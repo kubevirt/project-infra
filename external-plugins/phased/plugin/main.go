@@ -151,7 +151,9 @@ func main() {
 
 func helpProvider(_ []config.OrgRepo) (*pluginhelp.PluginHelp, error) {
 	pluginHelp := &pluginhelp.PluginHelp{
-		Description: `The Phased plugin is used to trigger phase 2 jobs when PR is ready for merging.`,
+		Description: `The Phased plugin triggers presubmit jobs in phases. Phase 0 jobs run automatically. ` +
+			`When all phase N jobs succeed, the plugin triggers phase N+1 jobs. ` +
+			`The merge phase (lgtm+approved) triggers jobs without phase annotations that match the manual-required filter.`,
 	}
 	return pluginHelp, nil
 }

@@ -7,6 +7,10 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"sort"
+	"strconv"
+	"sync"
+	"time"
 
 	pi_github "kubevirt.io/project-infra/pkg/github"
 	kubeVirtLabels "kubevirt.io/project-infra/pkg/github/labels"
@@ -21,7 +25,11 @@ import (
 
 var log *logrus.Logger
 
-const Intro = "Required labels detected, running phase 2 presubmits:\n"
+const (
+	Intro              = "Required labels detected, running phase 2 presubmits:\n"
+	PhaseIntroFmt      = "Phase %d jobs completed, triggering phase %d presubmits:\n"
+	PhaseAnnotationKey = "phased.kubevirt.io/phase"
+)
 
 func init() {
 	log = logrus.New()
@@ -36,14 +44,47 @@ type GitHubEvent struct {
 
 type githubClientInterface interface {
 	GetPullRequest(string, string, int) (*github.PullRequest, error)
+	GetPullRequests(string, string) ([]github.PullRequest, error)
 	CreateComment(org, repo string, number int, comment string) error
 	GetPullRequestChanges(org, repo string, number int) ([]github.PullRequestChange, error)
 	GetIssueLabels(org, repo string, number int) ([]github.Label, error)
+	GetCombinedStatus(org, repo, ref string) (*github.CombinedStatus, error)
 }
 
 type loadConfigBytesFunc func(h *GitHubEventsHandler, org, repo string) ([]byte, []byte, error)
 
 var LoadConfigBytesFunc loadConfigBytesFunc = loadConfigBytes
+
+type presubmitCache struct {
+	mu          sync.Mutex
+	presubmits  []config.Presubmit
+	phasedNames map[string]bool
+	loadedAt    time.Time
+	ttl         time.Duration
+}
+
+func (c *presubmitCache) get() ([]config.Presubmit, map[string]bool, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.presubmits == nil || time.Since(c.loadedAt) > c.ttl {
+		return nil, nil, false
+	}
+	return c.presubmits, c.phasedNames, true
+}
+
+func (c *presubmitCache) set(presubmits []config.Presubmit) {
+	names := make(map[string]bool)
+	for _, ps := range presubmits {
+		if _, ok := ps.JobBase.Annotations[PhaseAnnotationKey]; ok {
+			names[jobContext(ps)] = true
+		}
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.presubmits = presubmits
+	c.phasedNames = names
+	c.loadedAt = time.Now()
+}
 
 type GitHubEventsHandler struct {
 	eventsChan       <-chan *GitHubEvent
@@ -53,6 +94,7 @@ type GitHubEventsHandler struct {
 	prowConfigPath   string
 	jobsConfigBase   string
 	prowLocation     string
+	cache            presubmitCache
 }
 
 func NewGitHubEventsHandler(
@@ -72,6 +114,7 @@ func NewGitHubEventsHandler(
 		jobsConfigBase:   jobsConfigBase,
 		prowLocation:     prowLocation,
 		gitClientFactory: gitClientFactory,
+		cache:            presubmitCache{ttl: 5 * time.Minute},
 	}
 }
 
@@ -87,6 +130,14 @@ func (h *GitHubEventsHandler) Handle(incomingEvent *GitHubEvent) {
 			return
 		}
 		h.handlePullRequestEvent(eventLog, &event)
+	case "status":
+		eventLog.Infoln("Handling status event")
+		var event github.StatusEvent
+		if err := json.Unmarshal(incomingEvent.Payload, &event); err != nil {
+			eventLog.WithError(err).Error("Could not unmarshal event.")
+			return
+		}
+		h.handleStatusEvent(eventLog, &event)
 	default:
 		log.Infoln("Dropping irrelevant:", incomingEvent.Type, incomingEvent.GUID)
 	}
@@ -176,6 +227,146 @@ func (h *GitHubEventsHandler) loadPresubmits(pr github.PullRequest) ([]config.Pr
 func generateJobConfigURL(org, repo, prowLocation, jobsConfigBase string) string {
 	return fmt.Sprintf("%s/%s/%s/%s/%s-presubmits.yaml",
 		prowLocation, jobsConfigBase, org, repo, repo)
+}
+
+func (h *GitHubEventsHandler) handleStatusEvent(log *logrus.Entry, event *github.StatusEvent) {
+	if event.State != github.StatusSuccess {
+		return
+	}
+
+	org := event.Repo.Owner.Login
+	repo := event.Repo.Name
+
+	if !(org == "kubevirt" && repo == "kubevirt") {
+		return
+	}
+
+	_, phasedNames, ok := h.cache.get()
+	if !ok {
+		h.warmCache(log, org, repo)
+		_, phasedNames, ok = h.cache.get()
+	}
+	if ok && !phasedNames[event.Context] {
+		log.Debugf("Status context %q is not a phased job, skipping", event.Context)
+		return
+	}
+
+	sha := event.SHA
+
+	prs, err := h.findPRsForSHA(org, repo, sha)
+	if err != nil {
+		log.WithError(err).Error("Could not find PRs for SHA")
+		return
+	}
+	if len(prs) == 0 {
+		log.Debugf("No open PRs found with HEAD SHA %s", sha)
+		return
+	}
+
+	combinedStatus, err := h.ghClient.GetCombinedStatus(org, repo, sha)
+	if err != nil {
+		log.WithError(err).Error("Could not get combined status")
+		return
+	}
+	statusMap := make(map[string]string)
+	if combinedStatus != nil {
+		for _, s := range combinedStatus.Statuses {
+			statusMap[s.Context] = s.State
+		}
+	}
+
+	for i := range prs {
+		h.handlePhaseTransition(log, prs[i], statusMap)
+	}
+}
+
+func (h *GitHubEventsHandler) warmCache(log *logrus.Entry, org, repo string) {
+	fullName := org + "/" + repo
+	presubmits, err := h.loadPresubmits(github.PullRequest{
+		Base: github.PullRequestBranch{
+			Ref:  "main",
+			Repo: github.Repo{FullName: fullName},
+		},
+	})
+	if err != nil {
+		log.WithError(err).Error("Could not warm presubmit cache")
+		return
+	}
+	if presubmits != nil {
+		h.cache.set(presubmits)
+	}
+}
+
+func (h *GitHubEventsHandler) findPRsForSHA(org, repo, sha string) ([]github.PullRequest, error) {
+	allPRs, err := h.ghClient.GetPullRequests(org, repo)
+	if err != nil {
+		return nil, fmt.Errorf("listing PRs: %w", err)
+	}
+	var matched []github.PullRequest
+	for _, pr := range allPRs {
+		if pr.Head.SHA == sha && pr.State == "open" {
+			matched = append(matched, pr)
+		}
+	}
+	return matched, nil
+}
+
+func (h *GitHubEventsHandler) handlePhaseTransition(log *logrus.Entry, pr github.PullRequest, statusMap map[string]string) {
+	if pr.Base.Ref != "main" && pr.Base.Ref != "master" {
+		return
+	}
+
+	presubmits, _, ok := h.cache.get()
+	if !ok {
+		var err error
+		presubmits, err = h.loadPresubmits(pr)
+		if err != nil {
+			log.WithError(err).Error("Could not load presubmits for phase transition")
+			return
+		}
+		if presubmits == nil {
+			return
+		}
+		h.cache.set(presubmits)
+	}
+
+	phaseJobs, sortedPhases := groupJobsByPhase(presubmits)
+	if len(sortedPhases) == 0 {
+		return
+	}
+
+	completedPhase, nextPhase := findNextPhaseToTrigger(phaseJobs, sortedPhases, statusMap)
+	if nextPhase < 0 {
+		return
+	}
+
+	triggerPhaseJobs(log, h.ghClient, pr, phaseJobs[nextPhase], completedPhase, nextPhase, statusMap)
+}
+
+func triggerPhaseJobs(log *logrus.Entry, ghClient githubClientInterface, pr github.PullRequest, jobs []config.Presubmit, completedPhase, nextPhase int, statusMap map[string]string) {
+	org := pr.Base.Repo.Owner.Login
+	repo := pr.Base.Repo.Name
+
+	if !(org == "kubevirt" && repo == "kubevirt") {
+		return
+	}
+
+	var result string
+	for _, job := range jobs {
+		ctx := jobContext(job)
+		if _, exists := statusMap[ctx]; exists {
+			continue
+		}
+		result += "/test " + job.Name + "\n"
+		log.Debugf("Phase %d: triggering presubmit %s", nextPhase, job.Name)
+	}
+
+	if result != "" {
+		result = fmt.Sprintf(PhaseIntroFmt, completedPhase, nextPhase) + result
+		if err := ghClient.CreateComment(org, repo, pr.Number, result); err != nil {
+			log.WithError(err).Errorf("CreateComment failed PR %d", pr.Number)
+		}
+	}
 }
 
 func (h *GitHubEventsHandler) shouldActOnPREvent(event *github.PullRequestEvent) bool {
@@ -302,6 +493,72 @@ func testRequested(ghClient githubClientInterface, pr github.PullRequest, reques
 	}
 
 	return nil
+}
+
+func groupJobsByPhase(presubmits []config.Presubmit) (map[int][]config.Presubmit, []int) {
+	phases := make(map[int][]config.Presubmit)
+	for _, ps := range presubmits {
+		phaseStr, ok := ps.JobBase.Annotations[PhaseAnnotationKey]
+		if !ok {
+			continue
+		}
+		phase, err := strconv.Atoi(phaseStr)
+		if err != nil {
+			log.Warnf("Invalid phase annotation %q on job %s, skipping", phaseStr, ps.Name)
+			continue
+		}
+		phases[phase] = append(phases[phase], ps)
+	}
+	sortedPhases := make([]int, 0, len(phases))
+	for p := range phases {
+		sortedPhases = append(sortedPhases, p)
+	}
+	sort.Ints(sortedPhases)
+	return phases, sortedPhases
+}
+
+func findNextPhaseToTrigger(phaseJobs map[int][]config.Presubmit, sortedPhases []int, statusMap map[string]string) (completedPhase int, nextPhase int) {
+	for i, phase := range sortedPhases {
+		if !allJobsSucceeded(phaseJobs[phase], statusMap) {
+			return -1, -1
+		}
+		if i+1 < len(sortedPhases) {
+			next := sortedPhases[i+1]
+			if hasUntriggeredJobs(phaseJobs[next], statusMap) {
+				return phase, next
+			}
+			continue
+		}
+	}
+	return -1, -1
+}
+
+func allJobsSucceeded(jobs []config.Presubmit, statusMap map[string]string) bool {
+	for _, job := range jobs {
+		ctx := jobContext(job)
+		state, exists := statusMap[ctx]
+		if !exists || state != github.StatusSuccess {
+			return false
+		}
+	}
+	return true
+}
+
+func hasUntriggeredJobs(jobs []config.Presubmit, statusMap map[string]string) bool {
+	for _, job := range jobs {
+		ctx := jobContext(job)
+		if _, exists := statusMap[ctx]; !exists {
+			return true
+		}
+	}
+	return false
+}
+
+func jobContext(job config.Presubmit) string {
+	if job.Context != "" {
+		return job.Context
+	}
+	return job.Name
 }
 
 func loadLocalConfigBytes(h *GitHubEventsHandler, org, repo string) ([]byte, []byte, error) {
