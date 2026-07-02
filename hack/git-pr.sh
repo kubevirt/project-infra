@@ -29,6 +29,7 @@ command=
 command_path=${PWD}
 description_command=
 dry_run=
+no_fork=
 git_author=kubevirt-bot
 git_email=kubevirtbot@redhat.com
 head_branch=
@@ -96,6 +97,11 @@ Options:
     matching by title when finding existing PRs to update.
     (Default: ${head_branch:-<pr-branch>})
 
+  --no-fork, -F
+    Push the branch directly to the upstream repository (org/repo) instead of
+    a fork (user/repo). Useful for private repositories where forks are disabled.
+    (Default: ${no_fork:-false})
+
   --labels, -L label1,..,labelN
     Comma-separated list of labels to attach to the PR.
     (Default: ${labels:-unset})
@@ -147,13 +153,13 @@ cmdline=$(
     set +x
 
     opts='author:,body:,branch:,command:,command-path:,description-command:'
-    opts+=',dry-run,email:,head-branch:,help,labels:,missing-labels:,org:'
+    opts+=',dry-run,email:,head-branch:,help,labels:,missing-labels:,no-fork,org:'
     opts+=',release-note-none,repo:,repo-path:,summary:,target:,token:,user:'
 
     getopt \
         --name="${progname}" \
         --longoptions="${opts}" \
-        --options='b:B:c:d:De:h:Hl:L:m:M:n:o:p:r:Rs:t:T:' \
+        --options='b:B:c:d:De:Fh:Hl:L:m:M:n:o:p:r:Rs:t:T:' \
         -- "$@"
 ) || die
 
@@ -173,6 +179,7 @@ while [ "$#" -gt 0 ]; do
         --head-branch         | -h) head_branch=$2;          shift;;
         --labels              | -L) labels=$2;               shift;;
         --missing-labels      | -M) missing_labels=$2;       shift;;
+        --no-fork             | -F) no_fork='true'                ;;
         --org                 | -o) org=$2;                  shift;;
         --release-note-none   | -R) release_note_none='true'      ;;
         --repo                | -r) repo=$2;                 shift;;
@@ -251,33 +258,39 @@ fi
 
 git add -A
 
-fork_url="https://${user}@github.com/${user}/${repo}.git"
-if git fetch --depth 1 --no-tags "${fork_url}" "${branch}" 2>/dev/null; then
+if [ -n "${no_fork}" ]; then
+    push_remote="${org}"
+else
+    push_remote="${user}"
+fi
+
+push_url="https://${user}@github.com/${push_remote}/${repo}.git"
+if git fetch --depth 1 --no-tags "${push_url}" "${branch}" 2>/dev/null; then
     local_tree=$(git write-tree)
     remote_tree=$(git rev-parse "FETCH_HEAD^{tree}" 2>/dev/null || true)
     if [ -n "${remote_tree}" ] && [ "${local_tree}" = "${remote_tree}" ]; then
-        echo "PR branch ${user}:${branch} already has identical content, skipping" >&2
+        echo "PR branch ${push_remote}:${branch} already has identical content, skipping" >&2
         exit 0
     fi
 fi
 
 if [ -z "$dry_run" ]; then
     git commit -s -m "${summary//[@#]/}"
-    git push -f "https://${user}@github.com/${user}/${repo}.git" HEAD:"${branch}"
+    git push -f "${push_url}" HEAD:"${branch}"
 else
     echo "dry_run: git commit -s -m \"${summary}\""
-    echo "dry_run: git push -f \"https://${user}@github.com/${user}/${repo}.git\" HEAD:\"${branch}\""
+    echo "dry_run: git push -f \"${push_url}\" HEAD:\"${branch}\""
 fi
 
 if [ -z "$dry_run" ]; then
-    echo "Creating PR to merge ${user}:${branch} into master..." >&2
+    echo "Creating PR to merge ${push_remote}:${branch} into ${targetbranch}..." >&2
     pr-creator \
         --github-token-path="${token}" \
         --org="${org}" --repo="${repo}" --branch="${targetbranch}" \
         --title="${title}" \
         --head-branch="${head_branch}" \
         --body="${body}" \
-        --source="${user}":"${branch}" \
+        --source="${push_remote}":"${branch}" \
         --labels="${labels}" \
         --confirm
 else
