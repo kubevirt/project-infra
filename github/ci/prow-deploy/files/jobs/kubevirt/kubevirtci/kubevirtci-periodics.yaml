@@ -248,8 +248,8 @@ periodics:
         export PROVISION_CENTOS_VERSION=10; export PHASES=linux; export BYPASS_PMAN_CHANGE_CHECK=true; ./publish.sh
         rm_gcs_file kubevirt-prow "$GCS_FILE_PATH"
       env:
-      - name: GIMME_GO_VERSION
-        value: "1.24.7"
+      - name: GO_MOD_PATH
+        value: go.mod
       securityContext:
         privileged: true
       resources:
