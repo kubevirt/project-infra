@@ -2436,33 +2436,29 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/prometheus: ""
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
-      preset-shared-images: "true"
-    max_concurrency: 4
     name: pull-kubevirt-e2e-k8s-1.34-sig-performance-kube-burner
     optional: true
-    reporter_config:
-      slack: {}
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
       - command:
         - /usr/local/bin/runner.sh
         - /bin/sh
-        - -ce
+        - -c
         - |
           # Build the perfscale-audit binary
           make bazel-build
-
           # Create k8s cluster
           make cluster-up
-          echo $(./kubevirtci/cluster-up/kubeconfig.sh)
-
-          # run test
-          PERFSCALE_KUBE_BURNER=true ./automation/perfscale-test.sh
+          # Push and deploy kubevirt
+          make cluster-sync
+          make kube-burner-perftest
         env:
         - name: KUBEVIRT_PROVIDER
           value: k8s-1.34
@@ -2475,7 +2471,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: 1G
+          value: 8G
         - name: PROMETHEUS_ENDPOINT
           value: http://127.0.0.1
         - name: PROMETHEUS_PORT
