@@ -981,7 +981,7 @@ postsubmits:
       run_if_changed: "robots/perf-report-creator/shape.yaml"
       spec:
         containers:
-        - image: quay.io/kubevirtci/pr-creator:v20260630-1d4341e
+        - image: quay.io/kubevirtci/pr-creator:v20260701-82b5143
           env:
           - name: TARGET_GITHUB_REPO
             value: kubevirt/ci-performance-benchmarks
