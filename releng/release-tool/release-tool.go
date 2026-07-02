@@ -449,6 +449,12 @@ func (r *releaseData) forkProwJobs() error {
 			return err
 		}
 
+		err = appendVersionSuffixToJobNames(fullOutputConfig, version)
+		if err != nil {
+			log.Printf("ERROR: appending version suffix to job names failed: %s", err)
+			return err
+		}
+
 		_, err = gitCommand("-C", r.infraDir, "add", outputConfig)
 		if err != nil {
 			return err
@@ -532,6 +538,24 @@ func configureReleaseJob(configPath string, outputPath string) error {
 		return err
 	}
 	return nil
+}
+
+func appendVersionSuffixToJobNames(configPath string, version string) error {
+	jobConfig, err := config.ReadJobConfig(configPath)
+	if err != nil {
+		return err
+	}
+	for key, presubmits := range jobConfig.PresubmitsStatic {
+		for i := range presubmits {
+			presubmits[i].Name = presubmits[i].Name + "-" + version
+		}
+		jobConfig.PresubmitsStatic[key] = presubmits
+	}
+	marshalled, err := yaml.Marshal(&jobConfig)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(configPath, marshalled, os.ModePerm)
 }
 
 func (r *releaseData) cutNewBranch(skipProw bool) error {
