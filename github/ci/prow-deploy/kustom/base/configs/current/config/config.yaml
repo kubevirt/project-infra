@@ -406,6 +406,8 @@ tide:
   - labels: [ "kind/bug", "priority/critical-urgent" ]
   - labels: [ "approved-vep" ]
 
+# KubeVirt Prow uses a kubernetes CronJob to reconcile branch protection rules.
+# https://docs.prow.k8s.io/docs/components/optional/branchprotector/
 branch-protection:
   required_status_checks:
     contexts:
