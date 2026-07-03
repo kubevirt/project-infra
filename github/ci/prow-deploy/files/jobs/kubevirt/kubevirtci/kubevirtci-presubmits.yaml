@@ -357,8 +357,8 @@ presubmits:
         - -c
         - cd cluster-provision/gocli/ && make all container
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.7
+        - name: GO_MOD_PATH
+          value: go.mod
         image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
@@ -424,8 +424,8 @@ presubmits:
           (cd cluster-provision/gocli && make test && make container)
           podman run --rm -v $(pwd):/workdir:Z quay.io/kubevirtci/gocli provision-manager --debug
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.7
+        - name: GO_MOD_PATH
+          value: go.mod
         image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
@@ -452,8 +452,8 @@ presubmits:
         - -c
         - cd cluster-provision/k8s/1.32 && ../provision.sh
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.7
+        - name: GO_MOD_PATH
+          value: go.mod
         - name: SLIM
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
@@ -484,8 +484,8 @@ presubmits:
         - -c
         - cd cluster-provision/k8s/1.33 && ../provision.sh
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.7
+        - name: GO_MOD_PATH
+          value: go.mod
         - name: SLIM
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
@@ -516,8 +516,8 @@ presubmits:
         - -c
         - cd cluster-provision/k8s/1.34 && ../provision.sh
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.7
+        - name: GO_MOD_PATH
+          value: go.mod
         - name: SLIM
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
@@ -549,8 +549,8 @@ presubmits:
         - -c
         - cd cluster-provision/k8s/1.34 && ../provision.sh
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.7
+        - name: GO_MOD_PATH
+          value: go.mod
         image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
@@ -579,8 +579,8 @@ presubmits:
         - -c
         - cd cluster-provision/k8s/1.34 && ../provision.sh
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.7
+        - name: GO_MOD_PATH
+          value: go.mod
         - name: PROVISION_CENTOS_VERSION
           value: "10"
         image: quay.io/kubevirtci/golang:v20260612-73bc71e
@@ -611,8 +611,8 @@ presubmits:
         - -c
         - cd cluster-provision/k8s/1.35 && ../provision.sh
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.7
+        - name: GO_MOD_PATH
+          value: go.mod
         image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
@@ -641,8 +641,8 @@ presubmits:
         - -c
         - cd cluster-provision/k8s/1.35 && ../provision.sh
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.7
+        - name: GO_MOD_PATH
+          value: go.mod
         - name: PROVISION_CENTOS_VERSION
           value: "10"
         image: quay.io/kubevirtci/golang:v20260612-73bc71e
@@ -672,8 +672,8 @@ presubmits:
         - -c
         - cd $(find ./cluster-provision/k8s -name '1.*' | sort -rV | head -1) && ../provision.sh
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.7
+        - name: GO_MOD_PATH
+          value: go.mod
         - name: PHASES
           value: linux
         - name: BYPASS_PMAN_CHANGE_CHECK
@@ -707,8 +707,8 @@ presubmits:
         - -c
         - cd cluster-provision/k8s/1.36 && ../provision.sh
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.7
+        - name: GO_MOD_PATH
+          value: go.mod
         image: quay.io/kubevirtci/golang:v20260612-73bc71e
         name: ""
         resources:
@@ -737,8 +737,8 @@ presubmits:
         - -c
         - cd cluster-provision/k8s/1.36 && ../provision.sh
         env:
-        - name: GIMME_GO_VERSION
-          value: 1.24.7
+        - name: GO_MOD_PATH
+          value: go.mod
         - name: PROVISION_CENTOS_VERSION
           value: "10"
         image: quay.io/kubevirtci/golang:v20260612-73bc71e

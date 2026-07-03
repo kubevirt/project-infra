@@ -47,8 +47,8 @@ postsubmits:
             gsutil cp ./amd64-$SHORT_SHA gs://kubevirt-prow/release/kubevirt/kubevirtci/amd64-$SHORT_SHA
           # docker-in-docker needs privileged mode
           env:
-          - name: GIMME_GO_VERSION
-            value: "1.24.7"
+          - name: GO_MOD_PATH
+            value: go.mod
           securityContext:
             privileged: true
           volumeMounts:
@@ -168,8 +168,8 @@ postsubmits:
             rm_gcs_file kubevirt-prow "$GCS_FILE_PATH"
           # docker-in-docker needs privileged mode
           env:
-          - name: GIMME_GO_VERSION
-            value: "1.24.7"
+          - name: GO_MOD_PATH
+            value: go.mod
           securityContext:
             privileged: true
           volumeMounts:
