@@ -1,4 +1,7 @@
-# source https://github.com/kubernetes-sigs/prow/blob/8cd4af136cc0eeb9ee7ab9fc11cd99f7adba663e/pkg/plugins/config.go#L52
+# Source:
+# - https://docs.prow.k8s.io/docs/components/plugins/
+# - https://sigs.k8s.io/prow/pkg/plugins/plugin-config-documented.yaml
+# - https://pkg.go.dev/sigs.k8s.io/prow/pkg/plugins#Configuration
 # let's keep the order in the same way as it's defined in above configuration
 
 plugins:
@@ -586,6 +589,7 @@ plugins:
     - trigger
     - help
 
+# https://docs.prow.k8s.io/docs/components/plugins/#external-plugins
 external_plugins:
   libguestfs-appliance:
   - name: needs-rebase
@@ -645,6 +649,7 @@ external_plugins:
     events:
       - issue_comment
 
+# https://docs.prow.k8s.io/docs/components/plugins/approve/approvers/
 approve:
 - repos:
   - kubevirt/project-infra
@@ -793,6 +798,7 @@ label:
       - restricted-labels-kubevirt
       label: approved-vep
 
+# https://docs.prow.k8s.io/docs/components/plugins/lgtm/
 lgtm:
 - repos:
   - kubevirt/machine-remediation-operator
@@ -862,6 +868,8 @@ override:
     kubevirt:
       - prow-job-taskforce
 
+# Note: the trigger plugin ignore comments from its own bot user:
+# - https://sigs.k8s.io/prow/pkg/plugins/trigger/generic-comment.go#handleGenericComment()#L50-L59
 triggers:
 - repos:
   - kubevirt/project-infra
