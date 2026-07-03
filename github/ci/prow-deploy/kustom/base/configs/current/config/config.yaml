@@ -211,6 +211,7 @@ tide:
     kubevirt/kubevirt-aie-webhook: merge
     kubevirt/ci-health: merge
     kubevirt/redfish-controller: merge
+    kubevirt/kubevirt-observability-controller: squash
   queries:
   - repos:
     - kubevirt/dra-pci-driver
@@ -288,6 +289,7 @@ tide:
     - kubevirt/iommufd-device-plugin
     - kubevirt/kubevirt-aie
     - kubevirt/kubevirt-aie-webhook
+    - kubevirt/kubevirt-observability-controller
     labels:
     - lgtm
     - approved
