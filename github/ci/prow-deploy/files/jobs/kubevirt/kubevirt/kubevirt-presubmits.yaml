@@ -1288,7 +1288,7 @@ presubmits:
       preset-gomaxprocs-16: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 4
-    name: pull-kubevirt-e2e-kind-1.35-sig-compute-arm64
+    name: pull-kubevirt-e2e-kind-1.36-sig-compute-arm64
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1301,7 +1301,7 @@ presubmits:
           automation/test.sh
         env:
         - name: TARGET
-          value: kind-1.35-wg-arm64
+          value: kind-1.36-wg-arm64
         - name: KUBEVIRT_NUM_NODES
           value: "2"
         image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
@@ -1332,7 +1332,7 @@ presubmits:
       preset-gomaxprocs-16: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 2
-    name: pull-kubevirt-e2e-kind-1.35-sig-compute-conformance-arm64
+    name: pull-kubevirt-e2e-kind-1.36-sig-compute-conformance-arm64
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1346,9 +1346,9 @@ presubmits:
           automation/conformance.sh
         env:
         - name: TARGET
-          value: kind-1.35-wg-arm64
+          value: kind-1.36-wg-arm64
         - name: KUBEVIRT_PROVIDER
-          value: kind-1.35
+          value: kind-1.36
         - name: KUBEVIRT_NUM_NODES
           value: "2"
         - name: IPFAMILY
