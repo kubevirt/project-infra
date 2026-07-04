@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/golang:v20260612-73bc71e as builder
+FROM quay.io/kubevirtci/golang:v20260703-61a4923 as builder
 ENV GOPROXY=https://proxy.golang.org|direct \
     GOFLAGS="-mod=vendor -ldflags=-extldflags=\"-static\"" \
     CGO_ENABLED=0 \

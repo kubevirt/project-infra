@@ -19,7 +19,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+      - image: quay.io/kubevirtci/bootstrap:v20260703-61a4923
         env:
           - name: BUCKET_DIR
             value: kubevirtci-crio-mirror
@@ -57,7 +57,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260702-53e5e83
+    - image: quay.io/kubevirtci/pr-creator:v20260703-3fae306
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -95,7 +95,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260702-53e5e83
+    - image: quay.io/kubevirtci/pr-creator:v20260703-3fae306
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -131,7 +131,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260702-53e5e83
+    - image: quay.io/kubevirtci/pr-creator:v20260703-3fae306
       command:
       - /bin/sh
       - -ceu
@@ -170,7 +170,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260702-53e5e83
+    - image: quay.io/kubevirtci/pr-creator:v20260703-3fae306
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -216,7 +216,7 @@ periodics:
   cluster: prow-s390x-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+    - image: quay.io/kubevirtci/golang:v20260703-61a4923
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -279,7 +279,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260702-53e5e83
+      - image: quay.io/kubevirtci/pr-creator:v20260703-3fae306
         command: ["/bin/sh", "-ce"]
         args:
           - |
