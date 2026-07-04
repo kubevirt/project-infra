@@ -29,7 +29,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/mod v0.35.0
-	golang.org/x/net v0.53.0
+	golang.org/x/net v0.55.0
 	golang.org/x/oauth2 v0.34.0
 	golang.org/x/tools v0.44.0
 	gonum.org/v1/plot v0.12.0
@@ -184,13 +184,13 @@ require (
 	go.uber.org/zap v1.27.0 // indirect
 	go4.org v0.0.0-20201209231011-d4a079459e60 // indirect
 	gocloud.dev v0.40.0 // indirect
-	golang.org/x/crypto v0.50.0 // indirect
+	golang.org/x/crypto v0.51.0 // indirect
 	golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f // indirect
 	golang.org/x/image v0.38.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/sys v0.43.0 // indirect
-	golang.org/x/term v0.42.0 // indirect
-	golang.org/x/text v0.36.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
+	golang.org/x/term v0.43.0 // indirect
+	golang.org/x/text v0.37.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
