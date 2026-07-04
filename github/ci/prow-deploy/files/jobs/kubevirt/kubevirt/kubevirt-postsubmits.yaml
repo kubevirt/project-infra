@@ -25,7 +25,7 @@ postsubmits:
       preset-pgp-bot-key: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+      - image: quay.io/kubevirtci/golang:v20260703-61a4923
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -71,7 +71,7 @@ postsubmits:
       preset-gcs-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+      - image: quay.io/kubevirtci/bootstrap:v20260703-61a4923
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
         - |
@@ -109,7 +109,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+      - image: quay.io/kubevirtci/golang:v20260703-61a4923
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -147,7 +147,7 @@ postsubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260703-61a4923
           env:
             - name: COVERALLS_TOKEN_FILE
               value: /root/.docker/secrets/coveralls/token
@@ -186,7 +186,7 @@ postsubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260703-61a4923
           env:
             - name: FOSSA_TOKEN_FILE
               value: /root/.docker/secrets/fossa/token
@@ -231,7 +231,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260703-61a4923
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -267,7 +267,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260703-61a4923
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -324,7 +324,7 @@ postsubmits:
         - /usr/local/bin/runner.sh
         - /bin/bash
         - -ce
-        image: quay.io/kubevirtci/pr-creator:v20260702-53e5e83
+        image: quay.io/kubevirtci/pr-creator:v20260703-3fae306
         resources:
           requests:
             memory: "200Mi"

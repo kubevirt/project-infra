@@ -22,7 +22,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+      - image: quay.io/kubevirtci/bootstrap:v20260703-61a4923
         env:
           - name: GITHUB_USER
             value: kubevirt-bot

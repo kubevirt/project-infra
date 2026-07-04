@@ -19,7 +19,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+    - image: quay.io/kubevirtci/golang:v20260703-61a4923
       command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
