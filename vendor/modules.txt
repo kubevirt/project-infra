@@ -1010,7 +1010,7 @@ golang.org/x/crypto/ssh/knownhosts
 ## explicit; go 1.25.0
 golang.org/x/exp/maps
 golang.org/x/exp/slices
-# golang.org/x/image v0.38.0
+# golang.org/x/image v0.41.0
 ## explicit; go 1.25.0
 golang.org/x/image/ccitt
 golang.org/x/image/draw
