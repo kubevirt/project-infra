@@ -292,8 +292,9 @@ var _ = Describe("Phased", func() {
 					},
 				},
 			})
+			Expect(err).ShouldNot(HaveOccurred())
 
-			makeRepoWithEmptyProwConfig(gitrepo, org, repo)
+			err = makeRepoWithEmptyProwConfig(gitrepo, org, repo)
 
 			Expect(err).ShouldNot(HaveOccurred())
 			err = gitrepo.AddCommit(org, repo, map[string][]byte{
@@ -306,7 +307,8 @@ var _ = Describe("Phased", func() {
 
 		AfterEach(func() {
 			if gitClientFactory != nil {
-				gitClientFactory.Clean()
+				err := gitClientFactory.Clean()
+				Expect(err).ShouldNot(HaveOccurred())
 			}
 		})
 
