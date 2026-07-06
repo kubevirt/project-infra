@@ -38,8 +38,15 @@ spec:
         - --dry-run=false
         - --github-endpoint=http://ghproxy
         - --github-endpoint=https://api.github.com
-        - --github-token-path=/etc/github/oauth
-        - --update-period=6h
+        - --github-app-id=$(GITHUB_APP_ID)
+        - --github-app-private-key-path=/etc/github/cert
+        - --update-period=3h
+        env:
+          - name: GITHUB_APP_ID
+            valueFrom:
+              secretKeyRef:
+                name: github-token
+                key: appid
         ports:
           - name: http
             containerPort: 8888
@@ -47,7 +54,7 @@ spec:
         - name: hmac
           mountPath: /etc/webhook
           readOnly: true
-        - name: oauth
+        - name: github-token
           mountPath: /etc/github
           readOnly: true
         - name: plugins
@@ -57,9 +64,9 @@ spec:
       - name: hmac
         secret:
           secretName: hmac-token
-      - name: oauth
+      - name: github-token
         secret:
-          secretName: oauth-token
+          secretName: github-token
       - name: plugins
         configMap:
           name: plugins
