@@ -72,3 +72,17 @@ var _ = Describe(ExtendArgs("description of describe", func() {
 func ExtendArgs(text string, args ...interface{}) (extendedText string, newArgs []interface{}) {
 	return "whatever " + text, args
 }
+
+var _ = Describe("nested describe", func() {
+	Context("nested context", func() {
+		DescribeTable("nested table",
+			func(val string) {
+				Expect(val).ToNot(BeEmpty())
+			},
+			Entry("entry1", "a"),
+			Entry("entry2", "b"),
+			Entry("entry3", "c"),
+			Entry("entry4", "d"),
+		)
+	})
+})
