@@ -500,7 +500,9 @@ presubmits:
             memory: 12Gi
         securityContext:
           privileged: true
-  - always_run: true
+  # TODO: revert once the prow-s390x-workloads cluster is healthy again
+  - always_run: false
+    optional: true
     branches:
     - release-1.8
     cluster: prow-s390x-workloads
