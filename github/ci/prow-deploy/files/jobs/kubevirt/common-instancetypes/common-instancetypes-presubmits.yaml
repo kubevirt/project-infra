@@ -190,8 +190,7 @@ presubmits:
     branches:
       - main
     always_run: false
-    # TODO: revert once the prow-s390x-workloads cluster is healthy
-    #run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/fedora/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/fedora/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-s390x-workloads
     decorate: true
     decoration_config:
@@ -317,8 +316,7 @@ presubmits:
     branches:
       - main
     always_run: false
-    # TODO: revert once the prow-s390x-workloads cluster is healthy
-    #run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-s390x-workloads
     decorate: true
     decoration_config:
@@ -397,8 +395,7 @@ presubmits:
     branches:
       - main
     always_run: false
-    # TODO: revert once the prow-s390x-workloads cluster is healthy
-    #run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-s390x-workloads
     decorate: true
     decoration_config:
@@ -477,8 +474,7 @@ presubmits:
     branches:
       - main
     always_run: false
-    # TODO: revert once the prow-s390x-workloads cluster is healthy
-    #run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/ubuntu/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/ubuntu/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-s390x-workloads
     decorate: true
     decoration_config:
@@ -557,8 +553,7 @@ presubmits:
     branches:
       - main
     always_run: false
-    # TODO: revert once the prow-s390x-workloads cluster is healthy
-    #run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/opensuse/tumbleweed/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/opensuse/tumbleweed/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-s390x-workloads
     decorate: true
     decoration_config:

@@ -70,8 +70,7 @@ presubmits:
         - release-\d+\.\d+
       annotations:
         fork-per-release: "true"
-      # TODO: revert once the prow-s390x-workloads cluster is healthy
-      always_run: false
+      always_run: true
       optional: true
       decorate: true
       decoration_config:
