@@ -75,9 +75,8 @@ presubmits:
     - name: pull-hyperconverged-cluster-operator-unit-test-s390x
       branches:
         - release-1.18
-      # TODO: revert once the prow-s390x-workloads cluster is healthy
-      always_run: false
-      optional: true
+      always_run: true
+      optional: false
       decorate: true
       decoration_config:
         timeout: 2h
