@@ -401,12 +401,13 @@ func (m *OutlineMapper) GetPathsForLines(lines ...int) ([][]*ginkgo.Node, error)
 
 func expandPaths(parents []*ginkgo.Node, children []*ginkgo.Node) (paths [][]*ginkgo.Node) {
 	for _, child := range children {
+		parentsCopy := make([]*ginkgo.Node, len(parents), len(parents)+1)
+		copy(parentsCopy, parents)
 		if len(child.Nodes) > 0 {
-			newParents := append(parents, child.CloneWithoutNodes())
-			nodes := expandPaths(newParents, child.Nodes)
+			nodes := expandPaths(append(parentsCopy, child.CloneWithoutNodes()), child.Nodes)
 			paths = append(paths, nodes...)
 		} else {
-			paths = append(paths, append(parents, child))
+			paths = append(paths, append(parentsCopy, child))
 		}
 	}
 	return

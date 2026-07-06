@@ -253,7 +253,83 @@ var _ = Describe("extract testnames", func() {
 		})
 
 		It("should contain final test name", func() {
-			Expect(slices.Contains(changedTestNames, "whatever description of describe description of it")).To(BeTrue())
+			Expect(slices.Contains(changedTestNames, "nested describe nested context nested table entry1")).To(BeTrue())
+		})
+
+	})
+
+	When("a line within a deeply nested DescribeTable body is changed", Ordered, func() {
+
+		const (
+			fakeCommitHash = "abc1234567890"
+			testFile       = "testdata/simple_test.go"
+		)
+
+		var (
+			testPaths        [][]*ginkgo.Node
+			changedTestNames []string
+		)
+
+		BeforeAll(func() {
+			var outline []*ginkgo.Node
+
+			file, err := os.Open("testdata/simple_test_outline.json")
+			Expect(err).ToNot(HaveOccurred())
+			err = json.NewDecoder(file).Decode(&outline)
+			Expect(err).ToNot(HaveOccurred())
+
+			testfileContent, err := os.ReadFile(testFile)
+			Expect(err).ToNot(HaveOccurred())
+
+			commits := []*git.LogCommit{
+				{
+					Hash: fakeCommitHash,
+					FileChanges: []*git.FileChange{
+						{ChangeType: git.Modified, Filename: testFile},
+					},
+				},
+			}
+			outlines := map[string][]*ginkgo.Node{
+				testFile: outline,
+			}
+			// line 80 is inside the nested DescribeTable function body (Describe > Context > DescribeTable),
+			// outside any Entry
+			blameLines := map[string][]*git.BlameLine{
+				testFile: {
+					{CommitID: fakeCommitHash[:11], LineNo: 80},
+				},
+			}
+			testfileContents := map[string]string{
+				testFile: string(testfileContent),
+			}
+
+			testPaths = extractChangedTestPaths(commits, outlines, blameLines, testfileContents)
+
+			absTestPath, err := filepath.Abs("testdata")
+			Expect(err).ToNot(HaveOccurred())
+			changedTestNames, err = generateTestNames(testPaths, absTestPath)
+			Expect(err).ToNot(HaveOccurred())
+		})
+
+		It("should return paths for all entries in the table", func() {
+			Expect(testPaths).To(HaveLen(4))
+		})
+
+		It("should return distinct paths for each entry", func() {
+			uniqueLeafTexts := map[string]struct{}{}
+			for _, path := range testPaths {
+				leafNode := path[len(path)-1]
+				uniqueLeafTexts[leafNode.Text] = struct{}{}
+			}
+			Expect(uniqueLeafTexts).To(HaveLen(4))
+		})
+
+		It("should contain test name for each entry", func() {
+			Expect(changedTestNames).To(HaveLen(4))
+			Expect(slices.Contains(changedTestNames, "nested describe nested context nested table entry1")).To(BeTrue())
+			Expect(slices.Contains(changedTestNames, "nested describe nested context nested table entry2")).To(BeTrue())
+			Expect(slices.Contains(changedTestNames, "nested describe nested context nested table entry3")).To(BeTrue())
+			Expect(slices.Contains(changedTestNames, "nested describe nested context nested table entry4")).To(BeTrue())
 		})
 
 	})

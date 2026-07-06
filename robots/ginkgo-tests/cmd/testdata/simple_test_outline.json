@@ -1,116 +1,219 @@
 [
-  {
-    "name": "Describe",
-    "text": "simple",
-    "start": 745,
-    "end": 1508,
-    "spec": false,
-    "focused": false,
-    "pending": false,
-    "labels": [],
-    "nodes": [
-      {
-        "name": "Context",
-        "text": "was previously part of the latter node",
-        "start": 775,
-        "end": 936,
+    {
+        "name": "Describe",
+        "text": "simple",
+        "start": 747,
+        "end": 1510,
         "spec": false,
         "focused": false,
         "pending": false,
         "labels": [],
         "nodes": [
-          {
-            "name": "It",
-            "text": "[test_id:1742]is still found",
-            "start": 837,
-            "end": 931,
-            "spec": true,
-            "focused": false,
-            "pending": false,
-            "labels": [],
-            "nodes": []
-          }
+            {
+                "name": "Context",
+                "text": "was previously part of the latter node",
+                "start": 777,
+                "end": 938,
+                "spec": false,
+                "focused": false,
+                "pending": false,
+                "labels": [],
+                "nodes": [
+                    {
+                        "name": "It",
+                        "text": "[test_id:1742]is still found",
+                        "start": 839,
+                        "end": 933,
+                        "spec": true,
+                        "focused": false,
+                        "pending": false,
+                        "labels": [],
+                        "nodes": []
+                    }
+                ]
+            },
+            {
+                "name": "When",
+                "text": "does something is executed",
+                "start": 941,
+                "end": 1278,
+                "spec": false,
+                "focused": false,
+                "pending": false,
+                "labels": [],
+                "nodes": [
+                    {
+                        "name": "It",
+                        "text": "does not return an error",
+                        "start": 988,
+                        "end": 1076,
+                        "spec": true,
+                        "focused": false,
+                        "pending": false,
+                        "labels": [],
+                        "nodes": []
+                    },
+                    {
+                        "name": "It",
+                        "text": "does return an error",
+                        "start": 1080,
+                        "end": 1166,
+                        "spec": true,
+                        "focused": false,
+                        "pending": false,
+                        "labels": [],
+                        "nodes": []
+                    },
+                    {
+                        "name": "It",
+                        "text": "[vendor:cnv-qe]does do something else",
+                        "start": 1170,
+                        "end": 1273,
+                        "spec": true,
+                        "focused": false,
+                        "pending": false,
+                        "labels": [],
+                        "nodes": []
+                    }
+                ]
+            },
+            {
+                "name": "DescribeTable",
+                "text": "is a table",
+                "start": 1281,
+                "end": 1506,
+                "spec": false,
+                "focused": false,
+                "pending": false,
+                "labels": [],
+                "nodes": [
+                    {
+                        "name": "Entry",
+                        "text": "first testcase",
+                        "start": 1416,
+                        "end": 1451,
+                        "spec": true,
+                        "focused": false,
+                        "pending": false,
+                        "labels": [],
+                        "nodes": []
+                    },
+                    {
+                        "name": "Entry",
+                        "text": "[test_id:8976]2nd testcase",
+                        "start": 1455,
+                        "end": 1502,
+                        "spec": true,
+                        "focused": false,
+                        "pending": false,
+                        "labels": [],
+                        "nodes": []
+                    }
+                ]
+            }
         ]
-      },
-      {
-        "name": "When",
-        "text": "does something is executed",
-        "start": 939,
-        "end": 1276,
+    },
+    {
+        "name": "Describe",
+        "text": "undefined",
+        "start": 1520,
+        "end": 1662,
         "spec": false,
         "focused": false,
         "pending": false,
         "labels": [],
         "nodes": [
-          {
-            "name": "It",
-            "text": "does not return an error",
-            "start": 986,
-            "end": 1074,
-            "spec": true,
-            "focused": false,
-            "pending": false,
-            "labels": [],
-            "nodes": []
-          },
-          {
-            "name": "It",
-            "text": "does return an error",
-            "start": 1078,
-            "end": 1164,
-            "spec": true,
-            "focused": false,
-            "pending": false,
-            "labels": [],
-            "nodes": []
-          },
-          {
-            "name": "It",
-            "text": "[vendor:cnv-qe]does do something else",
-            "start": 1168,
-            "end": 1271,
-            "spec": true,
-            "focused": false,
-            "pending": false,
-            "labels": [],
-            "nodes": []
-          }
+            {
+                "name": "It",
+                "text": "description of it",
+                "start": 1578,
+                "end": 1657,
+                "spec": true,
+                "focused": false,
+                "pending": false,
+                "labels": [],
+                "nodes": []
+            }
         ]
-      },
-      {
-        "name": "DescribeTable",
-        "text": "is a table",
-        "start": 1279,
-        "end": 1504,
+    },
+    {
+        "name": "Describe",
+        "text": "nested describe",
+        "start": 1805,
+        "end": 2081,
         "spec": false,
         "focused": false,
         "pending": false,
         "labels": [],
         "nodes": [
-          {
-            "name": "Entry",
-            "text": "first testcase",
-            "start": 1414,
-            "end": 1449,
-            "spec": true,
-            "focused": false,
-            "pending": false,
-            "labels": [],
-            "nodes": []
-          },
-          {
-            "name": "Entry",
-            "text": "[test_id:8976]2nd testcase",
-            "start": 1453,
-            "end": 1500,
-            "spec": true,
-            "focused": false,
-            "pending": false,
-            "labels": [],
-            "nodes": []
-          }
+            {
+                "name": "Context",
+                "text": "nested context",
+                "start": 1843,
+                "end": 2078,
+                "spec": false,
+                "focused": false,
+                "pending": false,
+                "labels": [],
+                "nodes": [
+                    {
+                        "name": "DescribeTable",
+                        "text": "nested table",
+                        "start": 1880,
+                        "end": 2074,
+                        "spec": false,
+                        "focused": false,
+                        "pending": false,
+                        "labels": [],
+                        "nodes": [
+                            {
+                                "name": "Entry",
+                                "text": "entry1",
+                                "start": 1974,
+                                "end": 1994,
+                                "spec": true,
+                                "focused": false,
+                                "pending": false,
+                                "labels": [],
+                                "nodes": []
+                            },
+                            {
+                                "name": "Entry",
+                                "text": "entry2",
+                                "start": 1999,
+                                "end": 2019,
+                                "spec": true,
+                                "focused": false,
+                                "pending": false,
+                                "labels": [],
+                                "nodes": []
+                            },
+                            {
+                                "name": "Entry",
+                                "text": "entry3",
+                                "start": 2024,
+                                "end": 2044,
+                                "spec": true,
+                                "focused": false,
+                                "pending": false,
+                                "labels": [],
+                                "nodes": []
+                            },
+                            {
+                                "name": "Entry",
+                                "text": "entry4",
+                                "start": 2049,
+                                "end": 2069,
+                                "spec": true,
+                                "focused": false,
+                                "pending": false,
+                                "labels": [],
+                                "nodes": []
+                            }
+                        ]
+                    }
+                ]
+            }
         ]
-      }
-    ]
-  }
+    }
 ]
