@@ -589,6 +589,12 @@ plugins:
     - trigger
     - help
 
+  kubevirt/vdpa-network-binding-plugin:
+    plugins:
+    - approve
+    - lgtm
+    - trigger
+
 # https://docs.prow.k8s.io/docs/components/plugins/#external-plugins
 external_plugins:
   libguestfs-appliance:
@@ -713,6 +719,7 @@ approve:
   - kubevirt/ci-health
   - kubevirt/redfish-controller
   - kubevirt/kubevirt-observability-controller
+  - kubevirt/vdpa-network-binding-plugin
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -860,6 +867,7 @@ lgtm:
   - kubevirt/ci-health
   - kubevirt/redfish-controller
   - kubevirt/kubevirt-observability-controller
+  - kubevirt/vdpa-network-binding-plugin
   review_acts_as_lgtm: true
 
 override:
@@ -926,6 +934,7 @@ triggers:
   - kubevirt/ci-health
   - kubevirt/redfish-controller
   - kubevirt/kubevirt-observability-controller
+  - kubevirt/vdpa-network-binding-plugin
   ignore_ok_to_test: true
 - repos:
   - virtblocks/virtblocks

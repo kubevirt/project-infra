@@ -212,6 +212,7 @@ tide:
     kubevirt/ci-health: merge
     kubevirt/redfish-controller: merge
     kubevirt/kubevirt-observability-controller: squash
+    kubevirt/vdpa-network-binding-plugin: merge
   queries:
   - repos:
     - kubevirt/dra-pci-driver
@@ -241,6 +242,7 @@ tide:
     - kubevirt/enhancements
     - kubevirt/ci-health
     - kubevirt/redfish-controller
+    - kubevirt/vdpa-network-binding-plugin
     labels:
     - lgtm
     - approved
@@ -629,6 +631,10 @@ branch-protection:
             main:
               protect: true
         kubevirt-tekton-tasks:
+          branches:
+            main:
+              protect: true
+        vdpa-network-binding-plugin:
           branches:
             main:
               protect: true
