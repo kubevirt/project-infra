@@ -7,30 +7,112 @@ reviews:
     enabled: true
     golangci-lint:
       enabled: true
+    shellcheck:
+      enabled: true
   path_filters:
     - "!vendor/**"
   path_instructions:
+    - path: "**"
+      instructions: |
+        Comment severity: prefix style, naming, or minor improvement suggestions with "nit:" — these must not block merging.
+        Correctness issues, logic errors, security concerns, or contract violations must state the problem and why it matters.
+        When a review contains only nits, approve rather than request changes.
+
     - path: "**/*.go"
       instructions: |
-        Ensure all errors are handled. Flag unhandled error returns.
-        Check for concurrency issues (race conditions, mutex misuse).
-        Follow Go naming conventions and effective Go idioms.
+        Review against idiomatic Go standards:
+        - Naming: MixedCaps/mixedCaps only (no underscores). Acronyms fully capitalised (HTTPClient, not HttpClient). Package names are lowercase single words.
+        - Error handling: all errors must be checked and not discarded. Wrap with `fmt.Errorf("context: %w", err)`. No panic in library code. Note: fmt.Fprint/Fprintf/Fprintln errors are globally excluded per .golangci.yaml — do not flag these.
+        - Interfaces: accept interfaces, return concrete types. Keep interfaces small (1–3 methods). Define interfaces at the consumer, not the implementor.
+        - Package design: no circular dependencies. No package utils/common grab-bags. Exported symbols must have doc comments.
+        - Simplicity: prefer standard library over external dependencies. Flag unnecessary abstractions, premature generics, or over-engineered patterns.
+        - Nolint: prefer global .golangci.yaml exclusions over inline //nolint comments. Only use //nolint when the error is genuinely safe to ignore — and add a brief comment explaining why.
+        - Disabled checks: the project explicitly disables ST1001 (dot imports are allowed, especially in tests), ST1003, ST1005, ST1016, QF100*, QF1012. Do not flag patterns covered by these disabled checks.
+        - Import formatting: imports must be grouped and sorted per goimports conventions (stdlib / external / internal).
+
     - path: "**/*_test.go"
       instructions: |
-        Verify table-driven tests where appropriate.
-        Check for proper test cleanup and resource management.
-        Ensure tests use Ginkgo/Gomega patterns consistently where applicable.
+        Review test files for quality and correctness:
+        - Table-driven tests preferred for multiple similar cases.
+        - Ginkgo/Gomega tests use dot-imports — `. "github.com/onsi/ginkgo"`, `. "github.com/onsi/gomega"` — this is expected and correct; do not flag it.
+        - Proper cleanup via defer for any resources acquired in tests.
+        - Each test case should cover one clear behaviour.
+        - Avoid global mutable state in tests.
+
     - path: "**/github/ci/prow-deploy/files/jobs/**/*.yaml"
       instructions: |
-        Prow job configuration. Focus on:
-        - Job names follow kubevirt naming conventions.
-        - Timeout configurations are appropriate.
+        Prow job configuration. Review for:
+        - Job names follow the kubevirt naming convention (org-repo-type-description pattern).
+        - Timeout configurations are appropriate for the job type.
         - Cluster and preset labels are correct.
-        - run_if_changed regexes are correct and not overly broad or narrow.
-        - Environment variables are consistently named.
+        - run_if_changed regexes are precise — not overly broad (triggering unnecessary runs) or overly narrow (missing relevant files).
+        - Environment variables are consistently named in UPPER_CASE.
+        - decoration_config and extra_refs are correct where present.
+        - Periodic job cron schedules should be spread — not all clustered at :00 or :30 minutes.
+
     - path: "**/hack/**/*.sh"
       instructions: |
-        Shell script infrastructure automation.
-        Check for proper error handling (set -e, error traps).
-        Verify no hardcoded paths where environment variables should be used.
-        Ensure scripts are idempotent where possible.
+        Shell script review against shellcheck and bash best practices:
+        - Scripts must use `set -euo pipefail` near the top.
+        - All variable expansions must be double-quoted ("$var", "${array[@]}") unless word splitting is intentional.
+        - Use $(cmd) not backticks; quote the result: local out="$(cmd)".
+        - Use [[ ]] for conditionals (not [ ]), (( )) for arithmetic.
+        - If shebang is #!/bin/sh, no bash-isms allowed. Bash features require #!/usr/bin/env bash.
+        - Local variables: snake_case. Exported/environment variables: UPPER_CASE. Use `local` for function-scoped vars.
+        - Temporary files: use mktemp and clean up with `trap ... EXIT`. No hardcoded /tmp/foo paths.
+        - Scripts should be idempotent where possible.
+        - Cite shellcheck rule codes (e.g., SC2086) when flagging violations.
+
+    - path: "**/images/**/Dockerfile"
+      instructions: |
+        Container image build files. Review for:
+        - Base images must be pinned to a specific version tag or digest — no `latest`.
+        - Minimise layers: combine related RUN commands where sensible.
+        - Run as non-root user where possible.
+        - No hardcoded credentials, tokens, or secrets.
+        - Prefer COPY over ADD unless intentionally extracting archives.
+        - Multi-arch builds must not embed platform-specific assumptions.
+
+    - path: "**/labels/labels.yaml"
+      instructions: |
+        KubeVirt org label configuration. Enforce these constraints:
+        - `description` field must not exceed 100 characters (GitHub API limit enforced by label_sync — violations will cause sync failures).
+        - Required fields per entry: `name`, `color` (hex without # prefix), `target` (one of: both, issues, prs).
+        - Label names must be unique (case-insensitive) within their scope.
+        - `previously` entries for renames/migrations must include both `name` and `color`.
+        - docs/labels.md is auto-generated via `make update-labels` — flag any direct edits to it.
+
+    - path: "**/prow-deploy/files/orgs.yaml"
+      instructions: |
+        Peribolos organization configuration — manages GitHub org membership, teams, and repo permissions.
+        - Changes to `admins` are high-risk: flag any removals or unexpected additions; org admins have full org control.
+        - Member additions/removals: verify the GitHub handle is spelled correctly (case-sensitive for peribolos). Member lists should be kept alphabetically sorted for maintainability.
+        - Team membership changes: verify the team name and `privacy` setting (secret vs closed) are intentional.
+        - Repo-level `teams` entries with `permission: admin` are sensitive — flag unless clearly justified.
+        - Org-level settings (`default_repository_permission`, `has_organization_projects`, etc.) are rarely changed; flag any modification with a request for explanation.
+        - `previously` entries are used to rename teams — both old and new names should be present during migration.
+        - No field should be removed unless intentional (peribolos enforces what it finds; missing fields get default values).
+
+    - path: "**/prow-deploy/files/plugins.yaml"
+      instructions: |
+        Prow plugin configuration — controls which plugins are active per org and repo.
+        - Plugin names must be valid Prow plugin identifiers (see https://docs.prow.k8s.io/docs/components/plugins/).
+        - Repo-level plugin lists override or extend org-level defaults — check for unintentional omissions when adding a repo-specific block.
+        - `approve` plugin settings: `lgtm_acts_as_approve`, `require_self_approval`, and `ignore_review_state` have security implications — flag changes.
+        - `blunderbuss` `reviewer_count` changes affect review load distribution; flag large increases or decreases.
+        - Removing `trigger` from a repo disables all Prow job triggering — flag removals.
+        - Adding `override` grants maintainers the ability to bypass required checks — flag additions.
+        - Plugin configuration blocks (e.g. `label`, `milestone`, `size`) must conform to the Prow plugin schema.
+        - Comment: each repo section should reference why it diverges from the org defaults if it does.
+
+    - path: "**/prow-deploy/files/config.yaml"
+      instructions: |
+        Main Prow configuration — controls Tide merge automation, branch protection, and core Prow behaviour.
+        - Branch protection changes (`required_status_checks`, `required_pull_request_reviews`) directly affect merge safety — flag any weakening of protections.
+        - Tide `queries` changes affect which PRs can merge; removing required labels or status contexts is high-risk.
+        - `merge_method` changes (merge/squash/rebase) alter Git history — flag unless clearly intentional.
+        - `run_if_changed` patterns in presubmit jobs should be precise. Overly broad patterns trigger unnecessary CI; overly narrow patterns miss relevant file changes.
+        - Plank `default_decoration_config` changes affect all jobs — flag resource limit or image changes.
+        - `in_repo_config.enabled` toggling changes how job configs are loaded per repo.
+        - YAML anchors (`&name` / `*name`) are used heavily — verify that new references resolve correctly and that modified anchors don't silently break other consumers.
+        - Deck / Spyglass configuration: lens additions require the corresponding lens binary to be deployed.
