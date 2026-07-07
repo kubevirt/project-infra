@@ -45,6 +45,8 @@ type JobConfig struct {
 	GracePeriodSeconds int                 `yaml:"gracePeriodSeconds"`
 	UtilityImages      UtilityImagesConfig `yaml:"utilityImages"`
 	GCS                GCSConfig           `yaml:"gcs"`
+	CoverageThreshold  int                 `yaml:"coverageThreshold"`
+	GitHubTokenSecret  string              `yaml:"githubTokenSecret"`
 }
 
 type Config struct {
@@ -84,6 +86,12 @@ func (c *Config) RepoConfig(repo string) (*JobConfig, bool) {
 	}
 	if repoCfg.GCS != (GCSConfig{}) {
 		merged.GCS = repoCfg.GCS
+	}
+	if repoCfg.CoverageThreshold != 0 {
+		merged.CoverageThreshold = repoCfg.CoverageThreshold
+	}
+	if repoCfg.GitHubTokenSecret != "" {
+		merged.GitHubTokenSecret = repoCfg.GitHubTokenSecret
 	}
 	return &merged, true
 }
@@ -141,6 +149,15 @@ func LoadConfig(path string) (*Config, error) {
 	if cfg.Defaults.GracePeriodSeconds == 0 {
 		cfg.Defaults.GracePeriodSeconds = 15
 	}
+	if cfg.Defaults.CoverageThreshold < 0 || cfg.Defaults.CoverageThreshold > 100 {
+		return nil, fmt.Errorf("config: defaults.coverageThreshold must be between 0 and 100")
+	}
+	if cfg.Defaults.CoverageThreshold == 0 {
+		cfg.Defaults.CoverageThreshold = 70
+	}
+	if cfg.Defaults.GitHubTokenSecret == "" {
+		cfg.Defaults.GitHubTokenSecret = "commenter-oauth-token"
+	}
 
 	if len(cfg.Repos) == 0 {
 		return nil, fmt.Errorf("config: at least one repo must be configured")
@@ -154,6 +171,9 @@ func LoadConfig(path string) (*Config, error) {
 		}
 		if repoCfg.GracePeriodSeconds < 0 {
 			return nil, fmt.Errorf("config: repos.%s.gracePeriodSeconds must not be negative", repo)
+		}
+		if repoCfg.CoverageThreshold < 0 || repoCfg.CoverageThreshold > 100 {
+			return nil, fmt.Errorf("config: repos.%s.coverageThreshold must be between 0 and 100", repo)
 		}
 	}
 
@@ -256,10 +276,14 @@ func (h *GitHubEventsHandler) generateCoverageJob(
 		envKeys = append(envKeys, k)
 	}
 	sort.Strings(envKeys)
-	envVars := make([]corev1.EnvVar, 0, len(cfg.Env))
+	envVars := make([]corev1.EnvVar, 0, len(cfg.Env)+1)
 	for _, k := range envKeys {
 		envVars = append(envVars, corev1.EnvVar{Name: k, Value: cfg.Env[k]})
 	}
+	envVars = append(envVars, corev1.EnvVar{
+		Name:  "COVERAGE_THRESHOLD",
+		Value: fmt.Sprintf("%d", cfg.CoverageThreshold),
+	})
 
 	pathStrategy := prowapi.PathStrategyExplicit
 	if cfg.GCS.PathStrategy != "" {
@@ -284,9 +308,26 @@ func (h *GitHubEventsHandler) generateCoverageJob(
 							"-ce",
 						},
 						Args: []string{
-							fmt.Sprintf("go test %s -coverprofile=${ARTIFACTS}/filtered.cov && covreport -i ${ARTIFACTS}/filtered.cov -o ${ARTIFACTS}/filtered.html", cfg.TestPackages),
+							fmt.Sprintf("/usr/local/bin/coverage-report.sh %s", cfg.TestPackages),
 						},
 						Env: envVars,
+						VolumeMounts: []corev1.VolumeMount{
+							{
+								Name:      "github-token",
+								MountPath: "/etc/github-commenter",
+								ReadOnly:  true,
+							},
+						},
+					},
+				},
+				Volumes: []corev1.Volume{
+					{
+						Name: "github-token",
+						VolumeSource: corev1.VolumeSource{
+							Secret: &corev1.SecretVolumeSource{
+								SecretName: cfg.GitHubTokenSecret,
+							},
+						},
 					},
 				},
 			},
@@ -312,7 +353,7 @@ func (h *GitHubEventsHandler) generateCoverageJob(
 		},
 		Reporter: config.Reporter{
 			Context:    "coverage-auto",
-			SkipReport: false,
+			SkipReport: true,
 		},
 	}
 	return pjutil.NewPresubmit(*pr, pr.Base.SHA, presubmit, eventGUID, nil)
