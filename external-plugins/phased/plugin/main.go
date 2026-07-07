@@ -116,7 +116,7 @@ func main() {
 	logger := setupLogger()
 	logger.Infoln("Setting up events server")
 
-	err := secret.Add(opts.github.TokenPath, opts.hmacSecretFile)
+	err := secret.Add(opts.hmacSecretFile)
 	mustSucceed(err, "Failed to start secrets agent")
 
 	githubClient, err := opts.github.GitHubClient(opts.dryRun)

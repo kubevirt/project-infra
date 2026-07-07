@@ -144,7 +144,7 @@ func main() {
 	prowClient, err := v1.NewForConfig(config)
 	mustSucceed(err, "Could not instantiate a Prow client from the given kubeconfig.")
 
-	if err := secret.Add(opts.github.TokenPath, opts.hmacSecretFile); err != nil {
+	if err := secret.Add(opts.hmacSecretFile); err != nil {
 		logrus.WithError(err).Fatalf("Failed to start secrets agent.")
 	}
 

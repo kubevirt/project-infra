@@ -34,8 +34,8 @@ type GitHubEvent struct {
 	Payload []byte
 }
 
-type githubClientInterface interface {
-	GetPullRequest(string, string, int) (*github.PullRequest, error)
+type githubClient interface {
+	GetPullRequest(org, repo string, number int) (*github.PullRequest, error)
 	CreateComment(org, repo string, number int, comment string) error
 	GetPullRequestChanges(org, repo string, number int) ([]github.PullRequestChange, error)
 	GetIssueLabels(org, repo string, number int) ([]github.Label, error)
@@ -48,7 +48,7 @@ var LoadConfigBytesFunc loadConfigBytesFunc = loadConfigBytes
 type GitHubEventsHandler struct {
 	eventsChan       <-chan *GitHubEvent
 	logger           *logrus.Logger
-	ghClient         githubClientInterface
+	ghClient         githubClient
 	gitClientFactory gitv2.ClientFactory
 	prowConfigPath   string
 	jobsConfigBase   string
@@ -58,7 +58,7 @@ type GitHubEventsHandler struct {
 func NewGitHubEventsHandler(
 	eventsChan <-chan *GitHubEvent,
 	logger *logrus.Logger,
-	ghClient githubClientInterface,
+	ghClient githubClient,
 	prowConfigPath string,
 	jobsConfigBase string,
 	prowLocation string,
@@ -244,7 +244,7 @@ func fetchRemoteFile(url string) ([]byte, error) {
 	return body, nil
 }
 
-func listRequiredManual(ghClient githubClientInterface, pr github.PullRequest, presubmits []config.Presubmit) ([]config.Presubmit, error) {
+func listRequiredManual(ghClient githubClient, pr github.PullRequest, presubmits []config.Presubmit) ([]config.Presubmit, error) {
 	if pr.Draft || pr.Merged || pr.State != "open" {
 		return nil, nil
 	}
@@ -275,7 +275,7 @@ func (f manualRequiredFilter) ShouldRun(p config.Presubmit) (shouldRun bool, for
 
 func (f manualRequiredFilter) Name() string { return "manualRequiredFilter" }
 
-func testRequested(ghClient githubClientInterface, pr github.PullRequest, requestedJobs []config.Presubmit) error {
+func testRequested(ghClient githubClient, pr github.PullRequest, requestedJobs []config.Presubmit) error {
 	org, repo, err := pi_github.OrgRepo(pr.Base.Repo.FullName)
 	if err != nil {
 		log.WithError(err).Errorf("Could not parse repo name: %s", pr.Base.Repo.FullName)

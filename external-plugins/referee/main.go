@@ -116,11 +116,11 @@ func main() {
 
 	log := logrus.StandardLogger().WithField("plugin", server.PluginName)
 
-	if err := secret.Add(o.github.TokenPath, o.webhookSecretFile); err != nil {
+	if err := secret.Add(o.webhookSecretFile); err != nil {
 		logrus.WithError(err).Fatal("Error starting secrets agent.")
 	}
 
-	githubClient, err := o.github.GitHubClientWithAccessToken(string(secret.GetSecret(o.github.TokenPath)))
+	githubClient, err := o.github.GitHubClient(o.dryRun)
 	if err != nil {
 		logrus.WithError(err).Fatal("error getting github client")
 	}

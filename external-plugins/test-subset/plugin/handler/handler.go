@@ -83,9 +83,9 @@ type GitHubEvent struct {
 	Payload []byte
 }
 
-type githubClientInterface interface {
-	IsMember(string, string) (bool, error)
-	GetPullRequest(string, string, int) (*github.PullRequest, error)
+type githubClient interface {
+	IsMember(org, user string) (bool, error)
+	GetPullRequest(org, repo string, number int) (*github.PullRequest, error)
 }
 
 type loadConfigFn func(h *GitHubEventsHandler, org, repo string) ([]byte, []byte, error)
@@ -96,7 +96,7 @@ type GitHubEventsHandler struct {
 	eventsChan       <-chan *GitHubEvent
 	logger           *logrus.Logger
 	prowClient       v1.ProwJobInterface
-	ghClient         githubClientInterface
+	ghClient         githubClient
 	gitClientFactory gitv2.ClientFactory
 	prowConfigPath   string
 	jobsConfigBase   string
@@ -107,7 +107,7 @@ func NewGitHubEventsHandler(
 	eventsChan <-chan *GitHubEvent,
 	logger *logrus.Logger,
 	prowClient v1.ProwJobInterface,
-	ghClient githubClientInterface,
+	ghClient githubClient,
 	prowConfigPath string,
 	jobsConfigBase string,
 	prowLocation string,

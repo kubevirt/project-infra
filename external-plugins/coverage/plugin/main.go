@@ -116,7 +116,7 @@ func main() {
 	cfg, err := handler.LoadConfig(opts.configPath)
 	mustSucceed(err, "Could not load job configuration.")
 
-	if err := secret.Add(opts.github.TokenPath, opts.hmacSecretFile); err != nil {
+	if err := secret.Add(opts.hmacSecretFile); err != nil {
 		logrus.WithError(err).Fatalf("Failed to load secrets.")
 	}
 
