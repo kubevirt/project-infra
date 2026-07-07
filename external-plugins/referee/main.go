@@ -32,12 +32,11 @@ import (
 	"github.com/shurcooL/githubv4"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
-	"k8s.io/test-infra/pkg/flagutil"
 	"kubevirt.io/project-infra/external-plugins/referee/ghgraphql"
 	"kubevirt.io/project-infra/external-plugins/referee/metrics"
 	"kubevirt.io/project-infra/external-plugins/referee/server"
 	"sigs.k8s.io/prow/pkg/config/secret"
-	prowflagutil "sigs.k8s.io/prow/pkg/flagutil"
+	"sigs.k8s.io/prow/pkg/flagutil"
 	"sigs.k8s.io/prow/pkg/interrupts"
 	"sigs.k8s.io/prow/pkg/pluginhelp/externalplugins"
 )
@@ -53,7 +52,7 @@ type options struct {
 	dryRun                               bool
 	maximumNumberOfAllowedRetestComments int
 
-	github                    prowflagutil.GitHubOptions
+	github                    flagutil.GitHubOptions
 	webhookSecretFile         string
 	team                      string
 	initialRetestRepositories string

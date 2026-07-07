@@ -53,6 +53,11 @@ func (in *CensoringOptions) DeepCopyInto(out *CensoringOptions) {
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
+	if in.MinimumSecretLength != nil {
+		in, out := &in.MinimumSecretLength, &out.MinimumSecretLength
+		*out = new(int)
+		**out = **in
+	}
 	return
 }
 
@@ -123,6 +128,11 @@ func (in *DecorationConfig) DeepCopyInto(out *DecorationConfig) {
 		in, out := &in.BloblessFetch, &out.BloblessFetch
 		*out = new(bool)
 		**out = **in
+	}
+	if in.SparseCheckoutFiles != nil {
+		in, out := &in.SparseCheckoutFiles, &out.SparseCheckoutFiles
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	if in.SkipCloning != nil {
 		in, out := &in.SkipCloning, &out.SkipCloning
@@ -561,6 +571,11 @@ func (in *Refs) DeepCopyInto(out *Refs) {
 		in, out := &in.BloblessFetch, &out.BloblessFetch
 		*out = new(bool)
 		**out = **in
+	}
+	if in.SparseCheckoutFiles != nil {
+		in, out := &in.SparseCheckoutFiles, &out.SparseCheckoutFiles
+		*out = make([]string, len(*in))
+		copy(*out, *in)
 	}
 	return
 }

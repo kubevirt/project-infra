@@ -62,6 +62,16 @@ blunderbuss:
     # additional token per successful reviewer (and potentially more depending on
     # how many busy reviewers it had to pass over).
     use_status_availability: true
+    # WaitForStatus specifies whether to request reviews if the tide status indicates that
+    # the tests have passed but there are insufficient pull request reviews.
+    wait_for_status:
+        # Context name of the context to match on, defaults to "tide"
+        context: ' '
+        # Description regular expression to match the context description, defaults to
+        # "Not mergeable. (PullRequest is missing sufficient approving GitHub review\(s\)|Needs (lgtm|approved) label)"
+        description: ' '
+        # State is the state we want the context to be in before requesting reviews, e.g. "pending"
+        state: ' '
 branch_cleaner:
     # PreservedBranches is a map of org/repo branches
     # format:
@@ -336,6 +346,14 @@ config_updater:
     # will result in replacing the foo configmap whenever path.yaml changes
     maps:
         "":
+            # AllowedRepos is a list of org or org/repo entries that are allowed to update this configmap.
+            # If specified, only PRs from these orgs/repos will trigger updates.
+            # Entries without a slash (e.g., "kubernetes") match the entire org.
+            # Entries with a slash (e.g., "kubernetes/test-infra") match a specific repo.
+            # When both AllowedRepos and DeniedRepos are specified, the org/repo must be in
+            # the allowed list and not in the denied list.
+            allowed_repos:
+                - ""
             # ClusterGroup is a list of named cluster_groups to target. Mutually exclusive with clusters.
             cluster_groups:
                 - ""
@@ -343,6 +361,12 @@ config_updater:
             # which specifies the targets the configMap needs to be deployed, i.e., each namespace in map[cluster]
             clusters:
                 "": null
+            # DeniedRepos is a list of org or org/repo entries that are denied from updating this configmap.
+            # PRs from these orgs/repos will not trigger updates.
+            # Entries without a slash (e.g., "kubernetes") match the entire org.
+            # Entries with a slash (e.g., "kubernetes/test-infra") match a specific repo.
+            denied_repos:
+                - ""
             # GZIP toggles whether the key's data should be GZIP'd before being stored
             # If set to false and the global GZIP option is enabled, this file will
             # will not be GZIP'd.
@@ -529,6 +553,10 @@ project_manager:
                           org: ' '
                           # State must be open, closed or all
                           state: ' '
+release_note:
+    # GuidelinesURL is the URL to the release note guidelines that users should follow
+    # Defaults to the Kubernetes community guide: https://git.k8s.io/community/contributors/guide/release-notes.md
+    guidelines_url: ' '
 repo_milestone:
     "":
         maintainers_friendly_name: ' '
@@ -610,6 +638,25 @@ triggers:
       # OnlyOrgMembers requires PRs and/or /ok-to-test comments to come from org members.
       # By default, trigger also include repo collaborators.
       only_org_members: true
+      # OrgInvite holds configuration for the org invite message
+      # shown to non-org members when they open a PR.
+      org_invite:
+        # Prominent configures the prominent org invite message shown to
+        # non-org members who have contributed multiple merged PRs.
+        prominent:
+            # Disabled disables the prominent org invite functionality entirely.
+            # When true, only the regular "join the org" message is shown without
+            # querying for merged PRs.
+            disabled: true
+            # MergedPRThreshold is the number of merged PRs after which the user gets
+            # a prominent message about joining the org. Default: 3.
+            # Use a pointer so that we can distinguish between "not set" (use default)
+            # and "explicitly set to 0".
+            merged_pr_threshold: 0
+            # Message is a custom message template for the prominent org invite.
+            # Supports {join_org_url} as a placeholder for the org join URL.
+            # Default: ">[!TIP]\n>**We noticed you've done this a few times! Consider [joining the org]({join_org_url}) ..."
+            message: ' '
       # Repos is either of the form org/repos or just org.
       repos:
         - ""

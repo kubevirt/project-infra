@@ -24,12 +24,14 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"net/url"
 	"os"
 	"path"
 	"path/filepath"
 	"regexp"
 	"runtime/debug"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -40,9 +42,9 @@ import (
 	gitignore "github.com/denormal/go-gitignore"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
 	pipelinev1 "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1"
-	"gopkg.in/robfig/cron.v2"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -59,6 +61,10 @@ import (
 	"sigs.k8s.io/prow/pkg/kube"
 	"sigs.k8s.io/prow/pkg/pod-utils/decorate"
 	"sigs.k8s.io/prow/pkg/pod-utils/downwardapi"
+)
+
+var cronParser = cron.NewParser(
+	cron.SecondOptional | cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor,
 )
 
 const (
@@ -85,10 +91,10 @@ const (
 	ProwIgnoreFileName = ".prowignore"
 )
 
-var (
-	DefaultDiffOpts []cmp.Option = []cmp.Option{cmpopts.IgnoreFields(TideBranchMergeType{}, "Regexpr"),
-		cmpopts.IgnoreUnexported(Gerrit{})}
-)
+var DefaultDiffOpts []cmp.Option = []cmp.Option{
+	cmpopts.IgnoreFields(TideBranchMergeType{}, "Regexpr"),
+	cmpopts.IgnoreUnexported(Gerrit{}),
+}
 
 // Config is a read-only snapshot of the config.
 type Config struct {
@@ -143,6 +149,7 @@ type ProwConfig struct {
 	ConfigVersionSHA     string               `json:"config_version_sha,omitempty"`
 	Tide                 Tide                 `json:"tide,omitempty"`
 	Plank                Plank                `json:"plank,omitempty"`
+	Pipeline             Pipeline             `json:"pipeline,omitempty"`
 	Sinker               Sinker               `json:"sinker,omitempty"`
 	Deck                 Deck                 `json:"deck,omitempty"`
 	BranchProtection     BranchProtection     `json:"branch-protection"`
@@ -271,10 +278,8 @@ func (c *Config) InRepoConfigEnabled(identifier string) bool {
 // Assumes that config will not include http:// or https://
 func (c *Config) InRepoConfigAllowsCluster(clusterName, identifier string) bool {
 	for _, key := range keysForIdentifier(identifier) {
-		for _, allowedCluster := range c.InRepoConfig.AllowedClusters[key] {
-			if allowedCluster == clusterName {
-				return true
-			}
+		if slices.Contains(c.InRepoConfig.AllowedClusters[key], clusterName) {
+			return true
 		}
 	}
 	return false
@@ -413,8 +418,8 @@ func (rg *RefGetterForGitHubPullRequest) BaseSHA() (string, error) {
 // retrieval of a *ProwYAML.
 func GetAndCheckRefs(
 	baseSHAGetter RefGetter,
-	headSHAGetters ...RefGetter) (string, []string, error) {
-
+	headSHAGetters ...RefGetter,
+) (string, []string, error) {
 	// Parse "baseSHAGetter".
 	baseSHA, err := baseSHAGetter()
 	if err != nil {
@@ -642,6 +647,17 @@ func (c *Controller) ReportTemplateForRepo(refs *prowapi.Refs) *template.Templat
 	return def
 }
 
+// Pipeline is config for the Tekton pipeline controller.
+type Pipeline struct {
+	// AllowConcurrentPostsubmitJobs controls the duplicate job abort behavior for Tekton PipelineRuns.
+	// When disabled (default): all duplicate jobs (presubmit and postsubmit) are aborted when a newer
+	// job with the same identifier is detected.
+	// When enabled: only presubmit jobs are aborted; postsubmit jobs are allowed to run concurrently
+	// even if duplicates exist.
+	// This flag only affects jobs using the Tekton agent (agent: tekton-pipeline).
+	AllowConcurrentPostsubmitJobs bool `json:"allow_concurrent_postsubmit_jobs,omitempty"`
+}
+
 // Plank is config for the plank controller.
 type Plank struct {
 	Controller `json:",inline"`
@@ -654,6 +670,12 @@ type Plank struct {
 	// PodUnscheduledTimeout defines how long the controller will wait to abort a prowjob
 	// stuck in an unscheduled state. Defaults to 5 minutes.
 	PodUnscheduledTimeout *metav1.Duration `json:"pod_unscheduled_timeout,omitempty"`
+
+	// MaxRevivals is the maximum number of times a prowjob will be retried in case of an
+	// unexpected stop of the job before being marked as failed. Generally a job is stopped
+	// unexpectedly due to the underlying Node being terminated, evicted or becoming unreachable.
+	// Defaults to 3. A value of 0 means no retries.
+	MaxRevivals *int `json:"max_revivals,omitempty"`
 
 	// DefaultDecorationConfigs holds the default decoration config for specific values.
 	//
@@ -1902,7 +1924,7 @@ func loadConfig(prowConfig, jobConfig string, additionalProwConfigDirs []string,
 }
 
 // yamlToConfig converts a yaml file into a Config object.
-func yamlToConfig(path string, nc interface{}, opts ...yaml.JSONOpt) error {
+func yamlToConfig(path string, nc any, opts ...yaml.JSONOpt) error {
 	b, err := ReadFileMaybeGZIP(path)
 	if err != nil {
 		return fmt.Errorf("error reading %s: %w", path, err)
@@ -2013,18 +2035,14 @@ func mergeJobConfigs(a, b JobConfig) (JobConfig, error) {
 
 	// *** Presubmits ***
 	c.PresubmitsStatic = make(map[string][]Presubmit)
-	for repo, jobs := range a.PresubmitsStatic {
-		c.PresubmitsStatic[repo] = jobs
-	}
+	maps.Copy(c.PresubmitsStatic, a.PresubmitsStatic)
 	for repo, jobs := range b.PresubmitsStatic {
 		c.PresubmitsStatic[repo] = append(c.PresubmitsStatic[repo], jobs...)
 	}
 
 	// *** Postsubmits ***
 	c.PostsubmitsStatic = make(map[string][]Postsubmit)
-	for repo, jobs := range a.PostsubmitsStatic {
-		c.PostsubmitsStatic[repo] = jobs
-	}
+	maps.Copy(c.PostsubmitsStatic, a.PostsubmitsStatic)
 	for repo, jobs := range b.PostsubmitsStatic {
 		c.PostsubmitsStatic[repo] = append(c.PostsubmitsStatic[repo], jobs...)
 	}
@@ -2057,6 +2075,7 @@ func setPeriodicProwJobDefaults(c *Config, ps *Periodic) {
 
 	ps.ProwJobDefault = c.mergeProwJobDefault(repo, ps.Cluster, ps.ProwJobDefault)
 }
+
 func setPresubmitDecorationDefaults(c *Config, ps *Presubmit, repo string) {
 	if shouldDecorate(&c.JobConfig, &ps.JobBase.UtilityConfig) {
 		ps.DecorationConfig = c.Plank.mergeDefaultDecorationConfig(repo, ps.Cluster, ps.DecorationConfig)
@@ -2420,7 +2439,7 @@ func (c Config) validatePeriodics(periodics []Periodic) error {
 		}
 
 		if p.Cron != "" {
-			if _, err := cron.Parse(p.Cron); err != nil {
+			if _, err := cronParser.Parse(p.Cron); err != nil {
 				errs = append(errs, fmt.Errorf("invalid cron string %s in periodic %s: %w", p.Cron, p.Name, err))
 			}
 		}
@@ -2431,6 +2450,14 @@ func (c Config) validatePeriodics(periodics []Periodic) error {
 			d, err := time.ParseDuration(periodics[j].Interval)
 			if err != nil {
 				errs = append(errs, fmt.Errorf("cannot parse duration for %s: %w", periodics[j].Name, err))
+			}
+			periodics[j].interval = d
+		}
+
+		if p.Retry != nil {
+			d, err := time.ParseDuration(periodics[j].Retry.Interval)
+			if err != nil {
+				errs = append(errs, fmt.Errorf("cannot parse Retry duration for %s: %w", periodics[j].Name, err))
 			}
 			periodics[j].interval = d
 		}
@@ -2451,7 +2478,6 @@ func (c Config) validatePeriodics(periodics []Periodic) error {
 // ValidateJobConfig validates if all the jobspecs/presets are valid
 // if you are mutating the jobs, please add it to finalizeJobConfig above.
 func (c *Config) ValidateJobConfig() error {
-
 	var errs []error
 
 	// Validate presubmits.
@@ -2495,6 +2521,11 @@ func parseProwConfig(c *Config) error {
 		c.Plank.PodUnscheduledTimeout = &metav1.Duration{Duration: 5 * time.Minute}
 	}
 
+	if c.Plank.MaxRevivals == nil {
+		maxRetries := 3
+		c.Plank.MaxRevivals = &maxRetries
+	}
+
 	if err := c.Gerrit.DefaultAndValidate(); err != nil {
 		return fmt.Errorf("validating gerrit config: %w", err)
 	}
@@ -2525,7 +2556,7 @@ func parseProwConfig(c *Config) error {
 	// We could use sprig.FuncMap() instead in feature.
 	jenkinsFuncMap := template.FuncMap{
 		"replace": func(old, new, src string) string {
-			return strings.Replace(src, old, new, -1)
+			return strings.ReplaceAll(src, old, new)
 		},
 	}
 
@@ -2721,7 +2752,6 @@ func parseProwConfig(c *Config) error {
 	for name, templates := range c.Tide.MergeTemplate {
 		if templates.TitleTemplate != "" {
 			titleTemplate, err := template.New("CommitTitle").Parse(templates.TitleTemplate)
-
 			if err != nil {
 				return fmt.Errorf("parsing template for commit title: %w", err)
 			}
@@ -2731,7 +2761,6 @@ func parseProwConfig(c *Config) error {
 
 		if templates.BodyTemplate != "" {
 			bodyTemplate, err := template.New("CommitBody").Parse(templates.BodyTemplate)
-
 			if err != nil {
 				return fmt.Errorf("parsing template for commit body: %w", err)
 			}
@@ -2745,6 +2774,14 @@ func parseProwConfig(c *Config) error {
 	for i, tq := range c.Tide.Queries {
 		if err := tq.Validate(); err != nil {
 			return fmt.Errorf("tide query (index %d) is invalid: %w", i, err)
+		}
+	}
+
+	for key, policy := range c.Tide.GitHubMergeBlocksPolicyMap {
+		switch policy {
+		case GitHubMergeBlocksIgnore, GitHubMergeBlocksPermit, GitHubMergeBlocksBlock:
+		default:
+			return fmt.Errorf("tide.github_merge_blocks_policy[%q] has invalid value %q, must be one of: ignore, permit, block", key, policy)
 		}
 	}
 
@@ -2840,10 +2877,8 @@ func parseTideMergeType(tideMergeTypes map[string]TideOrgMergeType) utilerrors.A
 
 func validateLabels(labels map[string]string) error {
 	for label, value := range labels {
-		for _, prowLabel := range decorate.Labels() {
-			if label == prowLabel {
-				return fmt.Errorf("label %s is reserved for decoration", label)
-			}
+		if slices.Contains(decorate.Labels(), label) {
+			return fmt.Errorf("label %s is reserved for decoration", label)
 		}
 		if errs := validation.IsQualifiedName(label); len(errs) != 0 {
 			return fmt.Errorf("invalid label %s: %v", label, errs)
@@ -2922,7 +2957,7 @@ func validateDecoration(container v1.Container, config *prowapi.DecorationConfig
 func resolvePresets(name string, labels map[string]string, spec *v1.PodSpec, presets []Preset) error {
 	for _, preset := range presets {
 		if spec != nil {
-			if err := mergePreset(preset, labels, spec.Containers, &spec.Volumes); err != nil {
+			if err := mergePreset(preset, labels, spec); err != nil {
 				return fmt.Errorf("job %s failed to merge presets for podspec: %w", name, err)
 			}
 		}
@@ -2983,8 +3018,15 @@ func validatePodSpec(jobType prowapi.ProwJobType, spec *v1.PodSpec, decorationCo
 
 	var errs []error
 
-	if len(spec.InitContainers) != 0 {
-		errs = append(errs, errors.New("pod spec may not use init containers"))
+	var unspported []string
+	for i := range spec.InitContainers {
+		c := &spec.InitContainers[i]
+		if c.RestartPolicy == nil || *c.RestartPolicy != v1.ContainerRestartPolicyAlways {
+			unspported = append(unspported, c.Name)
+		}
+	}
+	if len(unspported) > 0 {
+		errs = append(errs, fmt.Errorf("pod spec may not use init containers(sidecar container is supported): %v", unspported))
 	}
 
 	if n := len(spec.Containers); n < 1 {

@@ -9,10 +9,9 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"k8s.io/test-infra/pkg/flagutil"
 	"sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/prow/pkg/config/secret"
-	prowflagutil "sigs.k8s.io/prow/pkg/flagutil"
+	"sigs.k8s.io/prow/pkg/flagutil"
 	"sigs.k8s.io/prow/pkg/interrupts"
 	"sigs.k8s.io/prow/pkg/pluginhelp/externalplugins"
 	"sigs.k8s.io/prow/pkg/plugins/ownersconfig"
@@ -23,7 +22,7 @@ type options struct {
 	port int
 
 	dryRun bool
-	github prowflagutil.GitHubOptions
+	github flagutil.GitHubOptions
 
 	webhookSecretFile string
 }

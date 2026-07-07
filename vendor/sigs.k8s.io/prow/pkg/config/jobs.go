@@ -21,9 +21,11 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
 	pipelinev1 "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1"
 
 	v1 "k8s.io/api/core/v1"
@@ -45,9 +47,13 @@ type Preset struct {
 	Env          []v1.EnvVar       `json:"env"`
 	Volumes      []v1.Volume       `json:"volumes"`
 	VolumeMounts []v1.VolumeMount  `json:"volumeMounts"`
+	Tolerations  []v1.Toleration   `json:"tolerations,omitempty"`
 }
 
-func mergePreset(preset Preset, labels map[string]string, containers []v1.Container, volumes *[]v1.Volume) error {
+func mergePreset(preset Preset, labels map[string]string, podSpec *v1.PodSpec) error {
+	containers := podSpec.Containers
+	volumes := &podSpec.Volumes
+	tolerations := &podSpec.Tolerations
 	for l, v := range preset.Labels {
 		if v2, ok := labels[l]; !ok || v2 != v {
 			return nil
@@ -80,6 +86,15 @@ func mergePreset(preset Preset, labels map[string]string, containers []v1.Contai
 			}
 			containers[i].VolumeMounts = append(containers[i].VolumeMounts, vm1)
 		}
+	}
+
+	for _, t1 := range preset.Tolerations {
+		for _, t2 := range *tolerations {
+			if cmp.Equal(t1, t2) {
+				return fmt.Errorf("toleration duplicated in pod spec: %v", t1)
+			}
+		}
+		*tolerations = append(*tolerations, t1)
 	}
 	return nil
 }
@@ -266,6 +281,20 @@ type Postsubmit struct {
 	JenkinsSpec *JenkinsSpec `json:"jenkins_spec,omitempty"`
 }
 
+// Retry defines the configuration for retrying failed prowjobs.
+type Retry struct {
+	// RunAll retries will not stop on first successful run.
+	// Failed job will always cause Attempts retries to be executed,
+	// not waiting on previous result, respecting Interval only.
+	RunAll bool `json:"run_all,omitempty"`
+	// Attempts specifies the maximum number of retry attempts allowed.
+	Attempts int `json:"attempts,omitempty"`
+	// Interval defines the wait duration between consecutive retry attempts.
+	Interval string `json:"interval,omitempty"`
+
+	interval time.Duration
+}
+
 // Periodic runs on a timer.
 type Periodic struct {
 	JobBase
@@ -282,6 +311,8 @@ type Periodic struct {
 	// Tags for config entries
 	Tags []string `json:"tags,omitempty"`
 
+	Retry *Retry `json:"retry,omitempty"`
+
 	interval         time.Duration
 	minimum_interval time.Duration
 }
@@ -291,6 +322,16 @@ type JenkinsSpec struct {
 	// Job is managed by the GH branch source plugin
 	// and requires a specific path
 	GitHubBranchSourceJob bool `json:"github_branch_source_job,omitempty"`
+}
+
+// SetInterval updates interval, the frequency duration it runs.
+func (r *Retry) SetInterval(d time.Duration) {
+	r.interval = d
+}
+
+// GetInterval returns interval, the frequency duration it runs.
+func (r *Retry) GetInterval() time.Duration {
+	return r.interval
 }
 
 // SetInterval updates interval, the frequency duration it runs.
@@ -387,12 +428,7 @@ func (br Brancher) Intersects(other Brancher) bool {
 
 		// Actually test our branches against the other brancher - if there are regex skip lists, simple comparison
 		// is insufficient.
-		for _, b := range sets.List(baseBranches) {
-			if other.ShouldRun(b) {
-				return true
-			}
-		}
-		return false
+		return slices.ContainsFunc(sets.List(baseBranches), other.ShouldRun)
 	}
 	if len(other.Branches) == 0 {
 		// There can only be one Brancher with skip_branches.
@@ -652,11 +688,8 @@ func (c *JobConfig) AllStaticPresubmits(repos []string) []Presubmit {
 		if len(repos) == 0 {
 			res = append(res, v...)
 		} else {
-			for _, r := range repos {
-				if r == repo {
-					res = append(res, v...)
-					break
-				}
+			if slices.Contains(repos, repo) {
+				res = append(res, v...)
 			}
 		}
 	}
@@ -676,11 +709,8 @@ func (c *JobConfig) AllStaticPostsubmits(repos []string) []Postsubmit {
 		if len(repos) == 0 {
 			res = append(res, v...)
 		} else {
-			for _, r := range repos {
-				if r == repo {
-					res = append(res, v...)
-					break
-				}
+			if slices.Contains(repos, repo) {
+				res = append(res, v...)
 			}
 		}
 	}
@@ -697,6 +727,22 @@ func (c *JobConfig) AllPeriodics() []Periodic {
 	}
 
 	return listPeriodic(c.Periodics)
+}
+
+func (c *JobConfig) PeriodicsMatchingExtraRefs(org, repo string) []Periodic {
+	filterPeriodics := func(ps []Periodic) []Periodic {
+		var res []Periodic
+		for _, p := range ps {
+			for _, ref := range p.ExtraRefs {
+				if ref.Org == org && ref.Repo == repo {
+					res = append(res, p)
+				}
+			}
+		}
+		return res
+	}
+
+	return filterPeriodics(c.Periodics)
 }
 
 // ClearCompiledRegexes removes compiled regexes from the presubmits,

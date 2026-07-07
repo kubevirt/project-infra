@@ -282,7 +282,7 @@ func testRequested(ghClient githubClientInterface, pr github.PullRequest, reques
 		return err
 	}
 
-	// Until we update k8s.io/test-infra which allows to read require_manually_triggered_jobs policy
+	// Until we update sigs.k8s.io/prow which allows to read require_manually_triggered_jobs policy
 	if !(org == "kubevirt" && repo == "kubevirt") {
 		return nil
 	}

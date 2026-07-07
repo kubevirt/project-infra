@@ -10,11 +10,10 @@ import (
 	"github.com/sirupsen/logrus"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/test-infra/pkg/flagutil"
 	v1 "sigs.k8s.io/prow/pkg/client/clientset/versioned/typed/prowjobs/v1"
 	prowconfig "sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/prow/pkg/config/secret"
-	prowflagutil "sigs.k8s.io/prow/pkg/flagutil"
+	"sigs.k8s.io/prow/pkg/flagutil"
 	"sigs.k8s.io/prow/pkg/interrupts"
 	"sigs.k8s.io/prow/pkg/pluginhelp"
 	"sigs.k8s.io/prow/pkg/pluginhelp/externalplugins"
@@ -30,7 +29,7 @@ type options struct {
 	port           int
 	kubeconfig     string
 	configPath     string
-	github         prowflagutil.GitHubOptions
+	github         flagutil.GitHubOptions
 }
 
 func (o *options) validate() {

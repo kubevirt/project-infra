@@ -13,9 +13,8 @@ import (
 	"kubevirt.io/project-infra/external-plugins/phased/plugin/handler"
 
 	"github.com/sirupsen/logrus"
-	"k8s.io/test-infra/pkg/flagutil"
 	"sigs.k8s.io/prow/pkg/config/secret"
-	prowflagutil "sigs.k8s.io/prow/pkg/flagutil"
+	"sigs.k8s.io/prow/pkg/flagutil"
 	"sigs.k8s.io/prow/pkg/git/v2"
 	"sigs.k8s.io/prow/pkg/interrupts"
 	"sigs.k8s.io/prow/pkg/pluginhelp/externalplugins"
@@ -32,7 +31,7 @@ type options struct {
 	jobsConfigBase string
 	cacheDir       string
 	prowLocation   string
-	github         prowflagutil.GitHubOptions
+	github         flagutil.GitHubOptions
 }
 
 func (o *options) validate() {

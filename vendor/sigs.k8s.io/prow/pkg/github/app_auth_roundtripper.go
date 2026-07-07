@@ -29,8 +29,9 @@ import (
 	"sync"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go/v4"
+	"github.com/golang-jwt/jwt/v5"
 
+	"sigs.k8s.io/prow/pkg/config/secret"
 	"sigs.k8s.io/prow/pkg/ghcache"
 )
 
@@ -115,14 +116,15 @@ func (arr *appsRoundTripper) addAppAuth(r *http.Request) *appsAuthError {
 	now := TimeNow()
 	// GitHub's clock may lag a few seconds, so we do not use 10min here.
 	expiresAt := now.Add(9 * time.Minute)
-	token, err := jwt.NewWithClaims(jwt.SigningMethodRS256, &jwt.StandardClaims{
-		IssuedAt:  jwt.NewTime(float64(now.Unix())),
-		ExpiresAt: jwt.NewTime(float64(expiresAt.Unix())),
+	token, err := jwt.NewWithClaims(jwt.SigningMethodRS256, &jwt.RegisteredClaims{
+		IssuedAt:  jwt.NewNumericDate(now),
+		ExpiresAt: jwt.NewNumericDate(expiresAt),
 		Issuer:    arr.appID,
 	}).SignedString(arr.privateKey())
 	if err != nil {
 		return &appsAuthError{fmt.Errorf("failed to generate jwt: %w", err)}
 	}
+	secret.AddExpiringToken(token, expiresAt)
 
 	r.Header.Set("Authorization", "Bearer "+token)
 	r.Header.Set(ghcache.TokenExpiryAtHeader, expiresAt.Format(time.RFC3339))
@@ -259,6 +261,7 @@ func (arr *appsRoundTripper) getTokenForInstallation(installation int64) (string
 		arr.tokens = map[int64]*AppInstallationToken{}
 	}
 	arr.tokens[installation] = token
+	secret.AddExpiringToken(token.Token, token.ExpiresAt)
 
 	return token.Token, token.ExpiresAt, nil
 }
