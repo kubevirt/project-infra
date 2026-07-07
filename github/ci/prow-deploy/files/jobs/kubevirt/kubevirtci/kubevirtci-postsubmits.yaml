@@ -32,7 +32,7 @@ postsubmits:
         containers:
         - image: quay.io/kubevirtci/golang:v20260703-61a4923
           command:
-          - "/usr/local/bin/runner.sh"
+          - "/usr/local/bin/entrypoint.sh"
           - "/bin/bash"
           - "-c"
           - |
@@ -48,7 +48,7 @@ postsubmits:
           # docker-in-docker needs privileged mode
           env:
           - name: GO_MOD_PATH
-            value: go.mod
+            value: cluster-provision/gocli/go.mod
           securityContext:
             privileged: true
           volumeMounts:
@@ -125,7 +125,7 @@ postsubmits:
         containers:
         - image: quay.io/kubevirtci/golang:v20260703-61a4923
           command:
-          - "/usr/local/bin/runner.sh"
+          - "/usr/local/bin/entrypoint.sh"
           - "/bin/bash"
           - "-c"
           - |
@@ -169,7 +169,7 @@ postsubmits:
           # docker-in-docker needs privileged mode
           env:
           - name: GO_MOD_PATH
-            value: go.mod
+            value: cluster-provision/gocli/go.mod
           securityContext:
             privileged: true
           volumeMounts:
