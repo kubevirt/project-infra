@@ -27,5 +27,6 @@ data:
     repos:
       kubevirt/project-infra:
         testPackages: "./external-plugins/... ./releng/... ./robots/... ./cmd/... ./pkg/..."
+        coverageThreshold: 25
       kubevirt/ci-health:
         testPackages: "./pkg/... ./cmd/..."
