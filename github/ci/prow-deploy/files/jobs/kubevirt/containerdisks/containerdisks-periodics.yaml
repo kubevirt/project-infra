@@ -20,7 +20,7 @@ periodics:
   spec:
     containers:
     - command:
-      - /usr/local/bin/runner.sh
+      - /usr/local/bin/entrypoint.sh
       - /bin/sh
       - -c
       - ./pipeline-periodic.sh
@@ -61,7 +61,7 @@ periodics:
   spec:
     containers:
     - command:
-      - /usr/local/bin/runner.sh
+      - /usr/local/bin/entrypoint.sh
       - /bin/sh
       - -c
       - |

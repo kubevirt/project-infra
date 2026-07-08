@@ -43,7 +43,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
@@ -84,7 +84,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
@@ -125,7 +125,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
@@ -166,7 +166,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
@@ -204,7 +204,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
         - "-c"
         - "make cluster-up && make cluster-sync && make cluster-functest"
@@ -241,7 +241,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
@@ -292,7 +292,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
@@ -330,7 +330,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
         - "-c"
         - "make cluster-up && make cluster-sync && make cluster-functest"
@@ -371,7 +371,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
@@ -409,7 +409,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
         - "-c"
         - "make cluster-up && make cluster-sync && make cluster-functest"
@@ -450,7 +450,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
@@ -488,7 +488,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
         - "-c"
         - "make cluster-up && make cluster-sync && make cluster-functest"
@@ -529,7 +529,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
@@ -567,7 +567,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
         - "-c"
         - "make cluster-up && make cluster-sync && make cluster-functest"
@@ -608,7 +608,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
         - "-c"
         - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
@@ -650,7 +650,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
         - "-c"
         - |
@@ -693,7 +693,7 @@ presubmits:
     spec:
       containers:
         - command:
-            - /usr/local/bin/runner.sh
+            - /usr/local/bin/entrypoint.sh
             - "/bin/sh"
             - "-c"
             - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
@@ -734,7 +734,7 @@ presubmits:
     spec:
       containers:
         - command:
-            - /usr/local/bin/runner.sh
+            - /usr/local/bin/entrypoint.sh
             - "/bin/sh"
             - "-c"
             - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
@@ -775,7 +775,7 @@ presubmits:
     spec:
       containers:
         - command:
-            - /usr/local/bin/runner.sh
+            - /usr/local/bin/entrypoint.sh
             - "/bin/sh"
             - "-c"
             - "make kubevirt-up && make kubevirt-sync && make kubevirt-functest"
@@ -850,7 +850,7 @@ presubmits:
     spec:
       containers:
         - command:
-            - /usr/local/bin/runner.sh
+            - /usr/local/bin/entrypoint.sh
             - "/bin/sh"
             - "-c"
             - |
@@ -894,7 +894,7 @@ presubmits:
     spec:
       containers:
         - command:
-            - /usr/local/bin/runner.sh
+            - /usr/local/bin/entrypoint.sh
             - "/bin/sh"
             - "-c"
             - |

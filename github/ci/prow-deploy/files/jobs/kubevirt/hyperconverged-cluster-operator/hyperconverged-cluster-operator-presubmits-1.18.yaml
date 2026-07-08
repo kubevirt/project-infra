@@ -21,7 +21,7 @@ presubmits:
         containers:
           - image: quay.io/kubevirtci/golang:v20260417-7427ea2
             command:
-              - "/usr/local/bin/runner.sh"
+              - "/usr/local/bin/entrypoint.sh"
               - "/bin/sh"
               - "-c"
               - "export TARGET=k8s-1.34 && automation/test.sh"
@@ -57,7 +57,7 @@ presubmits:
         containers:
           - image: quay.io/kubevirtci/golang:v20260417-7427ea2
             command:
-              - "/usr/local/bin/runner.sh"
+              - "/usr/local/bin/entrypoint.sh"
               - "/bin/sh"
               - "-c"
               - "export TARGET=k8s-1.35 && automation/test.sh"
@@ -89,7 +89,7 @@ presubmits:
               - name: GO_MOD_PATH
                 value: "go.mod"
             command:
-              - "/usr/local/bin/runner.sh"
+              - "/usr/local/bin/entrypoint.sh"
               - "/bin/sh"
               - "-c"
               - |
