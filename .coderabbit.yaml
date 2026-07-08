@@ -83,7 +83,7 @@ reviews:
         - `previously` entries for renames/migrations must include both `name` and `color`.
         - docs/labels.md is auto-generated via `make update-labels` — flag any direct edits to it.
 
-    - path: "**/prow-deploy/files/orgs.yaml"
+    - path: "**/prow-deploy/kustom/base/configs/current/orgs/orgs.yaml"
       instructions: |
         Peribolos organization configuration — manages GitHub org membership, teams, and repo permissions.
         - Changes to `admins` are high-risk: flag any removals or unexpected additions; org admins have full org control.
@@ -94,7 +94,7 @@ reviews:
         - `previously` entries are used to rename teams — both old and new names should be present during migration.
         - No field should be removed unless intentional (peribolos enforces what it finds; missing fields get default values).
 
-    - path: "**/prow-deploy/files/plugins.yaml"
+    - path: "**/prow-deploy/kustom/base/configs/current/plugins/plugins.yaml"
       instructions: |
         Prow plugin configuration — controls which plugins are active per org and repo.
         - Plugin names must be valid Prow plugin identifiers (see https://docs.prow.k8s.io/docs/components/plugins/).
@@ -106,7 +106,7 @@ reviews:
         - Plugin configuration blocks (e.g. `label`, `milestone`, `size`) must conform to the Prow plugin schema.
         - Comment: each repo section should reference why it diverges from the org defaults if it does.
 
-    - path: "**/prow-deploy/files/config.yaml"
+    - path: "**/prow-deploy/kustom/base/configs/current/config/config.yaml"
       instructions: |
         Main Prow configuration — controls Tide merge automation, branch protection, and core Prow behaviour.
         - Branch protection changes (`required_status_checks`, `required_pull_request_reviews`) directly affect merge safety — flag any weakening of protections.
