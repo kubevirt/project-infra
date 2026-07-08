@@ -64,7 +64,7 @@ reviews:
         - Scripts should be idempotent where possible.
         - Cite shellcheck rule codes (e.g., SC2086) when flagging violations.
 
-    - path: "**/images/**/Dockerfile"
+    - path: "**/images/**/{Dockerfile,Containerfile}"
       instructions: |
         Container image build files. Review for:
         - Base images must be pinned to a specific version tag or digest — no `latest`.
