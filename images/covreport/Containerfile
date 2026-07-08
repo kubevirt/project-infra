@@ -1,5 +1,4 @@
 FROM quay.io/kubevirtci/golang:v20260707-cacb217
 RUN /usr/local/bin/entrypoint.sh /bin/sh -ce "GOBIN=/usr/local/bin go install github.com/cancue/covreport@v0.5.0"
-COPY coverage-report.sh /usr/local/bin/coverage-report.sh
-RUN chmod +x /usr/local/bin/coverage-report.sh
+COPY --chmod=755 coverage-report.sh /usr/local/bin/coverage-report.sh
 

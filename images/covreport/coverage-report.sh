@@ -21,7 +21,7 @@ post_github_status() {
     local target_url="${3:-}"
 
     if [[ ! -f "${GITHUB_TOKEN_FILE}" ]]; then
-        echo "WARNING: GitHub token not found, skipping status update"
+        echo "WARNING: GitHub token not found, skipping status update" >&2
         return
     fi
 
@@ -37,7 +37,7 @@ post_github_status() {
         -H "Authorization: token $(cat "${GITHUB_TOKEN_FILE}")" \
         -H "Accept: application/vnd.github.v3+json" \
         "${GITHUB_API}/repos/${REPO_OWNER}/${REPO_NAME}/statuses/${PULL_PULL_SHA}" \
-        -d "${payload}" > /dev/null || echo "WARNING: Failed to post GitHub commit status"
+        -d "${payload}" > /dev/null || echo "WARNING: Failed to post GitHub commit status" >&2
 }
 
 extract_total_coverage() {
@@ -57,7 +57,7 @@ TEST_EXIT=0
 go test ${TEST_PACKAGES} -coverprofile="${ARTIFACTS}/pr.cov" || TEST_EXIT=$?
 
 if [[ ${TEST_EXIT} -ne 0 ]]; then
-    echo "WARNING: go test exited with ${TEST_EXIT}, coverage profile may be partial"
+    echo "WARNING: go test exited with ${TEST_EXIT}, coverage profile may be partial" >&2
 fi
 
 if [[ -f "${ARTIFACTS}/pr.cov" ]]; then
@@ -76,11 +76,11 @@ if git checkout "${PULL_BASE_SHA}" 2>/dev/null; then
     if go test ${TEST_PACKAGES} -coverprofile="${ARTIFACTS}/base.cov" 2>/dev/null; then
         BASE_COVERAGE=$(extract_total_coverage "${ARTIFACTS}/base.cov")
     else
-        echo "WARNING: Tests failed on base branch, using 0% as base coverage"
+        echo "WARNING: Tests failed on base branch, using 0% as base coverage" >&2
     fi
     git checkout "${CURRENT_HEAD}" 2>/dev/null || true
 else
-    echo "WARNING: Could not checkout base SHA ${PULL_BASE_SHA}, using 0% as base coverage"
+    echo "WARNING: Could not checkout base SHA ${PULL_BASE_SHA}, using 0% as base coverage" >&2
 fi
 echo "Base coverage: ${BASE_COVERAGE}%"
 
@@ -125,12 +125,12 @@ if [[ -f "${ARTIFACTS}/pr.cov" ]]; then
 fi
 
 if [[ ${TEST_EXIT} -ne 0 ]]; then
-    echo "FAIL: go test failed with exit code ${TEST_EXIT}"
+    echo "FAIL: go test failed with exit code ${TEST_EXIT}" >&2
     exit ${TEST_EXIT}
 fi
 
 if [[ "${BELOW_THRESHOLD}" == "true" ]]; then
-    echo "FAIL: Coverage ${PR_COVERAGE}% is below threshold ${THRESHOLD}%"
+    echo "FAIL: Coverage ${PR_COVERAGE}% is below threshold ${THRESHOLD}%" >&2
     exit 1
 fi
 

@@ -22,6 +22,13 @@ import (
 	"sigs.k8s.io/prow/pkg/pjutil"
 )
 
+const (
+	defaultCoverageThreshold  = 70
+	defaultGitHubTokenSecret  = "commenter-oauth-token"
+	defaultTimeoutMinutes     = 120
+	defaultGracePeriodSeconds = 15
+)
+
 type UtilityImagesConfig struct {
 	CloneRefs  string `yaml:"cloneRefs"`
 	InitUpload string `yaml:"initUpload"`
@@ -144,19 +151,19 @@ func LoadConfig(path string) (*Config, error) {
 		return nil, fmt.Errorf("config: defaults.gracePeriodSeconds must not be negative")
 	}
 	if cfg.Defaults.TimeoutMinutes == 0 {
-		cfg.Defaults.TimeoutMinutes = 120
+		cfg.Defaults.TimeoutMinutes = defaultTimeoutMinutes
 	}
 	if cfg.Defaults.GracePeriodSeconds == 0 {
-		cfg.Defaults.GracePeriodSeconds = 15
+		cfg.Defaults.GracePeriodSeconds = defaultGracePeriodSeconds
 	}
 	if cfg.Defaults.CoverageThreshold < 0 || cfg.Defaults.CoverageThreshold > 100 {
 		return nil, fmt.Errorf("config: defaults.coverageThreshold must be between 0 and 100")
 	}
 	if cfg.Defaults.CoverageThreshold == 0 {
-		cfg.Defaults.CoverageThreshold = 70
+		cfg.Defaults.CoverageThreshold = defaultCoverageThreshold
 	}
 	if cfg.Defaults.GitHubTokenSecret == "" {
-		cfg.Defaults.GitHubTokenSecret = "commenter-oauth-token"
+		cfg.Defaults.GitHubTokenSecret = defaultGitHubTokenSecret
 	}
 
 	if len(cfg.Repos) == 0 {
