@@ -3,4 +3,4 @@
 FROM quay.io/kubevirtci/golang:v20260707-cacb217
 RUN cd /project-infra && \
     /usr/local/bin/runner.sh /bin/sh -ce "env GOPROXY=off go build -tags netgo -o /go/bin/ginkgo-tests ./robots/ginkgo-tests"
-ENTRYPOINT ["/usr/local/bin/runner.sh", "/go/bin/ginkgo-tests"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh", "/go/bin/ginkgo-tests"]
