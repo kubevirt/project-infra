@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/golang:v20260703-61a4923 as builder
+FROM quay.io/kubevirtci/golang:v20260707-cacb217 as builder
 RUN cd /project-infra/ && \
     /usr/local/bin/runner.sh /bin/sh -ce "env GOPROXY=off go build -tags netgo -o /go/bin/flakefinder ./robots/flakefinder"
 
