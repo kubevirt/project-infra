@@ -60,6 +60,7 @@ reviews:
         - If shebang is #!/bin/sh, no bash-isms allowed. Bash features require #!/usr/bin/env bash.
         - Local variables: snake_case. Exported/environment variables: UPPER_CASE. Use `local` for function-scoped vars.
         - Temporary files: use mktemp and clean up with `trap ... EXIT`. No hardcoded /tmp/foo paths.
+        - Error messages must be sent to stderr (`echo "error: ..." >&2`), not stdout — stdout is for program output and may be consumed by callers.
         - Scripts should be idempotent where possible.
         - Cite shellcheck rule codes (e.g., SC2086) when flagging violations.
 
