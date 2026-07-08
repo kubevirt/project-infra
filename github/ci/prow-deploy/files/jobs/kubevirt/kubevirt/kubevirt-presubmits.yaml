@@ -303,7 +303,6 @@ presubmits:
         name: vfio
   - always_run: true
     annotations:
-      fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
     decorate: true
@@ -352,7 +351,6 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     annotations:
-      fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
     decorate: true
