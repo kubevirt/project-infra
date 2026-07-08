@@ -6,6 +6,8 @@ prowjob_namespace: kubevirt-prow-jobs
 pod_namespace: kubevirt-prow-jobs
 log_level: debug
 
+decorate_all_jobs: true
+
 # https://docs.prow.k8s.io/docs/components/core/deck/
 # https://pkg.go.dev/sigs.k8s.io/prow/pkg/config#Deck
 deck:

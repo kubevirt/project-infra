@@ -5,7 +5,6 @@ presubmits:
       - release-v1.34
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 5h
       grace_period: 5m
@@ -36,7 +35,6 @@ presubmits:
       - release-v1.34
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 5h
       grace_period: 5m

@@ -7,7 +7,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 1h0m0s
@@ -40,7 +39,6 @@ periodics:
   labels:
     preset-github-credentials: "true"
     preset-podman-in-container-enabled: "true"
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 1h0m0s
@@ -87,7 +85,6 @@ periodics:
   labels:
     preset-github-credentials: "true"
     preset-podman-in-container-enabled: "true"
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 1h0m0s

@@ -1,7 +1,6 @@
 periodics:
 - name: periodic-kubevirtci-mirror-crio-repository-weekly
   cron: "25 0 * * 1"
-  decorate: true
   annotations:
     testgrid-create-test-group: "false"
   decoration_config:
@@ -38,7 +37,6 @@ periodics:
   cron: "0 */12 * * *"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 1h
   max_concurrency: 1
@@ -78,7 +76,6 @@ periodics:
   cron: "5 3 * * 4"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 1h
   max_concurrency: 1
@@ -116,7 +113,6 @@ periodics:
   cron: "30 1 * * *"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 1h
   max_concurrency: 1
@@ -149,7 +145,6 @@ periodics:
   cron: "0 4 * * 3"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 2h
   max_concurrency: 1
@@ -200,7 +195,6 @@ periodics:
   cron: "0 4 * * 3" #Triggered at same time as x86 job so that both will run on same commit
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 2h
   max_concurrency: 1
@@ -259,7 +253,6 @@ periodics:
   cron: "0 */12 * * *"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 1h
   max_concurrency: 1

@@ -5,7 +5,6 @@ postsubmits:
       run_if_changed: "image/.*"
       branches:
         - main
-      decorate: true
       decoration_config:
         timeout: 1h
       max_concurrency: 1

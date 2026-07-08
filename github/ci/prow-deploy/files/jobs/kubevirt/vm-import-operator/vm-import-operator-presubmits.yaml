@@ -3,7 +3,6 @@ presubmits:
   - name: pull-vm-import-operator-e2e-k8s-1.20
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m

@@ -5,7 +5,6 @@ presubmits:
         fork-per-release: "true"
         testgrid-dashboards: kubevirt-presubmits
       cluster: prow-workloads
-      decorate: true
       decoration_config:
         grace_period: 5m0s
         timeout: 1h0m0s

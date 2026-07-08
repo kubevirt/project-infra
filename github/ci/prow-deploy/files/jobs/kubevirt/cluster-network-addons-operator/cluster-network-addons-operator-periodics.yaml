@@ -6,7 +6,6 @@ periodics:
   labels:
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -28,7 +27,6 @@ periodics:
   labels:
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -50,7 +48,6 @@ periodics:
   labels:
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -67,7 +64,6 @@ periodics:
       - --pr_base_branch=main
 - name: periodic-cnao-workflow-k8s-nightly
   cron: "2 2 * * *"
-  decorate: true
   annotations:
     testgrid-create-test-group: "false"
   decoration_config:

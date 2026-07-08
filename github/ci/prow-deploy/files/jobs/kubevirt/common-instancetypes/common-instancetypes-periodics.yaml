@@ -3,7 +3,6 @@ periodics:
     cron: 0 2 * * *
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
     max_concurrency: 1
@@ -43,7 +42,6 @@ periodics:
     cron: 0 2 * * *
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
     max_concurrency: 1
@@ -83,7 +81,6 @@ periodics:
     cron: 0 2 * * *
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
     max_concurrency: 1
@@ -123,7 +120,6 @@ periodics:
     cron: 0 2 * * *
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
     max_concurrency: 1
@@ -163,7 +159,6 @@ periodics:
     cron: 0 2 * * *
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
     max_concurrency: 1
@@ -203,7 +198,6 @@ periodics:
     cron: 0 5 * * *
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
     max_concurrency: 1
@@ -243,7 +237,6 @@ periodics:
     cron: 0 5 * * *
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
     max_concurrency: 1
@@ -283,7 +276,6 @@ periodics:
     cron: 0 4 * * *
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
     max_concurrency: 1
@@ -335,7 +327,6 @@ periodics:
     cron: 0 4 * * *
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
     max_concurrency: 1
@@ -374,7 +365,6 @@ periodics:
     cron: 0 3 * * *
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
     max_concurrency: 1

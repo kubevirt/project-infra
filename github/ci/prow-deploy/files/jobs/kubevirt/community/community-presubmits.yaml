@@ -2,7 +2,6 @@ presubmits:
   kubevirt/community:
   - always_run: true
     cluster: kubevirt-prow-control-plane
-    decorate: true
     extra_refs:
     - org: kubevirt
       repo: project-infra
@@ -28,7 +27,6 @@ presubmits:
             memory: "1Gi"
   - always_run: false
     cluster: kubevirt-prow-control-plane
-    decorate: true
     extra_refs:
     - org: kubevirt
       repo: project-infra
@@ -56,7 +54,6 @@ presubmits:
             memory: "1Gi"
   - always_run: false
     cluster: kubevirt-prow-control-plane
-    decorate: true
     extra_refs:
     - org: kubevirt
       repo: project-infra
@@ -79,7 +76,6 @@ presubmits:
             memory: "1Gi"
   - always_run: false
     cluster: kubevirt-prow-control-plane
-    decorate: true
     extra_refs:
     - org: kubevirt
       repo: project-infra

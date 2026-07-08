@@ -3,7 +3,6 @@ periodics:
     testgrid-create-test-group: "false"
   cluster: phx-prow
   cron: 5 * * * *
-  decorate: true
   name: periodic-kubevirt-flakefinder-hourly-rolling-window-report
   spec:
     containers:
@@ -42,7 +41,6 @@ periodics:
     testgrid-create-test-group: "false"
   cluster: phx-prow
   cron: 45 0 * * *
-  decorate: true
   name: periodic-publish-kubevirt-flakefinder-weekly-report
   spec:
     containers:
@@ -81,7 +79,6 @@ periodics:
     testgrid-create-test-group: "false"
   cluster: phx-prow
   cron: 25 0 * * *
-  decorate: true
   name: periodic-publish-kubevirt-flakefinder-daily-report
   spec:
     containers:
@@ -119,7 +116,6 @@ periodics:
 - annotations:
     testgrid-create-test-group: "false"
   cluster: phx-prow
-  decorate: true
   interval: 168h
   name: periodic-publish-kubevirt-flakefinder-four-weekly-report
   spec:
@@ -160,7 +156,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 0 1,9,17 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -206,7 +201,6 @@ periodics:
     testgrid-num-failures-to-alert: "1"
   cluster: prow-workloads
   cron: 0 0 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -251,7 +245,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 20 2,10,18 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -296,7 +289,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 40 3,11,19 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -341,7 +333,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 10 4,12,20 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -386,7 +377,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 20 5,13,21 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -431,7 +421,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 30 6,14,22 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -476,7 +465,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 40 7,15,23 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -523,7 +511,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 40 4,12,20 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -568,7 +555,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 50 5,13,21 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -613,7 +599,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 0 6,14,22 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -658,7 +643,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 10 7,15,23 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -704,7 +688,6 @@ periodics:
     testgrid-create-test-group: "false"
   cluster: prow-workloads
   cron: 2 1 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 1h0m0s
@@ -783,7 +766,6 @@ periodics:
     testgrid-create-test-group: "false"
   cluster: prow-workloads
   cron: 2 1 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 1h0m0s
@@ -864,7 +846,6 @@ periodics:
     testgrid-create-test-group: "false"
   cluster: ibm-prow-jobs
   cron: 2 15 */7 * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 1h0m0s
@@ -906,7 +887,6 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
   cluster: prow-workloads
   cron: 30 2 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 7h0m0s
@@ -943,7 +923,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 0 22,10 * * *
-  decorate: true
   decoration_config:
     grace_period: 30m0s
     timeout: 4h0m0s
@@ -1024,7 +1003,6 @@ periodics:
     testgrid-create-test-group: "false"
   cluster: phx-prow
   cron: 15 22 * * 0
-  decorate: true
   decoration_config:
     timeout: 1h0m0s
   extra_refs:
@@ -1076,7 +1054,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 40 4,12,20 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -1160,7 +1137,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 40 7,15,23 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -1219,7 +1195,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 50 5,13,21 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -1264,7 +1239,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 0 6,14,22 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -1309,7 +1283,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 10 7,15,23 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -1354,7 +1327,6 @@ periodics:
     testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 20 0,8,16 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -1401,7 +1373,6 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cron: "0 9,17,0 * * *"
-  decorate: true
   decoration_config:
     timeout: 7h
     grace_period: 5m

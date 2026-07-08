@@ -5,7 +5,6 @@ presubmits:
     always_run: true
     skip_report: false
     optional: false
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -30,7 +29,6 @@ presubmits:
     always_run: true
     skip_report: false
     optional: false
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m

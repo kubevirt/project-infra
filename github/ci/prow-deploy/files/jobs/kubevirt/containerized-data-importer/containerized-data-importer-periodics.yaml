@@ -6,7 +6,6 @@ periodics:
   labels:
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -28,7 +27,6 @@ periodics:
   labels:
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -50,7 +48,6 @@ periodics:
   labels:
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -70,7 +67,6 @@ periodics:
 # multi-arch manifest
 - name: periodic-containerized-data-importer-push-nightly
   cron: "2 3 * * *"
-  decorate: true
   annotations:
     testgrid-create-test-group: "false"
   decoration_config:

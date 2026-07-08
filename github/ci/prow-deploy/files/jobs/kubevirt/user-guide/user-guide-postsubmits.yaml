@@ -7,7 +7,6 @@ postsubmits:
       testgrid-create-test-group: "false"
     labels:
       preset-github-credentials: "true"
-    decorate: true
     extra_refs:
     - org: kubevirt
       repo: project-infra

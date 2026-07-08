@@ -4,7 +4,6 @@ presubmits:
     branches:
       - release-1.3
     always_run: true
-    decorate: true
     decoration_config:
       timeout: 3h
     max_concurrency: 5
@@ -27,7 +26,6 @@ presubmits:
     always_run: false
     run_if_changed: "instancetypes/.*|preferences/.*|scripts/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -67,7 +65,6 @@ presubmits:
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/fedora/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -107,7 +104,6 @@ presubmits:
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -147,7 +143,6 @@ presubmits:
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -187,7 +182,6 @@ presubmits:
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -227,7 +221,6 @@ presubmits:
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/ubuntu/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -267,7 +260,6 @@ presubmits:
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/opensuse/tumbleweed/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -307,7 +299,6 @@ presubmits:
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/opensuse/leap/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -347,7 +338,6 @@ presubmits:
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/windows/11/.*|tests/functests/.*|tests/vendor/.*|tests/go.*|tests/image/validationos.*"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -390,7 +380,6 @@ presubmits:
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/debian/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -430,7 +419,6 @@ presubmits:
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/debian/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -470,7 +458,6 @@ presubmits:
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/debian/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -509,7 +496,6 @@ presubmits:
     run_if_changed: "image/.*"
     branches:
       - release-1.3
-    decorate: true
     decoration_config:
       timeout: 1h
     max_concurrency: 1
@@ -543,7 +529,6 @@ presubmits:
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/oraclelinux/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -586,7 +571,6 @@ presubmits:
     always_run: false
     run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/oraclelinux/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s

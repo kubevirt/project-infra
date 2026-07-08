@@ -1,7 +1,6 @@
 periodics:
   - name: periodic-publish-kubemacpool-flakefinder-weekly-report
     cron: "50 0 * * *"
-    decorate: true
     cluster: kubevirt-prow-control-plane
     annotations:
       testgrid-create-test-group: "false"
@@ -40,7 +39,6 @@ periodics:
     cluster: kubevirt-prow-control-plane
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     spec:
       containers:
         - image: quay.io/kubevirtci/flakefinder:v20260711-7a66da0
@@ -75,7 +73,6 @@ periodics:
     interval: 168h
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     cluster: kubevirt-prow-control-plane
     spec:
       containers:

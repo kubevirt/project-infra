@@ -7,7 +7,6 @@ postsubmits:
       - ^release-.*$
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"

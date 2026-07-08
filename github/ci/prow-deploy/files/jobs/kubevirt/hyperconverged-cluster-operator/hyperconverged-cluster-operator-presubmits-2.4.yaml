@@ -3,7 +3,6 @@ presubmits:
   - always_run: true
     branches:
     - release-2.4
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -32,7 +31,6 @@ presubmits:
 #  - always_run: true
 #    branches:
 #    - release-2.4
-#    decorate: true
 #    decoration_config:
 #      grace_period: 5m0s
 #      timeout: 7h0m0s

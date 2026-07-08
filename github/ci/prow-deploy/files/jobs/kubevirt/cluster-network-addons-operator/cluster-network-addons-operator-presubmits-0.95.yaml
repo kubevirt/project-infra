@@ -5,7 +5,6 @@ presubmits:
       branches:
         - release-0.95
       always_run: true
-      decorate: true
       decoration_config:
         timeout: 4h
         grace_period: 5m
@@ -34,7 +33,6 @@ presubmits:
       branches:
         - release-0.95
       always_run: true
-      decorate: true
       decoration_config:
         timeout: 3h
         grace_period: 5m
@@ -63,7 +61,6 @@ presubmits:
       branches:
         - release-0.95
       always_run: true
-      decorate: true
       decoration_config:
         timeout: 3h
         grace_period: 5m
@@ -92,7 +89,6 @@ presubmits:
       branches:
         - release-0.95
       always_run: true
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -122,7 +118,6 @@ presubmits:
       branches:
         - release-0.95
       always_run: true
-      decorate: true
       decoration_config:
         timeout: 3h
         grace_period: 5m
@@ -150,7 +145,6 @@ presubmits:
       branches:
         - release-0.95
       always_run: true
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -180,7 +174,6 @@ presubmits:
       branches:
         - release-0.95
       always_run: true
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -210,7 +203,6 @@ presubmits:
       branches:
         - release-0.95
       always_run: true
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -240,7 +232,6 @@ presubmits:
       branches:
         - release-0.95
       always_run: true
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -271,7 +262,6 @@ presubmits:
         - release-0.95
       always_run: true
       optional: true
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -301,7 +291,6 @@ presubmits:
       branches:
         - release-0.95
       always_run: true
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h

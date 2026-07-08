@@ -3,7 +3,6 @@ periodics:
   cron: "5 1 * * *"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -39,7 +38,6 @@ periodics:
   cron: "45 0 * * *"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -75,7 +73,6 @@ periodics:
   interval: 168h
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -111,7 +108,6 @@ periodics:
   cron: "0 2 * * *"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 3h
     grace_period: 5m

@@ -1,7 +1,6 @@
 periodics:
   - interval: 24h
     name: kubevirt-io-periodic-link-checker
-    decorate: true
     annotations:
       testgrid-create-test-group: "false"
     extra_refs:

@@ -4,7 +4,6 @@ presubmits:
     # Check Prow configuration using the `checkconfig` tool:
     # - https://docs.prow.k8s.io/docs/components/cli-tools/checkconfig/
     always_run: true
-    decorate: true
     cluster: kubevirt-prow-control-plane
     labels:
       preset-gcs-credentials: "true"
@@ -32,7 +31,6 @@ presubmits:
   - name: pull-project-infra-test-robots
     run_if_changed: "robots/.*|pkg/.*|go.mod|go.sum"
     optional: false
-    decorate: true
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
@@ -55,7 +53,6 @@ presubmits:
             memory: "4Gi"
   - name: pull-project-infra-check-presubmits
     run_if_changed: "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml"
-    decorate: true
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
@@ -82,7 +79,6 @@ presubmits:
   - name: pull-project-infra-test-releng
     run_if_changed: "releng/.*|go.mod"
     optional: false
-    decorate: true
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
@@ -105,7 +101,6 @@ presubmits:
     run_if_changed: "external-plugins/.*|go.mod"
     cluster: kubevirt-prow-control-plane
     optional: false
-    decorate: true
     spec:
       containers:
       - image: quay.io/kubevirtci/golang:v20260707-cacb217
@@ -126,7 +121,6 @@ presubmits:
   - name: pull-project-infra-test-github-ci-services
     run_if_changed: "github/ci/services/.*|go.mod"
     optional: false
-    decorate: true
     cluster: kubevirt-prow-control-plane
     labels:
       preset-bazel-cache: "true"
@@ -148,7 +142,6 @@ presubmits:
           runAsUser: 0
   - always_run: true
     cluster: kubevirt-prow-control-plane
-    decorate: true
     name: pull-project-infra-lint
     spec:
       containers:
@@ -173,7 +166,6 @@ presubmits:
   - name: build-kubevirt-infra-bootstrap-image
     always_run: false
     run_if_changed: "images/kubevirt-infra-bootstrap/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -197,7 +189,6 @@ presubmits:
   - name: build-bootstrap-image
     always_run: false
     run_if_changed: "images/bootstrap/.*|images/golang/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -224,7 +215,6 @@ presubmits:
   - name: build-shared-images-controller-image
     always_run: false
     run_if_changed: "images/shared-images-controller/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -249,7 +239,6 @@ presubmits:
   - name: build-release-tool-image
     always_run: false
     run_if_changed: "releng/release-tool/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -276,7 +265,6 @@ presubmits:
   - name: build-kubekins-e2e-image
     always_run: false
     run_if_changed: "images/kubekins-e2e/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -302,7 +290,6 @@ presubmits:
   - name: build-kubevirt-kubevirt.github.io-image
     always_run: false
     run_if_changed: "images/kubevirt-kubevirt.github.io/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -333,7 +320,6 @@ presubmits:
   - name: build-kubevirt-user-guide-image
     always_run: false
     run_if_changed: "images/kubevirt-user-guide/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -359,7 +345,6 @@ presubmits:
   - name: build-prow-deploy-image
     always_run: false
     run_if_changed: "images/prow-deploy/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -385,7 +370,6 @@ presubmits:
   - name: build-autoowners-image
     always_run: false
     run_if_changed: "images/autoowners/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -411,7 +395,6 @@ presubmits:
   - name: build-pr-creator-image
     always_run: false
     run_if_changed: 'images/pr-creator/.*|hack/(git-pr\.sh|git-askpass\.sh)|robots/labels-checker/.*|pkg/.*|go.mod|go.sum'
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -437,7 +420,6 @@ presubmits:
   - name: build-vm-image-builder-image
     always_run: false
     run_if_changed: "images/vm-image-builder/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -461,7 +443,6 @@ presubmits:
   - name: build-fedora-coreos-kubevirt-image
     always_run: false
     run_if_changed: "images/fedora-coreos-kubevirt/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -486,7 +467,6 @@ presubmits:
   - name: build-test-report-image
     always_run: false
     run_if_changed: "^(robots|images)/test-report/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -511,7 +491,6 @@ presubmits:
   - name: build-release-blocker-image
     always_run: false
     run_if_changed: "^(robots|images)/release-blocker/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -536,7 +515,6 @@ presubmits:
   - name: build-referee-image
     always_run: false
     run_if_changed: "^(external-plugins|images)/referee/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -563,7 +541,6 @@ presubmits:
     run_if_changed: "^(robots|images)/ginkgo-tests/.*|pkg/.*|go.mod|go.sum"
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     cluster: kubevirt-prow-control-plane
     max_concurrency: 1
     labels:
@@ -592,7 +569,6 @@ presubmits:
   - name: build-indexpagecreator-image
     always_run: false
     run_if_changed: "^(robots|images)/indexpagecreator/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -617,7 +593,6 @@ presubmits:
   - name: build-flakefinder-image
     always_run: false
     run_if_changed: "^(robots|images)/flakefinder/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -642,7 +617,6 @@ presubmits:
   - name: build-flake-report-creator-image
     always_run: false
     run_if_changed: "^(robots|images)/flake-report-creator/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -667,7 +641,6 @@ presubmits:
   - name: build-rehearse-image
     always_run: false
     run_if_changed: "^(external-plugins|images)/rehearse/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -692,7 +665,6 @@ presubmits:
   - name: build-phased-image
     always_run: false
     run_if_changed: "images/phased/.*|external-plugins/phased/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -717,7 +689,6 @@ presubmits:
   - name: build-test-label-analyzer-image
     always_run: false
     run_if_changed: "images/test-label-analyzer/.*|robots/test-label-analyzer/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -742,7 +713,6 @@ presubmits:
   - name: build-test-subset-image
     always_run: false
     run_if_changed: "images/test-subset/.*|external-plugins/test-subset/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -767,7 +737,6 @@ presubmits:
   - name: pull-project-infra-prow-deploy-test
     always_run: false
     run_if_changed: "github/ci/prow-deploy/(defaults|hack|kustom|tasks|templates|vars)/.*|github/ci/prow-deploy/files/[^/]+$|github/ci/prow-deploy/[^/]+$"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -801,7 +770,6 @@ presubmits:
               memory: "2Gi"
   - name: pull-project-infra-ci-search-deploy-test
     run_if_changed: "github/ci/services/(ci-search|common)/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -838,7 +806,6 @@ presubmits:
   - name: pull-project-infra-grafana-deploy-test
     optional: false
     run_if_changed: "github/ci/services/(grafana|common)/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -879,7 +846,6 @@ presubmits:
             runAsUser: 0
   - name: pull-project-infra-check-testgrid-config
     run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$|^github/ci/testgrid/gen-config\.yaml$|^github/ci/testgrid/default\.yaml$'
-    decorate: true
     labels:
       preset-bazel-cache: "true"
     annotations:
@@ -907,7 +873,6 @@ presubmits:
       testgrid-create-test-group: "false"
     labels:
       preset-github-credentials: "true"
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m
@@ -942,7 +907,6 @@ presubmits:
       testgrid-create-test-group: "false"
     labels:
       preset-github-credentials: "true"
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -965,7 +929,6 @@ presubmits:
       testgrid-create-test-group: "false"
     labels:
       preset-github-credentials: "true"
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -985,7 +948,6 @@ presubmits:
   - annotations:
       testgrid-create-test-group: "false"
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m

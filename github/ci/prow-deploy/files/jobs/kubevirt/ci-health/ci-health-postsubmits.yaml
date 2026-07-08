@@ -10,7 +10,6 @@ postsubmits:
       testgrid-create-test-group: "false"
     labels:
       preset-gcs-credentials: "true"
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m

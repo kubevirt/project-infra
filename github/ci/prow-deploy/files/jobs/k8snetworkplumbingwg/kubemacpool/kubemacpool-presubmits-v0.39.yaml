@@ -7,7 +7,6 @@ presubmits:
         - release-0.39
       always_run: true
       optional: false
-      decorate: true
       decoration_config:
         timeout: 3h
         grace_period: 5m
@@ -34,7 +33,6 @@ presubmits:
         - release-0.39
       always_run: true
       optional: false
-      decorate: true
       cluster: prow-workloads
       decoration_config:
         timeout: 3h

@@ -2,7 +2,6 @@ presubmits:
   kubernetes-sigs/cluster-api-provider-kubevirt:
   - always_run: true
     optional: true
-    decorate: true
     skip_report: true
     cluster: prow-workloads
     decoration_config:
@@ -37,7 +36,6 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     optional: true
-    decorate: true
     skip_report: true
     cluster: prow-workloads
     decoration_config:

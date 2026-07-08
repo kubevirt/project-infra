@@ -4,7 +4,6 @@ presubmits:
     annotations:
       k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -81,7 +80,6 @@ presubmits:
         name: vfio
   - always_run: false
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -120,7 +118,6 @@ presubmits:
         name: cgroup
   - always_run: false
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -160,7 +157,6 @@ presubmits:
         name: cgroup
   - always_run: false
     cluster: prow-arm64-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     max_concurrency: 1
@@ -195,7 +191,6 @@ presubmits:
         name: cgroup
   - always_run: false
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -235,7 +230,6 @@ presubmits:
         name: cgroup
   - always_run: false
     cluster: prow-arm64-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     max_concurrency: 1
@@ -270,7 +264,6 @@ presubmits:
         name: cgroup
   - always_run: false
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -310,7 +303,6 @@ presubmits:
         name: cgroup
   - always_run: false
     cluster: prow-arm64-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     max_concurrency: 1
@@ -345,7 +337,6 @@ presubmits:
         name: cgroup
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -411,7 +402,6 @@ presubmits:
         name: vfio
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     labels:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -437,7 +427,6 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 20m0s
     labels:
@@ -472,7 +461,6 @@ presubmits:
         name: devices
   - always_run: true
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       timeout: 15m0s
     labels:
@@ -500,7 +488,6 @@ presubmits:
           privileged: true
   - always_run: false
     cluster: prow-s390x-workloads
-    decorate: true
     decoration_config:
       timeout: 4h0m0s
     labels:
@@ -531,7 +518,6 @@ presubmits:
           privileged: true
   - always_run: false
     cluster: prow-s390x-workloads
-    decorate: true
     decoration_config:
       timeout: 4h0m0s
     labels:
@@ -562,7 +548,6 @@ presubmits:
           privileged: true
   - always_run: true
     cluster: prow-s390x-workloads
-    decorate: true
     decoration_config:
       timeout: 4h0m0s
     labels:
@@ -593,7 +578,6 @@ presubmits:
           privileged: true
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -623,7 +607,6 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -654,7 +637,6 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -683,7 +665,6 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -714,7 +695,6 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -746,7 +726,6 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -776,7 +755,6 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:

@@ -4,7 +4,6 @@ periodics:
     testgrid-alert-email: nestor.acuna@ibm.com, ashok.pariya@ibm.com
   cluster: prow-s390x-workloads
   cron: 0 1 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 7h0m0s
@@ -42,7 +41,6 @@ periodics:
     testgrid-alert-email: fmatouschek@redhat.com, lyarwood@redhat.com
   cluster: prow-workloads
   cron: 0 2 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 7h0m0s

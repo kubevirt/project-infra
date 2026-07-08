@@ -5,7 +5,6 @@ postsubmits:
       run_if_changed: "tests/build/.*"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
@@ -40,7 +39,6 @@ postsubmits:
       run_if_changed: ^hack/builder/.*|^go\.mod$
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"

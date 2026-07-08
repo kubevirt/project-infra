@@ -10,7 +10,6 @@ presubmits:
     optional: false
     skip_report: false
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 10m
       grace_period: 5m
@@ -48,7 +47,6 @@ presubmits:
     optional: false
     skip_report: false
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 10m
       grace_period: 5m
@@ -86,7 +84,6 @@ presubmits:
     optional: false
     skip_report: false
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 10m
       grace_period: 5m
@@ -124,7 +121,6 @@ presubmits:
     optional: false
     skip_report: false
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m

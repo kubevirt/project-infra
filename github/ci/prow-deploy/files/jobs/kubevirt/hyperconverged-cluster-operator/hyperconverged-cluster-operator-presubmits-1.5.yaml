@@ -5,7 +5,6 @@ presubmits:
     branches:
     - release-1.5
     optional: false
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -36,7 +35,6 @@ presubmits:
     - release-1.5
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
