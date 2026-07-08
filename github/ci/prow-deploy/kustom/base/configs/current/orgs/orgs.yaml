@@ -975,6 +975,15 @@ orgs:
           Ref: https://github.com/kubevirt/community/blob/main/wg-arch-s390x/charter.md
         maintainers:
           - chandramerla
+        members:
+          - ashokpariya0
+          - Davo911
+          - HarshithaMS005
+          - jschintag
+          - laxmi-333
+          - nekkunti
+          - nestoracunablanco
+          - vamsikrishna-siddu
         privacy: closed
       community-team:
         description: "Maintainers of KubeVirt community and websites"
