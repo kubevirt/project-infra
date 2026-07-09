@@ -9,14 +9,20 @@ reviews:
       enabled: true
     shellcheck:
       enabled: true
-  path_filters:
-    - "!vendor/**"
   path_instructions:
     - path: "**"
       instructions: |
         Comment severity: prefix style, naming, or minor improvement suggestions with "nit:" — these must not block merging.
         Correctness issues, logic errors, security concerns, or contract violations must state the problem and why it matters.
         When a review contains only nits, approve rather than request changes.
+
+    - path: "vendor/**"
+      instructions: |
+        Vendored Go dependencies — do not review for style, logic, or correctness.
+        Only verify:
+        - Changes are consistent with go.mod and go.sum (no manual edits).
+        - No non-vendored files (scripts, configs, documentation) are added inside vendor/.
+        - The vendor/modules.txt file is present and updated.
 
     - path: "**/*.go"
       instructions: |
