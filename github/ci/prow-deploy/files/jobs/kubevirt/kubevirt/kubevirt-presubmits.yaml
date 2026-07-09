@@ -202,6 +202,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: prow-workloads
     decoration_config:
       grace_period: 5m0s
@@ -289,6 +290,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: kubevirt-prow-control-plane
     decoration_config:
       grace_period: 5m0s
@@ -344,6 +346,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-s390x-workloads
     decoration_config:
@@ -371,6 +374,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-arm64-workloads
     decoration_config:
@@ -401,6 +405,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: prow-workloads
     decoration_config:
       grace_period: 5m0s
@@ -428,6 +433,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: prow-workloads
     decoration_config:
       grace_period: 5m0s
@@ -458,6 +464,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: prow-workloads
     decoration_config:
       grace_period: 5m0s
@@ -591,6 +598,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
     decoration_config:
@@ -753,6 +761,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: kubevirt-prow-control-plane
     decoration_config:
       grace_period: 5m0s
@@ -779,6 +788,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: kubevirt-prow-control-plane
     decoration_config:
       grace_period: 5m0s
@@ -805,6 +815,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: kubevirt-prow-control-plane
     decoration_config:
       grace_period: 5m0s
@@ -859,6 +870,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: kubevirt-prow-control-plane
     decoration_config:
       grace_period: 5m0s
@@ -1071,6 +1083,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: prow-workloads
     decoration_config:
       grace_period: 5m0s
@@ -1460,10 +1473,11 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
+      phased.kubevirt.io/phase: "1"
     cluster: prow-workloads
     decoration_config:
       grace_period: 5m0s
@@ -1631,10 +1645,11 @@ presubmits:
             memory: 18Gi
         securityContext:
           privileged: true
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
+      phased.kubevirt.io/phase: "1"
     cluster: prow-workloads
     decoration_config:
       grace_period: 5m0s
@@ -1674,10 +1689,11 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
+      phased.kubevirt.io/phase: "1"
     cluster: prow-arm64-workloads
     decoration_config:
       grace_period: 5m0s
@@ -1901,10 +1917,11 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
+      phased.kubevirt.io/phase: "1"
     cluster: prow-workloads
     decoration_config:
       grace_period: 5m0s
@@ -2031,6 +2048,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
+      phased.kubevirt.io/phase: "1"
     cluster: prow-workloads
     decoration_config:
       grace_period: 5m0s
@@ -2112,10 +2130,11 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
+      phased.kubevirt.io/phase: "1"
     cluster: prow-workloads
     decoration_config:
       grace_period: 5m0s
@@ -2356,10 +2375,11 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
+      phased.kubevirt.io/phase: "1"
     cluster: prow-workloads
     decoration_config:
       grace_period: 5m0s
