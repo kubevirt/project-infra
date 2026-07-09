@@ -15,7 +15,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - make all
@@ -44,7 +44,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - make container-build
@@ -74,7 +74,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - make test
@@ -103,7 +103,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - "make cluster-up && make cluster-sync && make cluster-functest"
@@ -133,7 +133,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - make build-installer build-installer-openshift

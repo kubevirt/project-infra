@@ -18,7 +18,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - make functest
@@ -53,7 +53,7 @@ presubmits:
     spec:
       containers:
         - command:
-            - /usr/local/bin/runner.sh
+            - /usr/local/bin/entrypoint.sh
             - /bin/sh
             - -c
             - make functest
