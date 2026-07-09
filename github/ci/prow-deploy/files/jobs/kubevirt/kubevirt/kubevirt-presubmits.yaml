@@ -401,6 +401,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: prow-workloads
     decorate: true
     decoration_config:
@@ -491,6 +492,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
@@ -548,6 +550,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-s390x-workloads
     decorate: true
@@ -573,6 +576,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-arm64-workloads
     decorate: true
@@ -601,6 +605,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: prow-workloads
     decorate: true
     decoration_config:
@@ -629,6 +634,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: prow-workloads
     decorate: true
     decoration_config:
@@ -660,6 +666,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: prow-workloads
     decorate: true
     decoration_config:
@@ -797,6 +804,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
     decorate: true
@@ -933,6 +941,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
@@ -960,6 +969,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
@@ -987,6 +997,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
@@ -1043,6 +1054,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: kubevirt-prow-control-plane
     decorate: true
     decoration_config:
@@ -1200,9 +1212,10 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "1"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
     decorate: true
@@ -1241,9 +1254,10 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "1"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-arm64-workloads
     decorate: true
@@ -1399,6 +1413,7 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "0"
     cluster: prow-workloads
     decorate: true
     decoration_config:
@@ -2156,9 +2171,10 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "1"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
     decorate: true
@@ -2197,9 +2213,10 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "1"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
     decorate: true
@@ -2238,9 +2255,10 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "1"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
     decorate: true
@@ -2281,9 +2299,10 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "1"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
     decorate: true
@@ -2324,9 +2343,10 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "1"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
     decorate: true
