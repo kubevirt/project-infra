@@ -303,7 +303,6 @@ presubmits:
         name: vfio
   - always_run: true
     annotations:
-      fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
     decorate: true
@@ -336,8 +335,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        - name: CANNIER_IMAGE
-          value: quay.io/kubevirtci/cannier:v20250910-9d5a17d
+        - name: GINKGO_TESTS_IMAGE
+          value: quay.io/kubevirtci/ginkgo-tests:v20260708-fc5fb56
         - name: INVOKE_FUNCTEST_ONCE
           value: "true"
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
@@ -352,7 +351,6 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     annotations:
-      fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
     decorate: true
@@ -386,8 +384,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        - name: CANNIER_IMAGE
-          value: quay.io/kubevirtci/cannier:v20250910-9d5a17d
+        - name: GINKGO_TESTS_IMAGE
+          value: quay.io/kubevirtci/ginkgo-tests:v20260708-fc5fb56
         - name: INVOKE_FUNCTEST_ONCE
           value: "true"
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
