@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -122,6 +123,8 @@ var _ = Describe("generateCoverageJob", func() {
 				},
 				TimeoutMinutes:     120,
 				GracePeriodSeconds: 15,
+				CoverageThreshold:  70,
+				GitHubTokenSecret:  "commenter-oauth-token",
 				UtilityImages: UtilityImagesConfig{
 					CloneRefs:  "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260401-f6cc3990c",
 					InitUpload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260401-f6cc3990c",
@@ -191,7 +194,21 @@ var _ = Describe("generateCoverageJob", func() {
 			}
 			return ""
 		}, "local"),
+		Entry("COVERAGE_THRESHOLD env", func(j prowapi.ProwJob) string {
+			for _, env := range j.Spec.PodSpec.Containers[0].Env {
+				if env.Name == "COVERAGE_THRESHOLD" {
+					return env.Value
+				}
+			}
+			return ""
+		}, "70"),
 	)
+
+	It("Should use coverage-report.sh entrypoint", func() {
+		args := job.Spec.PodSpec.Containers[0].Args
+		Expect(args).To(HaveLen(1))
+		Expect(args[0]).To(HavePrefix("/usr/local/bin/coverage-report.sh"))
+	})
 
 	DescribeTable("Should include specific coverage targets",
 		func(target string) {
@@ -211,7 +228,7 @@ var _ = Describe("generateCoverageJob", func() {
 			args := job.Spec.PodSpec.Containers[0].Args
 			Expect(args[0]).NotTo(ContainSubstring(target))
 		},
-		Entry("should not run all tests", "go test ./..."),
+		Entry("should not run all tests", "/usr/local/bin/coverage-report.sh ./..."),
 		Entry("should not include github/ci/services e2e tests", "./github/ci/services/..."),
 	)
 
@@ -225,11 +242,17 @@ var _ = Describe("generateCoverageJob", func() {
 		Entry("sidecar", func(j prowapi.ProwJob) string { return j.Spec.DecorationConfig.UtilityImages.Sidecar }),
 	)
 
-	It("Should output coverage artifacts matching Spyglass config", func() {
-		args := job.Spec.PodSpec.Containers[0].Args
-		Expect(args).To(HaveLen(1))
-		Expect(args[0]).To(ContainSubstring("-coverprofile=${ARTIFACTS}/filtered.cov"))
-		Expect(args[0]).To(ContainSubstring("-o ${ARTIFACTS}/filtered.html"))
+	It("Should mount the GitHub token secret", func() {
+		volumeMounts := job.Spec.PodSpec.Containers[0].VolumeMounts
+		Expect(volumeMounts).To(HaveLen(1))
+		Expect(volumeMounts[0].Name).To(Equal("github-token"))
+		Expect(volumeMounts[0].MountPath).To(Equal("/etc/github-commenter"))
+		Expect(volumeMounts[0].ReadOnly).To(BeTrue())
+
+		volumes := job.Spec.PodSpec.Volumes
+		Expect(volumes).To(HaveLen(1))
+		Expect(volumes[0].Name).To(Equal("github-token"))
+		Expect(volumes[0].VolumeSource.Secret.SecretName).To(Equal("commenter-oauth-token"))
 	})
 })
 
@@ -258,10 +281,12 @@ var _ = Describe("Handle", func() {
 			prowJobClient: fakeProwClient.ProwJobs("test-namespace"),
 			config: &Config{
 				Defaults: JobConfig{
-					Namespace: "test-namespace",
-					Image:     "test-image:latest",
-					Cluster:   "test-cluster",
-					GCS:       GCSConfig{Bucket: "test-bucket", CredentialsSecret: "gcs"},
+					Namespace:         "test-namespace",
+					Image:             "test-image:latest",
+					Cluster:           "test-cluster",
+					CoverageThreshold: 70,
+					GitHubTokenSecret: "commenter-oauth-token",
+					GCS:               GCSConfig{Bucket: "test-bucket", CredentialsSecret: "gcs"},
 					UtilityImages: UtilityImagesConfig{
 						CloneRefs:  "clonerefs:latest",
 						InitUpload: "initupload:latest",
@@ -504,5 +529,182 @@ var _ = Describe("Handle", func() {
 
 			Expect(fakeProwClient.Actions()).To(BeEmpty())
 		})
+	})
+})
+
+var _ = Describe("LoadConfig", func() {
+	var writeConfig func(content string) string
+
+	BeforeEach(func() {
+		writeConfig = func(content string) string {
+			f, err := os.CreateTemp("", "coverage-config-*.yaml")
+			Expect(err).NotTo(HaveOccurred())
+			DeferCleanup(func() {
+				Expect(os.Remove(f.Name())).To(Succeed())
+			})
+			_, err = f.WriteString(content)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(f.Close()).To(Succeed())
+			return f.Name()
+		}
+	})
+
+	It("Should default coverageThreshold to 70 when not set", func() {
+		path := writeConfig(`
+defaults:
+  namespace: test-ns
+  image: test-image
+  cluster: test-cluster
+  utilityImages:
+    cloneRefs: cr
+    initUpload: iu
+    entrypoint: ep
+    sidecar: sc
+  gcs:
+    bucket: test-bucket
+    credentialsSecret: gcs
+repos:
+  org/repo:
+    testPackages: "./..."
+`)
+		cfg, err := LoadConfig(path)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(cfg.Defaults.CoverageThreshold).To(Equal(70))
+	})
+
+	It("Should default githubTokenSecret to commenter-oauth-token when not set", func() {
+		path := writeConfig(`
+defaults:
+  namespace: test-ns
+  image: test-image
+  cluster: test-cluster
+  utilityImages:
+    cloneRefs: cr
+    initUpload: iu
+    entrypoint: ep
+    sidecar: sc
+  gcs:
+    bucket: test-bucket
+    credentialsSecret: gcs
+repos:
+  org/repo:
+    testPackages: "./..."
+`)
+		cfg, err := LoadConfig(path)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(cfg.Defaults.GitHubTokenSecret).To(Equal("commenter-oauth-token"))
+	})
+
+	It("Should accept a custom coverageThreshold", func() {
+		path := writeConfig(`
+defaults:
+  namespace: test-ns
+  image: test-image
+  cluster: test-cluster
+  coverageThreshold: 50
+  utilityImages:
+    cloneRefs: cr
+    initUpload: iu
+    entrypoint: ep
+    sidecar: sc
+  gcs:
+    bucket: test-bucket
+    credentialsSecret: gcs
+repos:
+  org/repo:
+    testPackages: "./..."
+`)
+		cfg, err := LoadConfig(path)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(cfg.Defaults.CoverageThreshold).To(Equal(50))
+	})
+
+	It("Should reject coverageThreshold greater than 100", func() {
+		path := writeConfig(`
+defaults:
+  namespace: test-ns
+  image: test-image
+  cluster: test-cluster
+  coverageThreshold: 101
+  utilityImages:
+    cloneRefs: cr
+    initUpload: iu
+    entrypoint: ep
+    sidecar: sc
+  gcs:
+    bucket: test-bucket
+    credentialsSecret: gcs
+repos:
+  org/repo:
+    testPackages: "./..."
+`)
+		_, err := LoadConfig(path)
+		Expect(err).To(HaveOccurred())
+		Expect(err.Error()).To(ContainSubstring("coverageThreshold must be between 0 and 100"))
+	})
+
+	It("Should reject negative repo coverageThreshold", func() {
+		path := writeConfig(`
+defaults:
+  namespace: test-ns
+  image: test-image
+  cluster: test-cluster
+  utilityImages:
+    cloneRefs: cr
+    initUpload: iu
+    entrypoint: ep
+    sidecar: sc
+  gcs:
+    bucket: test-bucket
+    credentialsSecret: gcs
+repos:
+  org/repo:
+    testPackages: "./..."
+    coverageThreshold: -1
+`)
+		_, err := LoadConfig(path)
+		Expect(err).To(HaveOccurred())
+		Expect(err.Error()).To(ContainSubstring("coverageThreshold must be between 0 and 100"))
+	})
+})
+
+var _ = Describe("RepoConfig", func() {
+	It("Should override coverageThreshold per repo", func() {
+		cfg := &Config{
+			Defaults: JobConfig{
+				Namespace:         "ns",
+				CoverageThreshold: 70,
+				GitHubTokenSecret: "default-token",
+			},
+			Repos: map[string]JobConfig{
+				"org/repo": {
+					TestPackages:      "./...",
+					CoverageThreshold: 50,
+				},
+			},
+		}
+
+		repoCfg, ok := cfg.RepoConfig("org/repo")
+		Expect(ok).To(BeTrue())
+		Expect(repoCfg.CoverageThreshold).To(Equal(50))
+		Expect(repoCfg.GitHubTokenSecret).To(Equal("default-token"))
+	})
+
+	It("Should inherit default coverageThreshold when repo does not set one", func() {
+		cfg := &Config{
+			Defaults: JobConfig{
+				Namespace:         "ns",
+				CoverageThreshold: 70,
+			},
+			Repos: map[string]JobConfig{
+				"org/repo": {
+					TestPackages: "./...",
+				},
+			},
+		}
+
+		repoCfg, ok := cfg.RepoConfig("org/repo")
+		Expect(ok).To(BeTrue())
+		Expect(repoCfg.CoverageThreshold).To(Equal(70))
 	})
 })

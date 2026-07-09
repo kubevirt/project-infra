@@ -8,6 +8,8 @@ data:
       namespace: kubevirt-prow-jobs
       image: "quay.io/kubevirtci/covreport:latest"
       cluster: kubevirt-prow-control-plane
+      coverageThreshold: 70
+      githubTokenSecret: commenter-oauth-token
       env:
         GO_MOD_PATH: go.mod
         GOTOOLCHAIN: local
@@ -25,5 +27,6 @@ data:
     repos:
       kubevirt/project-infra:
         testPackages: "./external-plugins/... ./releng/... ./robots/... ./cmd/... ./pkg/..."
+        coverageThreshold: 25
       kubevirt/ci-health:
         testPackages: "./pkg/... ./cmd/..."
