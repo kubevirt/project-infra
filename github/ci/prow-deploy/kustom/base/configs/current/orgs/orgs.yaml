@@ -948,6 +948,13 @@ orgs:
         privacy: closed
         repos:
           vdpa-network-binding-plugin: admin
+      vhostuser-network-binding-plugin-maintainers:
+        description: "Maintainers of vhostuser-network-binding-plugin repository"
+        maintainers:
+          - amorenoz
+        privacy: closed
+        repos:
+          vhostuser-network-binding-plugin: admin
       vm-console-proxy-maintainers:
         description: "Maintainers of vm-console-proxy repository"
         privacy: closed
