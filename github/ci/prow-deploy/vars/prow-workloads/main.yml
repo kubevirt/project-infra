@@ -1,3 +1,5 @@
+prowUrl: prow.ci.kubevirt.io
+
 testinfra_dir: /tmp/test-infra
 bootstrap_full_config: false
 rescale_pushgateway_deployment: false
