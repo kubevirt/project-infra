@@ -301,8 +301,9 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
-  - always_run: true
+  - always_run: false
     annotations:
+      phased.kubevirt.io/phase: "1"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
     decorate: true
