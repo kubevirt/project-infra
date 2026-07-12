@@ -23,7 +23,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260708-3cba908
+      image: quay.io/kubevirtci/flakefinder:v20260711-7a66da0
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -49,7 +49,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260708-3cba908
+      image: quay.io/kubevirtci/flakefinder:v20260711-7a66da0
       resources:
         requests:
           cpu: 500m
@@ -78,7 +78,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v20260708-3cba908
+      image: quay.io/kubevirtci/flakefinder:v20260711-7a66da0
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -606,7 +606,7 @@ periodics:
           --release-note-none \
           --labels skip-review \
           --body $'Run of `cd ../kubevirt && make rpm-deps`\n\n/release-blocker main'
-      image: quay.io/kubevirtci/pr-creator:v20260708-2c7308f
+      image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
       resources:
         requests:
           memory: 8Gi
@@ -653,7 +653,7 @@ periodics:
           --release-note-none \
           --labels skip-review \
           --body $'Run of `cd ../kubevirt && KUBEVIRT_CENTOS_STREAM_VERSION=10 make rpm-deps`\n\n/release-blocker main'
-      image: quay.io/kubevirtci/pr-creator:v20260708-2c7308f
+      image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
       resources:
         requests:
           memory: 8Gi
@@ -1622,7 +1622,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ce
-      image: quay.io/kubevirtci/pr-creator:v20260708-2c7308f
+      image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
       resources:
         requests:
           memory: 200Mi
@@ -1655,7 +1655,7 @@ periodics:
       - --output-gcs-url=gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/index.html
       command:
       - /usr/bin/test-label-analyzer
-      image: quay.io/kubevirtci/test-label-analyzer:v20260711-10375c5
+      image: quay.io/kubevirtci/test-label-analyzer:v20260711-7a66da0
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -2375,7 +2375,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/pr-creator:v20260708-2c7308f
+      image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
       resources: {}
     nodeSelector:
       type: bare-metal-external
