@@ -652,7 +652,7 @@ postsubmits:
                 memory: "4Gi"
     - name: post-project-infra-kubevirt-prow-control-plane-deployment
       always_run: false
-      run_if_changed: "github/ci/prow-deploy/(defaults|hack|kustom|tasks|templates|vars)/.*|github/ci/prow-deploy/files/[^/]+|github/ci/prow-deploy/[^/]+"
+      run_if_changed: "github/ci/prow-deploy/(defaults|hack|kustom|tasks|templates|vars)/.*|github/ci/prow-deploy/files/[^/]+$|github/ci/prow-deploy/[^/]+$"
       annotations: &deploy_postsubmit_annotations
         testgrid-dashboards: kubevirt-project-infra-postsubmits
         testgrid-alert-email: kubevirt-ci-maintainers@redhat.com

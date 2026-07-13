@@ -766,7 +766,7 @@ presubmits:
               memory: "1Gi"
   - name: pull-project-infra-prow-deploy-test
     always_run: false
-    run_if_changed: "github/ci/prow-deploy/(defaults|hack|kustom|tasks|templates|vars)/.*|github/ci/prow-deploy/files/[^/]+|github/ci/prow-deploy/[^/]+"
+    run_if_changed: "github/ci/prow-deploy/(defaults|hack|kustom|tasks|templates|vars)/.*|github/ci/prow-deploy/files/[^/]+$|github/ci/prow-deploy/[^/]+$"
     decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
