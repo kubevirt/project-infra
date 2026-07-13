@@ -7,6 +7,7 @@ resources:
   - ../../components/docker-mirror-proxy/base
   - ../../components/greenhouse/base
   - resources/crier-rbac.yaml
+  - resources/deck-rbac.yaml
   - resources/docker-mirror-proxy_pvc.yaml
   - resources/hook-rbac.yaml
   - resources/horologium-rbac.yaml
@@ -83,13 +84,12 @@ patches:
       <<: *deployment_target
       name: pushgateway-proxy
     path: patches/JsonRFC6902/pushgateway_proxy_deployment.yaml
-  - target:
-      group: rbac.authorization.k8s.io
+  - target: &ingress_target
+      group: networking.k8s.io
       version: v1
-      kind: Role
-      namespace: test-pods
-      name: deck
-    path: patches/StrategicMerge/deck_role.yaml
+      kind: Ingress
+      name: prow
+    path: patches/JsonRFC6902/prow_ingress.yaml
   - target:
       version: v1
       kind: PersistentVolumeClaim
@@ -132,12 +132,12 @@ patches:
   - target: &configmap_target
       version: v1
       kind: ConfigMap
-      namespace: ""
+      namespace: default
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target:
       <<: *configmap_target
-      namespace: default
+      namespace: prow
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target: &serviceaccount_target
@@ -206,10 +206,13 @@ patches:
       name: deck
     path: patches/JsonRFC6902/prow-jobs-rolebinding-rules.yaml
   - target:
-      group: networking.k8s.io
-      version: v1
-      kind: Ingress
+      <<: *ingress_target
       namespace: default
+      name: .*
+    path: patches/JsonRFC6902/prow-namespace.yaml
+  - target:
+      <<: *ingress_target
+      namespace: prow
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
   - target:
@@ -222,7 +225,7 @@ patches:
       group: batch
       version: v1
       kind: CronJob
-      namespace: ""
+      namespace: default
       name: .*
     path: patches/JsonRFC6902/prow-namespace.yaml
 
@@ -239,9 +242,6 @@ configMapGenerator:
   - name: plugins
     files:
       - configs/plugins/plugins.yaml
-  - name: cat-api-key
-    files:
-      - configs/cat-api/api-key
 
 secretGenerator:
   - &github_token
@@ -285,6 +285,10 @@ secretGenerator:
     files:
       - secrets/virtci-service-account.json
     type: Opaque
+  - name: hmac-token
+    files:
+      - hmac=secrets/github/hmac-token
+    type: Opaque
   - name: slack-token
     files:
       - token=secrets/slack/token
@@ -301,18 +305,6 @@ secretGenerator:
     files:
       - config=secrets/kubeconfig
     type: Opaque
-  - name: kubeconfig-build-test-infra-trusted
-    files:
-      - kubeconfig=secrets/kubeconfig-build-test-infra-trusted
-  - name: kubeconfig-build-k8s-prow-builds
-    files:
-      - kubeconfig=secrets/kubeconfig-build-k8s-prow-builds
-  - name: kubeconfig-build-rules-k8s
-    files:
-      - kubeconfig=secrets/kubeconfig-build-rules-k8s
-  - name: unsplash-api-key
-    literals:
-      - honk.txt=
   - name: kubevirtci-docker-credential
     namespace: kubevirt-prow-jobs
     # username=dockerUser

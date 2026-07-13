@@ -1,65 +1,81 @@
 ---
+# https://docs.prow.k8s.io/docs/config/
+# https://sigs.k8s.io/prow/pkg/config/prow-config-documented.yaml
 # https://pkg.go.dev/sigs.k8s.io/prow/pkg/config#ProwConfig
 prowjob_namespace: kubevirt-prow-jobs
 pod_namespace: kubevirt-prow-jobs
 log_level: debug
 
+# https://docs.prow.k8s.io/docs/components/core/deck/
+# https://pkg.go.dev/sigs.k8s.io/prow/pkg/config#Deck
 deck:
+  default_rerun_auth_configs:
+    - cluster: '*'
+      rerun_auth_configs:
+        github_team_slugs:
+          # https://github.com/orgs/kubevirt/teams/prow-job-taskforce
+          - &prow_job_taskforce
+            org: kubevirt
+            slug: prow-job-taskforce
+    - cluster: prow-s390x-workloads
+      rerun_auth_configs:
+        github_team_slugs:
+          - *prow_job_taskforce
+          # https://github.com/orgs/kubevirt/teams/wg-arch-s390x
+          - org: kubevirt
+            slug: wg-arch-s390x
+  # https://docs.prow.k8s.io/docs/spyglass/
   spyglass:
-    size_limit: 500000000 # 500MB
     gcs_browser_prefix: https://gcsweb.ci.kubevirt.io/gcs/
+    lenses:
+      - lens:
+          name: metadata
+        required_files:
+          - ^(?:started|finished)\.json$
+        optional_files:
+          - ^(?:podinfo|prowjob)\.json$
+      - lens:
+          config:
+            highlight_regexes:
+              # see default patterns https://github.com/kubernetes-sigs/prow/blob/269d4b273f64d1a4371bc6c0bebc4d452320a649/pkg/spyglass/lenses/buildlog/lens.go#L98
+              - ^E\d{4} \d\d:\d\d:\d\d\.\d+
+              - "(Error|ERROR|error)s?:"
+              - (FAIL|Failure \[)\b
+              - "(timed out|TIMEOUT)"
+              - panic\b
+              - \[FAILED\]
+              - "fatal: "
+              - /logs/artifacts/k8s-reporter/.*\*
+              - " undefined: "
+          name: buildlog
+        required_files:
+          - build-log.txt
+      - lens:
+          name: junit
+        required_files:
+          - artifacts/junit.*\.xml
+      # podinfo.json is uploaded by crier's k8s reporter
+      - lens:
+          name: podinfo
+        required_files:
+          - podinfo.json
+      - lens:
+          name: coverage
+        required_files:
+          - artifacts/filtered.cov
+        optional_files:
+          - artifacts/filtered.html
+      - lens:
+          config:
+            threshold_warning: 50
+            threshold_error: 10
+          name: restcoverage
+        required_files:
+          - artifacts/rest-coverage.json
+    size_limit: 500000000 # 500MB
     testgrid_config: gs://k8s-testgrid/config
     testgrid_root: https://testgrid.k8s.io/
-    lenses:
-    - lens:
-        name: metadata
-      required_files:
-      - started.json|finished.json
-      optional_files:
-      - podinfo.json
-    - lens:
-        name: buildlog
-        config:
-          highlight_regexes:
-          # see default patterns https://github.com/kubernetes-sigs/prow/blob/269d4b273f64d1a4371bc6c0bebc4d452320a649/pkg/spyglass/lenses/buildlog/lens.go#L98
-          - ^E\d{4} \d\d:\d\d:\d\d\.\d+
-          - "(Error|ERROR|error)s?:"
-          - (FAIL|Failure \[)\b
-          - "(timed out|TIMEOUT)"
-          - panic\b
-          - \[FAILED\]
-          - "fatal: "
-          - /logs/artifacts/k8s-reporter/.*\*
-          - " undefined: "
-      required_files:
-        - build-log.txt
-    - lens:
-        name: junit
-      required_files:
-        - artifacts/junit.*\.xml
-    - lens:
-        name: coverage
-      required_files:
-        - artifacts/filtered.cov
-      optional_files:
-        - artifacts/filtered.html
-    # podinfo.json is uploaded by crier's k8s reporter
-    - lens:
-        name: podinfo
-      required_files:
-        - podinfo.json
-    - lens:
-        name: restcoverage
-        config:
-          threshold_warning: 50
-          threshold_error: 10
-      required_files:
-        - artifacts/rest-coverage.json
   tide_update_period: 1s
-  rerun_auth_configs:
-    '*':
-      github_team_ids:
-        - 3701123 # prow-job-taskforce
 
 # https://docs.prow.k8s.io/docs/components/core/prow-controller-manager/
 # https://docs.prow.k8s.io/docs/components/deprecated/plank/
@@ -71,17 +87,19 @@ plank:
   default_decoration_config_entries:
     - config:
         gcs_configuration:
-          bucket: gs://kubevirt-prow
+          # `gs://` prefix must be stripped for testgrid integration
+          # => https://github.com/GoogleCloudPlatform/testgrid/pull/107
+          bucket: kubevirt-prow
           path_strategy: explicit
         gcs_credentials_secret: gcs-credentials
         github_api_endpoints:
           - http://ghproxy
           - https://api.github.com
         utility_images:
-          clonerefs: us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260617-37d12bec7
-          entrypoint: us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260617-37d12bec7
-          initupload: us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260617-37d12bec7
-          sidecar: us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260617-37d12bec7
+          clonerefs: us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260709-bcf4297e5
+          entrypoint: us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260709-bcf4297e5
+          initupload: us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260709-bcf4297e5
+          sidecar: us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260709-bcf4297e5
         grace_period: 15s
         timeout: 2h
   pod_pending_timeout: 60m
@@ -125,6 +143,9 @@ slack_reporter_configs:
 # https://docs.prow.k8s.io/docs/components/core/tide/config/
 # https://pkg.go.dev/sigs.k8s.io/prow/pkg/config#Tide
 tide:
+  batch_size_limit:
+    # smaller size should increase probability of succeeding
+    "kubevirt/kubevirt": 8
   sync_period: 2m
   merge_method:
     kubevirt/libguestfs-appliance: merge
@@ -190,6 +211,8 @@ tide:
     kubevirt/kubevirt-aie-webhook: merge
     kubevirt/ci-health: merge
     kubevirt/redfish-controller: merge
+    kubevirt/kubevirt-observability-controller: squash
+    kubevirt/vdpa-network-binding-plugin: merge
   queries:
   - repos:
     - kubevirt/dra-pci-driver
@@ -219,6 +242,7 @@ tide:
     - kubevirt/enhancements
     - kubevirt/ci-health
     - kubevirt/redfish-controller
+    - kubevirt/vdpa-network-binding-plugin
     labels:
     - lgtm
     - approved
@@ -232,7 +256,6 @@ tide:
     - "dco-signoff: no"
   - repos:
     - kubevirt/containerdisks
-    - kubevirt/kubevirt
     - kubevirt/containerized-data-importer
     - kubevirt/hostpath-provisioner
     - kubevirt/hostpath-provisioner-operator
@@ -268,6 +291,7 @@ tide:
     - kubevirt/iommufd-device-plugin
     - kubevirt/kubevirt-aie
     - kubevirt/kubevirt-aie-webhook
+    - kubevirt/kubevirt-observability-controller
     labels:
     - lgtm
     - approved
@@ -280,6 +304,60 @@ tide:
     - do-not-merge/invalid-commit-message
     - needs-rebase
     - "dco-signoff: no"
+    # BEGIN kubevirt/kubevirt section
+  - repos:
+    - kubevirt/kubevirt
+    includedBranches:
+    - "main"
+    labels:
+    - lgtm
+    - approved
+    - approved-vep
+    missingLabels:
+    - do-not-merge
+    - do-not-merge/hold
+    - do-not-merge/invalid-owners-file
+    - do-not-merge/work-in-progress
+    - do-not-merge/release-note-label-needed
+    - do-not-merge/invalid-commit-message
+    - needs-rebase
+    - "dco-signoff: no"
+  - repos:
+    - kubevirt/kubevirt
+    includedBranches:
+    - "main"
+    labels:
+    - lgtm
+    - approved
+    - kind/bug
+    - priority/critical-urgent
+    missingLabels:
+    - do-not-merge
+    - do-not-merge/hold
+    - do-not-merge/invalid-owners-file
+    - do-not-merge/work-in-progress
+    - do-not-merge/release-note-label-needed
+    - do-not-merge/invalid-commit-message
+    - needs-rebase
+    - "dco-signoff: no"
+  - repos:
+    - kubevirt/kubevirt
+    # Handling CODE FREEZE
+    # excludedBranches:
+    # - "main"
+    labels:
+    - lgtm
+    - approved
+    missingLabels:
+    - do-not-merge
+    - do-not-merge/hold
+    - do-not-merge/invalid-owners-file
+    - do-not-merge/work-in-progress
+    - do-not-merge/release-note-label-needed
+    - do-not-merge/invalid-commit-message
+    - needs-rebase
+    - "dco-signoff: no"
+    # END kubevirt/kubevirt section
   # dependabot PRs that have been labeled skip-review by the commenter periodic
   - author: dependabot[bot]
     repos:
@@ -331,7 +409,10 @@ tide:
   - labels: [ "kind/flake", "priority/critical-urgent" ]
   - labels: [ "kind/failing-test", "priority/critical-urgent" ]
   - labels: [ "kind/bug", "priority/critical-urgent" ]
+  - labels: [ "approved-vep" ]
 
+# KubeVirt Prow uses a kubernetes CronJob to reconcile branch protection rules.
+# https://docs.prow.k8s.io/docs/components/optional/branchprotector/
 branch-protection:
   required_status_checks:
     contexts:
@@ -344,50 +425,57 @@ branch-protection:
           branches:
             main:
               require_manually_triggered_jobs: true
-            release-0.33:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.32:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.31:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.30:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.29:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.28:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.27:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.26:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.25:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.24:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
-            release-0.23:
-              required_status_checks:
-                contexts:
-                  - continuous-integration/travis-ci/pr
+            release-0.4: &archived_branch
+              unmanaged: true
+            release-0.6: *archived_branch
+            release-0.8: *archived_branch
+            release-0.9: *archived_branch
+            release-0.10: *archived_branch
+            release-0.11: *archived_branch
+            release-0.12: *archived_branch
+            release-0.13: *archived_branch
+            release-0.14: *archived_branch
+            release-0.15: *archived_branch
+            release-0.16: *archived_branch
+            release-0.17: *archived_branch
+            release-0.18: *archived_branch
+            release-0.19: *archived_branch
+            release-0.20: *archived_branch
+            release-0.21: *archived_branch
+            release-0.22: *archived_branch
+            release-0.23: *archived_branch
+            release-0.24: *archived_branch
+            release-0.26: *archived_branch
+            release-0.27: *archived_branch
+            release-0.29: *archived_branch
+            release-0.30: *archived_branch
+            release-0.31: *archived_branch
+            release-0.32: *archived_branch
+            release-0.33: *archived_branch
+            release-0.34: *archived_branch
+            release-0.35: *archived_branch
+            release-0.36: *archived_branch
+            release-0.37: *archived_branch
+            release-0.38: *archived_branch
+            release-0.39: *archived_branch
+            release-0.40: *archived_branch
+            release-0.41: *archived_branch
+            release-0.42: *archived_branch
+            release-0.43: *archived_branch
+            release-0.44: *archived_branch
+            release-0.45: *archived_branch
+            release-0.46: *archived_branch
+            release-0.47: *archived_branch
+            release-0.48: *archived_branch
+            release-0.49: *archived_branch
+            release-0.50: *archived_branch
+            release-0.51: *archived_branch
+            release-0.52: *archived_branch
+            release-0.53: *archived_branch
+            release-0.54: *archived_branch
+            release-0.55: *archived_branch
+            release-0.56: *archived_branch
+            release-0.57: *archived_branch
         kubevirt-aie:
           branches:
             release-1.8-aie-nv:
@@ -550,6 +638,10 @@ branch-protection:
             main:
               protect: true
         kubevirt-tekton-tasks:
+          branches:
+            main:
+              protect: true
+        vdpa-network-binding-plugin:
           branches:
             main:
               protect: true
@@ -851,17 +943,3 @@ presets:
 - env:
   - name: GOPROXY
     value: "https://proxy.golang.org|direct"
-
-managed_webhooks:
-  # This has to be true if any of the managed repo/org is using the legacy global token that is manually created.
-  respect_legacy_global_token: true
-  # Config for orgs and repos that have been onboarded to this Prow instance.
-  org_repo_config:
-    kubevirt:
-      token_created_after: 2026-04-15T01:00:00Z
-    k8snetworkplumbingwg/kubemacpool:
-      token_created_after: 2026-04-15T01:00:00Z
-    k8snetworkplumbingwg/ovs-cni:
-      token_created_after: 2026-04-15T01:00:00Z
-    nmstate/kubernetes-nmstate:
-      token_created_after: 2026-04-15T01:00:00Z

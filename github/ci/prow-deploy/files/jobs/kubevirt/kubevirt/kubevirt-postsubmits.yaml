@@ -25,7 +25,7 @@ postsubmits:
       preset-pgp-bot-key: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+      - image: quay.io/kubevirtci/golang:v20260707-cacb217
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -71,7 +71,7 @@ postsubmits:
       preset-gcs-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+      - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
         - |
@@ -109,7 +109,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+      - image: quay.io/kubevirtci/golang:v20260707-cacb217
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -124,7 +124,11 @@ postsubmits:
           privileged: true
         resources:
           requests:
-            memory: "8Gi"
+            memory: "24Gi"
+            cpu: "4"
+          limits:
+            memory: "24Gi"
+            cpu: "4"
   - name: push-kubevirt-goveralls
     cluster: kubevirt-prow-control-plane
     branches:
@@ -143,7 +147,7 @@ postsubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           env:
             - name: COVERALLS_TOKEN_FILE
               value: /root/.docker/secrets/coveralls/token
@@ -182,7 +186,7 @@ postsubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           env:
             - name: FOSSA_TOKEN_FILE
               value: /root/.docker/secrets/fossa/token
@@ -227,7 +231,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -263,14 +267,14 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
             - "-c"
             - >
               cat $QUAY_PASSWORD | podman login quay.io --username $(cat $QUAY_USER) --password-stdin=true &&
-              make builder-publish-cs10
+              make builder-publish-centos-stream-10
           securityContext:
             privileged: true
           resources:
@@ -320,7 +324,7 @@ postsubmits:
         - /usr/local/bin/runner.sh
         - /bin/bash
         - -ce
-        image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
+        image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
         resources:
           requests:
             memory: "200Mi"

@@ -8,16 +8,18 @@ data:
       namespace: kubevirt-prow-jobs
       image: "quay.io/kubevirtci/covreport:latest"
       cluster: kubevirt-prow-control-plane
+      coverageThreshold: 70
+      githubTokenSecret: commenter-oauth-token
       env:
         GO_MOD_PATH: go.mod
         GOTOOLCHAIN: local
       timeoutMinutes: 120
       gracePeriodSeconds: 15
       utilityImages:
-        cloneRefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260617-37d12bec7"
-        initUpload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260617-37d12bec7"
-        entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260617-37d12bec7"
-        sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260617-37d12bec7"
+        cloneRefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260709-bcf4297e5"
+        initUpload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260709-bcf4297e5"
+        entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260709-bcf4297e5"
+        sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260709-bcf4297e5"
       gcs:
         bucket: kubevirt-prow
         pathStrategy: explicit
@@ -25,5 +27,6 @@ data:
     repos:
       kubevirt/project-infra:
         testPackages: "./external-plugins/... ./releng/... ./robots/... ./cmd/... ./pkg/..."
+        coverageThreshold: 25
       kubevirt/ci-health:
         testPackages: "./pkg/... ./cmd/..."

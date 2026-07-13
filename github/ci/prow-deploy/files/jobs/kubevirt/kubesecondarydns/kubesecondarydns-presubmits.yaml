@@ -22,7 +22,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+          - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
             securityContext:
               privileged: true
             resources:
@@ -55,8 +55,7 @@ presubmits:
           - /bin/sh
           - -c
           - make test
-          image: quay.io/kubevirtci/golang:v20260612-73bc71e
-          name: ""
+          image: quay.io/kubevirtci/golang:v20260707-cacb217
           resources:
             requests:
               memory: 500Mi
@@ -83,8 +82,7 @@ presubmits:
           - /bin/sh
           - -c
           - make build
-          image: quay.io/kubevirtci/golang:v20260612-73bc71e
-          name: ""
+          image: quay.io/kubevirtci/golang:v20260707-cacb217
           resources:
             requests:
               memory: 500Mi

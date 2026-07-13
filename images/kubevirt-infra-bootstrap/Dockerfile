@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+FROM quay.io/kubevirtci/bootstrap:v20260707-cacb217
 
 RUN dnf update -y \
     && dnf install -y \
@@ -18,10 +18,3 @@ RUN dnf update -y \
         rsync \
         podman \
         && dnf clean all -y
-RUN export KUSTOMIZE_DIR=/opt/kustomize \
-    && mkdir -p $KUSTOMIZE_DIR \
-    && cd $KUSTOMIZE_DIR \
-    && wget "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv3.5.4/kustomize_v3.5.4_linux_amd64.tar.gz" \
-    && tar xzf ./kustomize_v3.5.4_linux_amd64.tar.gz \
-    && rm kustomize_v3.5.4_linux_amd64.tar.gz \
-    && ln -s $KUSTOMIZE_DIR/kustomize /usr/bin/kustomize

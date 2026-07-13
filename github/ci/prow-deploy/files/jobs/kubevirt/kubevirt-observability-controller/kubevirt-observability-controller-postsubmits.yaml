@@ -1,0 +1,88 @@
+postsubmits:
+  kubevirt/kubevirt-observability-controller:
+  - name: push-release-koc-images
+    branches:
+    # regex for semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+    - ^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+    cluster: prow-workloads
+    always_run: true
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-kubevirtci-quay-credential: "true"
+      preset-github-credentials: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+        env:
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirt
+        - name: GH_CLI_VERSION
+          value: "2.96.0"
+        - name: GITHUB_TOKEN_PATH
+          value: /etc/github/oauth
+        - name: GITHUB_REPOSITORY
+          value: kubevirt/kubevirt-observability-controller
+        - name: GIT_USER_NAME
+          value: kubevirt-bot
+        - name: GPG_USER_ID
+          value: "0x99F7C0D2E1BB8025"
+        - name: PLATFORMS
+          value: "linux/arm64,linux/amd64,linux/s390x"
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+          # Only push images on tags
+          [ -z "$(git tag --points-at HEAD | head -1)" ] ||
+          DOCKER_TAG="$(git tag --points-at HEAD | head -1)" GITHUB_RELEASE=true ./automation/release.sh
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"
+  - name: push-latest-koc-images
+    branches:
+    - main
+    cluster: prow-workloads
+    always_run: true
+    skip_report: true
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-kubevirtci-quay-credential: "true"
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+        env:
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirt
+        - name: PLATFORMS
+          value: "linux/arm64,linux/amd64,linux/s390x"
+        command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io &&
+          DOCKER_TAG="latest" GITHUB_RELEASE=false ./automation/release.sh
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "8Gi"

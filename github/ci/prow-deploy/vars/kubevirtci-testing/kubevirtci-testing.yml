@@ -1,4 +1,6 @@
 # Test provisioning
+prowUrl: prow.prowdeploy.ci
+
 testinfra_dir: /tmp/test-infra
 
 secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/kubevirtci-testing/secrets/'

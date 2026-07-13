@@ -30,6 +30,7 @@ var checkCommand = &cobra.Command{
 
 func init() {
 	checkCommand.AddCommand(CheckProvidersCommand())
+	checkCommand.AddCommand(CheckPresubmitsCommand())
 }
 
 func CheckCommand() *cobra.Command {

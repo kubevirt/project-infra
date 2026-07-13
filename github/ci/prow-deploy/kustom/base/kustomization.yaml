@@ -4,9 +4,20 @@ resources:
   - manifests/upstream/crier_rolebinding.yaml
   - manifests/upstream/crier_role.yaml
   - manifests/upstream/crier_serviceaccount.yaml
+  - manifests/upstream/deck_deployment.yaml
+  - manifests/upstream/deck_role.yaml
+  - manifests/upstream/deck_rolebinding.yaml
+  - manifests/upstream/deck_rolebinding_test-pods.yaml
+  - manifests/upstream/deck_service.yaml
+  - manifests/upstream/deck_serviceaccount.yaml
   - manifests/upstream/ghproxy_deployment.yaml
   - manifests/upstream/ghproxy_persistentvolumeclaim.yaml
   - manifests/upstream/ghproxy_service.yaml
+  - manifests/upstream/hook_deployment.yaml
+  - manifests/upstream/hook_role.yaml
+  - manifests/upstream/hook_rolebinding.yaml
+  - manifests/upstream/hook_service.yaml
+  - manifests/upstream/hook_serviceaccount.yaml
   - manifests/upstream/horologium_deployment.yaml
   - manifests/upstream/horologium_rolebinding.yaml
   - manifests/upstream/horologium_role.yaml
@@ -16,6 +27,7 @@ resources:
   - manifests/upstream/prow-controller-manager_rolebinding.yaml
   - manifests/upstream/prow-controller-manager_rolebinding_test-pods.yaml
   - manifests/upstream/prow-controller-manager_serviceaccount.yaml
+  - manifests/upstream/prow_ingress.yaml
   - manifests/upstream/prowjob_customresourcedefinition.yaml
   - manifests/upstream/sinker_deployment.yaml
   - manifests/upstream/sinker_rolebinding.yaml
@@ -33,7 +45,6 @@ resources:
   - manifests/upstream/tide_serviceaccount.yaml
 
   - manifests/local/branch-protector.yaml
-  - manifests/local/deck-ingress.yaml
   - manifests/local/gcsweb-deployment.yaml
   - manifests/local/gcsweb-ingress.yaml
   - manifests/local/gcsweb-service.yaml
@@ -57,15 +68,10 @@ resources:
   - manifests/local/prow-coverage-service.yaml
   - manifests/local/release-blocker_deployment.yaml
   - manifests/local/release-blocker_service.yaml
+  - manifests/local/terminating-pod-cleanup.yaml
 
   - manifests/test_infra/current/cherrypicker_deployment.yaml
   - manifests/test_infra/current/cherrypicker_service.yaml
-  - manifests/test_infra/current/deck_deployment.yaml
-  - manifests/test_infra/current/deck_rbac.yaml
-  - manifests/test_infra/current/deck_service.yaml
-  - manifests/test_infra/current/hook_deployment.yaml
-  - manifests/test_infra/current/hook_rbac.yaml
-  - manifests/test_infra/current/hook_service.yaml
   - manifests/test_infra/current/needs-rebase_deployment.yaml
   - manifests/test_infra/current/needs-rebase_service.yaml
   - manifests/test_infra/current/pushgateway_deployment.yaml

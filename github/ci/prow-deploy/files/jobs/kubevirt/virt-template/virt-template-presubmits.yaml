@@ -15,14 +15,14 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - make all
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
-        image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        image: quay.io/kubevirtci/golang:v20260707-cacb217
         resources:
           requests:
             memory: 4Gi
@@ -44,14 +44,14 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - make container-build
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
-        image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        image: quay.io/kubevirtci/golang:v20260707-cacb217
         resources:
           requests:
             memory: "8Gi"
@@ -74,14 +74,14 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - make test
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
-        image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        image: quay.io/kubevirtci/golang:v20260707-cacb217
         resources:
           requests:
             memory: 4Gi
@@ -103,14 +103,14 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - "make cluster-up && make cluster-sync && make cluster-functest"
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
-        image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        image: quay.io/kubevirtci/golang:v20260707-cacb217
         resources:
           requests:
             memory: 20Gi
@@ -133,14 +133,14 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - make build-installer build-installer-openshift
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
-        image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        image: quay.io/kubevirtci/golang:v20260707-cacb217
         resources:
           requests:
             memory: 4Gi

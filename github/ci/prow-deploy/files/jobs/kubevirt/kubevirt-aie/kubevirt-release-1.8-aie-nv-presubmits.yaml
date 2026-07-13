@@ -22,8 +22,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
-        image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
+        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
         resources:
           requests:
             memory: 12Gi
@@ -54,8 +53,7 @@ presubmits:
         env:
         - name: BUILD_ARCH
           value: crossbuild-aarch64
-        image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
+        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
         resources:
           requests:
             memory: 8Gi
@@ -84,8 +82,7 @@ presubmits:
         - -c
         - |
           make lint
-        image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
+        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
         resources:
           requests:
             memory: 12Gi
@@ -114,8 +111,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test
-        image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
+        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
         resources:
           requests:
             cpu: "4"
@@ -143,8 +139,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test
-        image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
+        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
         resources:
           requests:
             memory: 12Gi
@@ -182,8 +177,7 @@ presubmits:
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
           value: "2602231621-e36f1c7568"
-        image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
+        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
         resources:
           requests:
             memory: 52Gi
@@ -236,8 +230,7 @@ presubmits:
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
           value: "2602231621-e36f1c7568"
-        image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
+        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
         resources:
           requests:
             memory: 52Gi

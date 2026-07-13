@@ -19,7 +19,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -47,7 +47,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        - image: quay.io/kubevirtci/golang:v20260707-cacb217
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -85,8 +85,7 @@ presubmits:
         env:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
-        image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
+        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
         resources:
           requests:
             memory: 8Gi
@@ -120,7 +119,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -152,7 +151,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -184,7 +183,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -216,7 +215,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        - image: quay.io/kubevirtci/golang:v20260707-cacb217
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -250,7 +249,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -289,7 +288,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -328,7 +327,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -367,7 +366,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -410,7 +409,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -453,7 +452,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -496,7 +495,7 @@ presubmits:
       preset-pgp-bot-key: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           env:
           - name: KUBECONFIG
             value: /kubeconfig
@@ -565,7 +564,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -604,7 +603,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -643,7 +642,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"
@@ -686,8 +685,7 @@ presubmits:
         env:
         - name: FOSSA_TOKEN_FILE
           value: /root/.docker/secrets/fossa/token
-        image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
-        name: ""
+        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
         resources:
           requests:
             memory: 4Gi
@@ -723,7 +721,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image:  quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image:  quay.io/kubevirtci/bootstrap:v20260707-cacb217
           env:
           - name: KUBEVIRT_WITH_ETC_IN_MEMORY
             value: "true"

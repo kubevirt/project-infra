@@ -18,12 +18,11 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - make functest
-        image: quay.io/kubevirtci/golang:v20260612-73bc71e
-        name: ""
+        image: quay.io/kubevirtci/golang:v20260707-cacb217
         resources:
           requests:
             memory: 16Gi
@@ -54,12 +53,11 @@ presubmits:
     spec:
       containers:
         - command:
-            - /usr/local/bin/runner.sh
+            - /usr/local/bin/entrypoint.sh
             - /bin/sh
             - -c
             - make functest
-          image: quay.io/kubevirtci/golang:v20260612-73bc71e
-          name: ""
+          image: quay.io/kubevirtci/golang:v20260707-cacb217
           resources:
             requests:
               memory: 16Gi

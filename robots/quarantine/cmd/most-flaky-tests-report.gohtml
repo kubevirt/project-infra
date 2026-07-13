@@ -203,6 +203,29 @@
             background: #fef9c3;
             color: #a16207;
         }
+        .test-card.stale-failures {
+            border-left-color: #cbd5e0;
+            opacity: 0.6;
+        }
+        .test-card.stale-failures:hover {
+            opacity: 1;
+        }
+        .recency-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 100px;
+            flex-shrink: 0;
+        }
+        .recency-badge.active {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+        .recency-badge.stale {
+            background: #edf2f7;
+            color: #718096;
+        }
 
         .test-card-header {
             padding: 12px 16px;
@@ -358,10 +381,19 @@
                     {{ range $testName := $.TestNames }}
                         {{ $mostFlakyTests := index $.MostFlakyTestsBySig $sig $testName }}
                         {{ if $mostFlakyTests }}
-                            <div class="test-card" id="test_{{ $testName }}" data-testname="{{ $testName }}" data-max-impact="0">
+                            {{- $hasRecent := false -}}
+                            {{- range $t := $mostFlakyTests -}}
+                                {{- if $t.HasRecentFailures -}}{{- $hasRecent = true -}}{{- end -}}
+                            {{- end -}}
+                            <div class="test-card {{ if not $hasRecent }}stale-failures{{ end }}" id="test_{{ $testName }}" data-testname="{{ $testName }}" data-max-impact="0">
                                 <div class="test-card-header">
                                     <a href="#test_{{ $testName }}" class="card-link" title="permalink">#</a>
                                     <span class="test-name" title="{{ $testName }}">{{ $testName }}</span>
+                                    {{ if $hasRecent -}}
+                                        <span class="recency-badge active">active</span>
+                                    {{- else -}}
+                                        <span class="recency-badge stale">stale</span>
+                                    {{- end }}
                                 </div>
                                 <div class="test-card-body">
                                     {{ range $mostFlakyTest := $mostFlakyTests }}
@@ -401,13 +433,16 @@
 
 <script>
     var releaseLanePattern = /-\d+\.\d+$/;
+    var SEVERITY_CRITICAL = 10;
+    var SEVERITY_HIGH = 5;
+    var SEVERITY_MEDIUM = 2;
 
     function applyImpactColors() {
         document.querySelectorAll('.impact-percent[data-percent]').forEach(function(el) {
             var p = parseFloat(el.getAttribute('data-percent'));
-            if (p >= 10) el.classList.add('critical');
-            else if (p >= 5) el.classList.add('high');
-            else if (p >= 2) el.classList.add('medium');
+            if (p >= SEVERITY_CRITICAL) el.classList.add('critical');
+            else if (p >= SEVERITY_HIGH) el.classList.add('high');
+            else if (p >= SEVERITY_MEDIUM) el.classList.add('medium');
             else el.classList.add('low');
         });
         document.querySelectorAll('.test-card[data-max-impact]').forEach(function(card) {
@@ -418,10 +453,12 @@
             });
             card.setAttribute('data-max-impact', max);
             card.classList.remove('severity-critical', 'severity-high', 'severity-medium', 'severity-low');
-            if (max >= 10) card.classList.add('severity-critical');
-            else if (max >= 5) card.classList.add('severity-high');
-            else if (max >= 2) card.classList.add('severity-medium');
-            else card.classList.add('severity-low');
+            if (!card.classList.contains('stale-failures')) {
+                if (max >= SEVERITY_CRITICAL) card.classList.add('severity-critical');
+                else if (max >= SEVERITY_HIGH) card.classList.add('severity-high');
+                else if (max >= SEVERITY_MEDIUM) card.classList.add('severity-medium');
+                else card.classList.add('severity-low');
+            }
         });
     }
 

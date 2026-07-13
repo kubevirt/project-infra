@@ -18,7 +18,7 @@ presubmits:
         sriov-pod: "true"
       max_concurrency: 10
       name: pull-kubevirt-e2e-kind-sriov
-      run_before_merge: true
+      optional: true
       skip_branches:
         - release-\d+\.\d+
       spec:
@@ -49,7 +49,6 @@ presubmits:
               - name: TARGET
                 value: kind-sriov
             image: quay.io/kubevirtci/bootstrap:v20251022-6eb3ab1
-            name: ""
             resources:
               requests:
                 memory: 52Gi

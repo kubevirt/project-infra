@@ -1,0 +1,25 @@
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: kubevirt-prow-jobs
+  name: deck
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods/log
+    verbs:
+      - get
+  - apiGroups:
+      - prow.k8s.io
+    resources:
+      - prowjobs
+    verbs:
+      - get
+      - list
+      - watch
+      # Required when deck runs with `--rerun-creates-job=true`
+      - create
+      # Required to abort jobs
+      - patch

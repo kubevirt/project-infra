@@ -19,7 +19,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+      - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
         env:
           - name: BUCKET_DIR
             value: kubevirtci-crio-mirror
@@ -57,7 +57,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
+    - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -95,7 +95,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
+    - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -131,7 +131,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
+    - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
       command:
       - /bin/sh
       - -ceu
@@ -170,7 +170,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
+    - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -216,9 +216,9 @@ periodics:
   cluster: prow-s390x-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+    - image: quay.io/kubevirtci/golang:v20260707-cacb217
       command:
-      - "/usr/local/bin/runner.sh"
+      - "/usr/local/bin/entrypoint.sh"
       - "/bin/bash"
       - "-ce"
       - |
@@ -248,8 +248,8 @@ periodics:
         export PROVISION_CENTOS_VERSION=10; export PHASES=linux; export BYPASS_PMAN_CHANGE_CHECK=true; ./publish.sh
         rm_gcs_file kubevirt-prow "$GCS_FILE_PATH"
       env:
-      - name: GIMME_GO_VERSION
-        value: "1.24.7"
+      - name: GO_MOD_PATH
+        value: cluster-provision/gocli/go.mod
       securityContext:
         privileged: true
       resources:
@@ -279,7 +279,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260619-6c3c4d2
+      - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
         command: ["/bin/sh", "-ce"]
         args:
           - |

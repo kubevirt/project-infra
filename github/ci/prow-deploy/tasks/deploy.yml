@@ -6,7 +6,7 @@
 
 - name: validate Kustomize result
   shell: |
-    kustomize build overlays/{{ deploy_environment }}
+    kubectl kustomize overlays/{{ deploy_environment }}
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
 
@@ -31,7 +31,7 @@
 - name: Delete priority classes on prow-workloads BM cluster
   when: delete_priority_classes
   shell: |
-    kubectl delete pc --ignore-not-found=true sriov sriov-place-holder vgpu windows
+    kubectl delete pc --ignore-not-found=true sriov vgpu windows
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
 
@@ -45,36 +45,11 @@
 
 - name: Launch deployment
   shell: |
-    # for now cant execute "kubectl apply --server-side" reliably on
-    # "workloads-production" env (which runs k8s 1.19)
-    APPLY_OPTIONS=
-    if [ "{{deploy_environment}}" != "workloads-production" ]; then
-      APPLY_OPTIONS="--server-side --force-conflicts"
-    fi
-
-    kustomize build overlays/{{ deploy_environment }} | kubectl apply ${APPLY_OPTIONS} -f -
+    kubectl apply --server-side --force-conflicts -k overlays/{{ deploy_environment }}
   args:
     chdir: "{{ project_infra_root}}/github/ci/prow-deploy/kustom"
   environment:
     KUBECONFIG: "{{ kubeconfig_path }}"
-
-- name: Reconcile webhooks for onboarded repositories
-  shell: |
-    hmac \
-      --config-path=$PROW_CONFIG_PATH \
-      --github-token-path=$GITHUB_TOKEN_PATH \
-      --kubeconfig=$KUBECONFIG \
-      --kubeconfig-context=kubevirt-prow-control-plane \
-      --hmac-token-secret-namespace={{ prowNamespace }} \
-      --hmac-token-secret-name=hmac-token \
-      --hmac-token-key=hmac \
-      --hook-url https://prow.ci.kubevirt.io/hook \
-      --dry-run=false
-  environment:
-    PROW_CONFIG_PATH: "{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/config/config.yaml"
-    GITHUB_TOKEN_PATH: "{{ secrets_dir }}/github/bot-token"
-    KUBECONFIG: "{{ kubeconfig_path }}"
-  when: reconcile_github_webhooks
 
 # See https://github.com/kubernetes/test-infra/issues/25768
 - name: Rescale pushgateway deployment

@@ -1,0 +1,15 @@
+---
+- op: replace
+  path: /metadata/annotations/cert-manager.io~1cluster-issuer
+  value: letsencrypt
+
+- op: replace
+  path: /spec/rules/0/host
+  value: prow.ci.kubevirt.io
+
+- op: add
+  path: /spec/tls
+  value:
+    - hosts:
+        - prow.ci.kubevirt.io
+      secretName: deck-tls

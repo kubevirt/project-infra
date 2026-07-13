@@ -17,7 +17,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -47,7 +47,7 @@ presubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -80,7 +80,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
           env:
             - name: BUILD_ARCHES
               value: "amd64 arm64 s390x"
@@ -94,3 +94,31 @@ presubmits:
           resources:
             requests:
               memory: "52Gi"
+  - name: pull-aaq-unit-test-s390x
+    skip_branches:
+      - release-v\d+\.\d+
+    cluster: prow-s390x-workloads
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: true
+    decorate: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20260417-7427ea2
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"

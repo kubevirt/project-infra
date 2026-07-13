@@ -1,0 +1,146 @@
+presubmits:
+  kubevirt/virt-template:
+  - name: pull-virt-template-0.2
+    branches:
+    - release-0.2
+    always_run: true
+    optional: false
+    cluster: prow-workloads
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/entrypoint.sh
+        - /bin/sh
+        - -c
+        - make all
+        env:
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        resources:
+          requests:
+            memory: 4Gi
+  - name: pull-virt-template-container-build-0.2
+    branches:
+    - release-0.2
+    always_run: false
+    run_if_changed: "api/.*|cmd/.*|hack/.*|internal/.*|staging/.*|vendor/.*|apiserver.Dockerfile|Dockerfile|Makefile|go.*"
+    cluster: prow-workloads
+    annotations:
+      testgrid-create-test-group: "false"
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror: "true"
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/entrypoint.sh
+        - /bin/sh
+        - -c
+        - make container-build
+        env:
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        resources:
+          requests:
+            memory: "8Gi"
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - name: pull-virt-template-test-0.2
+    branches:
+    - release-0.2
+    always_run: false
+    run_if_changed: "api/.*|config/crd/.*|hack/.*|internal/.*|staging/.*|vendor/.*|Makefile|go.*"
+    cluster: prow-workloads
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/entrypoint.sh
+        - /bin/sh
+        - -c
+        - make test
+        env:
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        resources:
+          requests:
+            memory: 4Gi
+  - name: pull-virt-template-cluster-functest-0.2
+    branches:
+    - release-0.2
+    always_run: false
+    run_if_changed: "api/.*|cmd/.*|config/.*|hack/.*|internal/.*|staging/.*|tests/.*|vendor/.*|apiserver.Dockerfile|Dockerfile|Makefile|go.*"
+    annotations:
+      testgrid-create-test-group: "false"
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/entrypoint.sh
+        - /bin/sh
+        - -c
+        - "make cluster-up && make cluster-sync && make cluster-functest"
+        env:
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        resources:
+          requests:
+            memory: 20Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - name: pull-virt-template-build-installer-0.2
+    branches:
+    - release-0.2
+    always_run: false
+    run_if_changed: "api/.*|config/.*|hack/.*|internal/.*|Makefile"
+    cluster: prow-workloads
+    annotations:
+      testgrid-create-test-group: "false"
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/entrypoint.sh
+        - /bin/sh
+        - -c
+        - make build-installer build-installer-openshift
+        env:
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        resources:
+          requests:
+            memory: 4Gi

@@ -3,7 +3,7 @@ postsubmits:
   - name: push-release-vm-file-restore-operator-images
     branches:
     - release-\d+\.\d+
-    cluster: kubevirt-prow-control-plane
+    cluster: prow-workloads
     always_run: true
     skip_report: true
     annotations:
@@ -13,12 +13,11 @@ postsubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "false"
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+      - image: quay.io/kubevirtci/golang:v20260707-cacb217
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
@@ -28,9 +27,11 @@ postsubmits:
         - "-c"
         - |
           cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin quay.io &&
-          make buildah-manifest &&
+          make buildah-manifest-clean &&
+          GOARCH=arm64 make buildah-manifest &&
+          GOARCH=amd64 make buildah-manifest &&
+          GOARCH=s390x make buildah-manifest &&
           # Only push images on tags
-          git fetch --tags &&
           [ -z "$(git tag --points-at HEAD | head -1)" ] ||
           TAG="$(git tag --points-at HEAD | head -1)" make buildah-manifest-push
         # docker-in-docker needs privileged mode
@@ -58,7 +59,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "false"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+      - image: quay.io/kubevirtci/golang:v20260707-cacb217
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
@@ -82,7 +83,7 @@ postsubmits:
   - name: push-latest-vm-file-restore-operator-images
     branches:
     - main
-    cluster: kubevirt-prow-control-plane
+    cluster: prow-workloads
     always_run: true
     skip_report: true
     annotations:
@@ -92,12 +93,11 @@ postsubmits:
       timeout: 1h
       grace_period: 5m
     labels:
-      preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "false"
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+      - image: quay.io/kubevirtci/golang:v20260707-cacb217
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
@@ -107,7 +107,10 @@ postsubmits:
         - "-c"
         - |
           cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin quay.io &&
-          make buildah-manifest &&
+          make buildah-manifest-clean &&
+          GOARCH=arm64 make buildah-manifest &&
+          GOARCH=amd64 make buildah-manifest &&
+          GOARCH=s390x make buildah-manifest &&
           make buildah-manifest-push
         # docker-in-docker needs privileged mode
         securityContext:

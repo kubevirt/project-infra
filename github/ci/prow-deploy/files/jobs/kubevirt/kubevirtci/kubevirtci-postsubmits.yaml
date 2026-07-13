@@ -30,9 +30,9 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        - image: quay.io/kubevirtci/golang:v20260707-cacb217
           command:
-          - "/usr/local/bin/runner.sh"
+          - "/usr/local/bin/entrypoint.sh"
           - "/bin/bash"
           - "-c"
           - |
@@ -47,8 +47,8 @@ postsubmits:
             gsutil cp ./amd64-$SHORT_SHA gs://kubevirt-prow/release/kubevirt/kubevirtci/amd64-$SHORT_SHA
           # docker-in-docker needs privileged mode
           env:
-          - name: GIMME_GO_VERSION
-            value: "1.24.7"
+          - name: GO_MOD_PATH
+            value: cluster-provision/gocli/go.mod
           securityContext:
             privileged: true
           volumeMounts:
@@ -81,7 +81,7 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        - image: quay.io/kubevirtci/golang:v20260707-cacb217
           command:
           - "/usr/local/bin/runner.sh"
           - "/bin/bash"
@@ -123,9 +123,9 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        - image: quay.io/kubevirtci/golang:v20260707-cacb217
           command:
-          - "/usr/local/bin/runner.sh"
+          - "/usr/local/bin/entrypoint.sh"
           - "/bin/bash"
           - "-c"
           - |
@@ -168,8 +168,8 @@ postsubmits:
             rm_gcs_file kubevirt-prow "$GCS_FILE_PATH"
           # docker-in-docker needs privileged mode
           env:
-          - name: GIMME_GO_VERSION
-            value: "1.24.7"
+          - name: GO_MOD_PATH
+            value: cluster-provision/gocli/go.mod
           securityContext:
             privileged: true
           volumeMounts:
@@ -199,7 +199,7 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        - image: quay.io/kubevirtci/golang:v20260707-cacb217
           command:
           - "/usr/local/bin/runner.sh"
           - "/bin/bash"
