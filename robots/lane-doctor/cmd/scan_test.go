@@ -22,30 +22,26 @@ package cmd
 import (
 	"time"
 
-	"github.com/google/go-github/v32/github"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	github "sigs.k8s.io/prow/pkg/github"
 )
-
-func strPtr(s string) *string   { return &s }
-func intPtr(i int) *int         { return &i }
-func boolPtr(b bool) *bool      { return &b }
 
 var _ = Describe("buildStuckPR", func() {
 
 	It("extracts fields from a GitHub PullRequest", func() {
 		updated := time.Date(2026, 6, 10, 12, 0, 0, 0, time.UTC)
 		pr := &github.PullRequest{
-			Number: intPtr(42),
-			Title:  strPtr("Fix flaky test"),
-			User:   &github.User{Login: strPtr("dhiller")},
-			Head:   &github.PullRequestBranch{SHA: strPtr("abc123")},
-			Labels: []*github.Label{
-				{Name: strPtr("lgtm")},
-				{Name: strPtr("approved")},
+			Number: 42,
+			Title:  "Fix flaky test",
+			User:   github.User{Login: "dhiller"},
+			Head:   github.PullRequestBranch{SHA: "abc123"},
+			Labels: []github.Label{
+				{Name: "lgtm"},
+				{Name: "approved"},
 			},
-			Draft:     boolPtr(false),
-			UpdatedAt: &updated,
+			Draft:     false,
+			UpdatedAt: updated,
 		}
 
 		result := buildStuckPR(pr, "pending", "2026-06-10T11:00:00Z", false)
@@ -64,13 +60,12 @@ var _ = Describe("buildStuckPR", func() {
 	It("handles a draft PR with no labels", func() {
 		updated := time.Date(2026, 6, 10, 12, 0, 0, 0, time.UTC)
 		pr := &github.PullRequest{
-			Number:    intPtr(99),
-			Title:     strPtr("WIP: something"),
-			User:      &github.User{Login: strPtr("user")},
-			Head:      &github.PullRequestBranch{SHA: strPtr("def456")},
-			Labels:    nil,
-			Draft:     boolPtr(true),
-			UpdatedAt: &updated,
+			Number:    99,
+			Title:     "WIP: something",
+			User:      github.User{Login: "user"},
+			Head:      github.PullRequestBranch{SHA: "def456"},
+			Draft:     true,
+			UpdatedAt: updated,
 		}
 
 		result := buildStuckPR(pr, "missing", "", true)

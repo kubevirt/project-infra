@@ -19,6 +19,7 @@
 
 package cmd
 
+// ScanReport is the output of the scan command, listing all stuck PRs for a lane.
 type ScanReport struct {
 	Lane      string      `json:"lane"`
 	Repo      string      `json:"repo"`
@@ -27,6 +28,7 @@ type ScanReport struct {
 	StuckPRs  []StuckPR   `json:"stuckPRs"`
 }
 
+// ScanSummary counts PRs in each classification category.
 type ScanSummary struct {
 	Total   int `json:"total"`
 	Stuck   int `json:"stuck"`
@@ -36,6 +38,7 @@ type ScanSummary struct {
 	Failed  int `json:"failed"`
 }
 
+// StuckPR describes a PR whose lane status is stuck or missing.
 type StuckPR struct {
 	Number          int      `json:"number"`
 	Title           string   `json:"title"`
@@ -49,6 +52,7 @@ type StuckPR struct {
 	HasTargetURL    bool     `json:"hasTargetURL"`
 }
 
+// PriorityReport is the output of the prioritize command.
 type PriorityReport struct {
 	Lane          string          `json:"lane"`
 	Repo          string          `json:"repo"`
@@ -56,6 +60,7 @@ type PriorityReport struct {
 	Groups        []PriorityGroup `json:"groups"`
 }
 
+// PriorityGroup is a named tier (P1–P4) of PR numbers.
 type PriorityGroup struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`

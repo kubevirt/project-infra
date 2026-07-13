@@ -27,7 +27,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/go-github/v32/github"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"sigs.k8s.io/yaml"
@@ -38,7 +37,7 @@ var (
 	triggerBatchSize int
 	triggerGroup     string
 	triggerBatchWait time.Duration
-	triggerYes bool
+	triggerYes       bool
 )
 
 var triggerCmd = &cobra.Command{
@@ -48,6 +47,12 @@ var triggerCmd = &cobra.Command{
 	PreRunE: func(cmd *cobra.Command, _ []string) error {
 		if triggerYes && !cmd.Flags().Changed("batch-wait") {
 			return fmt.Errorf("--yes requires --batch-wait to be explicitly set")
+		}
+		if triggerBatchSize < 1 {
+			return fmt.Errorf("--batch-size must be a positive integer, got %d", triggerBatchSize)
+		}
+		if triggerBatchWait < 0 {
+			return fmt.Errorf("--batch-wait cannot be negative")
 		}
 		return nil
 	},
@@ -87,14 +92,14 @@ func runTrigger(cmd *cobra.Command, _ []string) error {
 
 	batches := splitBatches(prNumbers, triggerBatchSize)
 	logrus.WithFields(logrus.Fields{
-		"total_prs": len(prNumbers),
-		"batches":   len(batches),
+		"total_prs":  len(prNumbers),
+		"batches":    len(batches),
 		"batch_size": triggerBatchSize,
 	}).Info("triggering lane")
 
-	var client *github.Client
+	var client ghClient
 	if !dryRun {
-		client, err = newGitHubClient(ctx)
+		client, err = newGitHubClient()
 		if err != nil {
 			return err
 		}
@@ -114,14 +119,14 @@ func runTrigger(cmd *cobra.Command, _ []string) error {
 				fmt.Printf("[dry-run] would comment on PR #%d: %s\n", prNum, comment)
 				continue
 			}
-			if err := postComment(ctx, client, owner, repoName, prNum, comment); err != nil {
+			if err := postComment(client, owner, repoName, prNum, comment); err != nil {
 				logrus.WithError(err).WithField("pr", prNum).Error("failed to post comment")
 				continue
 			}
 		}
 
 		if i < len(batches)-1 {
-			if err := waitBetweenBatches(i+1, len(batches)); err != nil {
+			if err := waitBetweenBatches(ctx, i+1, len(batches)); err != nil {
 				return err
 			}
 		}
@@ -154,20 +159,15 @@ func splitBatches(items []int, size int) [][]int {
 	return batches
 }
 
-func postComment(ctx context.Context, client *github.Client, owner, repoName string, prNumber int, body string) error {
-	comment := &github.IssueComment{Body: &body}
-	created, _, err := client.Issues.CreateComment(ctx, owner, repoName, prNumber, comment)
-	if err != nil {
+func postComment(client ghClient, owner, repoName string, prNumber int, body string) error {
+	if err := client.CreateComment(owner, repoName, prNumber, body); err != nil {
 		return fmt.Errorf("commenting on PR #%d: %w", prNumber, err)
 	}
-	logrus.WithFields(logrus.Fields{
-		"pr":  prNumber,
-		"url": created.GetHTMLURL(),
-	}).Info("triggered lane")
+	logrus.WithField("pr", prNumber).Info("triggered lane")
 	return nil
 }
 
-func waitBetweenBatches(completedBatch, totalBatches int) error {
+func waitBetweenBatches(ctx context.Context, completedBatch, totalBatches int) error {
 	if dryRun {
 		fmt.Printf("[dry-run] would wait %s before batch %d/%d\n", triggerBatchWait, completedBatch+1, totalBatches)
 		return nil
@@ -180,18 +180,19 @@ func waitBetweenBatches(completedBatch, totalBatches int) error {
 		}).Info("waiting before next batch")
 
 		deadline := time.Now().Add(triggerBatchWait)
+		timer := time.NewTimer(time.Until(deadline))
+		defer timer.Stop()
 		ticker := time.NewTicker(5 * time.Minute)
 		defer ticker.Stop()
 		for {
 			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case <-timer.C:
+				return nil
 			case <-ticker.C:
 				remaining := time.Until(deadline).Truncate(time.Second)
-				if remaining <= 0 {
-					return nil
-				}
 				logrus.WithField("remaining", remaining).Info("waiting for next batch")
-			case <-time.After(time.Until(deadline)):
-				return nil
 			}
 		}
 	}

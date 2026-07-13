@@ -65,47 +65,53 @@ var _ = Describe("writeOutput", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(string(data)).To(Equal("test-data"))
 	})
+
+	It("writes to stdout when no path is given", func() {
+		err := writeOutput([]byte("stdout-data"), "")
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	It("returns wrapped error for invalid file path", func() {
+		err := writeOutput([]byte("data"), "/nonexistent-dir/foo/bar.yaml")
+		Expect(err).To(HaveOccurred())
+		Expect(err.Error()).To(ContainSubstring("writing output file"))
+	})
 })
 
-var _ = Describe("resolveToken", func() {
+var _ = Describe("resolveTokenPath", func() {
 
-	It("reads token from file", func() {
+	It("returns the token path directly when set", func() {
 		dir := GinkgoT().TempDir()
 		path := filepath.Join(dir, "token")
-		Expect(os.WriteFile(path, []byte("  my-token \n"), 0644)).To(Succeed())
+		Expect(os.WriteFile(path, []byte("my-token"), 0644)).To(Succeed())
 
 		tokenPath = path
 		defer func() { tokenPath = "" }()
 
-		token, err := resolveToken()
+		resolved, err := resolveTokenPath()
 		Expect(err).NotTo(HaveOccurred())
-		Expect(token).To(Equal("my-token"))
+		Expect(resolved).To(Equal(path))
 	})
 
-	It("falls back to GITHUB_TOKEN env var", func() {
+	It("creates a temp file from GITHUB_TOKEN env var", func() {
 		tokenPath = ""
 		GinkgoT().Setenv("GITHUB_TOKEN", "env-token")
 
-		token, err := resolveToken()
+		resolved, err := resolveTokenPath()
 		Expect(err).NotTo(HaveOccurred())
-		Expect(token).To(Equal("env-token"))
+		Expect(resolved).NotTo(BeEmpty())
+
+		data, err := os.ReadFile(resolved)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(string(data)).To(Equal("env-token"))
 	})
 
 	It("returns error when no token source is available", func() {
 		tokenPath = ""
 		GinkgoT().Setenv("GITHUB_TOKEN", "")
 
-		_, err := resolveToken()
+		_, err := resolveTokenPath()
 		Expect(err).To(HaveOccurred())
 		Expect(err.Error()).To(ContainSubstring("no GitHub token"))
-	})
-
-	It("returns error for nonexistent token file", func() {
-		tokenPath = "/nonexistent/path/token"
-		defer func() { tokenPath = "" }()
-
-		_, err := resolveToken()
-		Expect(err).To(HaveOccurred())
-		Expect(err.Error()).To(ContainSubstring("reading token file"))
 	})
 })

@@ -20,21 +20,29 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"strings"
 
-	"github.com/google/go-github/v32/github"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"golang.org/x/oauth2"
+	"sigs.k8s.io/prow/pkg/config/secret"
+	github "sigs.k8s.io/prow/pkg/github"
 )
+
+type ghClient interface {
+	GetBranchProtection(org, repo, branch string) (*github.BranchProtection, error)
+	GetPullRequests(org, repo string) ([]github.PullRequest, error)
+	GetCombinedStatus(org, repo, ref string) (*github.CombinedStatus, error)
+	ListStatuses(org, repo, ref string) ([]github.Status, error)
+	CreateComment(org, repo string, number int, comment string) error
+}
 
 var (
 	repo      string
 	tokenPath string
 	dryRun    bool
+	endpoint  string
 )
 
 var rootCmd = &cobra.Command{
@@ -46,12 +54,14 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&repo, "repo", "kubevirt/kubevirt", "GitHub repository in owner/repo format")
 	rootCmd.PersistentFlags().StringVar(&tokenPath, "token-path", "", "path to GitHub token file (falls back to GITHUB_TOKEN env var)")
 	rootCmd.PersistentFlags().BoolVar(&dryRun, "dry-run", false, "print actions without executing them")
+	rootCmd.PersistentFlags().StringVar(&endpoint, "endpoint", github.DefaultAPIEndpoint, "GitHub API endpoint")
 
 	rootCmd.AddCommand(scanCmd)
 	rootCmd.AddCommand(prioritizeCmd)
 	rootCmd.AddCommand(triggerCmd)
 }
 
+// Execute runs the root command.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
@@ -66,33 +76,47 @@ func parseRepo() (owner, repoName string, err error) {
 	return parts[0], parts[1], nil
 }
 
-func newGitHubClient(ctx context.Context) (*github.Client, error) {
-	token, err := resolveToken()
+func newGitHubClient() (ghClient, error) {
+	path, err := resolveTokenPath()
 	if err != nil {
 		return nil, err
 	}
-	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: token})
-	return github.NewClient(oauth2.NewClient(ctx, ts)), nil
+	if err := secret.Add(path); err != nil {
+		return nil, fmt.Errorf("starting secrets agent: %w", err)
+	}
+	if dryRun {
+		return github.NewDryRunClient(secret.GetTokenGenerator(path), secret.Censor, "", endpoint)
+	}
+	return github.NewClient(secret.GetTokenGenerator(path), secret.Censor, "", endpoint)
 }
 
-func resolveToken() (string, error) {
+func resolveTokenPath() (string, error) {
 	if tokenPath != "" {
-		data, err := os.ReadFile(tokenPath)
-		if err != nil {
-			return "", fmt.Errorf("reading token file: %w", err)
-		}
-		return strings.TrimSpace(string(data)), nil
+		return tokenPath, nil
 	}
 	if t := os.Getenv("GITHUB_TOKEN"); t != "" {
-		return t, nil
+		f, err := os.CreateTemp("", "lane-doctor-token-*")
+		if err != nil {
+			return "", fmt.Errorf("creating temp token file: %w", err)
+		}
+		if _, err := f.WriteString(t); err != nil {
+			f.Close()
+			return "", fmt.Errorf("writing temp token file: %w", err)
+		}
+		if err := f.Close(); err != nil {
+			return "", fmt.Errorf("closing temp token file: %w", err)
+		}
+		return f.Name(), nil
 	}
 	return "", fmt.Errorf("no GitHub token: set --token-path or GITHUB_TOKEN env var")
 }
 
 func writeOutput(data []byte, outputPath string) error {
 	if outputPath == "" {
-		_, err := os.Stdout.Write(data)
-		return err
+		if _, err := os.Stdout.Write(data); err != nil {
+			return fmt.Errorf("writing to stdout: %w", err)
+		}
+		return nil
 	}
 	if err := os.WriteFile(outputPath, data, 0644); err != nil {
 		return fmt.Errorf("writing output file: %w", err)

@@ -20,16 +20,15 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"sort"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/google/go-github/v32/github"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	github "sigs.k8s.io/prow/pkg/github"
 	"sigs.k8s.io/yaml"
 )
 
@@ -45,37 +44,36 @@ var scanCmd = &cobra.Command{
 }
 
 func init() {
-	scanCmd.Flags().StringVar(&scanLane, "lane", "", "required status check context name (required)")
+	scanCmd.Flags().StringVar(&scanLane, "lane", "", "Prow job name or GitHub status context (they are usually identical)")
 	scanCmd.Flags().StringVarP(&scanOutput, "output", "o", "", "output YAML file path (default: stdout)")
 	_ = scanCmd.MarkFlagRequired("lane")
 }
 
 func runScan(cmd *cobra.Command, _ []string) error {
-	ctx := cmd.Context()
 	owner, repoName, err := parseRepo()
 	if err != nil {
 		return err
 	}
 
-	client, err := newGitHubClient(ctx)
+	client, err := newGitHubClient()
 	if err != nil {
 		return err
 	}
 
 	log := logrus.WithFields(logrus.Fields{"lane": scanLane, "repo": repo})
 
-	if err := verifyRequiredCheck(ctx, client, owner, repoName, scanLane); err != nil {
+	if err := verifyRequiredCheck(client, owner, repoName, scanLane); err != nil {
 		return err
 	}
 	log.Info("confirmed lane is a required status check")
 
-	prs, err := listOpenPRs(ctx, client, owner, repoName)
+	prs, err := listOpenPRs(client, owner, repoName)
 	if err != nil {
 		return err
 	}
 	log.WithField("count", len(prs)).Info("fetched open PRs")
 
-	summary, stuckPRs := classifyPRs(ctx, client, owner, repoName, scanLane, prs)
+	summary, stuckPRs := classifyPRs(client, owner, repoName, scanLane, prs)
 
 	sort.Slice(stuckPRs, func(i, j int) bool {
 		return stuckPRs[i].Number < stuckPRs[j].Number
@@ -96,12 +94,12 @@ func runScan(cmd *cobra.Command, _ []string) error {
 	return writeOutput(data, scanOutput)
 }
 
-func verifyRequiredCheck(ctx context.Context, client *github.Client, owner, repoName, lane string) error {
-	protection, _, err := client.Repositories.GetBranchProtection(ctx, owner, repoName, "main")
+func verifyRequiredCheck(client ghClient, owner, repoName, lane string) error {
+	protection, err := client.GetBranchProtection(owner, repoName, "main")
 	if err != nil {
 		return fmt.Errorf("fetching branch protection: %w", err)
 	}
-	if protection.RequiredStatusChecks == nil {
+	if protection == nil || protection.RequiredStatusChecks == nil {
 		return fmt.Errorf("no required status checks configured on main")
 	}
 	for _, check := range protection.RequiredStatusChecks.Contexts {
@@ -112,25 +110,12 @@ func verifyRequiredCheck(ctx context.Context, client *github.Client, owner, repo
 	return fmt.Errorf("lane %q is not a required status check on main", lane)
 }
 
-func listOpenPRs(ctx context.Context, client *github.Client, owner, repoName string) ([]*github.PullRequest, error) {
-	var allPRs []*github.PullRequest
-	opts := &github.PullRequestListOptions{
-		State:       "open",
-		Base:        "main",
-		ListOptions: github.ListOptions{PerPage: 100},
+func listOpenPRs(client ghClient, owner, repoName string) ([]github.PullRequest, error) {
+	prs, err := client.GetPullRequests(owner, repoName)
+	if err != nil {
+		return nil, fmt.Errorf("listing PRs: %w", err)
 	}
-	for {
-		prs, resp, err := client.PullRequests.List(ctx, owner, repoName, opts)
-		if err != nil {
-			return nil, fmt.Errorf("listing PRs: %w", err)
-		}
-		allPRs = append(allPRs, prs...)
-		if resp.NextPage == 0 {
-			break
-		}
-		opts.Page = resp.NextPage
-	}
-	return allPRs, nil
+	return prs, nil
 }
 
 type prResult struct {
@@ -138,20 +123,20 @@ type prResult struct {
 	pr       *StuckPR
 }
 
-func classifyPRs(ctx context.Context, client *github.Client, owner, repoName, lane string, prs []*github.PullRequest) (ScanSummary, []StuckPR) {
+func classifyPRs(client ghClient, owner, repoName, lane string, prs []github.PullRequest) (ScanSummary, []StuckPR) {
 	const workers = 10
 	sem := make(chan struct{}, workers)
 	results := make([]prResult, len(prs))
 	var wg sync.WaitGroup
 
-	for i, pr := range prs {
+	for i := range prs {
 		wg.Add(1)
-		go func(idx int, pr *github.PullRequest) {
+		go func(idx int) {
 			defer wg.Done()
 			sem <- struct{}{}
 			defer func() { <-sem }()
-			results[idx] = classifyPR(ctx, client, owner, repoName, lane, pr)
-		}(i, pr)
+			results[idx] = classifyPR(client, owner, repoName, lane, &prs[idx])
+		}(i)
 	}
 	wg.Wait()
 
@@ -179,30 +164,30 @@ func classifyPRs(ctx context.Context, client *github.Client, owner, repoName, la
 	return summary, stuckPRs
 }
 
-func classifyPR(ctx context.Context, client *github.Client, owner, repoName, lane string, pr *github.PullRequest) prResult {
-	log := logrus.WithField("pr", pr.GetNumber())
-	sha := pr.GetHead().GetSHA()
+func classifyPR(client ghClient, owner, repoName, lane string, pr *github.PullRequest) prResult {
+	log := logrus.WithField("pr", pr.Number)
+	sha := pr.Head.SHA
 
-	combinedStatus, hasE2E, err := getCombinedStatusInfo(ctx, client, owner, repoName, sha, lane)
+	laneStatus, hasE2E, err := getLaneStatus(client, owner, repoName, sha, lane)
 	if err != nil {
 		log.WithError(err).Warn("failed to get combined status")
 		return prResult{category: "failed"}
 	}
 
-	if combinedStatus == nil {
+	if laneStatus == nil {
 		if !hasE2E {
 			return prResult{category: "success"}
 		}
 		return prResult{category: "missing", pr: buildStuckPR(pr, "missing", "", false)}
 	}
 
-	switch combinedStatus.GetState() {
+	switch laneStatus.State {
 	case "success":
 		return prResult{category: "success"}
 	case "failure", "error":
 		return prResult{category: "failed"}
 	case "pending":
-		hasURL, statusUpdatedAt := checkRawStatuses(ctx, client, owner, repoName, sha, lane)
+		hasURL, statusUpdatedAt := checkRawStatuses(client, owner, repoName, sha, lane)
 		if hasURL {
 			return prResult{category: "running"}
 		}
@@ -212,70 +197,52 @@ func classifyPR(ctx context.Context, client *github.Client, owner, repoName, lan
 	}
 }
 
-func getCombinedStatusInfo(ctx context.Context, client *github.Client, owner, repoName, sha, lane string) (laneStatus *github.RepoStatus, hasE2E bool, err error) {
-	opts := &github.ListOptions{PerPage: 100}
-	for {
-		combined, resp, err := client.Repositories.GetCombinedStatus(ctx, owner, repoName, sha, opts)
-		if err != nil {
-			return nil, false, err
+func getLaneStatus(client ghClient, owner, repoName, sha, lane string) (laneStatus *github.Status, hasE2E bool, err error) {
+	combined, err := client.GetCombinedStatus(owner, repoName, sha)
+	if err != nil {
+		return nil, false, err
+	}
+	for i, s := range combined.Statuses {
+		if s.Context == lane {
+			laneStatus = &combined.Statuses[i]
 		}
-		for _, s := range combined.Statuses {
-			if s.GetContext() == lane {
-				laneStatus = s
-			}
-			if strings.HasPrefix(s.GetContext(), "pull-kubevirt-e2e") {
-				hasE2E = true
-			}
+		if strings.HasPrefix(s.Context, "pull-kubevirt-e2e") {
+			hasE2E = true
 		}
-		if resp.NextPage == 0 {
-			break
-		}
-		opts.Page = resp.NextPage
 	}
 	return laneStatus, hasE2E, nil
 }
 
-func checkRawStatuses(ctx context.Context, client *github.Client, owner, repoName, sha, lane string) (hasURL bool, updatedAt string) {
-	opts := &github.ListOptions{PerPage: 100}
-	var latest *github.RepoStatus
-	for {
-		statuses, resp, err := client.Repositories.ListStatuses(ctx, owner, repoName, sha, opts)
-		if err != nil {
-			logrus.WithError(err).Warn("failed to list raw statuses")
-			return false, ""
-		}
-		for i := range statuses {
-			if statuses[i].GetContext() != lane {
-				continue
-			}
-			if latest == nil || statuses[i].GetUpdatedAt().After(latest.GetUpdatedAt()) {
-				latest = statuses[i]
-			}
-		}
-		if resp.NextPage == 0 {
-			break
-		}
-		opts.Page = resp.NextPage
-	}
-	if latest == nil {
+func checkRawStatuses(client ghClient, owner, repoName, sha, lane string) (hasURL bool, updatedAt string) {
+	statuses, err := client.ListStatuses(owner, repoName, sha)
+	if err != nil {
+		logrus.WithError(err).Warn("failed to list raw statuses")
 		return false, ""
 	}
-	return latest.GetTargetURL() != "", latest.GetUpdatedAt().Format(time.RFC3339)
+	for _, s := range statuses {
+		if s.Context != lane {
+			continue
+		}
+		// ListStatuses returns statuses in reverse-chronological order;
+		// the first match for our lane is the latest.
+		return s.TargetURL != "", ""
+	}
+	return false, ""
 }
 
 func buildStuckPR(pr *github.PullRequest, statusState, statusUpdatedAt string, hasURL bool) *StuckPR {
 	var labels []string
 	for _, l := range pr.Labels {
-		labels = append(labels, l.GetName())
+		labels = append(labels, l.Name)
 	}
 	return &StuckPR{
-		Number:          pr.GetNumber(),
-		Title:           pr.GetTitle(),
-		Author:          pr.GetUser().GetLogin(),
-		HeadSHA:         pr.GetHead().GetSHA(),
-		UpdatedAt:       pr.GetUpdatedAt().Format(time.RFC3339),
+		Number:          pr.Number,
+		Title:           pr.Title,
+		Author:          pr.User.Login,
+		HeadSHA:         pr.Head.SHA,
+		UpdatedAt:       pr.UpdatedAt.Format(time.RFC3339),
 		Labels:          labels,
-		IsDraft:         pr.GetDraft(),
+		IsDraft:         pr.Draft,
 		StatusState:     statusState,
 		StatusUpdatedAt: statusUpdatedAt,
 		HasTargetURL:    hasURL,

@@ -38,7 +38,15 @@ var (
 var prioritizeCmd = &cobra.Command{
 	Use:   "prioritize",
 	Short: "Group stuck PRs into priority tiers based on merge-readiness labels",
-	RunE:  runPrioritize,
+	Long: `Group stuck PRs from a scan report into priority tiers:
+
+  P1  lgtm + approved     — blocked from merging, highest priority
+  P2  lgtm or approved    — close to merging
+  P3  no merge labels     — under review
+  P4  do-not-merge/hold   — on hold
+
+Draft PRs and PRs labeled do-not-merge/work-in-progress are excluded.`,
+	RunE: runPrioritize,
 }
 
 func init() {
