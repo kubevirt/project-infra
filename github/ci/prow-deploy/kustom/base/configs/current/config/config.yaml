@@ -481,6 +481,9 @@ branch-protection:
             release-1.8-aie-nv:
               protect: true
               allow_force_pushes: true
+            release-1.9-aie-nv:
+              protect: true
+              allow_force_pushes: true
         project-infra:
           branches:
             main:

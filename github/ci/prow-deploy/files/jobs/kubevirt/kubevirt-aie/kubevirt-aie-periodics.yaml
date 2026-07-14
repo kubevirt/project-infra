@@ -33,3 +33,37 @@ periodics:
       resources:
         requests:
           memory: "200Mi"
+- name: periodic-kubevirt-aie-sync-nv-rpms-1.9
+  cron: "0 6 * * *"
+  annotations:
+    testgrid-create-test-group: "false"
+  decorate: true
+  decoration_config:
+    timeout: 1h
+  max_concurrency: 1
+  extra_refs:
+  - org: kubevirt
+    repo: kubevirt-aie
+    base_ref: release-1.9-aie-nv
+    workdir: true
+  labels:
+    preset-github-credentials: "true"
+  cluster: kubevirt-prow-control-plane
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/pr-creator:v20260624-f0a9591
+      command: ["/bin/sh", "-c"]
+      args:
+      - |
+        export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
+        git-pr.sh \
+          --command "./hack/sync-nv-rpms.sh" \
+          --summary "Sync el10nv RPMs for libvirt and qemu-kvm" \
+          --release-note-none \
+          --repo kubevirt-aie \
+          --branch sync-nv-rpms-1.9 \
+          --target release-1.9-aie-nv \
+          --missing-labels lgtm,approved,do-not-merge/hold
+      resources:
+        requests:
+          memory: "200Mi"
