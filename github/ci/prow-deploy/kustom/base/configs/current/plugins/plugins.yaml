@@ -395,6 +395,15 @@ plugins:
     - release-note
     - trigger
 
+  kubevirt/plugins:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
+    - help
+
   kubevirt/project-infra:
     plugins:
     - approve
@@ -720,6 +729,7 @@ approve:
   - kubevirt/redfish-controller
   - kubevirt/kubevirt-observability-controller
   - kubevirt/vdpa-network-binding-plugin
+  - kubevirt/plugins
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -868,6 +878,7 @@ lgtm:
   - kubevirt/redfish-controller
   - kubevirt/kubevirt-observability-controller
   - kubevirt/vdpa-network-binding-plugin
+  - kubevirt/plugins
   review_acts_as_lgtm: true
 
 override:
@@ -935,6 +946,7 @@ triggers:
   - kubevirt/redfish-controller
   - kubevirt/kubevirt-observability-controller
   - kubevirt/vdpa-network-binding-plugin
+  - kubevirt/plugins
   ignore_ok_to_test: true
 - repos:
   - virtblocks/virtblocks
