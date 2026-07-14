@@ -213,6 +213,7 @@ tide:
     kubevirt/redfish-controller: merge
     kubevirt/kubevirt-observability-controller: squash
     kubevirt/vdpa-network-binding-plugin: merge
+    kubevirt/plugins: merge
   queries:
   - repos:
     - kubevirt/dra-pci-driver
@@ -292,6 +293,7 @@ tide:
     - kubevirt/kubevirt-aie
     - kubevirt/kubevirt-aie-webhook
     - kubevirt/kubevirt-observability-controller
+    - kubevirt/plugins
     labels:
     - lgtm
     - approved
@@ -481,6 +483,10 @@ branch-protection:
             release-1.8-aie-nv:
               protect: true
               allow_force_pushes: true
+        plugins:
+          branches:
+            main:
+              protect: true
         project-infra:
           branches:
             main:
