@@ -100,7 +100,7 @@ periodics:
       args:
       - |
         git-pr.sh \
-          --command "./hack/bump-fedora-images-version.sh ../kubevirtci/cluster-provision/centos9/Dockerfile" \
+          --command "./hack/bump-fedora-images-version.sh ../kubevirtci/cluster-provision/centos9/Dockerfile ../kubevirtci/cluster-provision/centos10/Dockerfile" \
           --description-command "echo 'Bump fedora provisioning base to latest version'" \
           --branch bump-fedora-provision \
           --repo-path ../kubevirtci \
