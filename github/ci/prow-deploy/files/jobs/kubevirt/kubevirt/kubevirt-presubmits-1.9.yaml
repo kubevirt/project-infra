@@ -443,7 +443,7 @@ presubmits:
         - /bin/sh
         - -c
         - make go-test
-        image: quay.io/kubevirtci/golang:v20260612-73bc71e
+        image: quay.io/kubevirtci/golang:v20260707-cacb217
         resources:
           requests:
             memory: 8Gi
@@ -469,7 +469,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test
-        image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
         resources:
           requests:
             memory: 12Gi
@@ -679,7 +679,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test
-        image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
+        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
         resources:
           requests:
             cpu: "4"
