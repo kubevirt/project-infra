@@ -7,7 +7,6 @@ periodics:
     testgrid-alert-email: afrosi@redhat.com, victortoso@redhat.com
     testgrid-num-failures-to-alert: "1"
     testgrid-alert-stale-results-hours: "1"
-  decorate: true
   decoration_config:
     timeout: 3h
   max_concurrency: 1

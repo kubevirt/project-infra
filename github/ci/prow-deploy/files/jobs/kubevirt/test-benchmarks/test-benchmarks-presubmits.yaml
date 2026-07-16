@@ -6,7 +6,6 @@ presubmits:
     always_run: true
     optional: true
     skip_report: false
-    decorate: true
     decoration_config:
       timeout: 3h
     max_concurrency: 1

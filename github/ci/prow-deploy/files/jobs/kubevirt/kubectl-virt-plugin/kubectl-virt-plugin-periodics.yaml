@@ -1,7 +1,6 @@
 periodics:
 - name: periodic-kubectl-virt-plugin-publish
   cron: "0 0 * * *"
-  decorate: true
   annotations:
     testgrid-create-test-group: "false"
   decoration_config:

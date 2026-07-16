@@ -3,7 +3,6 @@ presubmits:
   - name: pull-ci-health-test
     run_if_changed: "cmd/.*|e2e/.*|pkg/.*|go\\..*"
     optional: false
-    decorate: true
     cluster: kubevirt-prow-control-plane
     annotations:
       testgrid-create-test-group: "false"

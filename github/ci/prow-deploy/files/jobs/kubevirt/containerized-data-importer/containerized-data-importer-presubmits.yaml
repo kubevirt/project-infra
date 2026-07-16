@@ -10,7 +10,6 @@ presubmits:
       fork-per-release: "true"
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -39,7 +38,6 @@ presubmits:
       fork-per-release: "true"
     always_run: true
     optional: true
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -65,7 +63,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 10m0s
       timeout: 1h0m0s
@@ -109,7 +106,6 @@ presubmits:
       fork-per-release: "true"
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -141,7 +137,6 @@ presubmits:
       fork-per-release: "true"
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -173,7 +168,6 @@ presubmits:
       fork-per-release: "true"
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -205,7 +199,6 @@ presubmits:
       fork-per-release: "true"
     always_run: true
     optional: true
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -235,7 +228,6 @@ presubmits:
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 5h
       grace_period: 5m
@@ -274,7 +266,6 @@ presubmits:
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 5h
       grace_period: 5m
@@ -313,7 +304,6 @@ presubmits:
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
     always_run: false
     optional: true
-    decorate: true
     decoration_config:
       timeout: 5h
       grace_period: 5m
@@ -352,7 +342,6 @@ presubmits:
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 5h
       grace_period: 5m
@@ -395,7 +384,6 @@ presubmits:
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 5h
       grace_period: 5m
@@ -438,7 +426,6 @@ presubmits:
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 6h
       grace_period: 10m
@@ -477,7 +464,6 @@ presubmits:
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
     always_run: true
     optional: true
-    decorate: true
     decoration_config:
       timeout: 6h
       grace_period: 10m
@@ -550,7 +536,6 @@ presubmits:
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 7h
       grace_period: 10m
@@ -589,7 +574,6 @@ presubmits:
       fork-per-release: "true"
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 5h
       grace_period: 5m
@@ -628,7 +612,6 @@ presubmits:
       fork-per-release: "true"
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 5h
       grace_period: 5m
@@ -667,7 +650,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -707,7 +689,6 @@ presubmits:
       testgrid-dashboards: kubevirt-containerized-data-importer-presubmits
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 5h
       grace_period: 5m

@@ -1,7 +1,6 @@
 periodics:
 - name: periodic-kvp-push-nightly-build-main
   cron: "2 2 * * *"
-  decorate: true
   annotations:
     testgrid-dashboards: kubevirt-velero-plugin-periodics
   decoration_config:

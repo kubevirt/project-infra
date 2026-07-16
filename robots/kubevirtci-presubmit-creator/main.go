@@ -182,7 +182,6 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 		Optional:  true,
 		JobBase: config.JobBase{
 			UtilityConfig: config.UtilityConfig{
-				Decorate: &yes,
 				DecorationConfig: &prowjobs.DecorationConfig{
 					Timeout: &prowjobs.Duration{Duration: 3 * time.Hour},
 				},

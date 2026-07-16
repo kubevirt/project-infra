@@ -7,7 +7,6 @@ presubmits:
       fork-per-release: "true"
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m
@@ -40,7 +39,6 @@ presubmits:
       fork-per-release: "true"
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m
@@ -106,7 +104,6 @@ presubmits:
       fork-per-release: "true"
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m
@@ -139,7 +136,6 @@ presubmits:
       fork-per-release: "true"
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -169,7 +165,6 @@ presubmits:
       fork-per-release: "true"
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m
@@ -204,7 +199,6 @@ presubmits:
     always_run: true
     skip_report: false
     optional: true
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m

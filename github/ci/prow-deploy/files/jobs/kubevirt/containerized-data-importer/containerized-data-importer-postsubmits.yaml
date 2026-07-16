@@ -8,7 +8,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 2h
       grace_period: 5m
@@ -45,7 +44,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 2h
       grace_period: 5m
@@ -80,7 +78,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m
@@ -120,7 +117,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m
@@ -161,7 +157,6 @@ postsubmits:
     run_if_changed: "hack/build/docker/builder/.*"
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m
@@ -197,7 +192,6 @@ postsubmits:
     annotations:
       testgrid-create-test-group: "false"
     always_run: true
-    decorate: true
     decoration_config:
       grace_period: 10m0s
       timeout: 1h0m0s

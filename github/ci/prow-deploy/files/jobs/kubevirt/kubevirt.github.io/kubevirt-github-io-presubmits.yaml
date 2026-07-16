@@ -1,7 +1,6 @@
 presubmits:
   kubevirt/kubevirt.github.io:
   - name: kubevirt-io-presubmit-link-checker
-    decorate: true
     always_run: true
     skip_report: false
     cluster: kubevirt-prow-control-plane
@@ -18,7 +17,6 @@ presubmits:
     - ^main$
     labels:
       preset-github-credentials: "true"
-    decorate: true
     always_run: true
     cluster: kubevirt-prow-control-plane
     spec:

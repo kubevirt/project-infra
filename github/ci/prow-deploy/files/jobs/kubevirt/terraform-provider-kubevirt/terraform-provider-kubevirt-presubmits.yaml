@@ -3,7 +3,6 @@ presubmits:
   - name: pull-terraform-provider-kubevirt-e2e
     always_run: true
     optional: true
-    decorate: true
     skip_report: false
     cluster: prow-workloads
     decoration_config:
@@ -45,7 +44,6 @@ presubmits:
     optional: false
     skip_report: false
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 10m
       grace_period: 5m

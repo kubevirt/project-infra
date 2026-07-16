@@ -5,7 +5,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -30,7 +29,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -55,7 +53,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -88,7 +85,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-s390x-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -121,7 +117,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -155,7 +150,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -189,7 +183,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-s390x-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -222,7 +215,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -256,7 +248,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-s390x-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -289,7 +280,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -323,7 +313,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-s390x-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -356,7 +345,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -390,7 +378,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-s390x-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -423,7 +410,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -457,7 +443,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-s390x-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -490,7 +475,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s

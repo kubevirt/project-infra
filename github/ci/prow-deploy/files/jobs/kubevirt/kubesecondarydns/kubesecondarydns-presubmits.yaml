@@ -8,7 +8,6 @@ presubmits:
         fork-per-release: "true"
       always_run: true
       optional: false
-      decorate: true
       cluster: prow-workloads
       decoration_config:
         timeout: 3h
@@ -43,7 +42,6 @@ presubmits:
         fork-per-release: "true"
       always_run: true
       optional: false
-      decorate: true
       cluster: prow-s390x-workloads
       decoration_config:
         grace_period: 5m0s
@@ -68,7 +66,6 @@ presubmits:
         fork-per-release: "true"
       always_run: true
       optional: false
-      decorate: true
       cluster: prow-s390x-workloads
       decoration_config:
         grace_period: 5m0s

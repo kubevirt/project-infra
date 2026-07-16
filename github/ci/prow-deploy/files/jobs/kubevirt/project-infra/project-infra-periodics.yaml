@@ -1,7 +1,6 @@
 periodics:
 - name: periodic-project-infra-retester
   interval: 1h  # Retest at most 1 PR every hour, which should not DOS the queue.
-  decorate: true
   annotations:
     testgrid-create-test-group: "false"
   cluster: kubevirt-prow-control-plane
@@ -37,7 +36,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -71,7 +69,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -104,7 +101,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -134,7 +130,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -173,7 +168,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -210,7 +204,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -245,7 +238,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -281,7 +273,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -306,7 +297,6 @@ periodics:
   interval: 1h
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -343,7 +333,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   extra_refs:
   - org: kubevirt
     repo: project-infra
@@ -375,7 +364,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-gcs-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -392,7 +380,6 @@ periodics:
   labels:
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -453,7 +440,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -495,7 +481,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -536,7 +521,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -579,7 +563,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -614,7 +597,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -666,7 +648,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -702,7 +683,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -748,7 +728,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 2h30m
     grace_period: 5m
@@ -791,7 +770,6 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -828,7 +806,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 10m
     grace_period: 5m
@@ -866,7 +843,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-docker-mirror-proxy: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -895,7 +871,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -933,7 +908,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -969,7 +943,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -1000,7 +973,6 @@ periodics:
           memory: "200Mi"
 - name: periodic-project-infra-mirror-istioctl
   cron: "25 1 * * 1"
-  decorate: true
   annotations:
     testgrid-create-test-group: "false"
   decoration_config:
@@ -1039,7 +1011,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -1077,7 +1048,6 @@ periodics:
   max_concurrency: 1
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 4h
     grace_period: 5m
@@ -1117,7 +1087,6 @@ periodics:
 - annotations:
     testgrid-create-test-group: "false"
   cluster: kubevirt-prow-control-plane
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -1156,7 +1125,6 @@ periodics:
 - annotations:
     testgrid-create-test-group: "false"
   cluster: kubevirt-prow-control-plane
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -1223,7 +1191,6 @@ periodics:
     testgrid-num-failures-to-alert: "1"
     testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
   cluster: kubevirt-prow-control-plane
-  decorate: true
   decoration_config:
     timeout: 5m
     grace_period: 1m
@@ -1351,7 +1318,6 @@ periodics:
     testgrid-num-failures-to-alert: "1"
     testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
   cluster: kubevirt-prow-control-plane
-  decorate: true
   decoration_config:
     timeout: 15m
     grace_period: 5m

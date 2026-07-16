@@ -8,7 +8,6 @@ presubmits:
         testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
       always_run: true
       optional: false
-      decorate: true
       decoration_config:
         timeout: 7h
         grace_period: 5m
@@ -47,7 +46,6 @@ presubmits:
         testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
       always_run: true
       optional: false
-      decorate: true
       decoration_config:
         timeout: 7h
         grace_period: 5m
@@ -85,7 +83,6 @@ presubmits:
       run_if_changed: "tests/build/.*"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
@@ -121,7 +118,6 @@ presubmits:
         testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
       always_run: true
       optional: false
-      decorate: true
       decoration_config:
         timeout: 2h
         grace_period: 5m

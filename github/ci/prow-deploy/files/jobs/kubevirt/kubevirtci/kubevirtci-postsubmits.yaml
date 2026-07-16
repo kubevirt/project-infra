@@ -6,7 +6,6 @@ postsubmits:
       always_run: true
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       decoration_config:
         timeout: 6h
       max_concurrency: 1
@@ -63,7 +62,6 @@ postsubmits:
       always_run: true
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       decoration_config:
         timeout: 1h
       max_concurrency: 1
@@ -103,7 +101,6 @@ postsubmits:
       always_run: true
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       decoration_config:
         timeout: 4h
       max_concurrency: 1
@@ -184,7 +181,6 @@ postsubmits:
       always_run: true
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       decoration_config:
         timeout: 1h
       max_concurrency: 1

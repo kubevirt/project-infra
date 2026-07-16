@@ -7,7 +7,6 @@ postsubmits:
       run_if_changed: "external-plugins/rehearse/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
@@ -39,7 +38,6 @@ postsubmits:
       run_if_changed: "external-plugins/coverage/.*|images/covreport/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
@@ -71,7 +69,6 @@ postsubmits:
       run_if_changed: "external-plugins/phased/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
@@ -103,7 +100,6 @@ postsubmits:
       run_if_changed: "external-plugins/test-subset/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
@@ -135,7 +131,6 @@ postsubmits:
       run_if_changed: "^(external-plugins|images)/release-blocker/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
@@ -167,7 +162,6 @@ postsubmits:
       run_if_changed: "^(releng|images)/release-tool/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
@@ -198,7 +192,6 @@ postsubmits:
       run_if_changed: "^(external-plugins|images)/referee/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
@@ -230,7 +223,6 @@ postsubmits:
       run_if_changed: "^(robots|images)/flakefinder/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
@@ -263,7 +255,6 @@ postsubmits:
       run_if_changed: "^(robots|images)/ginkgo-tests/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
@@ -296,7 +287,6 @@ postsubmits:
       run_if_changed: "images/kubevirt-infra-bootstrap/.*"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
@@ -328,7 +318,6 @@ postsubmits:
       run_if_changed: "images/golang/.*|images/bootstrap/.*"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       decoration_config:
         grace_period: 5m0s
         timeout: 5h0m0s
@@ -364,7 +353,6 @@ postsubmits:
       run_if_changed: "images/shared-images-controller/.*"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
@@ -395,7 +383,6 @@ postsubmits:
       run_if_changed: "images/kubekins-e2e/.*"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
@@ -427,7 +414,6 @@ postsubmits:
       run_if_changed: "images/kubevirt-kubevirt.github.io/.*"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
@@ -464,7 +450,6 @@ postsubmits:
       run_if_changed: "images/kubevirt-user-guide/.*"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
@@ -496,7 +481,6 @@ postsubmits:
       run_if_changed: "images/prow-deploy/.*"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
@@ -527,7 +511,6 @@ postsubmits:
       run_if_changed: "images/autoowners/.*"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
@@ -559,7 +542,6 @@ postsubmits:
       run_if_changed: 'images/pr-creator/.*|hack/(git-pr\.sh|git-askpass\.sh)|robots/labels-checker/.*|pkg/.*|go.mod|go.sum'
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
@@ -591,7 +573,6 @@ postsubmits:
       run_if_changed: "images/vm-image-builder/.*"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       decoration_config:
         grace_period: 5m0s
         timeout: 5h0m0s
@@ -625,7 +606,6 @@ postsubmits:
       run_if_changed: "images/fedora-coreos-kubevirt/.*"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
@@ -657,7 +637,6 @@ postsubmits:
         testgrid-dashboards: kubevirt-project-infra-postsubmits
         testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
         testgrid-num-failures-to-alert: "1"
-      decorate: true
       branches:
       - ^main$
       labels:
@@ -689,7 +668,6 @@ postsubmits:
       always_run: false
       run_if_changed: "github/ci/prow-deploy/kustom/overlays/prow-workloads/.*|github/ci/prow-deploy/kustom/components/.*"
       annotations: *deploy_postsubmit_annotations
-      decorate: true
       branches:
       - ^main$
       labels:
@@ -720,7 +698,6 @@ postsubmits:
     - name: post-project-infra-ci-search-deployment
       always_run: false
       annotations: *deploy_postsubmit_annotations
-      decorate: true
       run_if_changed: "github/ci/services/ci-search/.*"
       branches:
       - ^main$
@@ -753,7 +730,6 @@ postsubmits:
     - name: post-project-infra-grafana-deployment
       always_run: false
       annotations: *deploy_postsubmit_annotations
-      decorate: true
       run_if_changed: "github/ci/services/grafana/.*"
       branches:
       - ^main$
@@ -803,7 +779,6 @@ postsubmits:
         testgrid-create-test-group: "false"
       labels:
         preset-gcs-credentials: "true"
-      decorate: true
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
@@ -828,7 +803,6 @@ postsubmits:
       run_if_changed: "^(robots|images)/test-report/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
@@ -860,7 +834,6 @@ postsubmits:
       run_if_changed: "^(robots|images)/test-label-analyzer/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
@@ -893,7 +866,6 @@ postsubmits:
       run_if_changed: "hack/mirror-images.sh|hack/images_to_mirror.csv"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       cluster: kubevirt-prow-control-plane
       labels:
         preset-kubevirtci-quay-credential: "true"
@@ -923,7 +895,6 @@ postsubmits:
       annotations:
         testgrid-create-test-group: "false"
       cluster: kubevirt-prow-control-plane
-      decorate: true
       decoration_config:
         grace_period: 5m
         timeout: 1h
@@ -975,7 +946,6 @@ postsubmits:
       annotations:
         testgrid-create-test-group: "false"
       cluster: kubevirt-prow-control-plane
-      decorate: true
       labels:
         preset-github-credentials: "true"
       run_if_changed: "robots/perf-report-creator/shape.yaml"

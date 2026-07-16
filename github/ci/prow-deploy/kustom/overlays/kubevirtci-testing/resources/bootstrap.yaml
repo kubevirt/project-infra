@@ -26,7 +26,6 @@ data:
     presubmits:
       testorg/testrepo:
         - name: test-job
-          decorate: true
           always_run: true
           skip_report: false
           spec:

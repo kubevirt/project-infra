@@ -14,7 +14,6 @@ postsubmits:
       testgrid-create-test-group: "false"
     labels:
       preset-github-credentials: "true"
-    decorate: true
     spec:
       containers:
       - args:

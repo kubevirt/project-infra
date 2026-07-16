@@ -1,7 +1,6 @@
 periodics:
 - name: periodic-redfish-controller-push-nightly-main
   cron: "2 4 * * *"
-  decorate: true
   annotations:
     testgrid-create-test-group: "false"
   decoration_config:

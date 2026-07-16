@@ -3,7 +3,6 @@ presubmits:
   - name: pull-controller-lifecycle-operator-sdk-e2e
     always_run: true
     optional: true
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m

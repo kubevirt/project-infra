@@ -2,7 +2,6 @@ presubmits:
   kubevirt/qe-tools:
   - name: pull-qe-tools-make-test
     always_run: true
-    decorate: true
     cluster: kubevirt-prow-control-plane
     spec:
       containers:

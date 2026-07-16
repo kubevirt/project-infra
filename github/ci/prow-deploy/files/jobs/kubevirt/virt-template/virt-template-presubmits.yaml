@@ -8,7 +8,6 @@ presubmits:
     cluster: prow-workloads
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -37,7 +36,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror: "true"
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -67,7 +65,6 @@ presubmits:
     cluster: prow-workloads
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -96,7 +93,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -126,7 +122,6 @@ presubmits:
     cluster: prow-workloads
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s

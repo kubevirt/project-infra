@@ -9,7 +9,6 @@ postsubmits:
       preset-shared-images: "true"
     labels:
       preset-github-credentials: "true"
-    decorate: true
     extra_refs:
     - org: kubevirt
       repo: project-infra
