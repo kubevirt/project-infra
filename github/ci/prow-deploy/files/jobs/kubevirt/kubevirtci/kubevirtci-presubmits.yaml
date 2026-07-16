@@ -435,7 +435,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    skip_if_only_changed: '^[^/]+\.md$'
     cluster: prow-workloads
     decorate: true
     decoration_config:
@@ -560,7 +561,8 @@ presubmits:
             memory: 16Gi
         securityContext:
           privileged: true
-  - always_run: true
+  - always_run: false
+    skip_if_only_changed: '^[^/]+\.md$'
     cluster: prow-s390x-workloads
     decorate: true
     decoration_config:
@@ -591,7 +593,8 @@ presubmits:
             memory: 16Gi
         securityContext:
           privileged: true
-  - always_run: true
+  - always_run: false
+    skip_if_only_changed: '^[^/]+\.md$'
     cluster: prow-workloads
     decorate: true
     decoration_config:
@@ -621,7 +624,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    skip_if_only_changed: '^[^/]+\.md$'
     cluster: prow-workloads
     decorate: true
     decoration_config:
@@ -681,7 +685,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    skip_if_only_changed: '^[^/]+\.md$'
     cluster: prow-workloads
     decorate: true
     decoration_config:
@@ -774,7 +779,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    skip_if_only_changed: '^[^/]+\.md$'
     cluster: prow-workloads
     decorate: true
     decoration_config:
