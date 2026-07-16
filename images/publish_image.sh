@@ -81,8 +81,8 @@ EOF
 get_image_tag() {
     local current_commit today
     current_commit="$(git rev-parse HEAD)"
-    today="$(date +%Y%m%d)"
-    echo "v${today}-${current_commit:0:7}"
+    now="$(date +%Y%m%d%H%M)"
+    echo "v${now}-${current_commit:0:7}"
 }
 
 build_image() {

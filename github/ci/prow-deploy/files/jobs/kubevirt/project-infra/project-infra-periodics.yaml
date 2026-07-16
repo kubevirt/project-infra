@@ -1060,7 +1060,8 @@ periodics:
       - -c
       args:
       - |
-        hack/git-pr.sh \
+        # TODO: remove dry-run mode once tags sorting order is fixed
+        hack/git-pr.sh --dry-run \
           --command "go run ./robots/image-bumper all --repo-root=$(pwd)" \
           --branch project-infra-image-bump \
           --repo project-infra \
