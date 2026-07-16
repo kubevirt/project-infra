@@ -2,7 +2,7 @@ presubmits:
   kubevirt/vm-file-restore-operator:
   - name: pull-vm-file-restore-operator-e2e
     skip_branches:
-      - release-\d+\.\d+
+      - release-v\d+\.\d+
     annotations:
       fork-per-release: "true"
     always_run: false
@@ -35,7 +35,7 @@ presubmits:
   - name: pull-vm-file-restore-operator-unit-test
     cluster: kubevirt-prow-control-plane
     skip_branches:
-      - release-\d+\.\d+
+      - release-v\d+\.\d+
     annotations:
       fork-per-release: "true"
     always_run: true
@@ -64,7 +64,7 @@ presubmits:
   - name: pull-vm-file-restore-operator-lint
     cluster: kubevirt-prow-control-plane
     skip_branches:
-      - release-\d+\.\d+
+      - release-v\d+\.\d+
     annotations:
       fork-per-release: "true"
     always_run: true
