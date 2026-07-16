@@ -25,9 +25,12 @@ import (
 	"fmt"
 	"os/exec"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // kubevirtCITagPattern matches tags selected by hack/update-jobs-with-latest-image.sh
@@ -37,6 +40,8 @@ var ErrNoMatchingTag = errors.New("no tag matching kubevirtci date-hash pattern"
 type listTagsCommand func(imageRef string) ([]string, error)
 
 var listTagsCmd = func(imageRef string) ([]string, error) {
+	logEntry := log.WithField("command", fmt.Sprintf("%s %s %s", "skopeo", "list-tags", "docker://"+imageRef))
+	logEntry.Debug("running")
 	cmd := exec.Command("skopeo", "list-tags", "docker://"+imageRef)
 	out, err := cmd.Output()
 	if err != nil {
@@ -52,12 +57,15 @@ var listTagsCmd = func(imageRef string) ([]string, error) {
 	if err := json.Unmarshal(out, &parsed); err != nil {
 		return nil, fmt.Errorf("parse skopeo output: %w", err)
 	}
+	logEntry.WithField("parsed", parsed).Debug("done")
 	return parsed.Tags, nil
 }
 
 type inspectCommand func(fullImageRef string) (time.Time, error)
 
 var inspectCmd = func(fullImageRef string) (time.Time, error) {
+	logEntry := log.WithField("command", fmt.Sprintf("%s %s %s", "skopeo", "inspect", "docker://"+fullImageRef))
+	logEntry.Debug("running")
 	cmd := exec.Command("skopeo", "inspect", "docker://"+fullImageRef)
 	out, err := cmd.Output()
 	if err != nil {
@@ -73,6 +81,7 @@ var inspectCmd = func(fullImageRef string) (time.Time, error) {
 	if err := json.Unmarshal(out, &parsed); err != nil {
 		return time.Time{}, fmt.Errorf("parse skopeo inspect output: %w", err)
 	}
+	logEntry.WithField("parsed", parsed).Debug("done")
 	return parsed.Created, nil
 }
 
@@ -94,18 +103,35 @@ func LatestSkopeoTag(imageRef string) (string, error) {
 		return "", fmt.Errorf("%w for %s (pattern %s)", ErrNoMatchingTag, imageRef, kubevirtCITagPattern.String())
 	}
 
-	var sortErrs []error
-	sort.Slice(allMatching, func(i, j int) bool {
-		iDateTime, jDateTime := strings.Split(allMatching[i], "-")[0], strings.Split(allMatching[j], "-")[0]
-		if iDateTime != jDateTime {
-			return iDateTime < jDateTime
+	// First pass, reverse sort, so newest elements should be at the start
+	slices.Reverse(allMatching)
+
+	// Now reduce to the subset of the latest candidates, i.e. remove all that don't have the date component of the last
+	// entry
+	dateComponent := strings.Split(allMatching[0], "-")[0]
+	var candidates []string
+	for _, c := range allMatching {
+		if !strings.HasPrefix(c, dateComponent) {
+			continue
 		}
-		iCreated, err := inspectCmd(fmt.Sprintf("%s:%s", imageRef, allMatching[i]))
+		candidates = append(candidates, c)
+	}
+
+	// Only one left, done
+	if len(candidates) == 1 {
+		return candidates[0], nil
+	}
+
+	// Now sort the candidates again, using skopeo inspect to look up the Created date
+	// This time the most recent tag will show up at the bottom
+	var sortErrs []error
+	sort.Slice(candidates, func(i, j int) bool {
+		iCreated, err := inspectCmd(fmt.Sprintf("%s:%s", imageRef, candidates[i]))
 		if err != nil {
 			sortErrs = append(sortErrs, err)
 			return false
 		}
-		jCreated, err := inspectCmd(fmt.Sprintf("%s:%s", imageRef, allMatching[j]))
+		jCreated, err := inspectCmd(fmt.Sprintf("%s:%s", imageRef, candidates[j]))
 		if err != nil {
 			sortErrs = append(sortErrs, err)
 			return false
@@ -116,5 +142,5 @@ func LatestSkopeoTag(imageRef string) (string, error) {
 		return "", fmt.Errorf("errors when sorting tags: %w", errors.Join(sortErrs...))
 	}
 
-	return allMatching[len(allMatching)-1], nil
+	return allMatching[len(candidates)-1], nil
 }
