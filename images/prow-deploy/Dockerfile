@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/golang:v20260707-cacb217 as builder
+FROM quay.io/kubevirtci/golang:v20260715-af3e234 as builder
 
 RUN git clone --depth 1 --revision 3815e13b727dd09738bf9bd7e8a06ab616cb0d62 https://github.com/kubernetes/test-infra.git && \
   cd test-infra && \
@@ -7,7 +7,7 @@ RUN git clone --depth 1 --revision 3815e13b727dd09738bf9bd7e8a06ab616cb0d62 http
 
 FROM gcr.io/k8s-prow/config-bootstrapper:v20221117-3815e13b72 as cfg-bootstrap
 
-FROM quay.io/kubevirtci/bootstrap:v20260707-cacb217
+FROM quay.io/kubevirtci/bootstrap:v20260715-af3e234
 
 COPY --from=builder /usr/local/bin/phony /usr/local/bin/
 COPY --from=cfg-bootstrap /ko-app/config-bootstrapper /usr/local/bin/
