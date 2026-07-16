@@ -70,7 +70,7 @@ var _ = Describe("GitHubEventsServer", func() {
 			req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(payload))
 			req.Header.Set("X-GitHub-Event", "pull_request")
 			req.Header.Set("X-GitHub-Delivery", "test-guid")
-			req.Header.Set("X-Hub-Signature", github.PayloadSignature(payload, hmacSecret))
+			req.Header.Set("X-Hub-Signature-256", github.PayloadSignature(payload, hmacSecret))
 			req.Header.Set("Content-Type", "application/json")
 
 			eventsServer.ServeHTTP(recorder, req)
@@ -88,7 +88,7 @@ var _ = Describe("GitHubEventsServer", func() {
 			req.Header.Set("X-GitHub-Delivery", "test-guid-456")
 			req.Header.Set("Content-Type", "application/json")
 			if setSignature {
-				req.Header.Set("X-Hub-Signature", signature)
+				req.Header.Set("X-Hub-Signature-256", signature)
 			}
 
 			eventsServer.ServeHTTP(recorder, req)

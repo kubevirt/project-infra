@@ -13,9 +13,8 @@ import (
 	"kubevirt.io/project-infra/external-plugins/phased/plugin/handler"
 
 	"github.com/sirupsen/logrus"
-	"k8s.io/test-infra/pkg/flagutil"
 	"sigs.k8s.io/prow/pkg/config/secret"
-	prowflagutil "sigs.k8s.io/prow/pkg/flagutil"
+	"sigs.k8s.io/prow/pkg/flagutil"
 	"sigs.k8s.io/prow/pkg/git/v2"
 	"sigs.k8s.io/prow/pkg/interrupts"
 	"sigs.k8s.io/prow/pkg/pluginhelp/externalplugins"
@@ -32,7 +31,7 @@ type options struct {
 	jobsConfigBase string
 	cacheDir       string
 	prowLocation   string
-	github         prowflagutil.GitHubOptions
+	github         flagutil.GitHubOptions
 }
 
 func (o *options) validate() {
@@ -117,7 +116,7 @@ func main() {
 	logger := setupLogger()
 	logger.Infoln("Setting up events server")
 
-	err := secret.Add(opts.github.TokenPath, opts.hmacSecretFile)
+	err := secret.Add(opts.hmacSecretFile)
 	mustSucceed(err, "Failed to start secrets agent")
 
 	githubClient, err := opts.github.GitHubClient(opts.dryRun)

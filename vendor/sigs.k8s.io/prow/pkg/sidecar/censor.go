@@ -26,6 +26,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -77,7 +78,14 @@ func (o Options) censor() error {
 		return fmt.Errorf("could not load secrets: %w", err)
 	}
 	logrus.WithField("secrets", len(secrets)).Debug("Loaded secrets to censor.")
-	censorer := secretutil.NewCensorer()
+
+	minLength := 0
+	if o.CensoringOptions.MinimumSecretLength != nil {
+		minLength = *o.CensoringOptions.MinimumSecretLength
+	}
+	logrus.WithField("minimum_secret_length", minLength).Debug("Using minimum secret length for censoring.")
+
+	censorer := secretutil.NewCensorerWithMinLength(minLength)
 	censorer.RefreshBytes(secrets...)
 
 	bufferSize := defaultBufferSize
@@ -519,11 +527,8 @@ func loadSecrets(paths, iniFilenames []string) ([][]byte, error) {
 			if info.Name() == ".dockerconfigjson" {
 				parser = loadDockerconfigJsonAuths
 			}
-			for _, filename := range iniFilenames {
-				if info.Name() == filename {
-					parser = loadIniData
-					break
-				}
+			if slices.Contains(iniFilenames, info.Name()) {
+				parser = loadIniData
 			}
 			extra, parseErr := parser(raw)
 			if parseErr != nil {

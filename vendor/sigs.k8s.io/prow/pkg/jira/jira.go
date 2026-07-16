@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/andygrunwald/go-jira"
 	"github.com/hashicorp/go-retryablehttp"
@@ -55,6 +56,7 @@ type Client interface {
 	// SearchWithContext will search for tickets according to the jql
 	// Jira API docs: https://developer.atlassian.com/jiradev/jira-apis/jira-rest-apis/jira-rest-api-tutorials/jira-rest-api-example-query-issues
 	SearchWithContext(ctx context.Context, jql string, options *jira.SearchOptions) ([]jira.Issue, *jira.Response, error)
+	SearchV2JqlWithContext(ctx context.Context, jql string, options *jira.SearchOptionsV2) ([]jira.Issue, *jira.Response, error)
 	UpdateIssue(*jira.Issue) (*jira.Issue, error)
 	CreateIssue(*jira.Issue) (*jira.Issue, error)
 	CreateIssueLink(*jira.IssueLink) error
@@ -71,10 +73,8 @@ type Client interface {
 	// is set for the issue, the returned SecurityLevel and error will both be nil and
 	// the issue will follow the default project security level.
 	GetIssueSecurityLevel(*jira.Issue) (*SecurityLevel, error)
-	// GetIssueQaContact get the user details for the QA contact. The QA contact is a custom field in Jira
-	GetIssueQaContact(*jira.Issue) (*jira.User, error)
-	// GetIssueTargetVersion get the issue Target Release. The target release is a custom field in Jira
-	GetIssueTargetVersion(issue *jira.Issue) (*[]*jira.Version, error)
+	// GetUser returns a single user by their Jira account ID.
+	GetUser(accountID string) (*jira.User, error)
 	// FindUser returns all users with a field matching the queryParam (ex: email, display name, etc.)
 	FindUser(queryParam string) ([]*jira.User, error)
 	GetRemoteLinks(id string) ([]jira.RemoteLink, error)
@@ -95,15 +95,23 @@ type Client interface {
 	Used() bool
 	WithFields(fields logrus.Fields) Client
 	GetProjectVersions(project string) ([]*jira.Version, error)
+	AddWatcher(issueID, userName string) error
+	AddWatcherWithContext(ctx context.Context, issueID, userName string) error
+	GetWatchers(issueID string) (*[]jira.User, error)
+	GetWatchersWithContext(ctx context.Context, issueID string) (*[]jira.User, error)
 }
 
 type BasicAuthGenerator func() (username, password string)
 type BearerAuthGenerator func() (token string)
 
 type Options struct {
-	BasicAuth  BasicAuthGenerator
-	BearerAuth BearerAuthGenerator
-	LogFields  logrus.Fields
+	BasicAuth    BasicAuthGenerator
+	BearerAuth   BearerAuthGenerator
+	LogFields    logrus.Fields
+	BackOff      retryablehttp.Backoff
+	RetryWaitMin time.Duration
+	RetryWaitMax time.Duration
+	RetryMax     int
 }
 
 type Option func(*Options)
@@ -123,6 +131,30 @@ func WithBearerAuth(token BearerAuthGenerator) Option {
 func WithFields(fields logrus.Fields) Option {
 	return func(o *Options) {
 		o.LogFields = fields
+	}
+}
+
+func WithBackOff(backoff retryablehttp.Backoff) Option {
+	return func(o *Options) {
+		o.BackOff = backoff
+	}
+}
+
+func WithRetryWaitMin(retryWaitMin time.Duration) Option {
+	return func(o *Options) {
+		o.RetryWaitMin = retryWaitMin
+	}
+}
+
+func WithRetryWaitMax(retryWaitMax time.Duration) Option {
+	return func(o *Options) {
+		o.RetryWaitMax = retryWaitMax
+	}
+}
+
+func WithRetryMax(retryMax int) Option {
+	return func(o *Options) {
+		o.RetryMax = retryMax
 	}
 }
 
@@ -149,6 +181,20 @@ func newJiraClient(endpoint string, o Options, retryingClient *retryablehttp.Cli
 			generator: o.BearerAuth,
 			upstream:  retryingClient.HTTPClient.Transport,
 		}
+	}
+
+	if o.BackOff != nil {
+		retryingClient.Backoff = o.BackOff
+	}
+
+	if o.RetryWaitMin == 0 {
+		retryingClient.RetryWaitMin = 1 * time.Second
+	}
+	if o.RetryWaitMax == 0 {
+		retryingClient.RetryWaitMax = 30 * time.Second
+	}
+	if o.RetryMax == 0 {
+		retryingClient.RetryMax = 4
 	}
 
 	return jira.NewClient(retryingClient.StandardClient(), endpoint)
@@ -351,6 +397,17 @@ func (jc *client) DeleteRemoteLinkViaURL(issueID, url string) (bool, error) {
 	return DeleteRemoteLinkViaURL(jc, issueID, url)
 }
 
+func (jc *client) GetUser(accountID string) (*jira.User, error) {
+	user, response, err := jc.upstream.User.Get(accountID)
+	if err != nil {
+		if response != nil && response.StatusCode == http.StatusNotFound {
+			return nil, NotFoundError{err}
+		}
+		return nil, HandleJiraError(response, err)
+	}
+	return user, nil
+}
+
 func (jc *client) FindUser(queryParam string) ([]*jira.User, error) {
 	// JIRA's own documentation here is incorrect; it specifies that either 'accountID',
 	// 'query', or 'property' must be used. However, JIRA throws an error unless 'username'
@@ -470,10 +527,14 @@ func CloneIssue(jc Client, parent *jira.Issue) (*jira.Issue, error) {
 	// update description
 	childIssue.Fields.Description = fmt.Sprintf("This is a clone of issue %s. The following is the description of the original issue: \n---\n%s", parent.Key, parent.Fields.Description)
 
-	// attempt to create the new issue
-	createdIssue, err := jc.CreateIssue(childIssue)
-	if err != nil {
-		// some fields cannot be set on creation; unset them
+	// attempt to create the new issue; some fields cannot be set on creation,
+	// and Jira may report them across multiple attempts, so retry in a loop
+	var createdIssue *jira.Issue
+	for range 5 {
+		createdIssue, err = jc.CreateIssue(childIssue)
+		if err == nil {
+			break
+		}
 		if JiraErrorStatusCode(err) != 400 {
 			return nil, err
 		}
@@ -485,10 +546,9 @@ func CloneIssue(jc Client, parent *jira.Issue) (*jira.Issue, error) {
 			// unsetProblematicFields is not useful in these cases
 			return nil, err
 		}
-		createdIssue, err = jc.CreateIssue(childIssue)
-		if err != nil {
-			return nil, err
-		}
+	}
+	if err != nil {
+		return nil, err
 	}
 
 	// create clone links
@@ -528,11 +588,11 @@ func unsetProblematicFields(issue *jira.Issue, responseBody string) (*jira.Issue
 	if err != nil {
 		return nil, err
 	}
-	issueMap := make(map[string]interface{})
+	issueMap := make(map[string]any)
 	if err := json.Unmarshal(marshalledIssue, &issueMap); err != nil {
 		return nil, err
 	}
-	fieldsMap := issueMap["fields"].(map[string]interface{})
+	fieldsMap := issueMap["fields"].(map[string]any)
 	for field := range processedResponse.Errors {
 		delete(fieldsMap, field)
 	}
@@ -623,7 +683,7 @@ func (bart *bearerAuthRoundtripper) RoundTrip(req *http.Request) (*http.Response
 	req2.URL = new(url.URL)
 	*req2.URL = *req.URL
 	token := bart.generator()
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 	logrus.WithField("curl", toCurl(req2)).Trace("Executing http request")
 	return bart.upstream.RoundTrip(req2)
 }
@@ -730,14 +790,14 @@ func HandleJiraError(response *jira.Response, err error) error {
 
 // toCurl is a slightly adjusted copy of https://github.com/kubernetes/kubernetes/blob/74053d555d71a14e3853b97e204d7d6415521375/staging/src/k8s.io/client-go/transport/round_trippers.go#L339
 func toCurl(r *http.Request) string {
-	headers := ""
+	var headers strings.Builder
 	for key, values := range r.Header {
 		for _, value := range values {
-			headers += fmt.Sprintf(` -H %q`, fmt.Sprintf("%s: %s", key, maskAuthorizationHeader(key, value)))
+			headers.WriteString(fmt.Sprintf(` -H %q`, fmt.Sprintf("%s: %s", key, maskAuthorizationHeader(key, value))))
 		}
 	}
 
-	return fmt.Sprintf("curl -k -v -X%s %s '%s'", r.Method, headers, r.URL.String())
+	return fmt.Sprintf("curl -k -v -X%s %s '%s'", r.Method, headers.String(), r.URL.String())
 }
 
 type retryableHTTPLogrusWrapper struct {
@@ -747,7 +807,7 @@ type retryableHTTPLogrusWrapper struct {
 // fieldsForContext translates a list of context fields to a
 // logrus format; any items that don't conform to our expectations
 // are omitted
-func (l *retryableHTTPLogrusWrapper) fieldsForContext(context ...interface{}) logrus.Fields {
+func (l *retryableHTTPLogrusWrapper) fieldsForContext(context ...any) logrus.Fields {
 	fields := logrus.Fields{}
 	for i := 0; i < len(context)-1; i += 2 {
 		key, ok := context[i].(string)
@@ -759,19 +819,19 @@ func (l *retryableHTTPLogrusWrapper) fieldsForContext(context ...interface{}) lo
 	return fields
 }
 
-func (l *retryableHTTPLogrusWrapper) Error(msg string, context ...interface{}) {
+func (l *retryableHTTPLogrusWrapper) Error(msg string, context ...any) {
 	l.log.WithFields(l.fieldsForContext(context...)).Error(msg)
 }
 
-func (l *retryableHTTPLogrusWrapper) Info(msg string, context ...interface{}) {
+func (l *retryableHTTPLogrusWrapper) Info(msg string, context ...any) {
 	l.log.WithFields(l.fieldsForContext(context...)).Info(msg)
 }
 
-func (l *retryableHTTPLogrusWrapper) Debug(msg string, context ...interface{}) {
+func (l *retryableHTTPLogrusWrapper) Debug(msg string, context ...any) {
 	l.log.WithFields(l.fieldsForContext(context...)).Debug(msg)
 }
 
-func (l *retryableHTTPLogrusWrapper) Warn(msg string, context ...interface{}) {
+func (l *retryableHTTPLogrusWrapper) Warn(msg string, context ...any) {
 	l.log.WithFields(l.fieldsForContext(context...)).Warn(msg)
 }
 
@@ -786,7 +846,18 @@ func (jc *client) SearchWithContext(ctx context.Context, jql string, options *ji
 	return issues, response, nil
 }
 
-func GetUnknownField(field string, issue *jira.Issue, fn func() interface{}) error {
+func (jc *client) SearchV2JqlWithContext(ctx context.Context, jql string, options *jira.SearchOptionsV2) ([]jira.Issue, *jira.Response, error) {
+	issues, response, err := jc.upstream.Issue.SearchV2JQLWithContext(ctx, jql, options)
+	if err != nil {
+		if response != nil && response.StatusCode == http.StatusNotFound {
+			return nil, response, NotFoundError{err}
+		}
+		return nil, response, HandleJiraError(response, err)
+	}
+	return issues, response, nil
+}
+
+func GetUnknownField(field string, issue *jira.Issue, fn func() any) error {
 	obj := fn()
 	unknownField, ok := issue.Fields.Unknowns[field]
 	if !ok {
@@ -811,7 +882,7 @@ func GetIssueSecurityLevel(issue *jira.Issue) (*SecurityLevel, error) {
 	// as part of the issue fields
 	// See https://github.com/andygrunwald/go-jira/issues/456
 	var obj *SecurityLevel
-	err := GetUnknownField("security", issue, func() interface{} {
+	err := GetUnknownField("security", issue, func() any {
 		obj = &SecurityLevel{}
 		return obj
 	})
@@ -820,32 +891,6 @@ func GetIssueSecurityLevel(issue *jira.Issue) (*SecurityLevel, error) {
 
 func (jc *client) GetIssueSecurityLevel(issue *jira.Issue) (*SecurityLevel, error) {
 	return GetIssueSecurityLevel(issue)
-}
-
-func GetIssueQaContact(issue *jira.Issue) (*jira.User, error) {
-	var obj *jira.User
-	err := GetUnknownField("customfield_12316243", issue, func() interface{} {
-		obj = &jira.User{}
-		return obj
-	})
-	return obj, err
-}
-
-func (jc *client) GetIssueQaContact(issue *jira.Issue) (*jira.User, error) {
-	return GetIssueQaContact(issue)
-}
-
-func GetIssueTargetVersion(issue *jira.Issue) (*[]*jira.Version, error) {
-	var obj *[]*jira.Version
-	err := GetUnknownField("customfield_12319940", issue, func() interface{} {
-		obj = &[]*jira.Version{{}}
-		return obj
-	})
-	return obj, err
-}
-
-func (jc *client) GetIssueTargetVersion(issue *jira.Issue) (*[]*jira.Version, error) {
-	return GetIssueTargetVersion(issue)
 }
 
 // GetProjectVersions returns the list of all the Versions defined in a Project
@@ -863,4 +908,49 @@ func (jc *client) GetProjectVersions(project string) ([]*jira.Version, error) {
 		return nil, HandleJiraError(resp, err)
 	}
 	return versions, nil
+}
+
+func (jc *client) GetWatchers(issueID string) (*[]jira.User, error) {
+	return jc.GetWatchersWithContext(context.Background(), issueID)
+}
+
+func (jc *client) GetWatchersWithContext(ctx context.Context, issueID string) (*[]jira.User, error) {
+	watchers, response, err := jc.upstream.Issue.GetWatchersWithContext(ctx, issueID)
+	if err != nil {
+		if response != nil && response.StatusCode == http.StatusNotFound {
+			return nil, NotFoundError{err}
+		}
+		return nil, HandleJiraError(response, err)
+	}
+	return watchers, nil
+}
+
+func (jc *client) AddWatcher(issueID, userName string) error {
+	return jc.AddWatcherWithContext(context.Background(), issueID, userName)
+}
+
+func (jc *client) AddWatcherWithContext(ctx context.Context, issueID, userName string) error {
+	response, err := jc.upstream.Issue.AddWatcherWithContext(ctx, issueID, userName)
+	if err != nil {
+		if response != nil && response.StatusCode == http.StatusNotFound {
+			return NotFoundError{err}
+		}
+		return HandleJiraError(response, err)
+	}
+	return nil
+}
+
+func (jc *client) RemoveWatcher(issueID, userName string) error {
+	return jc.RemoveWatcherWithContext(context.Background(), issueID, userName)
+}
+
+func (jc *client) RemoveWatcherWithContext(ctx context.Context, issueID, userName string) error {
+	response, err := jc.upstream.Issue.RemoveWatcherWithContext(ctx, issueID, userName)
+	if err != nil {
+		if response != nil && response.StatusCode == http.StatusNotFound {
+			return NotFoundError{err}
+		}
+		return HandleJiraError(response, err)
+	}
+	return nil
 }

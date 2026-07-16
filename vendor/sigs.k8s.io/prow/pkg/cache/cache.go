@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/hashicorp/golang-lru/simplelru"
+	"github.com/hashicorp/golang-lru/v2/simplelru"
 	"github.com/sirupsen/logrus"
 )
 
@@ -45,7 +45,7 @@ import (
 // LRUCache is the actual concurrent non-blocking cache.
 type LRUCache struct {
 	*sync.Mutex
-	*simplelru.LRU
+	*simplelru.LRU[any, any]
 	callbacks Callbacks
 }
 
@@ -64,13 +64,13 @@ type Callbacks struct {
 	LookupsCallback         EventCallback
 	HitsCallback            EventCallback
 	MissesCallback          EventCallback
-	ForcedEvictionsCallback simplelru.EvictCallback
+	ForcedEvictionsCallback simplelru.EvictCallback[any, any]
 	ManualEvictionsCallback EventCallback
 }
 
 // EventCallback is similar to simplelru.EvictCallback, except that it doesn't
 // take a value argument.
-type EventCallback func(key interface{})
+type EventCallback func(key any)
 
 // ValConstructor is used to construct a value. The assumption is that this
 // ValConstructor is expensive to compute, and that we need to memoize it via
@@ -79,7 +79,7 @@ type EventCallback func(key interface{})
 // arbitrary function whose resulting value needs to be memoized (saved in the
 // cache). This type also allows us to delay running the expensive computation
 // until we actually need it (after a cache miss).
-type ValConstructor func() (interface{}, error)
+type ValConstructor func() (any, error)
 
 // Promise is a wrapper around cache value construction; it is used to
 // synchronize the to-be-cached value between the first thread that undergoes a
@@ -90,7 +90,7 @@ type ValConstructor func() (interface{}, error)
 type Promise struct {
 	valConstructor         ValConstructor
 	valConstructionPending chan struct{}
-	val                    interface{}
+	val                    any
 	err                    error
 }
 
@@ -119,8 +119,9 @@ func (p *Promise) resolve() {
 // The forcedEvictionsCallback is a function that is called when an eviction occurs in the
 // underlying cache.
 func NewLRUCache(size int,
-	callbacks Callbacks) (*LRUCache, error) {
-	cache, err := simplelru.NewLRU(size, callbacks.ForcedEvictionsCallback)
+	callbacks Callbacks,
+) (*LRUCache, error) {
+	cache, err := simplelru.NewLRU[any, any](size, callbacks.ForcedEvictionsCallback)
 	if err != nil {
 		return nil, err
 	}
@@ -142,9 +143,9 @@ func NewLRUCache(size int,
 // This cache is resistant to cache stampedes because it uses a duplicate
 // suppression strategy. This is also called request coalescing.
 func (lruCache *LRUCache) GetOrAdd(
-	key interface{},
-	valConstructor ValConstructor) (interface{}, bool, error) {
-
+	key any,
+	valConstructor ValConstructor,
+) (any, bool, error) {
 	// Cache lookup.
 	if lruCache.callbacks.LookupsCallback != nil {
 		lruCache.callbacks.LookupsCallback(key)

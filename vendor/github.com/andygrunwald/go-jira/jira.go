@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	jwt "github.com/golang-jwt/jwt/v4"
 	"github.com/google/go-querystring/query"
 	"github.com/pkg/errors"
 )
@@ -58,6 +58,8 @@ type Client struct {
 	IssueLinkType    *IssueLinkTypeService
 	Organization     *OrganizationService
 	ServiceDesk      *ServiceDeskService
+	Customer         *CustomerService
+	Request          *RequestService
 }
 
 // NewClient returns a new Jira API client.
@@ -106,6 +108,8 @@ func NewClient(httpClient httpClient, baseURL string) (*Client, error) {
 	c.IssueLinkType = &IssueLinkTypeService{client: c}
 	c.Organization = &OrganizationService{client: c}
 	c.ServiceDesk = &ServiceDeskService{client: c}
+	c.Customer = &CustomerService{client: c}
+	c.Request = &RequestService{client: c}
 
 	return c, nil
 }
@@ -323,6 +327,10 @@ type Response struct {
 	StartAt    int
 	MaxResults int
 	Total      int
+
+	// *searchResultV2
+	IsLast        bool
+	NextPageToken string
 }
 
 func newResponse(r *http.Response, v interface{}) *Response {
@@ -339,6 +347,9 @@ func (r *Response) populatePageValues(v interface{}) {
 		r.StartAt = value.StartAt
 		r.MaxResults = value.MaxResults
 		r.Total = value.Total
+	case *searchResultV2:
+		r.IsLast = value.IsLast
+		r.NextPageToken = value.NextPageToken
 	case *groupMembersResult:
 		r.StartAt = value.StartAt
 		r.MaxResults = value.MaxResults
@@ -376,6 +387,77 @@ func (t *BasicAuthTransport) Client() *http.Client {
 }
 
 func (t *BasicAuthTransport) transport() http.RoundTripper {
+	if t.Transport != nil {
+		return t.Transport
+	}
+	return http.DefaultTransport
+}
+
+// BearerAuthTransport is a http.RoundTripper that authenticates all requests
+// using Jira's bearer (oauth 2.0 (3lo)) based authentication.
+type BearerAuthTransport struct {
+	Token string
+
+	// Transport is the underlying HTTP transport to use when making requests.
+	// It will default to http.DefaultTransport if nil.
+	Transport http.RoundTripper
+}
+
+// RoundTrip implements the RoundTripper interface.  We just add the
+// bearer token and return the RoundTripper for this transport type.
+func (t *BearerAuthTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req2 := cloneRequest(req) // per RoundTripper contract
+
+	req2.Header.Set("Authorization", fmt.Sprintf("Bearer %s", t.Token))
+	return t.transport().RoundTrip(req2)
+}
+
+// Client returns an *http.Client that makes requests that are authenticated
+// using HTTP Basic Authentication.  This is a nice little bit of sugar
+// so we can just get the client instead of creating the client in the calling code.
+// If it's necessary to send more information on client init, the calling code can
+// always skip this and set the transport itself.
+func (t *BearerAuthTransport) Client() *http.Client {
+	return &http.Client{Transport: t}
+}
+
+func (t *BearerAuthTransport) transport() http.RoundTripper {
+	if t.Transport != nil {
+		return t.Transport
+	}
+	return http.DefaultTransport
+}
+
+// PATAuthTransport is an http.RoundTripper that authenticates all requests
+// using the Personal Access Token specified.
+// See here for more info: https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html
+type PATAuthTransport struct {
+	// Token is the key that was provided by Jira when creating the Personal Access Token.
+	Token string
+
+	// Transport is the underlying HTTP transport to use when making requests.
+	// It will default to http.DefaultTransport if nil.
+	Transport http.RoundTripper
+}
+
+// RoundTrip implements the RoundTripper interface.  We just add the
+// basic auth and return the RoundTripper for this transport type.
+func (t *PATAuthTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req2 := cloneRequest(req) // per RoundTripper contract
+	req2.Header.Set("Authorization", "Bearer "+t.Token)
+	return t.transport().RoundTrip(req2)
+}
+
+// Client returns an *http.Client that makes requests that are authenticated
+// using HTTP Basic Authentication.  This is a nice little bit of sugar
+// so we can just get the client instead of creating the client in the calling code.
+// If it's necessary to send more information on client init, the calling code can
+// always skip this and set the transport itself.
+func (t *PATAuthTransport) Client() *http.Client {
+	return &http.Client{Transport: t}
+}
+
+func (t *PATAuthTransport) transport() http.RoundTripper {
 	if t.Transport != nil {
 		return t.Transport
 	}
@@ -444,6 +526,7 @@ func (t *CookieAuthTransport) setSessionObject() error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	t.SessionObject = resp.Cookies()
 	return nil
@@ -485,8 +568,9 @@ func (t *CookieAuthTransport) transport() http.RoundTripper {
 //
 // Jira docs: https://developer.atlassian.com/cloud/jira/platform/understanding-jwt
 // Examples in other languages:
-//    https://bitbucket.org/atlassian/atlassian-jwt-ruby/src/d44a8e7a4649e4f23edaa784402655fda7c816ea/lib/atlassian/jwt.rb
-//    https://bitbucket.org/atlassian/atlassian-jwt-py/src/master/atlassian_jwt/url_utils.py
+//
+//	https://bitbucket.org/atlassian/atlassian-jwt-ruby/src/d44a8e7a4649e4f23edaa784402655fda7c816ea/lib/atlassian/jwt.rb
+//	https://bitbucket.org/atlassian/atlassian-jwt-py/src/master/atlassian_jwt/url_utils.py
 type JWTAuthTransport struct {
 	Secret []byte
 	Issuer string

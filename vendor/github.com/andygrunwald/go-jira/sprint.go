@@ -28,6 +28,7 @@ type IssuesInSprintResult struct {
 // The maximum number of issues that can be moved in one operation is 50.
 //
 // Jira API docs: https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/sprint-moveIssuesToSprint
+// Caller must close resp.Body
 func (s *SprintService) MoveIssuesToSprintWithContext(ctx context.Context, sprintID int, issueIDs []string) (*Response, error) {
 	apiEndpoint := fmt.Sprintf("rest/agile/1.0/sprint/%d/issue", sprintID)
 
@@ -47,6 +48,7 @@ func (s *SprintService) MoveIssuesToSprintWithContext(ctx context.Context, sprin
 }
 
 // MoveIssuesToSprint wraps MoveIssuesToSprintWithContext using the background context.
+// Caller must close resp.Body
 func (s *SprintService) MoveIssuesToSprint(sprintID int, issueIDs []string) (*Response, error) {
 	return s.MoveIssuesToSprintWithContext(context.Background(), sprintID, issueIDs)
 }
@@ -84,7 +86,7 @@ func (s *SprintService) GetIssuesForSprint(sprintID int) ([]Issue, *Response, er
 // This can be an issue id, or an issue key.
 // If the issue cannot be found via an exact match, Jira will also look for the issue in a case-insensitive way, or by looking to see if the issue was moved.
 //
-// The given options will be appended to the query string
+// # The given options will be appended to the query string
 //
 // Jira API docs: https://docs.atlassian.com/jira-software/REST/7.3.1/#agile/1.0/issue-getIssue
 //

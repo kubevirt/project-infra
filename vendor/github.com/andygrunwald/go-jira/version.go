@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 )
 
 // VersionService handles Versions for the Jira instance / API.
@@ -68,7 +68,7 @@ func (s *VersionService) CreateWithContext(ctx context.Context, version *Version
 
 	responseVersion := new(Version)
 	defer resp.Body.Close()
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		e := fmt.Errorf("could not read the returned data")
 		return nil, resp, NewJiraError(resp, e)
@@ -89,6 +89,7 @@ func (s *VersionService) Create(version *Version) (*Version, *Response, error) {
 // UpdateWithContext updates a version from a JSON representation.
 //
 // Jira API docs: https://developer.atlassian.com/cloud/jira/platform/rest/#api-api-2-version-id-put
+// Caller must close resp.Body
 func (s *VersionService) UpdateWithContext(ctx context.Context, version *Version) (*Version, *Response, error) {
 	apiEndpoint := fmt.Sprintf("rest/api/2/version/%v", version.ID)
 	req, err := s.client.NewRequestWithContext(ctx, "PUT", apiEndpoint, version)
@@ -108,6 +109,7 @@ func (s *VersionService) UpdateWithContext(ctx context.Context, version *Version
 }
 
 // Update wraps UpdateWithContext using the background context.
+// Caller must close resp.Body
 func (s *VersionService) Update(version *Version) (*Version, *Response, error) {
 	return s.UpdateWithContext(context.Background(), version)
 }

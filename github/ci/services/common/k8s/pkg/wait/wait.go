@@ -48,17 +48,22 @@ func ForDeploymentReady(namespace, name string) {
 	stop := newStopChan()
 
 	watchlist := cache.NewListWatchFromClient(clientset.AppsV1().RESTClient(), "deployments", namespace, fields.Everything())
-	_, controller := cache.NewInformer(watchlist, &appsv1.Deployment{}, poll, cache.ResourceEventHandlerFuncs{
-		UpdateFunc: func(o, n interface{}) {
-			newDeployment := n.(*appsv1.Deployment)
+	_, controller := cache.NewInformerWithOptions(cache.InformerOptions{
+		ListerWatcher: watchlist,
+		ObjectType:    &appsv1.Deployment{},
+		ResyncPeriod:  poll,
+		Handler: cache.ResourceEventHandlerFuncs{
+			UpdateFunc: func(o, n interface{}) {
+				newDeployment := n.(*appsv1.Deployment)
 
-			if newDeployment.Name != name {
-				return
-			}
-			if isDeploymentReady(newDeployment) {
-				stop.closeOnce()
-				return
-			}
+				if newDeployment.Name != name {
+					return
+				}
+				if isDeploymentReady(newDeployment) {
+					stop.closeOnce()
+					return
+				}
+			},
 		},
 	})
 	waitForControllerWithTimeout(controller, stop, name, namespace)
@@ -73,17 +78,22 @@ func ForCertificateReady(namespace, name string) {
 	stop := newStopChan()
 
 	watchlist := cache.NewListWatchFromClient(clientset.CertmanagerV1().RESTClient(), "certificates", namespace, fields.Everything())
-	_, controller := cache.NewInformer(watchlist, &certmanagerv1.Certificate{}, poll, cache.ResourceEventHandlerFuncs{
-		UpdateFunc: func(o, n interface{}) {
-			newCertificate := n.(*certmanagerv1.Certificate)
+	_, controller := cache.NewInformerWithOptions(cache.InformerOptions{
+		ListerWatcher: watchlist,
+		ObjectType:    &certmanagerv1.Certificate{},
+		ResyncPeriod:  poll,
+		Handler: cache.ResourceEventHandlerFuncs{
+			UpdateFunc: func(o, n interface{}) {
+				newCertificate := n.(*certmanagerv1.Certificate)
 
-			if newCertificate.Name != name {
-				return
-			}
-			if isCertificateReady(newCertificate) {
-				stop.closeOnce()
-				return
-			}
+				if newCertificate.Name != name {
+					return
+				}
+				if isCertificateReady(newCertificate) {
+					stop.closeOnce()
+					return
+				}
+			},
 		},
 	})
 	waitForControllerWithTimeout(controller, stop, name, namespace)
@@ -128,24 +138,29 @@ func ForHTTP01IngressCreated(namespace, hostname string) {
 	stop := newStopChan()
 
 	watchlist := cache.NewListWatchFromClient(clientset.NetworkingV1().RESTClient(), "ingresses", namespace, fields.Everything())
-	_, controller := cache.NewInformer(watchlist, &networkingv1.Ingress{}, poll, cache.ResourceEventHandlerFuncs{
-		UpdateFunc: func(o, n interface{}) {
-			newIngress := n.(*networkingv1.Ingress)
+	_, controller := cache.NewInformerWithOptions(cache.InformerOptions{
+		ListerWatcher: watchlist,
+		ObjectType:    &networkingv1.Ingress{},
+		ResyncPeriod:  poll,
+		Handler: cache.ResourceEventHandlerFuncs{
+			UpdateFunc: func(o, n interface{}) {
+				newIngress := n.(*networkingv1.Ingress)
 
-			found := false
-			for labelKey, labelValue := range newIngress.Labels {
-				if labelKey == "acme.cert-manager.io/http01-solver" ||
-					labelValue == "true" {
-					found = true
+				found := false
+				for labelKey, labelValue := range newIngress.Labels {
+					if labelKey == "acme.cert-manager.io/http01-solver" ||
+						labelValue == "true" {
+						found = true
+					}
 				}
-			}
-			if !found {
-				return
-			}
-			if isHTTP01Ingress(newIngress, hostname) {
-				stop.closeOnce()
-				return
-			}
+				if !found {
+					return
+				}
+				if isHTTP01Ingress(newIngress, hostname) {
+					stop.closeOnce()
+					return
+				}
+			},
 		},
 	})
 	waitForControllerWithTimeout(controller, stop, hostname, namespace)
@@ -160,17 +175,22 @@ func ForStatefulsetReady(namespace, name string) {
 	stop := newStopChan()
 
 	watchlist := cache.NewListWatchFromClient(clientset.AppsV1().RESTClient(), "statefulsets", namespace, fields.Everything())
-	_, controller := cache.NewInformer(watchlist, &appsv1.StatefulSet{}, poll, cache.ResourceEventHandlerFuncs{
-		UpdateFunc: func(o, n interface{}) {
-			newStatefulset := n.(*appsv1.StatefulSet)
+	_, controller := cache.NewInformerWithOptions(cache.InformerOptions{
+		ListerWatcher: watchlist,
+		ObjectType:    &appsv1.StatefulSet{},
+		ResyncPeriod:  poll,
+		Handler: cache.ResourceEventHandlerFuncs{
+			UpdateFunc: func(o, n interface{}) {
+				newStatefulset := n.(*appsv1.StatefulSet)
 
-			if newStatefulset.Name != name {
-				return
-			}
-			if isStatefulsetReady(newStatefulset) {
-				stop.closeOnce()
-				return
-			}
+				if newStatefulset.Name != name {
+					return
+				}
+				if isStatefulsetReady(newStatefulset) {
+					stop.closeOnce()
+					return
+				}
+			},
 		},
 	})
 	waitForControllerWithTimeout(controller, stop, name, namespace)
@@ -206,17 +226,22 @@ func ForDaemonsetReady(namespace, name string) {
 	stop := newStopChan()
 
 	watchlist := cache.NewListWatchFromClient(clientset.AppsV1().RESTClient(), "daemonsets", namespace, fields.Everything())
-	_, controller := cache.NewInformer(watchlist, &appsv1.DaemonSet{}, poll, cache.ResourceEventHandlerFuncs{
-		UpdateFunc: func(o, n interface{}) {
-			newResource := n.(*appsv1.DaemonSet)
+	_, controller := cache.NewInformerWithOptions(cache.InformerOptions{
+		ListerWatcher: watchlist,
+		ObjectType:    &appsv1.DaemonSet{},
+		ResyncPeriod:  poll,
+		Handler: cache.ResourceEventHandlerFuncs{
+			UpdateFunc: func(o, n interface{}) {
+				newResource := n.(*appsv1.DaemonSet)
 
-			if newResource.Name != name {
-				return
-			}
-			if isDaemonsetReady(newResource) {
-				stop.closeOnce()
-				return
-			}
+				if newResource.Name != name {
+					return
+				}
+				if isDaemonsetReady(newResource) {
+					stop.closeOnce()
+					return
+				}
+			},
 		},
 	})
 	waitForControllerWithTimeout(controller, stop, name, namespace)
