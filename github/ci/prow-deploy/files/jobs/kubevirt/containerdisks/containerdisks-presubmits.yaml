@@ -21,7 +21,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 4Gi
@@ -46,7 +46,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 4Gi
@@ -76,7 +76,7 @@ presubmits:
           value: "go.mod"
         - name: FOCUS
           value: "centos-stream:9"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -110,7 +110,7 @@ presubmits:
           value: "centos-stream:9"
         - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
           value: "true"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -142,7 +142,7 @@ presubmits:
               value: "go.mod"
             - name: FOCUS
               value: "debian:*"
-          image: quay.io/kubevirtci/golang:v20260707-cacb217
+          image: quay.io/kubevirtci/golang:v20260715-af3e234
           resources:
             requests:
               memory: 12Gi
@@ -176,7 +176,7 @@ presubmits:
           value: "go.mod"
         - name: FOCUS
           value: "centos-stream:*"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -211,7 +211,7 @@ presubmits:
           value: "centos-stream:*"
         - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
           value: "true"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -243,7 +243,7 @@ presubmits:
           value: "go.mod"
         - name: FOCUS
           value: "fedora:*"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -278,7 +278,7 @@ presubmits:
           value: "fedora:*"
         - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
           value: "true"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -310,7 +310,7 @@ presubmits:
           value: "go.mod"
         - name: FOCUS
           value: "ubuntu:*"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -345,7 +345,7 @@ presubmits:
           value: "ubuntu:*"
         - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
           value: "true"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -377,7 +377,7 @@ presubmits:
           value: "go.mod"
         - name: FOCUS
           value: "opensuse-microos:*"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -412,7 +412,7 @@ presubmits:
           value: "opensuse-microos:*"
         - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
           value: "true"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -444,7 +444,7 @@ presubmits:
           value: "go.mod"
         - name: FOCUS
           value: "opensuse-tumbleweed:*"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -479,7 +479,7 @@ presubmits:
           value: "opensuse-tumbleweed:*"
         - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
           value: "true"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -511,7 +511,7 @@ presubmits:
           value: "go.mod"
         - name: FOCUS
           value: "opensuse-leap:*"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi

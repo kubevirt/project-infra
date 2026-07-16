@@ -1,6 +1,6 @@
 # Not using a staged build here as ginkgo-tests internally calls ginkgo which in
 # turn compiles the test suite. This requires the full Go toolchain
-FROM quay.io/kubevirtci/golang:v20260707-cacb217
+FROM quay.io/kubevirtci/golang:v20260715-af3e234
 RUN cd /project-infra && \
     /usr/local/bin/runner.sh /bin/sh -ce "env GOPROXY=off go build -tags netgo -o /go/bin/ginkgo-tests ./robots/ginkgo-tests"
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh", "/go/bin/ginkgo-tests"]
