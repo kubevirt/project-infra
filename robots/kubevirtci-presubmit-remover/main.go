@@ -18,6 +18,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
 	"kubevirt.io/project-infra/pkg/kubevirt/release"
 	"kubevirt.io/project-infra/pkg/querier"
@@ -31,17 +32,27 @@ import (
 
 const OrgAndRepoForJobConfig = "kubevirt/kubevirtci"
 
+var knownArchs = map[string]struct{}{
+	"s390x": {},
+}
+
 type options struct {
 	dryRun bool
 
 	TokenPath                        string
 	endpoint                         string
 	jobConfigPathKubevirtciPresubmit string
+	extraArchs                       string
 }
 
 func (o *options) Validate() error {
 	if _, err := os.Stat(o.jobConfigPathKubevirtciPresubmit); os.IsNotExist(err) {
 		return fmt.Errorf("jobConfigPathKubevirtciPresubmit is required: %v", err)
+	}
+	for _, arch := range parseExtraArchs(o.extraArchs) {
+		if _, ok := knownArchs[arch]; !ok {
+			return fmt.Errorf("unknown architecture %q in extra-archs", arch)
+		}
 	}
 	return nil
 }
@@ -53,6 +64,7 @@ func gatherOptions() options {
 	fs.StringVar(&o.TokenPath, "github-token-path", "/etc/github/oauth", "Path to the file containing the GitHub OAuth secret.")
 	fs.StringVar(&o.endpoint, "github-endpoint", "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
 	fs.StringVar(&o.jobConfigPathKubevirtciPresubmit, "job-config-path-kubevirtci-presubmit", "", "The directory of the k8s providers")
+	fs.StringVar(&o.extraArchs, "extra-archs", "", "Comma-separated list of extra architectures whose presubmit jobs should also be removed (e.g. s390x)")
 	err := fs.Parse(os.Args[1:])
 	if err != nil {
 		fmt.Println(fmt.Errorf("failed to parse args: %v", err))
@@ -117,7 +129,8 @@ func main() {
 	}
 
 	targetRelease := latestMinorReleases[3]
-	updated := deletePresubmitJobForRelease(&jobConfig, targetRelease)
+	extraArchs := parseExtraArchs(o.extraArchs)
+	updated := deletePresubmitJobForRelease(&jobConfig, targetRelease, extraArchs)
 	if !updated {
 		log.Info("Not updated, nothing to do")
 		os.Exit(0)
@@ -143,9 +156,12 @@ func main() {
 
 }
 
-func deletePresubmitJobForRelease(jobConfig *config.JobConfig, targetReleaseSemver *querier.SemVer) (updated bool) {
+func deletePresubmitJobForRelease(jobConfig *config.JobConfig, targetReleaseSemver *querier.SemVer, extraArchs []string) (updated bool) {
 	toDeleteJobNames := map[string]struct{}{}
 	toDeleteJobNames[createKubevirtciPresubmitJobName(targetReleaseSemver)] = struct{}{}
+	for _, arch := range extraArchs {
+		toDeleteJobNames[createKubevirtciPresubmitJobNameArch(targetReleaseSemver, arch)] = struct{}{}
+	}
 
 	var newPresubmits []config.Presubmit
 
@@ -164,6 +180,30 @@ func deletePresubmitJobForRelease(jobConfig *config.JobConfig, targetReleaseSemv
 	return
 }
 
+func parseExtraArchs(raw string) []string {
+	if raw == "" {
+		return nil
+	}
+	var archs []string
+	seen := make(map[string]struct{})
+	for _, a := range strings.Split(raw, ",") {
+		a = strings.TrimSpace(a)
+		if a == "" {
+			continue
+		}
+		if _, ok := seen[a]; ok {
+			continue
+		}
+		seen[a] = struct{}{}
+		archs = append(archs, a)
+	}
+	return archs
+}
+
 func createKubevirtciPresubmitJobName(latestReleaseSemver *querier.SemVer) string {
 	return fmt.Sprintf("check-provision-k8s-%s.%s", latestReleaseSemver.Major, latestReleaseSemver.Minor)
+}
+
+func createKubevirtciPresubmitJobNameArch(semver *querier.SemVer, arch string) string {
+	return fmt.Sprintf("check-provision-k8s-%s.%s-%s", semver.Major, semver.Minor, arch)
 }
