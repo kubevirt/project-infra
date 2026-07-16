@@ -16,7 +16,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 4
-    name: pull-kubevirt-e2e-k8s-1.34-sig-performance
+    name: pull-kubevirt-e2e-k8s-1.36-sig-performance
     run_if_changed: ^cmd/.*|^rpm/.*|^tests/performance/.*|^hack/perftests.sh|^tools/perfscale-audit/.*|^bazel/.*|^third_party/.*|^staging/src/.*|^api/.*|^pkg/virt-.*|^pkg/controller/.*|^pkg/monitoring/.*
     skip_branches:
     - release-\d+\.\d+
@@ -39,7 +39,7 @@ presubmits:
           FUNC_TEST_ARGS="--no-color --seed=42" make perftest
         env:
         - name: KUBEVIRT_PROVIDER
-          value: k8s-1.34
+          value: k8s-1.36
         - name: KUBEVIRT_STORAGE
           value: hpp
         - name: KUBEVIRT_MEMORY_SIZE
@@ -1774,7 +1774,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
-    name: pull-kubevirt-e2e-k8s-1.34-sig-performance-kwok
+    name: pull-kubevirt-e2e-k8s-1.36-sig-performance-kwok
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1794,7 +1794,7 @@ presubmits:
           FUNC_TEST_ARGS="--no-color --seed=42" make kwok-perftest
         env:
         - name: KUBEVIRT_PROVIDER
-          value: k8s-1.34
+          value: k8s-1.36
         - name: KUBEVIRT_MEMORY_SIZE
           value: 35G
         - name: KUBEVIRT_DEPLOY_KWOK
@@ -2382,7 +2382,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 4
-    name: pull-kubevirt-e2e-k8s-1.34-sig-performance-kube-burner
+    name: pull-kubevirt-e2e-k8s-1.36-sig-performance-kube-burner
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -2406,7 +2406,7 @@ presubmits:
           PERFSCALE_KUBE_BURNER=true ./automation/perfscale-test.sh
         env:
         - name: KUBEVIRT_PROVIDER
-          value: k8s-1.34
+          value: k8s-1.36
         - name: KUBEVIRT_MEMORY_SIZE
           value: 35G
         - name: KUBEVIRT_DEPLOY_PROMETHEUS
@@ -2425,7 +2425,7 @@ presubmits:
         - name: PERFAUDIT
           value: "true"
         - name: KUBECONFIG
-          value: kubevirtci/_ci-configs/k8s-1.34/.kubeconfig
+          value: kubevirtci/_ci-configs/k8s-1.36/.kubeconfig
         - name: IMAGE_PULL_POLICY
           value: Always
         - name: KUBE_BURNER_VERSION
