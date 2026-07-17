@@ -34,12 +34,15 @@ function main() {
     fi
 
     github_token_path="$1"
+    github_token_dir="${github_token_path%/*}"
+    github_token_file="${github_token_path##*/}"
+
     shift
 
     podman run \
-        -v "${github_token_path%/*}:/etc/github:Z" \
+        -v "${github_token_dir}:/etc/github:Z" \
         --rm quay.io/kubevirtci/migratestatus:v20250326-66cd380 \
-        --github-token-path "/etc/github/${github_token_path##*/}" $@
+        --github-token-path "/etc/github/${github_token_file##*/}" "$@"
 }
 
 main "$@"
