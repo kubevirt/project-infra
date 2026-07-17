@@ -39,7 +39,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -72,7 +72,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -104,7 +104,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -133,7 +133,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -171,7 +171,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -207,7 +207,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -241,7 +241,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -276,7 +276,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -300,7 +300,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -742,7 +742,7 @@ periodics:
   spec:
     containers:
     - name: peribolos
-      image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260709-bcf4297e5
+      image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260714-0633879af
       command:
       - /ko-app/peribolos
       args:
