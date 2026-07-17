@@ -33,9 +33,18 @@ spec:
               command: [ "/ko-app/label_sync" ]
               args:
               - --config=/etc/config/labels.yaml
+              - --github-endpoint=http://ghproxy
+              - --github-endpoint=https://api.github.com
+              - --github-app-id=$(GITHUB_APP_ID)
+              - --github-app-private-key-path=/etc/github/cert
               - --confirm=true
               - --only=nmstate/kubernetes-nmstate
-              - --token=/etc/github/token
+              env:
+                 - name: GITHUB_APP_ID
+                   valueFrom:
+                     secretKeyRef:
+                       name: github-token
+                       key: appid
               volumeMounts:
               - name: config
                 mountPath: /etc/config
@@ -43,6 +52,13 @@ spec:
               - name: github-token
                 mountPath: /etc/github
                 readOnly: true
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: [ALL]
+                runAsNonRoot: true
+                seccompProfile:
+                  type: RuntimeDefault
           restartPolicy: Never
           volumes:
           - name: config

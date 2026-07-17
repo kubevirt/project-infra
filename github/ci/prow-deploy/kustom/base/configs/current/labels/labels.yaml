@@ -1,4 +1,8 @@
 ---
+# KubeVirt Prow uses a presubmit ProwJob to validate the labels and a
+# kubernetes CronJob to reconcile them. Both jobs are duplicated to
+# reconcile kubevirt and nmstate organizations separately.
+# https://git.k8s.io/test-infra/label_sync/README.md
 default:
   labels:
     - color: 8fc951
