@@ -22,10 +22,10 @@ set -euo pipefail
 
 function usage() {
     cat <<EOF
-usage: $0 <path-to-oauth-token> [<arg-1>...<arg-n>]
+usage: $0 <path-to-github-token> [<arg-1>...<arg-n>]
        $0 --help
 
-       Example: $0 /path/to/github/oauth --username dhiller --repo project-infra --months 12
+       Example: $0 /path/to/github/token --username dhiller --repo project-infra --months 12
 EOF
 }
 
@@ -42,8 +42,8 @@ if [[ "$1" == "--help" ]]; then
     exit 1
 fi
 
-oauth_token="$1"
-if [[ ! -f "${oauth_token}" ]]; then
+github_token="$1"
+if [[ ! -f "${github_token}" ]]; then
     usage
     exit 1
 fi
@@ -55,11 +55,11 @@ temp_dir=$(mktemp -d /tmp/contributions-XXXXXX)
 
 podman run \
     -v "${temp_dir}:/tmp:z" \
-    -v "$(dirname "${oauth_token}"):/etc/github:Z" \
+    -v "$(dirname "${github_token}"):/etc/github:Z" \
     -v "${project_infra_dir}:/project-infra:z" \
     --rm \
     quay.io/kubevirtci/contributions:v20250417-cd6921f \
-    --github-token "/etc/github/$(basename "${oauth_token}")" \
+    --github-token "/etc/github/$(basename "${github_token}")" \
     --orgs-file-path "/project-infra/github/ci/prow-deploy/kustom/base/configs/current/orgs/orgs.yaml" \
     "$@" 2>&1 | tee "${temp_dir}/output.txt"
 report_file=$(grep -oE '[^/]*\.yaml' "${temp_dir}/output.txt" | head -n1)

@@ -1,5 +1,5 @@
 ---
-gitHubToken: "/etc/github/oauth"
+gitHubToken: "/etc/github/token"
 includedConfigPaths:
   - "/config/github/ci/prow-deploy/files/jobs"
   - "/config/github/ci/prow-deploy/kustom/base/manifests/local"

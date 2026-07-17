@@ -4,6 +4,8 @@ periodics:
     cluster: kubevirt-prow-control-plane
     annotations:
       testgrid-create-test-group: "false"
+    labels:
+      preset-github-credentials: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/flakefinder:v20260716-ff8cd14
@@ -14,7 +16,7 @@ periodics:
           - /usr/bin/flakefinder
           args:
             - --dry-run=false
-            - --token=/etc/github/oauth
+            - --token=/etc/github/token
             - --merged=168h
             - --report_output_child_path=k8snetworkplumbingwg/kubemacpool
             - --org=k8snetworkplumbingwg
@@ -22,15 +24,10 @@ periodics:
             - --skip_results_before_start_of_report=false
             - --pr_base_branch=main
           volumeMounts:
-            - name: token
-              mountPath: /etc/github
             - name: gcs
               mountPath: /etc/gcs
               readOnly: true
       volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: gcs
           secret:
             secretName: gcs
@@ -39,6 +36,8 @@ periodics:
     cluster: kubevirt-prow-control-plane
     annotations:
       testgrid-create-test-group: "false"
+    labels:
+      preset-github-credentials: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/flakefinder:v20260716-ff8cd14
@@ -49,7 +48,7 @@ periodics:
           - /usr/bin/flakefinder
           args:
             - --dry-run=false
-            - --token=/etc/github/oauth
+            - --token=/etc/github/token
             - --merged=24h
             - --report_output_child_path=k8snetworkplumbingwg/kubemacpool
             - --org=k8snetworkplumbingwg
@@ -57,15 +56,10 @@ periodics:
             - --skip_results_before_start_of_report=false
             - --pr_base_branch=main
           volumeMounts:
-            - name: token
-              mountPath: /etc/github
             - name: gcs
               mountPath: /etc/gcs
               readOnly: true
       volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: gcs
           secret:
             secretName: gcs
@@ -73,6 +67,8 @@ periodics:
     interval: 168h
     annotations:
       testgrid-create-test-group: "false"
+    labels:
+      preset-github-credentials: "true"
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
@@ -84,7 +80,7 @@ periodics:
           - /usr/bin/flakefinder
           args:
             - --dry-run=false
-            - --token=/etc/github/oauth
+            - --token=/etc/github/token
             - --merged=672h
             - --report_output_child_path=k8snetworkplumbingwg/kubemacpool
             - --org=k8snetworkplumbingwg
@@ -92,15 +88,10 @@ periodics:
             - --skip_results_before_start_of_report=false
             - --pr_base_branch=main
           volumeMounts:
-            - name: token
-              mountPath: /etc/github
             - name: gcs
               mountPath: /etc/gcs
               readOnly: true
       volumes:
-        - name: token
-          secret:
-            secretName: oauth-token
         - name: gcs
           secret:
             secretName: gcs

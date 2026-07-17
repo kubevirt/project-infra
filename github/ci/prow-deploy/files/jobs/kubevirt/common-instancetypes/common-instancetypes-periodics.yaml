@@ -302,7 +302,7 @@ periodics:
           command: ["/bin/bash", "-ce"]
           args:
             - |
-              if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=update-common-instancetypes-${KUBEVIRT_BRANCH} --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
+              if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=update-common-instancetypes-${KUBEVIRT_BRANCH} --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/token; then
                 export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
                 latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/common-instancetypes/releases | jq -r '.[] | select(.target_commitish == '\""${COMMON_INSTANCETYPES_BRANCH}"\"') | .tag_name' | head -n1)
                 description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"
@@ -391,7 +391,7 @@ periodics:
           command: ["/bin/bash", "-ce"]
           args:
             - |
-              if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=update-common-instancetypes-${KUBEVIRT_BRANCH} --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/oauth; then
+              if labels-checker --org=kubevirt --repo=kubevirt --author=kubevirt-bot --branch-name=update-common-instancetypes-${KUBEVIRT_BRANCH} --ensure-labels-missing=lgtm,approved,do-not-merge/hold --github-token-path=/etc/github/token; then
                 export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
                 latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/common-instancetypes/releases | jq -r '.[] | select(.target_commitish == '\""${COMMON_INSTANCETYPES_BRANCH}"\"') | .tag_name' | head -n1)
                 description="Automated update of common-instancetypes bundles to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated common-instancetypes bundles to ${latest_version}\n\\\`\\\`\\\`"

@@ -71,7 +71,6 @@ presubmits:
       fork-per-release: "true"
     always_run: false
     optional: true
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m

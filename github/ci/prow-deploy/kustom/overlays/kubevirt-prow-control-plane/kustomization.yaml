@@ -255,13 +255,6 @@ secretGenerator:
     type: Opaque
   - <<: *github_token
     namespace: kubevirt-prow-jobs
-  - &oauth_token
-    name: oauth-token
-    files:
-      - oauth=secrets/github/bot-token
-    type: Opaque
-  - <<: *oauth_token
-    namespace: kubevirt-prow-jobs
   - &gcs_credentials
     name: gcs-credentials
     files:

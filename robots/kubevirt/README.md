@@ -26,7 +26,7 @@ Flags:
 Global Flags:
 --dry-run                    Whether the file should get modified or just modifications printed to stdout. (default true)
 --github-endpoint string     GitHub's API endpoint (may differ for enterprise). (default "https://api.github.com/")
---github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/oauth")
+--github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/token")
 ```
 
 ### `kubevirt check presubmits`
@@ -48,7 +48,7 @@ Flags:
 Global Flags:
     --dry-run                    Whether the file should get modified or just modifications printed to stdout. (default true)
     --github-endpoint string     GitHub's API endpoint (may differ for enterprise). (default "https://api.github.com/")
-    --github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/oauth")
+    --github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/token")
 ```
 
 ### `kubevirt copy jobs`
@@ -80,7 +80,7 @@ Flags:
 Global Flags:
 --dry-run                    Whether the file should get modified or just modifications printed to stdout. (default true)
 --github-endpoint string     GitHub's API endpoint (may differ for enterprise). (default "https://api.github.com/")
---github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/oauth")
+--github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/token")
 ```
 
 ### `kubevirt get periodics`
@@ -103,7 +103,7 @@ Flags:
 Global Flags:
 --dry-run                    Whether the file should get modified or just modifications printed to stdout. (default true)
 --github-endpoint string     GitHub's API endpoint (may differ for enterprise). (default "https://api.github.com/")
---github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/oauth")
+--github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/token")
 ```
 
 ### `kubevirt get presubmits` 
@@ -127,7 +127,7 @@ Flags:
 Global Flags:
 --dry-run                    Whether the file should get modified or just modifications printed to stdout. (default true)
 --github-endpoint string     GitHub's API endpoint (may differ for enterprise). (default "https://api.github.com/")
---github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/oauth")
+--github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/token")
 ```
 
 ### `kubevirt remove always_run`
@@ -163,7 +163,7 @@ Flags:
 Global Flags:
 --dry-run                    Whether the file should get modified or just modifications printed to stdout. (default true)
 --github-endpoint string     GitHub's API endpoint (may differ for enterprise). (default "https://api.github.com/")
---github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/oauth")
+--github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/token")
 ```
 
 ### `kubevirt remove jobs`
@@ -200,7 +200,7 @@ Flags:
 Global Flags:
 --dry-run                    Whether the file should get modified or just modifications printed to stdout. (default true)
 --github-endpoint string     GitHub's API endpoint (may differ for enterprise). (default "https://api.github.com/")
---github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/oauth")
+--github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/token")
 ```
 
 ### `kubevirt require presubmits` 
@@ -235,7 +235,7 @@ Flags:
 Global Flags:
 --dry-run                    Whether the file should get modified or just modifications printed to stdout. (default true)
 --github-endpoint string     GitHub's API endpoint (may differ for enterprise). (default "https://api.github.com/")
---github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/oauth")
+--github-token-path string   Path to the file containing the GitHub OAuth secret. (default "/etc/github/token")
 ```
 
 Building

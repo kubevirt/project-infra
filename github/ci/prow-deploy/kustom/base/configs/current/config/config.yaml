@@ -894,7 +894,7 @@ presets:
   volumes:
   - name: github-token
     secret:
-      secretName: oauth-token
+      secretName: github-token
       defaultMode: 0400
   volumeMounts:
     - name: github-token

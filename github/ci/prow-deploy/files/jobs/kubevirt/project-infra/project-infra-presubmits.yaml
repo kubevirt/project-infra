@@ -889,7 +889,7 @@ presubmits:
         - --github-endpoint=http://ghproxy
         - --github-endpoint=https://api.github.com
         - --config-path=github/ci/prow-deploy/kustom/base/configs/current/orgs/orgs.yaml
-        - --github-token-path=/etc/github/oauth
+        - --github-token-path=/etc/github/token
         - --fix-org=true
         - --fix-org-members=true
         - --fix-repos=true
@@ -921,7 +921,7 @@ presubmits:
         - --config=github/ci/prow-deploy/kustom/base/configs/current/labels/labels.yaml
         - --confirm=false
         - --orgs=kubevirt
-        - --token=/etc/github/oauth
+        - --token=/etc/github/token
       restartPolicy: Never
   - name: pull-prow-nmstate-labels-update-precheck
     run_if_changed: '^github/ci/prow-deploy/kustom/base/configs/current/labels/labels\.yaml$'
@@ -943,7 +943,7 @@ presubmits:
         - --config=github/ci/prow-deploy/kustom/base/configs/current/labels/labels.yaml
         - --confirm=false
         - --only=nmstate/kubernetes-nmstate
-        - --token=/etc/github/oauth
+        - --token=/etc/github/token
       restartPolicy: Never
   - annotations:
       testgrid-create-test-group: "false"

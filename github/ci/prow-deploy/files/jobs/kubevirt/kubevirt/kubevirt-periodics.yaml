@@ -14,7 +14,7 @@ periodics:
     containers:
     - args:
       - --dry-run=false
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - --merged=24h
       - --today=true
       - --report_output_child_path=kubevirt/kubevirt
@@ -39,7 +39,7 @@ periodics:
     containers:
     - args:
       - --dry-run=false
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - --merged=168h
       - --report_output_child_path=kubevirt/kubevirt
       - --skip_results_before_start_of_report=false
@@ -67,7 +67,7 @@ periodics:
     containers:
     - args:
       - --dry-run=false
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - --merged=24h
       - --report_output_child_path=kubevirt/kubevirt
       - --skip_results_before_start_of_report=false
@@ -140,8 +140,8 @@ periodics:
       - name: GITHUB_TOKEN
         valueFrom:
           secretKeyRef:
-            key: oauth
-            name: oauth-token
+            name: github-token
+            key: token
       image: quay.io/kubevirtci/golang:v20260715-af3e234
       resources: {}
 - annotations:
@@ -360,7 +360,7 @@ periodics:
       - name: GIT_USER_NAME
         value: kubevirt-bot
       - name: GITHUB_TOKEN_PATH
-        value: /etc/github/oauth
+        value: /etc/github/token
       - name: BUILD_ARCH
         value: amd64,crossbuild-s390x,crossbuild-aarch64
       image: quay.io/kubevirtci/golang:v20260715-af3e234
@@ -754,6 +754,7 @@ periodics:
   labels:
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
+    preset-github-credentials: "true"
     preset-kubevirtci-quay-credential: "true"
     preset-pgp-bot-key: "true"
     preset-podman-in-container-enabled: "true"
@@ -796,23 +797,14 @@ periodics:
         value: Always
       - name: BUILD_ARCH
         value: crossbuild-s390x
-      - name: GIT_ASKPASS
-        value: ../project-infra/hack/git-askpass.sh
       image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
       resources:
         requests:
           memory: 8Gi
       securityContext:
         privileged: true
-      volumeMounts:
-      - mountPath: /etc/github
-        name: token
     nodeSelector:
       type: bare-metal-external
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
@@ -1732,7 +1724,7 @@ periodics:
             --org kubevirt \
             --repo kubevirt \
             --path-to-repository $kubevirt_dir \
-            --github-token-file /etc/github/oauth
+            --github-token-file /etc/github/token
         cd ${sig_release_dir}
         git add upcoming-changes.md
         if git diff --name-only --exit-code HEAD; then
@@ -2234,6 +2226,7 @@ periodics:
   labels:
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
+    preset-github-credentials: "true"
     preset-kubevirtci-quay-credential: "true"
     preset-pgp-bot-key: "true"
     preset-podman-in-container-enabled: "true"
@@ -2273,21 +2266,12 @@ periodics:
         value: Always
       - name: BUILD_ARCH
         value: amd64,crossbuild-s390x
-      - name: GIT_ASKPASS
-        value: ../project-infra/hack/git-askpass.sh
       image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
       resources:
         requests:
           memory: 8Gi
       securityContext:
         privileged: true
-      volumeMounts:
-      - mountPath: /etc/github
-        name: token
-    volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
 - annotations:
     testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
     testgrid-dashboards: kubevirt-periodics

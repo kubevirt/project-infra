@@ -145,7 +145,6 @@ periodics:
   cron: "0 4 * * 2"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 2h
   max_concurrency: 1
@@ -196,7 +195,6 @@ periodics:
   cron: "0 4 * * 2" #Triggered at same time as x86 job so that both will run on same commit
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 2h
   max_concurrency: 1
@@ -298,7 +296,7 @@ periodics:
         cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io
         PROVISION_CENTOS_VERSION=10 ./hack/bump-centos-version.sh
         SHORT_SHA=$(git rev-parse --short HEAD)
-        GIT_ASKPASS=../project-infra/hack/git-askpass.sh ../project-infra/hack/git-pr.sh \
+        ../project-infra/hack/git-pr.sh \
         --command "PROVISION_CENTOS_VERSION=10 PHASES=linux BYPASS_PMAN_CHANGE_CHECK=true ./publish.sh" \
         --repo kubevirtci \
         --branch bump-centos10-stream \

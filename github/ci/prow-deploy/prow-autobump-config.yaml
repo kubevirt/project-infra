@@ -1,5 +1,5 @@
 ---
-gitHubToken: "/etc/github/oauth"
+gitHubToken: "/etc/github/token"
 includedConfigPaths:
   - "/config/github/ci/prow-deploy/kustom/base/configs/current/config"
   - "/config/github/ci/prow-deploy/kustom/overlays/kubevirt-prow-control-plane/resources"
