@@ -43,7 +43,7 @@ repo_path=${PWD}
 summary=
 targetbranch=master
 title=
-token=/etc/github/oauth
+token=/etc/github/token
 user=kubevirt-bot
 
 usage() {

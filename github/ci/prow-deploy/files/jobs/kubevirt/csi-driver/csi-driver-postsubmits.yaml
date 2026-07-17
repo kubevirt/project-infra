@@ -61,7 +61,7 @@ postsubmits:
           - name: GH_CLI_VERSION
             value: "1.5.0"
           - name: GITHUB_TOKEN_PATH
-            value: /etc/github/oauth
+            value: /etc/github/token
           - name: GITHUB_REPOSITORY
             value: kubevirt/csi-driver
           - name: GIT_USER_NAME

@@ -73,7 +73,7 @@ func (o *options) Validate() error {
 func gatherOptions() options {
 	o := options{}
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-	fs.StringVar(&o.TokenPath, "github-token-path", "/etc/github/oauth", "Path to the file containing the GitHub OAuth secret.")
+	fs.StringVar(&o.TokenPath, "github-token-path", "/etc/github/token", "Path to the file containing the GitHub OAuth secret.")
 	fs.StringVar(&o.endpoint, "github-endpoint", "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
 	fs.BoolVar(&o.ensureLatest, "ensure-latest", false, "Ensure that we have a provider for the latest k8s release")
 	fs.StringVar(&o.forceTargetMajorMinor, "force-target-major-minor", "", `when using ensure-latest, override latest k8s release to use given target major.minor (i.e. "1.28"`)

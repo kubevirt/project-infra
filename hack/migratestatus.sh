@@ -33,14 +33,16 @@ function main() {
         exit 1
     fi
 
-    oauth_token_dir="$(realpath $(dirname $1))"
-    oauth_file_name="$(basename $1)"
+    github_token_path="$1"
+    github_token_dir="${github_token_path%/*}"
+    github_token_file="${github_token_path##*/}"
+
     shift
 
     podman run \
-        -v "$oauth_token_dir:/etc/tokens:z" \
+        -v "${github_token_dir}:/etc/github:Z" \
         --rm quay.io/kubevirtci/migratestatus:v20250326-66cd380 \
-        --github-token-path "/etc/tokens/$oauth_file_name" $@
+        --github-token-path "/etc/github/${github_token_file##*/}" "$@"
 }
 
 main "$@"

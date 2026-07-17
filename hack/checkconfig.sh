@@ -30,4 +30,6 @@ podman run --rm \
     --config-path /project-infra/github/ci/prow-deploy/files/config.yaml \
     --job-config-path /project-infra/github/ci/prow-deploy/files/jobs \
     --plugin-config /project-infra/github/ci/prow-deploy/files/plugins.yaml \
-    --strict
+    --strict \
+    --include-default-warnings \
+    --warnings unknown-fields-all

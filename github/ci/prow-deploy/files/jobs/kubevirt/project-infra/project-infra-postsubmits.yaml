@@ -956,7 +956,7 @@ postsubmits:
           - name: TARGET_GITHUB_REPO
             value: kubevirt/ci-performance-benchmarks
           - name: GITHUB_TOKEN_PATH
-            value: /etc/github/oauth
+            value: /etc/github/token
           command:
           - /usr/local/bin/runner.sh
           - /bin/sh

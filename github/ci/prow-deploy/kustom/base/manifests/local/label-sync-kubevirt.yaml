@@ -35,19 +35,19 @@ spec:
               - --config=/etc/config/labels.yaml
               - --confirm=true
               - --orgs=kubevirt
-              - --token=/etc/github/oauth
+              - --token=/etc/github/token
               volumeMounts:
-              - name: oauth
-                mountPath: /etc/github
-                readOnly: true
               - name: config
                 mountPath: /etc/config
                 readOnly: true
+              - name: github-token
+                mountPath: /etc/github
+                readOnly: true
           restartPolicy: Never
           volumes:
-          - name: oauth
-            secret:
-              secretName: oauth-token
           - name: config
             configMap:
               name: label-config
+          - name: github-token
+            secret:
+              secretName: github-token

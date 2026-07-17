@@ -54,7 +54,7 @@ func (o GlobalOptions) Validate() error {
 
 func AddPersistentFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().BoolVar(&Options.DryRun, FlagDryRun, true, "Whether the file should get modified or just modifications printed to stdout.")
-	cmd.PersistentFlags().StringVar(&Options.GitHubTokenPath, FlagGitHubTokenPath, "/etc/github/oauth", "Path to the file containing the GitHub OAuth secret.")
+	cmd.PersistentFlags().StringVar(&Options.GitHubTokenPath, FlagGitHubTokenPath, "/etc/github/token", "Path to the file containing the GitHub OAuth secret.")
 	cmd.PersistentFlags().StringVar(&Options.GitHubEndPoint, FlagGitHubEndpoint, "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
 }
 

@@ -15,6 +15,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
         preset-kubevirtci-quay-credential: "true"
       branches:
         - main
@@ -23,8 +24,6 @@ postsubmits:
         containers:
           - image: quay.io/kubevirtci/golang:v20260715-af3e234
             env:
-            - name: GIT_ASKPASS
-              value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
             - name: GITHUB_USER
               value: kubevirt-bot
             - name: GITHUB_EMAIL
@@ -35,17 +34,14 @@ postsubmits:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
               - "-c"
-              - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && ./automation/publish.sh"
+            args:
+              - |
+                export GIT_ASKPASS=/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh
+
+                cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && ./automation/publish.sh
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
-            volumeMounts:
-              - name: github-token
-                mountPath: /etc/github
-        volumes:
-          - name: github-token
-            secret:
-              secretName: oauth-token
 
     - name: release-kubernetes-nmstate
       annotations:
@@ -58,6 +54,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
+        preset-github-credentials: "true"
         preset-kubevirtci-quay-credential: "true"
       branches:
         - ^v\d+\.\d+\.\d+$
@@ -66,8 +63,6 @@ postsubmits:
         containers:
           - image: quay.io/kubevirtci/golang:v20260715-af3e234
             env:
-            - name: GIT_ASKPASS
-              value: "/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh"
             - name: GITHUB_USER
               value: kubevirt-bot
             - name: GITHUB_EMAIL
@@ -78,14 +73,11 @@ postsubmits:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
               - "-c"
-              - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && GITHUB_TOKEN=$(cat /etc/github/oauth) ./automation/release.sh"
+            args:
+              - |
+                export GIT_ASKPASS=/home/prow/go/src/github.com/kubevirt/project-infra/hack/git-askpass.sh
+
+                cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && GITHUB_TOKEN=$(cat /etc/github/token) ./automation/release.sh"
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
-            volumeMounts:
-              - name: github-token
-                mountPath: /etc/github
-        volumes:
-          - name: github-token
-            secret:
-              secretName: oauth-token

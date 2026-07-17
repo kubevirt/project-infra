@@ -65,7 +65,7 @@ func (o *options) getEnsureLabelsMissing() []string {
 var o = options{}
 
 func init() {
-	flag.StringVar(&o.tokenPath, "github-token-path", "/etc/github/oauth", "Path to the file containing the GitHub OAuth secret.")
+	flag.StringVar(&o.tokenPath, "github-token-path", "/etc/github/token", "Path to the file containing the GitHub OAuth secret.")
 	flag.StringVar(&o.endpoint, "github-endpoint", "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
 	flag.StringVar(&o.org, "org", "", "The org for the PR.")
 	flag.StringVar(&o.repo, "repo", "", "The repo for the PR.")

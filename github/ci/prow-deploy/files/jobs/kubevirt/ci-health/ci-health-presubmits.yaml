@@ -21,7 +21,7 @@ presubmits:
         - name: GIMME_GO_VERSION
           value: "1.24.3"
         - name: GITHUB_TOKEN_PATH
-          value: "/etc/github/oauth"
+          value: /etc/github/token
         resources:
           requests:
             memory: "1Gi"

@@ -17,7 +17,7 @@ periodics:
       - "-ce"
       - >
         go run ./robots/retester
-        --token=/etc/github/oauth
+        --token=/etc/github/token
         --ceiling=1
         --confirm
       env:
@@ -30,6 +30,9 @@ periodics:
     - name: token
       secret:
         secretName:  commenter-oauth-token
+        items:
+        - key: oauth
+          path: token
 - name: periodic-project-infra-stale-issues
   interval: 1h
   annotations:
@@ -51,7 +54,7 @@ periodics:
           -label:lifecycle/rotten
           is:public
       - --updated=2160h
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=Issues go stale after 90d of inactivity.
         Mark the issue as fresh with `/remove-lifecycle stale`.
@@ -83,7 +86,7 @@ periodics:
           label:lifecycle/stale
           -label:lifecycle/rotten
       - --updated=720h
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=Stale issues rot after 30d of inactivity.
         Mark the issue as fresh with `/remove-lifecycle rotten`.
@@ -114,7 +117,7 @@ periodics:
           -label:lifecycle/frozen
           label:lifecycle/rotten
       - --updated=720h
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=Rotten issues close after 30d of inactivity.
         Reopen the issue with `/reopen`.
@@ -145,7 +148,7 @@ periodics:
           -label:lifecycle/rotten
           is:public
       - --updated=1080h
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=There has been no activity on this PR for 45 days.
         To protect limited CI resources, it has been automatically labelled 'stale'.
@@ -182,7 +185,7 @@ periodics:
           label:lifecycle/stale
           -label:lifecycle/rotten
       - --updated=336h
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=There has been no activity on this PR for 59 days and it has been stale for 14 days.
         To protect limited CI resources, it has been automatically labelled 'rotten' and will be closed in 7 days.
@@ -217,7 +220,7 @@ periodics:
           -label:lifecycle/frozen
           label:lifecycle/rotten
       - --updated=168h
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=There has been no activity on this PR for 66 days and it has been rotten for 7 days.
         To protect limited CI resources, it has been automatically closed.
@@ -256,7 +259,7 @@ periodics:
           -review:changes-requested
           is:public
       - --updated=168h
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=Pull requests that are marked with `lgtm` should receive a review
         from an approver within 1 week.
@@ -286,7 +289,7 @@ periodics:
           is:pr
           label:needs-approver-review
           is:public
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=/remove-label needs-approver-review
       - --include-closed
@@ -310,7 +313,7 @@ periodics:
           is:pr
           author:app/dependabot
           -label:skip-review
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=Dependabot PRs are automatically labeled for merge
         once all required presubmit tests pass.
@@ -327,6 +330,9 @@ periodics:
     - name: token
       secret:
         secretName: commenter-oauth-token
+        items:
+        - key: oauth
+          path: token
 - name: periodic-project-infra-autoowners
   interval: 24h
   annotations:
@@ -356,7 +362,7 @@ periodics:
       - --target-dir=.
       - --target-subdir=github/ci/prow-deploy/files
       - --config-subdir=jobs
-      - --github-token-path=/etc/github/oauth
+      - --github-token-path=/etc/github/token
       - --git-signoff=true
 - name: periodic-update-flakefinder-indexpage
   interval: 24h
@@ -749,7 +755,7 @@ periodics:
       - --github-endpoint=http://ghproxy
       - --github-endpoint=https://api.github.com
       - --config-path=github/ci/prow-deploy/kustom/base/configs/current/orgs/orgs.yaml
-      - --github-token-path=/etc/github/oauth
+      - --github-token-path=/etc/github/token
       - --fix-org=true
       - --fix-org-members=true
       - --fix-repos=true

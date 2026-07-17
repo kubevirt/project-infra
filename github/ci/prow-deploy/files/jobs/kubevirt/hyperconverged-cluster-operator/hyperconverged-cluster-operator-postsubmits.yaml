@@ -23,7 +23,7 @@ postsubmits:
               - "-c"
               - |
                   cat $QUAY_PASSWORD | docker login --username $(<$QUAY_USER) --password-stdin quay.io && \
-                  GITHUB_USER=kubevirt-bot GITHUB_TOKEN=$(cat /etc/github/oauth) ./hack/build-in-docker.sh
+                  GITHUB_USER=kubevirt-bot GITHUB_TOKEN=$(cat /etc/github/token) ./hack/build-in-docker.sh
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true

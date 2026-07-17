@@ -25,7 +25,7 @@ postsubmits:
         - name: GH_CLI_VERSION
           value: "2.96.0"
         - name: GITHUB_TOKEN_PATH
-          value: /etc/github/oauth
+          value: /etc/github/token
         - name: GITHUB_REPOSITORY
           value: kubevirt/kubevirt-observability-controller
         - name: GIT_USER_NAME
