@@ -1,3 +1,6 @@
+# KubeVirt Prow uses a presubmit ProwJob to validate the organization
+# and a periodic ProwJob to reconcile it.
+# https://docs.prow.k8s.io/docs/components/cli-tools/peribolos/
 orgs:
   kubevirt:
     admins:
