@@ -258,6 +258,7 @@ func TestDeterministicJobPattern(t *testing.T) {
 		{"pull-kubevirt-build-s390x", true},
 		{"pull-kubevirt-build-cs10", true},
 		{"pull-kubevirt-generate", true},
+		{"pull-kubevirt-check-tests-for-flakes", true},
 		{"pull-kubevirt-e2e-k8s-1.33-sig-compute", false},
 		{"pull-kubevirt-e2e-kind-sriov", false},
 		{"pull-kubevirt-unit-test", false},
@@ -265,6 +266,7 @@ func TestDeterministicJobPattern(t *testing.T) {
 		{"pull-kubevirt-code-lint", false},
 		{"pull-kubevirt-goveralls", false},
 		{"pull-kubevirt-fossa", false},
+		{"pull-kubevirt-check-dequarantine-test", false},
 	}
 
 	for _, tc := range cases {
