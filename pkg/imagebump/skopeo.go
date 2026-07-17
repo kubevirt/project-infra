@@ -40,22 +40,24 @@ var ErrNoMatchingTag = errors.New("no tag matching kubevirtci date-hash pattern"
 type listTagsCommand func(imageRef string) ([]string, error)
 
 var listTagsCmd = func(imageRef string) ([]string, error) {
-	logEntry := log.WithField("command", fmt.Sprintf("%s %s %s", "skopeo", "list-tags", "docker://"+imageRef))
+	cmdArgs := []string{"list-tags", "docker://" + imageRef}
+	fullCommand := "skopeo " + strings.Join(cmdArgs, " ")
+	logEntry := log.WithField("command", fullCommand)
 	logEntry.Debug("running")
-	cmd := exec.Command("skopeo", "list-tags", "docker://"+imageRef)
+	cmd := exec.Command("skopeo", cmdArgs...)
 	out, err := cmd.Output()
 	if err != nil {
 		if ee, ok := err.(*exec.ExitError); ok {
-			return nil, fmt.Errorf("skopeo list-tags docker://%s: %w\n%s", imageRef, err, string(ee.Stderr))
+			return nil, fmt.Errorf("%s: %w\n%s", fullCommand, err, string(ee.Stderr))
 		}
-		return nil, fmt.Errorf("skopeo list-tags docker://%s: %w", imageRef, err)
+		return nil, fmt.Errorf("%s: %w", fullCommand, err)
 	}
 	type skopeoListTags struct {
 		Tags []string `json:"Tags"`
 	}
 	var parsed skopeoListTags
 	if err := json.Unmarshal(out, &parsed); err != nil {
-		return nil, fmt.Errorf("parse skopeo output: %w", err)
+		return nil, fmt.Errorf("parse %s output: %w", fullCommand, err)
 	}
 	logEntry.WithField("parsed", parsed).Debug("done")
 	return parsed.Tags, nil
@@ -64,25 +66,26 @@ var listTagsCmd = func(imageRef string) ([]string, error) {
 type inspectCommand func(fullImageRef string) (time.Time, error)
 
 var inspectCmd = func(fullImageRef string) (time.Time, error) {
-	logEntry := log.WithField("command", fmt.Sprintf("%s %s %s", "skopeo", "inspect", "docker://"+fullImageRef))
+	const dateTimeFormat string = "2006-01-02T15:04:05Z"
+	cmdArgs := []string{"inspect", "--no-tags", fmt.Sprintf(`--format={{.Created.Format "%s"}}`, dateTimeFormat), "docker://" + fullImageRef}
+	fullCommand := "skopeo " + strings.Join(cmdArgs, " ")
+	logEntry := log.WithField("command", fullCommand)
 	logEntry.Debug("running")
-	cmd := exec.Command("skopeo", "inspect", "docker://"+fullImageRef)
+	cmd := exec.Command("skopeo", cmdArgs...)
 	out, err := cmd.Output()
 	if err != nil {
 		if ee, ok := err.(*exec.ExitError); ok {
-			return time.Time{}, fmt.Errorf("skopeo inspect docker://%s: %w\n%s", fullImageRef, err, string(ee.Stderr))
+			return time.Time{}, fmt.Errorf("%s: %w\n%s", fullCommand, err, string(ee.Stderr))
 		}
-		return time.Time{}, fmt.Errorf("skopeo inspect docker://%s: %w", fullImageRef, err)
+		return time.Time{}, fmt.Errorf("%s: %w", fullCommand, err)
 	}
-	type skopeoInspect struct {
-		Created time.Time `json:"Created"`
-	}
-	var parsed skopeoInspect
-	if err := json.Unmarshal(out, &parsed); err != nil {
-		return time.Time{}, fmt.Errorf("parse skopeo inspect output: %w", err)
+	before, _ := strings.CutSuffix(string(out), "\n")
+	parsed, err := time.Parse(dateTimeFormat, before)
+	if err != nil {
+		return time.Time{}, fmt.Errorf("parse %s output: %w\n%v", fullCommand, err, out)
 	}
 	logEntry.WithField("parsed", parsed).Debug("done")
-	return parsed.Created, nil
+	return parsed, nil
 }
 
 // LatestSkopeoTag returns the last tag in skopeo list-tags order that matches kubevirtCITagPattern
