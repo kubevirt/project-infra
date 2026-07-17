@@ -31,6 +31,7 @@ type githubClient interface {
 	RemoveLabel(org, repo string, number int, label string) error
 	GetIssueLabels(org, repo string, number int) ([]github.Label, error)
 	CreateComment(org, repo string, number int, comment string) error
+	BotUserChecker() (func(candidate string) bool, error)
 	IsMember(org, user string) (bool, error)
 }
 
@@ -57,7 +58,6 @@ func HelpProvider(_ []config.OrgRepo) (*pluginhelp.PluginHelp, error) {
 // then dispatches them to the appropriate plugins.
 type Server struct {
 	tokenGenerator func() []byte
-	botName        string
 
 	// Used for unit testing
 	ghc          githubClient
@@ -223,7 +223,11 @@ func (s *Server) handleManualLabelling(l *logrus.Entry, action string, org strin
 		github.PrLogField:   num,
 	})
 
-	if user == s.botName {
+	isBot, err := s.ghc.BotUserChecker()
+	if err != nil {
+		return fmt.Errorf("failed to construct bot user checker: %w", err)
+	}
+	if isBot(user) {
 		// it's just us, ignore
 		return nil
 	}

@@ -26,6 +26,8 @@ import (
 	"github.com/stretchr/testify/mock"
 	"kubevirt.io/project-infra/external-plugins/referee/ghgraphql"
 	"sigs.k8s.io/prow/pkg/github"
+
+	"kubevirt.io/project-infra/pkg/testutils"
 )
 
 const (
@@ -33,11 +35,12 @@ const (
 	repo     = "repo"
 	prNumber = 1742
 	user     = "user"
-	botuser  = "botuser"
+	botuser  = testutils.Bot
 )
 
 type fakeGitHubClient struct {
 	mock.Mock
+	testutils.FakeClient
 }
 
 func newFakeGitHubClient() *fakeGitHubClient {
@@ -83,7 +86,6 @@ var _ = Describe("", func() {
 			mockGitHubGraphQLClient = newFakeGitHubGraphQLClient()
 			server = Server{
 				TokenGenerator:  nil,
-				BotName:         botuser,
 				Log:             entry,
 				GithubClient:    mockGitHubClient,
 				GHGraphQLClient: mockGitHubGraphQLClient,

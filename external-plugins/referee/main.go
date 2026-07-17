@@ -125,11 +125,6 @@ func main() {
 		logrus.WithError(err).Fatal("error getting github client")
 	}
 
-	botUserData, err := githubClient.BotUser()
-	if err != nil {
-		logrus.WithError(err).Fatal("Error getting bot name.")
-	}
-
 	token, err := os.ReadFile(o.github.TokenPath)
 	if err != nil {
 		logrus.Fatalf("failed to use github token path %s: %v", o.github.TokenPath, err)
@@ -145,7 +140,6 @@ func main() {
 
 	pluginServer := &server.Server{
 		TokenGenerator: secret.GetTokenGenerator(o.webhookSecretFile),
-		BotName:        botUserData.Name,
 		Team:           o.team,
 
 		GithubClient:    githubClient,
