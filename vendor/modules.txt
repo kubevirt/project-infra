@@ -745,30 +745,6 @@ github.com/inconshreveable/mousetrap
 # github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99
 ## explicit
 github.com/jbenet/go-context/io
-# github.com/jetstack/cert-manager v1.1.0
-## explicit; go 1.15
-github.com/jetstack/cert-manager/pkg/apis/acme
-github.com/jetstack/cert-manager/pkg/apis/acme/v1
-github.com/jetstack/cert-manager/pkg/apis/acme/v1alpha2
-github.com/jetstack/cert-manager/pkg/apis/acme/v1alpha3
-github.com/jetstack/cert-manager/pkg/apis/acme/v1beta1
-github.com/jetstack/cert-manager/pkg/apis/certmanager
-github.com/jetstack/cert-manager/pkg/apis/certmanager/v1
-github.com/jetstack/cert-manager/pkg/apis/certmanager/v1alpha2
-github.com/jetstack/cert-manager/pkg/apis/certmanager/v1alpha3
-github.com/jetstack/cert-manager/pkg/apis/certmanager/v1beta1
-github.com/jetstack/cert-manager/pkg/apis/meta
-github.com/jetstack/cert-manager/pkg/apis/meta/v1
-github.com/jetstack/cert-manager/pkg/client/clientset/versioned
-github.com/jetstack/cert-manager/pkg/client/clientset/versioned/scheme
-github.com/jetstack/cert-manager/pkg/client/clientset/versioned/typed/acme/v1
-github.com/jetstack/cert-manager/pkg/client/clientset/versioned/typed/acme/v1alpha2
-github.com/jetstack/cert-manager/pkg/client/clientset/versioned/typed/acme/v1alpha3
-github.com/jetstack/cert-manager/pkg/client/clientset/versioned/typed/acme/v1beta1
-github.com/jetstack/cert-manager/pkg/client/clientset/versioned/typed/certmanager/v1
-github.com/jetstack/cert-manager/pkg/client/clientset/versioned/typed/certmanager/v1alpha2
-github.com/jetstack/cert-manager/pkg/client/clientset/versioned/typed/certmanager/v1alpha3
-github.com/jetstack/cert-manager/pkg/client/clientset/versioned/typed/certmanager/v1beta1
 # github.com/jmespath/go-jmespath v0.4.0
 ## explicit; go 1.14
 github.com/jmespath/go-jmespath
@@ -1583,14 +1559,6 @@ k8s.io/api/storage/v1
 k8s.io/api/storage/v1alpha1
 k8s.io/api/storage/v1beta1
 k8s.io/api/storagemigration/v1alpha1
-# k8s.io/apiextensions-apiserver v0.33.11
-## explicit; go 1.24.0
-k8s.io/apiextensions-apiserver/pkg/apis/apiextensions
-k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1
-k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1
-k8s.io/apiextensions-apiserver/pkg/client/applyconfiguration/apiextensions/v1
-k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/scheme
-k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1
 # k8s.io/apimachinery v0.33.11 => k8s.io/apimachinery v0.33.11
 ## explicit; go 1.24.0
 k8s.io/apimachinery/pkg/api/equality
@@ -1951,10 +1919,6 @@ sigs.k8s.io/structured-merge-diff/v4/value
 sigs.k8s.io/yaml
 sigs.k8s.io/yaml/goyaml.v2
 # cloud.google.com/go/storage => cloud.google.com/go/storage v1.50.0
-# github.com/Azure/go-autorest => github.com/Azure/go-autorest v14.2.0+incompatible
-# github.com/googleapis/gnostic => github.com/googleapis/gnostic v0.4.1
-# github.com/opencontainers/runc => github.com/opencontainers/runc v1.1.5
-# golang.org/x/lint => golang.org/x/lint v0.0.0-20190409202823-959b441ac422
 # k8s.io/api => k8s.io/api v0.33.11
 # k8s.io/apimachinery => k8s.io/apimachinery v0.33.11
 # k8s.io/client-go => k8s.io/client-go v0.33.11
