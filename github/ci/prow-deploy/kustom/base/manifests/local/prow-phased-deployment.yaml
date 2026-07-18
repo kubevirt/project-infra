@@ -17,7 +17,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: phased
-          image: quay.io/kubevirtci/phased:v20260716-a2b9efe
+          image: quay.io/kubevirtci/phased:v202607171347-5a548bb
           imagePullPolicy: IfNotPresent
           args:
             # Not using KubeVirt CI Prow GitHub App Credentials because the
