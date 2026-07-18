@@ -330,7 +330,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
         - name: GINKGO_TESTS_IMAGE
-          value: quay.io/kubevirtci/ginkgo-tests:v20260716-ff8cd14
+          value: quay.io/kubevirtci/ginkgo-tests:v202607171347-5a548bb
         - name: INVOKE_FUNCTEST_ONCE
           value: "true"
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
@@ -378,7 +378,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
         - name: GINKGO_TESTS_IMAGE
-          value: quay.io/kubevirtci/ginkgo-tests:v20260716-ff8cd14
+          value: quay.io/kubevirtci/ginkgo-tests:v202607171347-5a548bb
         - name: INVOKE_FUNCTEST_ONCE
           value: "true"
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT

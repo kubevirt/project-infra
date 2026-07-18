@@ -18,7 +18,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: test-subset
-          image: quay.io/kubevirtci/test-subset:v20260716-a2b9efe
+          image: quay.io/kubevirtci/test-subset:v202607171346-5a548bb
           imagePullPolicy: IfNotPresent
           args:
             - --github-endpoint=http://ghproxy
