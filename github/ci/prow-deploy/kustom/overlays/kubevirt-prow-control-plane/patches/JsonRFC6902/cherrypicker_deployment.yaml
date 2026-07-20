@@ -2,7 +2,6 @@
 - op: replace
   path: /spec/template/spec/volumes/2/secret
   value:
-    secretName: oauth-token
-    items:
-      - key: oauth
-        path: token
+    # Not using KubeVirt CI Prow GitHub App Credentials because the
+    # cherry-picker plugin requires a user to create forks.
+    secretName: github-token

@@ -30,6 +30,7 @@ orgs:
       - alicefr
       - AlonaKaplan
       - alromeros
+      - amorenoz
       - andreabolognani
       - Aseeef
       - aqilbeig
@@ -38,6 +39,7 @@ orgs:
       - assafad
       - avlitman
       - awels
+      - azhivovk
       - Atharva-Shinde
       - Barakmor1
       - bgartzi
@@ -508,6 +510,8 @@ orgs:
         has_wiki: false
       vdpa-network-binding-plugin:
         description: KubeVirt network binding plugin providing network vhost-vdpa interface support to VMs.
+      vhostuser-network-binding-plugin:
+        description: KubeVirt network binding plugin providing network vhost-user interface support to VMs.
       virt-template:
         description: A KubeVirt add-on providing native, user-friendly templating workflows for KubeVirt virtual machines.
         has_projects: true
@@ -609,6 +613,12 @@ orgs:
         has_wiki: true
         has_issues: true
       kubevirt-observability-controller:
+        default_branch: main
+        has_projects: true
+        has_wiki: true
+        has_issues: true
+      plugins:
+        description: SDK and catalog for building KubeVirt plugins
         default_branch: main
         has_projects: true
         has_wiki: true
@@ -852,6 +862,13 @@ orgs:
         repos:
           kubevirt: admin
           kubevirt-ansible: write
+      plugins-maintainers:
+        description: Maintainers of SDK and catalog for building KubeVirt plugins
+        maintainers:
+          - iholder101
+        privacy: closed
+        repos:
+          plugins: admin
       prow-job-taskforce:
         description: This team is authorized to interact with ProwJobs
         maintainers:
@@ -948,6 +965,13 @@ orgs:
         privacy: closed
         repos:
           vdpa-network-binding-plugin: admin
+      vhostuser-network-binding-plugin-maintainers:
+        description: "Maintainers of vhostuser-network-binding-plugin repository"
+        maintainers:
+          - amorenoz
+        privacy: closed
+        repos:
+          vhostuser-network-binding-plugin: admin
       vm-console-proxy-maintainers:
         description: "Maintainers of vm-console-proxy repository"
         privacy: closed

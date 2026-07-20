@@ -243,7 +243,7 @@ func extractPresubmitName(targetURL string) string {
 	return m[1]
 }
 
-var deterministicJobPattern = regexp.MustCompile(`-build(-|$)|-generate$`)
+var deterministicJobPattern = regexp.MustCompile(`-build(-|$)|-generate$|-check-tests-for-flakes$`)
 
 func notFitForRetest(failedRequired []string, allStatuses []github.Status) string {
 	// Condition 1: a build or generate job failed (deterministic failure)

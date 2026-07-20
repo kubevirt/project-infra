@@ -8,7 +8,6 @@ presubmits:
         testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
       always_run: true
       optional: false
-      decorate: true
       decoration_config:
         timeout: 7h
         grace_period: 5m
@@ -22,7 +21,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20260707-cacb217
+          - image: quay.io/kubevirtci/golang:v20260715-af3e234
             command:
               - "/usr/local/bin/entrypoint.sh"
               - "/bin/sh"
@@ -47,7 +46,6 @@ presubmits:
         testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
       always_run: true
       optional: false
-      decorate: true
       decoration_config:
         timeout: 7h
         grace_period: 5m
@@ -61,7 +59,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20260707-cacb217
+          - image: quay.io/kubevirtci/golang:v20260715-af3e234
             command:
               - "/usr/local/bin/entrypoint.sh"
               - "/bin/sh"
@@ -85,7 +83,6 @@ presubmits:
       run_if_changed: "tests/build/.*"
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
@@ -94,7 +91,7 @@ presubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
             env:
               - name: GO_MOD_PATH
                 value: "go.mod"
@@ -104,7 +101,7 @@ presubmits:
               - "-c"
               - |
                 cat $QUAY_PASSWORD | docker login --username $(<$QUAY_USER) --password-stdin quay.io && \
-                GITHUB_USER=kubevirt-bot GITHUB_TOKEN=$(cat /etc/github/oauth) PUSH_IMAGE=false ./hack/build-in-docker.sh
+                GITHUB_USER=kubevirt-bot GITHUB_TOKEN=$(cat /etc/github/token) PUSH_IMAGE=false ./hack/build-in-docker.sh
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true
@@ -121,14 +118,13 @@ presubmits:
         testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
       always_run: true
       optional: false
-      decorate: true
       decoration_config:
         timeout: 2h
         grace_period: 5m
       cluster: prow-s390x-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20260707-cacb217
+          - image: quay.io/kubevirtci/golang:v20260715-af3e234
             env:
               - name: GO_MOD_PATH
                 value: "go.mod"

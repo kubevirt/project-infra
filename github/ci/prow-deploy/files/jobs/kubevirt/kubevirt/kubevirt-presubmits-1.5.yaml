@@ -5,7 +5,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.31-sig-performance
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 2h0m0s
@@ -65,7 +64,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-windows2016
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 2h0m0s
@@ -103,7 +101,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-kind-1.30-vgpu
-    decorate: true
     decoration_config:
       grace_period: 30m0s
       timeout: 4h0m0s
@@ -171,7 +168,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-kind-sriov
-    decorate: true
     decoration_config:
       grace_period: 30m0s
       timeout: 4h0m0s
@@ -245,7 +241,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-check-tests-for-flakes
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -287,7 +282,6 @@ presubmits:
     - release-1.5
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-generate
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -312,7 +306,6 @@ presubmits:
     - release-1.5
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-verify-rpms
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -339,7 +332,6 @@ presubmits:
     - release-1.5
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-verify-go-mod
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -366,7 +358,6 @@ presubmits:
     - release-1.5
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-gosec
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -393,7 +384,6 @@ presubmits:
     - release-1.5
     cluster: prow-s390x-workloads
     context: pull-kubevirt-unit-test-s390x
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 2h0m0s
@@ -418,7 +408,6 @@ presubmits:
     - release-1.5
     cluster: prow-arm64-workloads
     context: pull-kubevirt-unit-test-arm64
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 2h0m0s
@@ -445,7 +434,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-build
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -471,7 +459,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-build-arm64
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -501,7 +488,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-build-s390x
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -530,7 +516,6 @@ presubmits:
     - release-1.5
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-unit-test
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -556,7 +541,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-fuzz
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -583,7 +567,6 @@ presubmits:
     - release-1.5
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-apidocs
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -608,7 +591,6 @@ presubmits:
     - release-1.5
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-client-python
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -633,7 +615,6 @@ presubmits:
     - release-1.5
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-manifests
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -659,7 +640,6 @@ presubmits:
     - release-1.5
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-prom-rules-verify
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -684,7 +664,6 @@ presubmits:
     - release-1.5
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-check-unassigned-tests
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -710,7 +689,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.32-ipv6-sig-network
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -752,7 +730,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.32-sig-network-multus-v4
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -794,7 +771,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.32-sig-compute-migrations
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -836,7 +812,6 @@ presubmits:
     - release-1.5
     cluster: prow-arm64-workloads
     context: pull-kubevirt-e2e-arm64
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -884,7 +859,6 @@ presubmits:
     - release-1.5
     cluster: prow-arm64-workloads
     context: pull-kubevirt-conformance-arm64
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -950,7 +924,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: build-kubevirt-builder
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -979,7 +952,6 @@ presubmits:
     - release-1.5
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-code-lint
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1006,7 +978,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.32-swap-enabled
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1047,7 +1018,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.31-sig-monitoring
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 2h0m0s
@@ -1081,7 +1051,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.32-single-node
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1127,7 +1096,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.31-sig-storage-root
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1165,7 +1133,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.31-sig-compute-root
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1206,7 +1173,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.32-sig-compute-realtime
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1245,7 +1211,6 @@ presubmits:
     - release-1.5
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-metrics-lint
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1274,7 +1239,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.30-sig-network
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1316,7 +1280,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.30-sig-storage
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1358,7 +1321,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.30-sig-compute
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1400,7 +1362,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.30-sig-operator
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1440,7 +1401,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.31-sig-network
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1482,7 +1442,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.31-sig-storage
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1524,7 +1483,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.31-sig-compute
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1566,7 +1524,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.31-sig-operator
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1606,7 +1563,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.32-sig-performance-kwok
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1657,7 +1613,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.32-sig-network
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1699,7 +1654,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.32-sig-storage
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1741,7 +1695,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.32-sig-compute
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1783,7 +1736,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.32-sig-operator
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1823,7 +1775,6 @@ presubmits:
     - release-1.5
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.32-sig-compute-serial
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s

@@ -32,9 +32,9 @@ import (
 // NOTE: PopulateStruct will panic if not fed a pointer. Generally if you care about
 // the stability of the app that runs this code, it is strongly recommended to recover panics:
 // defer func(){if r := recover(); r != nil { fmt.Printf("Recovered panic: %v", r } }(
-func PopulateStruct(in interface{}) interface{} {
+func PopulateStruct(in any) any {
 	typeOf := reflect.TypeOf(in)
-	if typeOf.Kind() != reflect.Ptr {
+	if typeOf.Kind() != reflect.Pointer {
 		panic(fmt.Sprintf("got nonpointer type %T", in))
 	}
 	if typeOf.Elem().Kind() != reflect.Struct {
@@ -68,7 +68,7 @@ func PopulateStruct(in interface{}) interface{} {
 		// Needed because of the String field handling
 		case reflect.Struct:
 			PopulateStruct(valueOf.Elem().Field(i).Addr().Interface())
-		case reflect.Ptr:
+		case reflect.Pointer:
 			ptr := createNonNilPtr(valueOf.Elem().Field(i).Type())
 			// Populate our ptr
 			if ptr.Elem().Kind() == reflect.Struct {
@@ -83,8 +83,8 @@ func PopulateStruct(in interface{}) interface{} {
 			// Create a one element slice
 			slice := reflect.MakeSlice(typeOf.Elem().Field(i).Type, 1, 1)
 			// Get a pointer to the value
-			var sliceElementPtr interface{}
-			if slice.Index(0).Type().Kind() == reflect.Ptr {
+			var sliceElementPtr any
+			if slice.Index(0).Type().Kind() == reflect.Pointer {
 				// Slice of pointers, make it a non-nil pointer, then pass on its address
 				slice.Index(0).Set(createNonNilPtr(slice.Index(0).Type()))
 				sliceElementPtr = slice.Index(0).Interface()
@@ -102,14 +102,14 @@ func PopulateStruct(in interface{}) interface{} {
 			key := reflect.New(keyType).Elem()
 			value := reflect.New(valueType).Elem()
 
-			var keyPtr, valPtr interface{}
-			if key.Kind() == reflect.Ptr {
+			var keyPtr, valPtr any
+			if key.Kind() == reflect.Pointer {
 				key.Set(createNonNilPtr(key.Type()))
 				keyPtr = key.Interface()
 			} else {
 				keyPtr = key.Addr().Interface()
 			}
-			if value.Kind() == reflect.Ptr {
+			if value.Kind() == reflect.Pointer {
 				value.Set(createNonNilPtr(value.Type()))
 				valPtr = value.Interface()
 			} else {
@@ -142,5 +142,5 @@ func createNonNilPtr(in reflect.Type) reflect.Value {
 	return ptr
 }
 
-var typeOfBytes = reflect.TypeOf([]byte(nil))
-var typeOfJSONRawMessage = reflect.TypeOf(json.RawMessage{})
+var typeOfBytes = reflect.TypeFor[[]byte]()
+var typeOfJSONRawMessage = reflect.TypeFor[json.RawMessage]()

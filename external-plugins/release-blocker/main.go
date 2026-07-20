@@ -9,10 +9,9 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"k8s.io/test-infra/pkg/flagutil"
 	"sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/prow/pkg/config/secret"
-	prowflagutil "sigs.k8s.io/prow/pkg/flagutil"
+	"sigs.k8s.io/prow/pkg/flagutil"
 	"sigs.k8s.io/prow/pkg/interrupts"
 	"sigs.k8s.io/prow/pkg/pluginhelp/externalplugins"
 	"sigs.k8s.io/prow/pkg/plugins/ownersconfig"
@@ -23,7 +22,7 @@ type options struct {
 	port int
 
 	dryRun bool
-	github prowflagutil.GitHubOptions
+	github flagutil.GitHubOptions
 
 	webhookSecretFile string
 }
@@ -62,7 +61,7 @@ func main() {
 	logrus.SetLevel(logrus.DebugLevel)
 	log := logrus.StandardLogger().WithField("plugin", pluginName)
 
-	if err := secret.Add(o.github.TokenPath, o.webhookSecretFile); err != nil {
+	if err := secret.Add(o.webhookSecretFile); err != nil {
 		logrus.WithError(err).Fatal("Error starting secrets agent.")
 	}
 
@@ -81,7 +80,6 @@ func main() {
 		}
 	})
 
-	botUserData, err := githubClient.BotUser()
 	if err != nil {
 		logrus.WithError(err).Fatal("Error getting bot name.")
 	}
@@ -96,7 +94,6 @@ func main() {
 
 	server := &Server{
 		tokenGenerator: secret.GetTokenGenerator(o.webhookSecretFile),
-		botName:        botUserData.Login,
 
 		ghc:          githubClient,
 		log:          log,

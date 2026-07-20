@@ -8,7 +8,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -18,7 +17,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -45,7 +44,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -55,7 +53,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -80,7 +78,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m
@@ -91,14 +88,14 @@ postsubmits:
       preset-kubevirtci-quay-credential: "false"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+      - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
         - name: GH_CLI_VERSION
           value: "1.5.0"
         - name: GITHUB_TOKEN_PATH
-          value: /etc/github/oauth
+          value: /etc/github/token
         - name: GITHUB_REPOSITORY
           value: kubevirt/kubevirt-velero-plugin
         - name: GIT_USER_NAME

@@ -4,7 +4,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -22,7 +21,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -32,7 +31,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -53,7 +51,7 @@ presubmits:
         env:
         - name: BUILD_ARCH
           value: crossbuild-aarch64
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 8Gi
@@ -63,7 +61,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -82,7 +79,7 @@ presubmits:
         - -c
         - |
           make lint
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -93,7 +90,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -111,7 +107,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             cpu: "4"
@@ -123,7 +119,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-arm64-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 2h0m0s
@@ -139,7 +134,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -150,7 +145,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-arm64-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -177,7 +171,7 @@ presubmits:
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
           value: "2602231621-e36f1c7568"
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -196,7 +190,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-arm64-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -230,7 +223,7 @@ presubmits:
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
           value: "2602231621-e36f1c7568"
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi

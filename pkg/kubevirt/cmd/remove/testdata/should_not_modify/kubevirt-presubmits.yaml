@@ -5,7 +5,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -42,7 +41,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -79,7 +77,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -116,7 +113,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -152,7 +148,6 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -192,7 +187,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -229,7 +223,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -267,7 +260,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -304,7 +296,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -341,7 +332,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -383,7 +373,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -424,7 +413,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -466,7 +454,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -508,7 +495,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -549,7 +535,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -586,7 +571,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -624,7 +608,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -661,7 +644,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -698,7 +680,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 2h0m0s
@@ -736,7 +717,6 @@ presubmits:
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 30m0s
       timeout: 4h0m0s
@@ -820,7 +800,6 @@ presubmits:
       k8s.v1.cni.cncf.io/networks: multus-cni-ns/sriov-passthrough-cni,multus-cni-ns/sriov-passthrough-cni
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 30m0s
       timeout: 4h0m0s
@@ -899,7 +878,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 30m0s
       timeout: 4h0m0s
@@ -958,7 +936,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -990,7 +967,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: ibm-prow-jobs
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1018,7 +994,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: ibm-prow-jobs
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1048,7 +1023,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: ibm-prow-jobs
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1079,7 +1053,6 @@ presubmits:
       fork-per-release: "true"
       rehearsal.allowed: "true"
     cluster: ibm-prow-jobs
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1109,7 +1082,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: ibm-prow-jobs
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1137,7 +1109,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: ibm-prow-jobs
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1169,7 +1140,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: ibm-prow-jobs
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1197,7 +1167,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: ibm-prow-jobs
-    decorate: true
     decoration_config:
       grace_period: 10m0s
       timeout: 1h0m0s
@@ -1236,7 +1205,6 @@ presubmits:
           secretName: kubevirtci-coveralls-token
   - always_run: true
     cluster: ibm-prow-jobs
-    decorate: true
     decoration_config:
       grace_period: 10m0s
       timeout: 1h0m0s
@@ -1276,7 +1244,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: ibm-prow-jobs
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1304,7 +1271,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: ibm-prow-jobs
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1332,7 +1298,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: ibm-prow-jobs
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1361,7 +1326,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: ibm-prow-jobs
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1389,7 +1353,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: ibm-prow-jobs
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1418,7 +1381,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1454,7 +1416,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1490,7 +1451,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1526,7 +1486,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s

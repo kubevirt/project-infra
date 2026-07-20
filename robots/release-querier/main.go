@@ -77,7 +77,7 @@ func gatherOptions() options {
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	fs.StringVar(&o.org, "org", "kubevirt", "Organization")
 	fs.StringVar(&o.repo, "repo", "kubevirt", "Organization")
-	fs.StringVar(&o.TokenPath, "github-token-path", "/etc/github/oauth", "Path to the file containing the GitHub OAuth secret.")
+	fs.StringVar(&o.TokenPath, "github-token-path", "/etc/github/token", "Path to the file containing the GitHub OAuth secret.")
 	fs.StringVar(&o.endpoint, "github-endpoint", "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
 	fs.BoolVar(&o.latest, "latest", false, "Query for the latest release")
 	fs.StringVar(&o.latestThreeMinor, "last-three-minor-of", "", "Query for the last three minor releases of a given release (e.g. v1 or 2)")

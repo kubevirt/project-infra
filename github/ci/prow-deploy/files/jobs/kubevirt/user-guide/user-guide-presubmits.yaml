@@ -3,7 +3,6 @@ presubmits:
   - name: check-links-user-guide
     always_run: false
     skip_report: true
-    decorate: true
     cluster: kubevirt-prow-control-plane
     spec:
       containers:

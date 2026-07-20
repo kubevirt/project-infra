@@ -564,6 +564,14 @@ owners_dir_denylist:
     # Repos configures a directory denylist per repo (or org).
     repos:
         "": null
+pipeline:
+    # AllowConcurrentPostsubmitJobs controls the duplicate job abort behavior for Tekton PipelineRuns.
+    # When disabled (default): all duplicate jobs (presubmit and postsubmit) are aborted when a newer
+    # job with the same identifier is detected.
+    # When enabled: only presubmit jobs are aborted; postsubmit jobs are allowed to run concurrently
+    # even if duplicates exist.
+    # This flag only affects jobs using the Tekton agent (agent: tekton-pipeline).
+    allow_concurrent_postsubmit_jobs: true
 plank:
     # BuildClusterStatusFile is an optional field used to specify the blob storage location
     # to publish cluster status information.
@@ -622,6 +630,10 @@ plank:
                 # globbed matches.
                 include_directories:
                     - ""
+                # MinimumSecretLength is the minimum length a secret must have to be censored.
+                # Secrets shorter than this length will not be censored. If unset, defaults to 0
+                # (all secrets are censored regardless of length).
+                minimum_secret_length: 0
             # CookieFileSecret is the name of a kubernetes secret that contains
             # a git http.cookiefile, which should be used during the cloning process.
             cookiefile_secret: ""
@@ -720,6 +732,7 @@ plank:
                 clonerefs:
                     claims:
                         - name: ' '
+                          request: ' '
                     limits:
                         "": "0"
                     requests:
@@ -727,6 +740,7 @@ plank:
                 initupload:
                     claims:
                         - name: ' '
+                          request: ' '
                     limits:
                         "": "0"
                     requests:
@@ -734,6 +748,7 @@ plank:
                 place_entrypoint:
                     claims:
                         - name: ' '
+                          request: ' '
                     limits:
                         "": "0"
                     requests:
@@ -741,6 +756,7 @@ plank:
                 sidecar:
                     claims:
                         - name: ' '
+                          request: ' '
                     limits:
                         "": "0"
                     requests:
@@ -905,6 +921,13 @@ plank:
             # SkipCloning determines if we should clone source code in the
             # initcontainers for jobs that specify refs
             skip_cloning: false
+            # SparseCheckoutFiles limits the working tree to only the listed paths.
+            # Accepts the same patterns as git sparse-checkout set (file names,
+            # directory names, gitignore-style globs). When set, clonerefs performs a
+            # sparse checkout instead of a full clone. Applied to the primary ref for
+            # presubmit/postsubmit jobs. Not applied to extra refs.
+            sparse_checkout_files:
+                - ""
             # SSHHostFingerprints are the fingerprints of known SSH hosts
             # that the cloning process can trust.
             # Create with ssh-keyscan [-t rsa] host
@@ -975,6 +998,10 @@ plank:
                 # globbed matches.
                 include_directories:
                     - ""
+                # MinimumSecretLength is the minimum length a secret must have to be censored.
+                # Secrets shorter than this length will not be censored. If unset, defaults to 0
+                # (all secrets are censored regardless of length).
+                minimum_secret_length: 0
             # CookieFileSecret is the name of a kubernetes secret that contains
             # a git http.cookiefile, which should be used during the cloning process.
             cookiefile_secret: ""
@@ -1073,6 +1100,7 @@ plank:
                 clonerefs:
                     claims:
                         - name: ' '
+                          request: ' '
                     limits:
                         "": "0"
                     requests:
@@ -1080,6 +1108,7 @@ plank:
                 initupload:
                     claims:
                         - name: ' '
+                          request: ' '
                     limits:
                         "": "0"
                     requests:
@@ -1087,6 +1116,7 @@ plank:
                 place_entrypoint:
                     claims:
                         - name: ' '
+                          request: ' '
                     limits:
                         "": "0"
                     requests:
@@ -1094,6 +1124,7 @@ plank:
                 sidecar:
                     claims:
                         - name: ' '
+                          request: ' '
                     limits:
                         "": "0"
                     requests:
@@ -1258,6 +1289,13 @@ plank:
             # SkipCloning determines if we should clone source code in the
             # initcontainers for jobs that specify refs
             skip_cloning: false
+            # SparseCheckoutFiles limits the working tree to only the listed paths.
+            # Accepts the same patterns as git sparse-checkout set (file names,
+            # directory names, gitignore-style globs). When set, clonerefs performs a
+            # sparse checkout instead of a full clone. Applied to the primary ref for
+            # presubmit/postsubmit jobs. Not applied to extra refs.
+            sparse_checkout_files:
+                - ""
             # SSHHostFingerprints are the fingerprints of known SSH hosts
             # that the cloning process can trust.
             # Create with ssh-keyscan [-t rsa] host
@@ -1301,6 +1339,11 @@ plank:
     # JobURLPrefixDisableAppendStorageProvider disables that the storageProvider is
     # automatically appended to the JobURLPrefix.
     jobURLPrefixDisableAppendStorageProvider: true
+    # MaxRevivals is the maximum number of times a prowjob will be retried in case of an
+    # unexpected stop of the job before being marked as failed. Generally a job is stopped
+    # unexpectedly due to the underlying Node being terminated, evicted or becoming unreachable.
+    # Defaults to 3. A value of 0 means no retries.
+    max_revivals: 0
     # PodPendingTimeout defines how long the controller will wait to perform a garbage
     # collection on pending pods. Defaults to 10 minutes.
     pod_pending_timeout: 0s
@@ -1531,6 +1574,13 @@ tide:
               org: ' '
               repos:
                 - ""
+    # GitHubMergeBlocksPolicyMap configures on org or org/repo level how Tide should handle
+    # GitHub's mergeStateStatus (BLOCKED state from branch protection rules, rulesets,
+    # required reviews, etc.).
+    # Use '*' as key to set this globally. Defaults to "permit" which allows merging but logs warnings.
+    # Valid values: "ignore", "permit", "block"
+    github_merge_blocks_policy:
+        "": ""
     # A key/value pair of an org/repo as the key and Go template to override
     # the default merge commit title and/or message. Template is passed the
     # PullRequest struct (prow/github/types.go#PullRequest)

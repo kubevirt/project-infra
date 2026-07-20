@@ -8,7 +8,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 15m
@@ -18,7 +17,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
@@ -49,7 +48,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m
@@ -60,14 +58,14 @@ postsubmits:
       preset-kubevirtci-quay-credential: "false"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+      - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
         - name: GH_CLI_VERSION
           value: "1.5.0"
         - name: GITHUB_TOKEN_PATH
-          value: /etc/github/oauth
+          value: /etc/github/token
         - name: GITHUB_REPOSITORY
           value: kubevirt/kubevirt-migration-controller
         - name: GIT_USER_NAME
@@ -89,7 +87,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 15m
@@ -99,7 +96,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
@@ -127,7 +124,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -141,7 +137,7 @@ postsubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+      - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
         command: ["/bin/sh", "-ce"]
         args:
         - |

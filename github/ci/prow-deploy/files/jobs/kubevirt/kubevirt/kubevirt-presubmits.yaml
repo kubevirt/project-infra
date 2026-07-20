@@ -5,7 +5,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 2h0m0s
@@ -16,7 +15,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 4
-    name: pull-kubevirt-e2e-k8s-1.34-sig-performance
+    name: pull-kubevirt-e2e-k8s-1.36-sig-performance
     run_if_changed: ^cmd/.*|^rpm/.*|^tests/performance/.*|^hack/perftests.sh|^tools/perfscale-audit/.*|^bazel/.*|^third_party/.*|^staging/src/.*|^api/.*|^pkg/virt-.*|^pkg/controller/.*|^pkg/monitoring/.*
     skip_branches:
     - release-\d+\.\d+
@@ -39,7 +38,7 @@ presubmits:
           FUNC_TEST_ARGS="--no-color --seed=42" make perftest
         env:
         - name: KUBEVIRT_PROVIDER
-          value: k8s-1.34
+          value: k8s-1.36
         - name: KUBEVIRT_STORAGE
           value: hpp
         - name: KUBEVIRT_MEMORY_SIZE
@@ -54,7 +53,7 @@ presubmits:
           value: 1G
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             cpu: "12"
@@ -68,7 +67,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 2h0m0s
@@ -98,7 +96,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -112,7 +110,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 30m0s
       timeout: 4h0m0s
@@ -146,7 +143,7 @@ presubmits:
         env:
         - name: TARGET
           value: kind-1.35-vgpu
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 18Gi
@@ -174,14 +171,13 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: amd-workloads
-    decorate: true
     decoration_config:
       grace_period: 30m0s
       timeout: 4h0m0s
     labels:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 5
-    name: pull-kubevirt-e2e-kind-1.34-sev
+    name: pull-kubevirt-e2e-kind-1.36-sev
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -197,10 +193,10 @@ presubmits:
           automation/test.sh
         env:
         - name: TARGET
-          value: kind-1.34-sev
+          value: kind-1.36-sev
         - name: KUBEVIRT_PROVIDER
-          value: kind-1.34
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+          value: kind-1.36
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 18Gi
@@ -230,7 +226,6 @@ presubmits:
       k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 30m0s
       timeout: 4h0m0s
@@ -272,7 +267,7 @@ presubmits:
         env:
         - name: TARGET
           value: kind-sriov
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -305,7 +300,6 @@ presubmits:
     annotations:
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -336,12 +330,12 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
         - name: GINKGO_TESTS_IMAGE
-          value: quay.io/kubevirtci/ginkgo-tests:v20260711-7a66da0
+          value: quay.io/kubevirtci/ginkgo-tests:v202607171347-5a548bb
         - name: INVOKE_FUNCTEST_ONCE
           value: "true"
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
           value: 6h45m
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -353,7 +347,6 @@ presubmits:
     annotations:
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 36h0m0s
@@ -385,12 +378,12 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
         - name: GINKGO_TESTS_IMAGE
-          value: quay.io/kubevirtci/ginkgo-tests:v20260711-7a66da0
+          value: quay.io/kubevirtci/ginkgo-tests:v202607171347-5a548bb
         - name: INVOKE_FUNCTEST_ONCE
           value: "true"
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
           value: 35h45m
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -402,7 +395,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -419,7 +411,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make generate-verify
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -429,7 +421,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -448,7 +439,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make verify-rpm-deps
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -458,7 +449,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -482,7 +472,7 @@ presubmits:
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
           value: 2605290816-89fad9a940
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -492,7 +482,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -509,7 +498,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make deps-sync && hack/verify-generate.sh
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -520,7 +509,6 @@ presubmits:
       fork-per-release: "true"
       rehearsal.allowed: "true"
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -539,7 +527,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make gosec
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -550,7 +538,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-s390x-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 2h0m0s
@@ -564,7 +551,7 @@ presubmits:
         - /bin/sh
         - -c
         - make go-test
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 8Gi
@@ -575,7 +562,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-arm64-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 2h0m0s
@@ -592,7 +578,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -602,7 +588,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -620,7 +605,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -630,7 +615,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -651,7 +635,7 @@ presubmits:
         env:
         - name: BUILD_ARCH
           value: crossbuild-aarch64
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 8Gi
@@ -661,7 +645,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -682,7 +665,7 @@ presubmits:
         env:
         - name: BUILD_ARCH
           value: crossbuild-s390x
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 8Gi
@@ -692,7 +675,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -716,7 +698,7 @@ presubmits:
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
           value: 2606301559-b9f50e380a
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -726,7 +708,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -752,7 +733,7 @@ presubmits:
           value: 2605290816-89fad9a940
         - name: BUILD_ARCH
           value: crossbuild-aarch64
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 8Gi
@@ -762,7 +743,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -788,7 +768,7 @@ presubmits:
           value: 2605290816-89fad9a940
         - name: BUILD_ARCH
           value: crossbuild-s390x
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 8Gi
@@ -799,7 +779,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -817,7 +796,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             cpu: "4"
@@ -829,7 +808,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -848,7 +826,7 @@ presubmits:
         - /bin/sh
         - -c
         - make fuzz
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 8Gi
@@ -858,7 +836,6 @@ presubmits:
     annotations:
       fork-per-release: "false"
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       grace_period: 10m0s
       timeout: 1h0m0s
@@ -880,7 +857,7 @@ presubmits:
         env:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 16Gi
@@ -896,7 +873,6 @@ presubmits:
           secretName: kubevirtci-coveralls-token
   - always_run: true
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       grace_period: 10m0s
       timeout: 1h0m0s
@@ -916,7 +892,7 @@ presubmits:
         env:
         - name: FOSSA_TOKEN_FILE
           value: /root/.docker/secrets/fossa/token
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 16Gi
@@ -934,7 +910,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -951,7 +926,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make apidocs
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -961,7 +936,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -978,7 +952,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make client-python
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -988,7 +962,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1006,7 +979,7 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make manifests DOCKER_PREFIX="docker.io/kubevirt"
           && make olm-verify
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -1016,7 +989,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1034,7 +1006,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make prom-rules-verify
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -1044,7 +1016,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1062,7 +1033,7 @@ presubmits:
         - /bin/sh
         - -c
         - hack/check-unassigned-tests.sh
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -1073,7 +1044,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1104,7 +1074,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -1117,7 +1087,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1149,7 +1118,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -1162,7 +1131,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1192,7 +1160,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -1205,7 +1173,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1233,7 +1200,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -1246,7 +1213,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-arm64-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1270,7 +1236,7 @@ presubmits:
           value: kind-1.36-wg-arm64
         - name: KUBEVIRT_NUM_NODES
           value: "2"
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -1289,7 +1255,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-arm64-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1320,7 +1285,7 @@ presubmits:
           value: dual
         - name: RUN_ON_ARM64_INFRA
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -1339,7 +1304,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1359,7 +1323,7 @@ presubmits:
         - -ce
         - |
           make builder-build
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 16Gi
@@ -1370,7 +1334,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1390,7 +1353,7 @@ presubmits:
         - -ce
         - |
           make builder-build-centos-stream-10
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 16Gi
@@ -1400,7 +1363,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1419,7 +1381,7 @@ presubmits:
         - -c
         - |
           make lint
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 12Gi
@@ -1430,7 +1392,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1460,7 +1421,7 @@ presubmits:
           value: SwapTest
         - name: KUBEVIRT_SWAP_ON
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -1473,7 +1434,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 2h0m0s
@@ -1500,7 +1460,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -1511,7 +1471,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1546,7 +1505,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_STORAGE
           value: rook-ceph-default
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 15Gi
@@ -1559,7 +1518,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1590,7 +1548,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -1603,7 +1561,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1636,7 +1593,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -1649,7 +1606,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1678,7 +1634,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -1690,7 +1646,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s
@@ -1711,7 +1666,7 @@ presubmits:
         - -c
         - |
           make lint-metrics
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 4Gi
@@ -1722,7 +1677,6 @@ presubmits:
       fork-per-release: "false"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 2h0m0s
@@ -1751,7 +1705,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -1764,7 +1718,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1774,7 +1727,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
-    name: pull-kubevirt-e2e-k8s-1.34-sig-performance-kwok
+    name: pull-kubevirt-e2e-k8s-1.36-sig-performance-kwok
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1794,7 +1747,7 @@ presubmits:
           FUNC_TEST_ARGS="--no-color --seed=42" make kwok-perftest
         env:
         - name: KUBEVIRT_PROVIDER
-          value: k8s-1.34
+          value: k8s-1.36
         - name: KUBEVIRT_MEMORY_SIZE
           value: 35G
         - name: KUBEVIRT_DEPLOY_KWOK
@@ -1807,7 +1760,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 8G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             cpu: "12"
@@ -1821,7 +1774,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1850,7 +1802,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -1863,7 +1815,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -1892,7 +1843,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -1905,7 +1856,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1936,7 +1886,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -1949,7 +1899,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -1978,7 +1927,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -1991,7 +1940,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -2020,7 +1968,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -2033,7 +1981,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -2062,7 +2009,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -2075,7 +2022,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -2106,7 +2052,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -2119,7 +2065,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -2148,7 +2093,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -2161,7 +2106,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -2189,7 +2133,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -2202,7 +2146,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -2230,7 +2173,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -2243,7 +2186,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -2273,7 +2215,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -2286,7 +2228,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -2316,7 +2257,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -2329,7 +2270,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -2357,7 +2297,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -2370,7 +2310,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -2380,7 +2319,9 @@ presubmits:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
-    name: pull-kubevirt-e2e-k8s-1.34-sig-performance-kube-burner
+      preset-shared-images: "true"
+    max_concurrency: 4
+    name: pull-kubevirt-e2e-k8s-1.36-sig-performance-kube-burner
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -2400,7 +2341,7 @@ presubmits:
           make kube-burner-perftest
         env:
         - name: KUBEVIRT_PROVIDER
-          value: k8s-1.34
+          value: k8s-1.36
         - name: KUBEVIRT_MEMORY_SIZE
           value: 35G
         - name: KUBEVIRT_DEPLOY_PROMETHEUS
@@ -2419,7 +2360,7 @@ presubmits:
         - name: PERFAUDIT
           value: "true"
         - name: KUBECONFIG
-          value: kubevirtci/_ci-configs/k8s-1.34/.kubeconfig
+          value: kubevirtci/_ci-configs/k8s-1.36/.kubeconfig
         - name: IMAGE_PULL_POLICY
           value: Always
         - name: KUBE_BURNER_VERSION
@@ -2434,7 +2375,7 @@ presubmits:
           value: debug
         - name: PERFSCALE_WORKLOAD
           value: tests/performance/manifests/kube-burner/kubevirt-density/kubevirt-density.yml
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             cpu: "12"
@@ -2449,7 +2390,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 4h0m0s
@@ -2481,7 +2421,7 @@ presubmits:
           value: 16G
         - name: KUBEVIRTCI_CONTAINER_SUFFIX
           value: 2606261100-91633356
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi

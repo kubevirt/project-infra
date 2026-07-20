@@ -4,7 +4,6 @@ presubmits:
     annotations:
       k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -50,7 +49,7 @@ presubmits:
           value: "true"
         - name: SONOBUOY_EXTRA_ARGS
           value: --plugin-env kubevirt-conformance.E2E_FOCUS=SRIOV
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 15Gi
@@ -81,7 +80,6 @@ presubmits:
         name: vfio
   - always_run: false
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -104,7 +102,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: 1.22.3
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 15Gi
@@ -120,7 +118,6 @@ presubmits:
         name: cgroup
   - always_run: false
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -144,7 +141,7 @@ presubmits:
           value: "2"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 11264M
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -160,7 +157,6 @@ presubmits:
         name: cgroup
   - always_run: false
     cluster: prow-arm64-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     max_concurrency: 1
@@ -179,7 +175,7 @@ presubmits:
           value: kind-1.34
         - name: KUBEVIRT_DEPLOY_CDI
           value: "true"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 24Gi
@@ -195,7 +191,6 @@ presubmits:
         name: cgroup
   - always_run: false
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -219,7 +214,7 @@ presubmits:
           value: "2"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 11264M
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -235,7 +230,6 @@ presubmits:
         name: cgroup
   - always_run: false
     cluster: prow-arm64-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     max_concurrency: 1
@@ -254,7 +248,7 @@ presubmits:
           value: kind-1.35
         - name: KUBEVIRT_DEPLOY_CDI
           value: "true"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 24Gi
@@ -270,7 +264,6 @@ presubmits:
         name: cgroup
   - always_run: false
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -294,7 +287,7 @@ presubmits:
           value: "2"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 11264M
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 24Gi
@@ -310,7 +303,6 @@ presubmits:
         name: cgroup
   - always_run: false
     cluster: prow-arm64-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     max_concurrency: 1
@@ -329,7 +321,7 @@ presubmits:
           value: kind-1.36
         - name: KUBEVIRT_DEPLOY_CDI
           value: "true"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 24Gi
@@ -345,7 +337,6 @@ presubmits:
         name: cgroup
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -386,7 +377,7 @@ presubmits:
         - name: SONOBUOY_EXTRA_ARGS
           value: --plugin-env kubevirt-conformance.E2E_FOCUS=MediatedDevices --plugin-env
             kubevirt-conformance.E2E_SKIP=QUARANTINE
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 52Gi
@@ -411,7 +402,6 @@ presubmits:
         name: vfio
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     labels:
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -427,7 +417,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: cluster-provision/gocli/go.mod
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 1Gi
@@ -437,7 +427,6 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 20m0s
     labels:
@@ -454,7 +443,7 @@ presubmits:
         - -c
         - dnf install -y genisoimage libvirt && cd cluster-provision/images/vm-image-builder
           && ./create-containerdisk.sh alpine-cloud-init
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 500M
@@ -472,7 +461,6 @@ presubmits:
         name: devices
   - always_run: true
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       timeout: 15m0s
     labels:
@@ -492,7 +480,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: cluster-provision/gocli/go.mod
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 1Gi
@@ -500,7 +488,6 @@ presubmits:
           privileged: true
   - always_run: false
     cluster: prow-s390x-workloads
-    decorate: true
     decoration_config:
       timeout: 4h0m0s
     labels:
@@ -523,7 +510,7 @@ presubmits:
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
           value: "false"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 16Gi
@@ -531,7 +518,6 @@ presubmits:
           privileged: true
   - always_run: false
     cluster: prow-s390x-workloads
-    decorate: true
     decoration_config:
       timeout: 4h0m0s
     labels:
@@ -554,7 +540,7 @@ presubmits:
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
           value: "false"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 16Gi
@@ -562,7 +548,6 @@ presubmits:
           privileged: true
   - always_run: true
     cluster: prow-s390x-workloads
-    decorate: true
     decoration_config:
       timeout: 4h0m0s
     labels:
@@ -585,7 +570,7 @@ presubmits:
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
           value: "false"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 16Gi
@@ -593,7 +578,6 @@ presubmits:
           privileged: true
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -613,7 +597,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: cluster-provision/gocli/go.mod
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 16Gi
@@ -623,7 +607,6 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -644,7 +627,7 @@ presubmits:
           value: cluster-provision/gocli/go.mod
         - name: PROVISION_CENTOS_VERSION
           value: "10"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 16Gi
@@ -654,7 +637,6 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -673,7 +655,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: cluster-provision/gocli/go.mod
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 16Gi
@@ -683,7 +665,6 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -704,7 +685,7 @@ presubmits:
           value: cluster-provision/gocli/go.mod
         - name: PROVISION_CENTOS_VERSION
           value: "10"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 16Gi
@@ -714,7 +695,6 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -736,7 +716,7 @@ presubmits:
           value: linux
         - name: BYPASS_PMAN_CHANGE_CHECK
           value: "true"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 8Gi
@@ -746,7 +726,6 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -766,7 +745,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: cluster-provision/gocli/go.mod
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 16Gi
@@ -776,7 +755,6 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     cluster: prow-workloads
-    decorate: true
     decoration_config:
       timeout: 3h0m0s
     labels:
@@ -797,7 +775,7 @@ presubmits:
           value: cluster-provision/gocli/go.mod
         - name: PROVISION_CENTOS_VERSION
           value: "10"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 16Gi

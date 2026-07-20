@@ -29,6 +29,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -66,6 +67,8 @@ type OrganizationClient interface {
 	GetOrg(name string) (*Organization, error)
 	EditOrg(name string, config Organization) (*Organization, error)
 	ListOrgInvitations(org string) ([]OrgInvitation, error)
+	ListFailedOrgInvitations(org string) ([]OrgInvitation, error)
+	DeleteOrgInvitation(org string, invitationID int) error
 	ListOrgMembers(org, role string) ([]TeamMember, error)
 	HasPermission(org, repo, user string, roles ...string) (bool, error)
 	GetUserPermission(org, repo, user string) (string, error)
@@ -185,11 +188,19 @@ type RepositoryClient interface {
 	GetDirectory(org, repo, dirpath, commit string) ([]DirectoryContent, error)
 	IsCollaborator(org, repo, user string) (bool, error)
 	ListCollaborators(org, repo string) ([]User, error)
+	ListDirectCollaboratorsWithPermissions(org, repo string) (map[string]RepoPermissionLevel, error)
+	AddCollaborator(org, repo, user string, permission RepoPermissionLevel) error
+	UpdateCollaborator(org, repo, user string, permission RepoPermissionLevel) error
+	UpdateCollaboratorRepoInvitation(org, repo string, invitationID int, permission RepoPermissionLevel) error
+	DeleteCollaboratorRepoInvitation(org, repo string, invitationID int) error
+	RemoveCollaborator(org, repo, user string) error
+	UpdateCollaboratorPermission(org, repo, user string, permission RepoPermissionLevel) error
 	CreateFork(owner, repo string) (string, error)
 	EnsureFork(forkingUser, org, repo string) (string, error)
 	ListRepoTeams(org, repo string) ([]Team, error)
 	CreateRepo(owner string, isUser bool, repo RepoCreateRequest) (*FullRepo, error)
 	UpdateRepo(owner, name string, repo RepoUpdateRequest) (*FullRepo, error)
+	ListRepoInvitations(org, repo string) ([]CollaboratorRepoInvitation, error)
 }
 
 // TeamClient interface for team related API actions
@@ -284,6 +295,8 @@ type Client interface {
 	Used() bool
 	TriggerGitHubWorkflow(org, repo string, id int) error
 	TriggerFailedGitHubWorkflow(org, repo string, id int) error
+	GetPendingApprovalActionRuns(org, repo, branchName, headSHA string) ([]WorkflowRun, error)
+	ApproveGitHubWorkflowRun(org, repo string, id int) error
 }
 
 // client interacts with the github api. It is reconstructed whenever
@@ -375,6 +388,8 @@ func (c *client) WithFields(fields logrus.Fields) Client {
 
 var (
 	teamRe = regexp.MustCompile(`^(.*)/(.*)$`)
+
+	passedWorkflowRunConclusions = []string{"success", "skipped"}
 )
 
 const (
@@ -811,6 +826,12 @@ type request struct {
 	org         string
 	requestBody interface{}
 	exitCodes   []int
+	// allowInDryRun allows this request even in dry-run mode.
+	// WARNING: This should ONLY be used for read-only operations that enable other reads,
+	// such as GitHub App installation token acquisition. NEVER use this for actual mutations
+	// (creating/updating/deleting org members, teams, repos, etc.) as it would defeat the
+	// purpose of dry-run mode. Currently only used for: /app/installations/{id}/access_tokens
+	allowInDryRun bool
 }
 
 type requestError struct {
@@ -870,6 +891,27 @@ func IsNotFound(err error) bool {
 	return false
 }
 
+// NewForbidden returns a forbiddenError which may be useful for tests
+func NewForbidden() error {
+	return forbiddenError{}
+}
+
+type forbiddenError struct {
+	body []byte
+}
+
+func (e forbiddenError) Error() string {
+	return fmt.Sprintf("the GitHub API request returns a 403 error: %s", e.body)
+}
+
+func IsForbidden(err error) bool {
+	if err == nil {
+		return false
+	}
+	var forbiddenErr forbiddenError
+	return errors.As(err, &forbiddenErr)
+}
+
 // Make a request with retries. If ret is not nil, unmarshal the response body
 // into it. Returns an error if the exit code is not one of the provided codes.
 func (c *client) request(r *request, ret interface{}) (int, error) {
@@ -889,6 +931,32 @@ func (c *client) requestWithContext(ctx context.Context, r *request, ret interfa
 	return statusCode, nil
 }
 
+// isDryRunAllowed returns true if this request should be allowed in dry-run mode.
+// GET requests are always allowed. Non-GET requests are only allowed if they match
+// a hardcoded allowlist (currently only GitHub App token acquisition).
+func isDryRunAllowed(r *request) bool {
+	if r.method == http.MethodGet {
+		return true
+	}
+
+	if !r.allowInDryRun {
+		return false
+	}
+
+	// Hardcoded allowlist: ONLY allow GitHub App token acquisition
+	// Pattern: POST /app/installations/{installation_id}/access_tokens
+	if r.method == http.MethodPost &&
+		strings.Contains(r.path, "/app/installations/") &&
+		strings.HasSuffix(r.path, "/access_tokens") {
+		return true
+	}
+
+	// If allowInDryRun is set but doesn't match the allowlist, this is a bug
+	// Log an error to catch misuse during development
+	logrus.Errorf("SECURITY: allowInDryRun=true set for non-allowed endpoint: %s %s. This is a bug - allowInDryRun should ONLY be used for GitHub App token acquisition.", r.method, r.path)
+	return false
+}
+
 // requestRaw makes a request with retries and returns the response body.
 // Returns an error if the exit code is not one of the provided codes.
 func (c *client) requestRaw(r *request) (int, []byte, error) {
@@ -896,7 +964,7 @@ func (c *client) requestRaw(r *request) (int, []byte, error) {
 }
 
 func (c *client) requestRawWithContext(ctx context.Context, r *request) (int, []byte, error) {
-	if c.fake || (c.dry && r.method != http.MethodGet) {
+	if c.fake || (c.dry && !isDryRunAllowed(r)) {
 		return r.exitCodes[0], nil, nil
 	}
 	resp, err := c.requestRetryWithContext(ctx, r.method, r.path, r.accept, r.org, r.requestBody)
@@ -1016,7 +1084,7 @@ func (c *client) requestRetryWithContext(ctx context.Context, method, path, acce
 						err = fmt.Errorf("the account is using %s oauth scopes, please make sure you are using at least one of the following oauth scopes: %s", authorizedScopes, acceptedScopes)
 					} else {
 						body, _ := io.ReadAll(resp.Body)
-						err = fmt.Errorf("the GitHub API request returns a 403 error: %s", string(body))
+						err = forbiddenError{body: body}
 					}
 					resp.Body.Close()
 					break
@@ -1488,6 +1556,50 @@ func (c *client) ListOrgInvitations(org string) ([]OrgInvitation, error) {
 	return ret, nil
 }
 
+// ListFailedOrgInvitations lists failed invitations to the org.
+//
+// https://docs.github.com/en/rest/orgs/members#list-failed-organization-invitations
+func (c *client) ListFailedOrgInvitations(org string) ([]OrgInvitation, error) {
+	c.log("ListFailedOrgInvitations", org)
+	if c.fake {
+		return nil, nil
+	}
+	path := fmt.Sprintf("/orgs/%s/failed_invitations", org)
+	var ret []OrgInvitation
+	err := c.readPaginatedResults(
+		path,
+		acceptNone,
+		org,
+		func() interface{} {
+			return &[]OrgInvitation{}
+		},
+		func(obj interface{}) {
+			ret = append(ret, *(obj.(*[]OrgInvitation))...)
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return ret, nil
+}
+
+// DeleteOrgInvitation deletes a pending or failed organization invitation.
+//
+// https://docs.github.com/en/rest/orgs/members#cancel-an-organization-invitation
+func (c *client) DeleteOrgInvitation(org string, invitationID int) error {
+	c.log("DeleteOrgInvitation", org, invitationID)
+	if c.dry {
+		return nil
+	}
+	_, err := c.request(&request{
+		method:    http.MethodDelete,
+		path:      fmt.Sprintf("/orgs/%s/invitations/%d", org, invitationID),
+		org:       org,
+		exitCodes: []int{204, 404},
+	}, nil)
+	return err
+}
+
 // ListCurrentUserRepoInvitations lists pending invitations for the authenticated user.
 //
 // https://docs.github.com/en/rest/reference/repos#list-repository-invitations-for-the-authenticated-user
@@ -1913,20 +2025,30 @@ func (c *client) readPaginatedResultsWithValuesWithContext(ctx context.Context, 
 		// * c.bases[0]: api.github.com
 		// * initial call: api.github.com/repos/kubernetes/kubernetes/pulls?per_page=100
 		// * next: api.github.com/repositories/22/pulls?per_page=100&page=2
-		// * in this case prefix will be empty and we're just calling the path returned by next
+		// * prefix will be empty; we call the path returned by next as-is
 		// Example for github enterprise:
 		// * c.bases[0]: <ghe-url>/api/v3
 		// * initial call: <ghe-url>/api/v3/repos/kubernetes/kubernetes/pulls?per_page=100
 		// * next: <ghe-url>/api/v3/repositories/22/pulls?per_page=100&page=2
-		// * in this case prefix will be "/api/v3" and we will strip the prefix. If we don't do that,
-		//   the next call will go to <ghe-url>/api/v3/api/v3/repositories/22/pulls?per_page=100&page=2
-		prefix := strings.TrimSuffix(resp.Request.URL.RequestURI(), pagedPath)
+		// * prefix will be "/api/v3" and we strip it so we don't duplicate it
+		//   when prepending c.bases[hostIndex]
+		// Example for a redirect (e.g. repo rename):
+		// * initial call: api.github.com/repos/old-org/old-repo/pulls?per_page=100
+		// * resp.Request.URL (after redirect): api.github.com/repos/new-org/new-repo/pulls?per_page=100
+		// * next: api.github.com/repos/new-org/new-repo/pulls?per_page=100&page=2
+		// * prefix will be empty; we compare only Path (not full RequestURI) so
+		//   the differing response URL doesn't break the suffix match
+		pathOnly := strings.SplitN(pagedPath, "?", 2)[0]
+		prefix := strings.TrimSuffix(resp.Request.URL.Path, pathOnly)
 
 		u, err := url.Parse(link)
 		if err != nil {
 			return fmt.Errorf("failed to parse 'next' link: %w", err)
 		}
 		pagedPath = strings.TrimPrefix(u.RequestURI(), prefix)
+		if len(pagedPath) == 0 || pagedPath[0] != '/' {
+			pagedPath = u.RequestURI()
+		}
 	}
 	return nil
 }
@@ -2055,7 +2177,8 @@ func (c *client) GetFailedActionRunsByHeadBranch(org, repo, branchName, headSHA 
 		Path: fmt.Sprintf("/repos/%s/%s/actions/runs", org, repo),
 	}
 	query := u.Query()
-	query.Add("status", "failure")
+	// Filter for the specific head SHA
+	query.Add("head_sha", headSHA)
 	// setting the OR condition to get both PR and PR target workflows, as well
 	// as workflows called via another workflow using workflow_call (matrix workflows)
 	query.Add("event", "pull_request OR pull_request_target OR workflow_call")
@@ -2072,9 +2195,16 @@ func (c *client) GetFailedActionRunsByHeadBranch(org, repo, branchName, headSHA 
 
 	prRuns := []WorkflowRun{}
 
-	// keep only the runs matching the current PR headSHA
+	// We only want to get failed workflows.
+	// Note: The query parameter "status" is overloaded and used for both status and conclusion.
+	// See https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-workflow
+	// This makes it hard to use directly. Instead, we loop through the runs and check them individually.
+	// A successful workflow will have status "completed" and conclusion "success".
+	// A skipped workflow will have status "completed" and conclusion "skipped".
+	// A failed workflow also have status "completed", but the conclusion can be either "failure" or "cancelled".
+	// We only want completed jobs that are not skipped and not successful.
 	for _, run := range runs.WorkflowRuns {
-		if run.HeadSha == headSHA {
+		if run.Status == "completed" && !slices.Contains(passedWorkflowRunConclusions, run.Conclusion) {
 			prRuns = append(prRuns, run)
 		}
 	}
@@ -2108,6 +2238,55 @@ func (c *client) TriggerFailedGitHubWorkflow(org, repo string, id int) error {
 		accept:    "application/vnd.github.v3+json",
 		method:    http.MethodPost,
 		path:      fmt.Sprintf("/repos/%s/%s/actions/runs/%d/rerun-failed-jobs", org, repo, id),
+		org:       org,
+		exitCodes: []int{201},
+	}, nil)
+	return err
+}
+
+// GetPendingApprovalActionRuns retrieves workflow runs that are pending approval for a given PR head SHA
+//
+// See https://docs.github.com/en/rest/actions/workflow-runs#list-workflow-runs-for-a-repository
+func (c *client) GetPendingApprovalActionRuns(org, repo, branchName, headSHA string) ([]WorkflowRun, error) {
+	durationLogger := c.log("GetPendingApprovalActionRuns", org, repo)
+	defer durationLogger()
+
+	var runs WorkflowRuns
+
+	u := url.URL{
+		Path: fmt.Sprintf("/repos/%s/%s/actions/runs", org, repo),
+	}
+	query := u.Query()
+	// Filter for the specific head SHA
+	query.Add("head_sha", headSHA)
+	// setting the OR condition to get both PR and PR target workflows
+	query.Add("event", "pull_request OR pull_request_target")
+	query.Add("branch", branchName)
+	// Filter for action_required status (workflows pending approval)
+	query.Add("status", "action_required")
+	u.RawQuery = query.Encode()
+
+	_, err := c.request(&request{
+		accept:    "application/vnd.github.v3+json",
+		method:    http.MethodGet,
+		path:      u.String(),
+		org:       org,
+		exitCodes: []int{200},
+	}, &runs)
+
+	return runs.WorkflowRuns, err
+}
+
+// ApproveGitHubWorkflowRun approves a pending workflow run
+//
+// See https://docs.github.com/en/rest/actions/workflow-runs#approve-a-workflow-run-for-a-fork-pull-request
+func (c *client) ApproveGitHubWorkflowRun(org, repo string, id int) error {
+	durationLogger := c.log("ApproveGitHubWorkflowRun", org, repo, id)
+	defer durationLogger()
+	_, err := c.request(&request{
+		accept:    "application/vnd.github.v3+json",
+		method:    http.MethodPost,
+		path:      fmt.Sprintf("/repos/%s/%s/actions/runs/%d/approve", org, repo, id),
 		org:       org,
 		exitCodes: []int{201},
 	}, nil)
@@ -4062,6 +4241,211 @@ func (c *client) ListCollaborators(org, repo string) ([]User, error) {
 	return users, nil
 }
 
+// directCollaboratorsQuery defines the GraphQL query structure for fetching direct repository collaborators
+type directCollaboratorsQuery struct {
+	Repository struct {
+		Collaborators struct {
+			Edges []struct {
+				Permission githubql.String
+				Node       struct {
+					Login githubql.String
+				}
+			}
+			PageInfo struct {
+				HasNextPage githubql.Boolean
+				EndCursor   githubql.String
+			}
+		} `graphql:"collaborators(affiliation: DIRECT, first: $first, after: $after)"`
+	} `graphql:"repository(owner: $owner, name: $name)"`
+}
+
+// mapGraphQLPermissionToRepoLevel maps GraphQL permission strings to RepoPermissionLevel
+func mapGraphQLPermissionToRepoLevel(graphqlPerm string) RepoPermissionLevel {
+	switch graphqlPerm {
+	case "ADMIN":
+		return Admin
+	case "MAINTAIN":
+		return Maintain
+	case "WRITE":
+		return Write
+	case "TRIAGE":
+		return Triage
+	case "READ":
+		return Read
+	default:
+		return Read // Default fallback
+	}
+}
+
+// ListDirectCollaboratorsWithPermissions gets direct repository collaborators with their permissions using GraphQL.
+// This only returns users who were explicitly added as collaborators, not those with inherited org/team access.
+//
+// See GraphQL schema: repository.collaborators(affiliation: DIRECT)
+func (c *client) ListDirectCollaboratorsWithPermissions(org, repo string) (map[string]RepoPermissionLevel, error) {
+	durationLogger := c.log("ListDirectCollaboratorsWithPermissions", org, repo)
+	defer durationLogger()
+
+	if c.fake {
+		return nil, nil
+	}
+
+	result := make(map[string]RepoPermissionLevel)
+	vars := map[string]interface{}{
+		"owner": githubql.String(org),
+		"name":  githubql.String(repo),
+		"first": githubql.Int(100), // GitHub's max per page
+		"after": (*githubql.String)(nil),
+	}
+
+	for {
+		var query directCollaboratorsQuery
+		if err := c.QueryWithGitHubAppsSupport(context.Background(), &query, vars, org); err != nil {
+			return nil, fmt.Errorf("GraphQL query failed: %w", err)
+		}
+
+		// Process this page of results
+		for _, edge := range query.Repository.Collaborators.Edges {
+			login := string(edge.Node.Login)
+			permission := mapGraphQLPermissionToRepoLevel(string(edge.Permission))
+			result[login] = permission
+		}
+
+		// Check if there are more pages
+		if !query.Repository.Collaborators.PageInfo.HasNextPage {
+			break
+		}
+		vars["after"] = query.Repository.Collaborators.PageInfo.EndCursor
+	}
+
+	return result, nil
+}
+
+// AddCollaborator adds a user as a collaborator to a repository with the specified permission level.
+//
+// See https://docs.github.com/en/rest/collaborators/collaborators#add-a-repository-collaborator
+func (c *client) AddCollaborator(org, repo, user string, permission RepoPermissionLevel) error {
+	c.log("AddCollaborator", org, repo, user, permission)
+
+	if c.dry {
+		return nil
+	}
+
+	requestBody := struct {
+		Permission string `json:"permission"`
+	}{
+		Permission: string(permission),
+	}
+
+	_, err := c.request(&request{
+		method:      http.MethodPut,
+		path:        fmt.Sprintf("/repos/%s/%s/collaborators/%s", org, repo, user),
+		org:         org,
+		requestBody: &requestBody,
+		exitCodes:   []int{201, 204},
+	}, nil)
+	return err
+}
+
+// UpdateCollaborator updates an existing repository invitation or collaborator permission.
+// This specifically handles updating pending invitations using the PATCH endpoint.
+//
+// See https://docs.github.com/en/rest/collaborators/invitations#update-a-repository-invitation
+func (c *client) UpdateCollaborator(org, repo, user string, permission RepoPermissionLevel) error {
+	c.log("UpdateCollaborator", org, repo, user, permission)
+
+	if c.dry {
+		return nil
+	}
+
+	requestBody := struct {
+		Permission string `json:"permission"`
+	}{
+		Permission: string(permission),
+	}
+
+	_, err := c.request(&request{
+		method:      http.MethodPatch,
+		path:        fmt.Sprintf("/repos/%s/%s/collaborators/%s", org, repo, user),
+		org:         org,
+		requestBody: &requestBody,
+		exitCodes:   []int{200, 204},
+	}, nil)
+	return err
+}
+
+// UpdateCollaboratorRepoInvitation updates a pending repository invitation using the invitation ID.
+// This is the correct method for updating pending invitations.
+//
+// See https://docs.github.com/en/rest/collaborators/invitations#update-a-repository-invitation
+func (c *client) UpdateCollaboratorRepoInvitation(org, repo string, invitationID int, permission RepoPermissionLevel) error {
+	c.log("UpdateCollaboratorRepoInvitation", org, repo, invitationID, permission)
+
+	if c.dry {
+		return nil
+	}
+
+	requestBody := struct {
+		Permission string `json:"permissions"`
+	}{
+		Permission: string(permission),
+	}
+
+	_, err := c.request(&request{
+		method:      http.MethodPatch,
+		path:        fmt.Sprintf("/repos/%s/%s/invitations/%d", org, repo, invitationID),
+		org:         org,
+		requestBody: &requestBody,
+		exitCodes:   []int{200, 204},
+	}, nil)
+	return err
+}
+
+// DeleteCollaboratorRepoInvitation deletes a pending repository invitation using the invitation ID.
+//
+// See https://docs.github.com/en/rest/collaborators/invitations#delete-a-repository-invitation
+func (c *client) DeleteCollaboratorRepoInvitation(org, repo string, invitationID int) error {
+	c.log("DeleteCollaboratorRepoInvitation", org, repo, invitationID)
+
+	if c.dry {
+		return nil
+	}
+
+	_, err := c.request(&request{
+		method:    http.MethodDelete,
+		path:      fmt.Sprintf("/repos/%s/%s/invitations/%d", org, repo, invitationID),
+		org:       org,
+		exitCodes: []int{204},
+	}, nil)
+	return err
+}
+
+// RemoveCollaborator removes a user as a collaborator from a repository.
+//
+// See https://docs.github.com/en/rest/collaborators/collaborators#remove-a-repository-collaborator
+func (c *client) RemoveCollaborator(org, repo, user string) error {
+	c.log("RemoveCollaborator", org, repo, user)
+
+	if c.dry {
+		return nil
+	}
+
+	_, err := c.request(&request{
+		method:    http.MethodDelete,
+		path:      fmt.Sprintf("/repos/%s/%s/collaborators/%s", org, repo, user),
+		org:       org,
+		exitCodes: []int{204},
+	}, nil)
+	return err
+}
+
+// UpdateCollaboratorPermission updates a collaborator's permission level for a repository.
+// This is essentially the same as AddCollaborator since the GitHub API uses PUT for both adding and updating.
+//
+// See https://docs.github.com/en/rest/collaborators/collaborators#add-a-repository-collaborator
+func (c *client) UpdateCollaboratorPermission(org, repo, user string, permission RepoPermissionLevel) error {
+	return c.AddCollaborator(org, repo, user, permission)
+}
+
 // CreateFork creates a fork for the authenticated user. Forking a repository
 // happens asynchronously. Therefore, we may have to wait a short period before
 // accessing the git objects. If this takes longer than 5 minutes, GitHub
@@ -4742,9 +5126,6 @@ func (c *client) IsAppInstalled(org, repo string) (bool, error) {
 	durationLogger := c.log("IsAppInstalled", org, repo)
 	defer durationLogger()
 
-	if c.dry {
-		return false, fmt.Errorf("not getting AppInstallation in dry-run mode")
-	}
 	if !c.usesAppsAuth {
 		return false, fmt.Errorf("IsAppInstalled was called when not using appsAuth")
 	}
@@ -4791,15 +5172,21 @@ func (c *client) getAppInstallationToken(installationId int64) (*AppInstallation
 	durationLogger := c.log("AppInstallationToken")
 	defer durationLogger()
 
-	if c.dry {
-		return nil, fmt.Errorf("not requesting GitHub App access_token in dry-run mode")
-	}
+	// Note: We allow token fetching even in dry-run mode because:
+	// 1. Fetching a token is effectively a read-only operation - it has no side effects on the org/repos
+	// 2. The token is required to make any subsequent API calls (even GET requests)
+	// 3. All actual mutations (POST/PUT/PATCH/DELETE to org/repo resources) are still blocked by dry-run mode
+	// 4. This allows tools to run in dry-run mode with GitHub Apps
 
 	var token AppInstallationToken
 	if _, err := c.request(&request{
 		method:    http.MethodPost,
 		path:      fmt.Sprintf("/app/installations/%d/access_tokens", installationId),
 		exitCodes: []int{201},
+		// allowInDryRun: This is the ONLY place this flag should be set to true.
+		// Token acquisition is read-only and enables subsequent reads. Do not use
+		// this flag for actual mutations to org/repo resources.
+		allowInDryRun: true,
 	}, &token); err != nil {
 		return nil, err
 	}
@@ -4888,4 +5275,34 @@ func (c *client) CreatePullRequestReviewComment(org, repo string, number int, rc
 		exitCodes:   []int{201},
 	}, nil)
 	return err
+}
+
+// ListRepoInvitations returns a list of invitations for the repository.
+//
+// See https://docs.github.com/en/rest/reference/repos#list-repository-invitations
+func (c *client) ListRepoInvitations(org, repo string) ([]CollaboratorRepoInvitation, error) {
+	durationLogger := c.log("ListRepoInvitations", org, repo)
+	defer durationLogger()
+
+	if c.fake {
+		return nil, nil
+	}
+
+	path := fmt.Sprintf("/repos/%s/%s/invitations", org, repo)
+	var ret []CollaboratorRepoInvitation
+	err := c.readPaginatedResults(
+		path,
+		"application/vnd.github.v3+json",
+		org,
+		func() interface{} {
+			return &[]CollaboratorRepoInvitation{}
+		},
+		func(obj interface{}) {
+			ret = append(ret, *(obj.(*[]CollaboratorRepoInvitation))...)
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return ret, nil
 }

@@ -4,13 +4,12 @@ presubmits:
     # Check Prow configuration using the `checkconfig` tool:
     # - https://docs.prow.k8s.io/docs/components/cli-tools/checkconfig/
     always_run: true
-    decorate: true
     cluster: kubevirt-prow-control-plane
     labels:
       preset-gcs-credentials: "true"
     spec:
       containers:
-      - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20260709-bcf4297e5
+      - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20260714-0633879af
         command:
         - /ko-app/checkconfig
         args:
@@ -32,11 +31,10 @@ presubmits:
   - name: pull-project-infra-test-robots
     run_if_changed: "robots/.*|pkg/.*|go.mod|go.sum"
     optional: false
-    decorate: true
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -55,11 +53,10 @@ presubmits:
             memory: "4Gi"
   - name: pull-project-infra-check-presubmits
     run_if_changed: "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml"
-    decorate: true
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -82,11 +79,10 @@ presubmits:
   - name: pull-project-infra-test-releng
     run_if_changed: "releng/.*|go.mod"
     optional: false
-    decorate: true
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -105,10 +101,9 @@ presubmits:
     run_if_changed: "external-plugins/.*|go.mod"
     cluster: kubevirt-prow-control-plane
     optional: false
-    decorate: true
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -126,13 +121,12 @@ presubmits:
   - name: pull-project-infra-test-github-ci-services
     run_if_changed: "github/ci/services/.*|go.mod"
     optional: false
-    decorate: true
     cluster: kubevirt-prow-control-plane
     labels:
       preset-bazel-cache: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -148,7 +142,6 @@ presubmits:
           runAsUser: 0
   - always_run: true
     cluster: kubevirt-prow-control-plane
-    decorate: true
     name: pull-project-infra-lint
     spec:
       containers:
@@ -164,7 +157,7 @@ presubmits:
           value: "1.26.4"
         - name: GOLANGCI_LINT_VERSION
           value: "v2.12.2"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: "4Gi"
@@ -173,7 +166,6 @@ presubmits:
   - name: build-kubevirt-infra-bootstrap-image
     always_run: false
     run_if_changed: "images/kubevirt-infra-bootstrap/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -181,7 +173,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -197,7 +189,6 @@ presubmits:
   - name: build-bootstrap-image
     always_run: false
     run_if_changed: "images/bootstrap/.*|images/golang/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -205,7 +196,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -224,14 +215,13 @@ presubmits:
   - name: build-shared-images-controller-image
     always_run: false
     run_if_changed: "images/shared-images-controller/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -249,7 +239,6 @@ presubmits:
   - name: build-release-tool-image
     always_run: false
     run_if_changed: "releng/release-tool/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -258,7 +247,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20260707-cacb217
+        - image: quay.io/kubevirtci/golang:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -276,7 +265,6 @@ presubmits:
   - name: build-kubekins-e2e-image
     always_run: false
     run_if_changed: "images/kubekins-e2e/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -284,7 +272,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -302,7 +290,6 @@ presubmits:
   - name: build-kubevirt-kubevirt.github.io-image
     always_run: false
     run_if_changed: "images/kubevirt-kubevirt.github.io/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -314,7 +301,7 @@ presubmits:
       base_ref: main
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -333,7 +320,6 @@ presubmits:
   - name: build-kubevirt-user-guide-image
     always_run: false
     run_if_changed: "images/kubevirt-user-guide/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -341,7 +327,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -359,7 +345,6 @@ presubmits:
   - name: build-prow-deploy-image
     always_run: false
     run_if_changed: "images/prow-deploy/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -367,7 +352,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -385,7 +370,6 @@ presubmits:
   - name: build-autoowners-image
     always_run: false
     run_if_changed: "images/autoowners/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -393,7 +377,7 @@ presubmits:
     cluster: prow-workloads
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -411,7 +395,6 @@ presubmits:
   - name: build-pr-creator-image
     always_run: false
     run_if_changed: 'images/pr-creator/.*|hack/(git-pr\.sh|git-askpass\.sh)|robots/labels-checker/.*|pkg/.*|go.mod|go.sum'
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -419,7 +402,7 @@ presubmits:
     cluster: prow-workloads
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -437,7 +420,6 @@ presubmits:
   - name: build-vm-image-builder-image
     always_run: false
     run_if_changed: "images/vm-image-builder/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -445,7 +427,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -461,7 +443,6 @@ presubmits:
   - name: build-fedora-coreos-kubevirt-image
     always_run: false
     run_if_changed: "images/fedora-coreos-kubevirt/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -469,7 +450,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -486,7 +467,6 @@ presubmits:
   - name: build-test-report-image
     always_run: false
     run_if_changed: "^(robots|images)/test-report/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -495,7 +475,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -511,7 +491,6 @@ presubmits:
   - name: build-release-blocker-image
     always_run: false
     run_if_changed: "^(robots|images)/release-blocker/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -520,7 +499,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -536,7 +515,6 @@ presubmits:
   - name: build-referee-image
     always_run: false
     run_if_changed: "^(external-plugins|images)/referee/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -545,7 +523,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -563,7 +541,6 @@ presubmits:
     run_if_changed: "^(robots|images)/ginkgo-tests/.*|pkg/.*|go.mod|go.sum"
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     cluster: kubevirt-prow-control-plane
     max_concurrency: 1
     labels:
@@ -573,7 +550,7 @@ presubmits:
       preset-project-infra-image-build-linux: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -592,7 +569,6 @@ presubmits:
   - name: build-indexpagecreator-image
     always_run: false
     run_if_changed: "^(robots|images)/indexpagecreator/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -601,7 +577,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -617,7 +593,6 @@ presubmits:
   - name: build-flakefinder-image
     always_run: false
     run_if_changed: "^(robots|images)/flakefinder/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -626,7 +601,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -642,7 +617,6 @@ presubmits:
   - name: build-flake-report-creator-image
     always_run: false
     run_if_changed: "^(robots|images)/flake-report-creator/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -651,7 +625,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -667,7 +641,6 @@ presubmits:
   - name: build-rehearse-image
     always_run: false
     run_if_changed: "^(external-plugins|images)/rehearse/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -676,7 +649,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -692,7 +665,6 @@ presubmits:
   - name: build-phased-image
     always_run: false
     run_if_changed: "images/phased/.*|external-plugins/phased/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -701,7 +673,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -717,7 +689,6 @@ presubmits:
   - name: build-test-label-analyzer-image
     always_run: false
     run_if_changed: "images/test-label-analyzer/.*|robots/test-label-analyzer/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -726,7 +697,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -742,7 +713,6 @@ presubmits:
   - name: build-test-subset-image
     always_run: false
     run_if_changed: "images/test-subset/.*|external-plugins/test-subset/.*|pkg/.*|go.mod|go.sum"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -751,7 +721,7 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -767,7 +737,6 @@ presubmits:
   - name: pull-project-infra-prow-deploy-test
     always_run: false
     run_if_changed: "github/ci/prow-deploy/(defaults|hack|kustom|tasks|templates|vars)/.*|github/ci/prow-deploy/files/[^/]+$|github/ci/prow-deploy/[^/]+$"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -785,7 +754,7 @@ presubmits:
       securityContext:
         runAsUser: 0
       containers:
-        - image: quay.io/kubevirtci/prow-deploy:v20260708-3cba908
+        - image: quay.io/kubevirtci/prow-deploy:v20260716-ff8cd14
           env:
           - name: DEPLOY_ENVIRONMENT
             value: "kubevirtci-testing"
@@ -801,14 +770,13 @@ presubmits:
               memory: "2Gi"
   - name: pull-project-infra-ci-search-deploy-test
     run_if_changed: "github/ci/services/(ci-search|common)/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
     cluster: prow-workloads
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20260707-cacb217
+        - image: quay.io/kubevirtci/golang:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -838,7 +806,6 @@ presubmits:
   - name: pull-project-infra-grafana-deploy-test
     optional: false
     run_if_changed: "github/ci/services/(grafana|common)/.*"
-    decorate: true
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -868,7 +835,7 @@ presubmits:
           env:
           - name: GIMME_GO_VERSION
             value: "1.25.1"
-          image: quay.io/kubevirtci/golang:v20260707-cacb217
+          image: quay.io/kubevirtci/golang:v20260715-af3e234
           resources:
             requests:
               memory: "2Gi"
@@ -879,7 +846,6 @@ presubmits:
             runAsUser: 0
   - name: pull-project-infra-check-testgrid-config
     run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$|^github/ci/testgrid/gen-config\.yaml$|^github/ci/testgrid/default\.yaml$'
-    decorate: true
     labels:
       preset-bazel-cache: "true"
     annotations:
@@ -891,7 +857,7 @@ presubmits:
       base_ref: master
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         command:
         - github/ci/testgrid/hack/check.sh
         securityContext:
@@ -907,7 +873,6 @@ presubmits:
       testgrid-create-test-group: "false"
     labels:
       preset-github-credentials: "true"
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m
@@ -916,7 +881,7 @@ presubmits:
     spec:
       containers:
       - name: peribolos
-        image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260709-bcf4297e5
+        image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260714-0633879af
         command:
         - /ko-app/peribolos
         # when changing the peribolos settings below, please align the peribolos settings from the periodic job!
@@ -924,7 +889,7 @@ presubmits:
         - --github-endpoint=http://ghproxy
         - --github-endpoint=https://api.github.com
         - --config-path=github/ci/prow-deploy/kustom/base/configs/current/orgs/orgs.yaml
-        - --github-token-path=/etc/github/oauth
+        - --github-token-path=/etc/github/token
         - --fix-org=true
         - --fix-org-members=true
         - --fix-repos=true
@@ -942,7 +907,6 @@ presubmits:
       testgrid-create-test-group: "false"
     labels:
       preset-github-credentials: "true"
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -951,13 +915,13 @@ presubmits:
     spec:
       containers:
       - name: label-sync
-        image: gcr.io/k8s-staging-test-infra/label_sync:v20260515-778139c32d
+        image: gcr.io/k8s-staging-test-infra/label_sync:v20260714-c52c557180
         command: [ "/ko-app/label_sync" ]
         args:
         - --config=github/ci/prow-deploy/kustom/base/configs/current/labels/labels.yaml
         - --confirm=false
         - --orgs=kubevirt
-        - --token=/etc/github/oauth
+        - --token=/etc/github/token
       restartPolicy: Never
   - name: pull-prow-nmstate-labels-update-precheck
     run_if_changed: '^github/ci/prow-deploy/kustom/base/configs/current/labels/labels\.yaml$'
@@ -965,7 +929,6 @@ presubmits:
       testgrid-create-test-group: "false"
     labels:
       preset-github-credentials: "true"
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -974,18 +937,17 @@ presubmits:
     spec:
       containers:
       - name: label-sync
-        image: gcr.io/k8s-staging-test-infra/label_sync:v20260515-778139c32d
+        image: gcr.io/k8s-staging-test-infra/label_sync:v20260714-c52c557180
         command: [ "/ko-app/label_sync" ]
         args:
         - --config=github/ci/prow-deploy/kustom/base/configs/current/labels/labels.yaml
         - --confirm=false
         - --only=nmstate/kubernetes-nmstate
-        - --token=/etc/github/oauth
+        - --token=/etc/github/token
       restartPolicy: Never
   - annotations:
       testgrid-create-test-group: "false"
     cluster: kubevirt-prow-control-plane
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -993,7 +955,7 @@ presubmits:
     run_if_changed: 'robots/job-config-validator/.*|pkg/.*|go.mod|go.sum'
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         env:
         - name: GIMME_GO_VERSION
           value: "1.25.1"

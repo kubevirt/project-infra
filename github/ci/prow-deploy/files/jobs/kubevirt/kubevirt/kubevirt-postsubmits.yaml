@@ -12,7 +12,6 @@ postsubmits:
       testgrid-days-of-results: "90"
       testgrid-alert-email: push-release-kubevirt-tag@redhat.com
       testgrid-num-failures-to-alert: "1"
-    decorate: true
     decoration_config:
       timeout: 5h
       grace_period: 5m
@@ -25,14 +24,14 @@ postsubmits:
       preset-pgp-bot-key: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
         - name: GH_CLI_VERSION
           value: "2.52.0"
         - name: GITHUB_TOKEN_PATH
-          value: /etc/github/oauth
+          value: /etc/github/token
         - name: GITHUB_REPOSITORY
           value: kubevirt/kubevirt
         - name: GIT_USER_NAME
@@ -61,7 +60,6 @@ postsubmits:
     always_run: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -71,7 +69,7 @@ postsubmits:
       preset-gcs-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+      - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
         - |
@@ -97,7 +95,6 @@ postsubmits:
     skip_report: false
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m
@@ -109,14 +106,14 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
         - name: GIT_USER_NAME
           value: kubevirt-bot
         - name: GITHUB_TOKEN_PATH
-          value: /etc/github/oauth
+          value: /etc/github/token
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
         - ./automation/postsubmit-main.sh
@@ -137,7 +134,6 @@ postsubmits:
       testgrid-create-test-group: "false"
     always_run: true
     skip_report: true
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 10m
@@ -147,7 +143,7 @@ postsubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           env:
             - name: COVERALLS_TOKEN_FILE
               value: /root/.docker/secrets/coveralls/token
@@ -176,7 +172,6 @@ postsubmits:
     annotations:
       testgrid-create-test-group: "false"
     always_run: true
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 10m
@@ -186,7 +181,7 @@ postsubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           env:
             - name: FOSSA_TOKEN_FILE
               value: /root/.docker/secrets/fossa/token
@@ -213,7 +208,6 @@ postsubmits:
     run_if_changed: "hack/builder/.*"
     branches:
       - main
-    decorate: true
     decoration_config:
       timeout: 4h
       grace_period: 5m
@@ -231,7 +225,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -249,7 +243,6 @@ postsubmits:
     run_if_changed: "hack/builder/.*"
     branches:
       - main
-    decorate: true
     decoration_config:
       timeout: 4h
       grace_period: 5m
@@ -267,7 +260,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -289,7 +282,6 @@ postsubmits:
     skip_report: false
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m
@@ -324,7 +316,7 @@ postsubmits:
         - /usr/local/bin/runner.sh
         - /bin/bash
         - -ce
-        image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+        image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
         resources:
           requests:
             memory: "200Mi"

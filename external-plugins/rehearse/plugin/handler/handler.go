@@ -77,7 +77,7 @@ type GitHubEventsHandler struct {
 	eventsChan       <-chan *GitHubEvent
 	logger           *logrus.Logger
 	prowClient       v1.ProwJobInterface
-	ghClient         githubClientInterface
+	ghClient         githubClient
 	gitClientFactory gitv2.ClientFactory
 	ownersClient     repoOwnersClient
 	prowConfigPath   string
@@ -86,7 +86,7 @@ type GitHubEventsHandler struct {
 }
 
 // NewGitHubEventsHandler returns a new github events handler
-func NewGitHubEventsHandler(eventsChan <-chan *GitHubEvent, logger *logrus.Logger, prowClient v1.ProwJobInterface, ghClient githubClientInterface, prowConfigPath string, jobsConfigBase string, alwaysRun bool, gitClientFactory gitv2.ClientFactory, ownersClient repoOwnersClient) *GitHubEventsHandler {
+func NewGitHubEventsHandler(eventsChan <-chan *GitHubEvent, logger *logrus.Logger, prowClient v1.ProwJobInterface, ghClient githubClient, prowConfigPath string, jobsConfigBase string, alwaysRun bool, gitClientFactory gitv2.ClientFactory, ownersClient repoOwnersClient) *GitHubEventsHandler {
 
 	return &GitHubEventsHandler{
 		eventsChan:       eventsChan,
@@ -101,9 +101,9 @@ func NewGitHubEventsHandler(eventsChan <-chan *GitHubEvent, logger *logrus.Logge
 	}
 }
 
-type githubClientInterface interface {
-	IsMember(string, string) (bool, error)
-	GetPullRequest(string, string, int) (*github.PullRequest, error)
+type githubClient interface {
+	IsMember(org, user string) (bool, error)
+	GetPullRequest(org, repo string, number int) (*github.PullRequest, error)
 	CreateComment(org, repo string, number int, comment string) error
 	GetIssueLabels(org, repo string, number int) ([]github.Label, error)
 }

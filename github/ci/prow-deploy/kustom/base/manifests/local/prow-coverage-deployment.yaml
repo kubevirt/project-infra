@@ -18,15 +18,22 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: coverage
-          image: quay.io/kubevirtci/coverage:v20260711-7a66da0
+          image: quay.io/kubevirtci/coverage:v202607171346-5a548bb
           imagePullPolicy: IfNotPresent
           args:
             - --dry-run=false
             - --config=/etc/coverage/config.yaml
-            - --github-token-path=/etc/github/oauth
             - --github-endpoint=http://ghproxy
             - --github-endpoint=https://api.github.com
+            - --github-app-id=$(GITHUB_APP_ID)
+            - --github-app-private-key-path=/etc/github/cert
             - --hmac-secret-file=/etc/webhook/hmac
+          env:
+            - name: GITHUB_APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: github-token
+                  key: appid
           ports:
             - name: http
               containerPort: 9901
@@ -34,19 +41,26 @@ spec:
             - name: hmac
               mountPath: /etc/webhook
               readOnly: true
-            - name: oauth
+            - name: github-token
               mountPath: /etc/github
               readOnly: true
             - name: config
               mountPath: /etc/coverage
               readOnly: true
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
       volumes:
         - name: hmac
           secret:
             secretName: hmac-token
-        - name: oauth
+        - name: github-token
           secret:
-            secretName: oauth-token
+            secretName: github-token
         - name: config
           configMap:
             name: prow-coverage-config

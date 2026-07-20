@@ -1,7 +1,6 @@
 periodics:
 - name: periodic-kubevirtci-mirror-crio-repository-weekly
   cron: "25 0 * * 1"
-  decorate: true
   annotations:
     testgrid-create-test-group: "false"
   decoration_config:
@@ -19,7 +18,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+      - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         env:
           - name: BUCKET_DIR
             value: kubevirtci-crio-mirror
@@ -38,7 +37,6 @@ periodics:
   cron: "0 */12 * * *"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 1h
   max_concurrency: 1
@@ -57,7 +55,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+    - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -78,7 +76,6 @@ periodics:
   cron: "5 3 * * 4"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 1h
   max_concurrency: 1
@@ -95,12 +92,12 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+    - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
       command: ["/bin/sh", "-ce"]
       args:
       - |
         git-pr.sh \
-          --command "./hack/bump-fedora-images-version.sh ../kubevirtci/cluster-provision/centos9/Dockerfile" \
+          --command "./hack/bump-fedora-images-version.sh ../kubevirtci/cluster-provision/centos9/Dockerfile ../kubevirtci/cluster-provision/centos10/Dockerfile" \
           --description-command "echo 'Bump fedora provisioning base to latest version'" \
           --branch bump-fedora-provision \
           --repo-path ../kubevirtci \
@@ -116,7 +113,6 @@ periodics:
   cron: "30 1 * * *"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 1h
   max_concurrency: 1
@@ -131,7 +127,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+    - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
       command:
       - /bin/sh
       - -ceu
@@ -145,11 +141,10 @@ periodics:
       resources:
         requests:
           memory: "200Mi"
-- name: periodic-kubevirtci-bump-centos10-base
-  cron: "0 4 * * 3"
+- name: periodic-kubevirtci-bump-centos-base
+  cron: "0 4 * * 2"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 2h
   max_concurrency: 1
@@ -170,7 +165,129 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+    - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
+      command:
+      - "/usr/local/bin/runner.sh"
+      - "/bin/bash"
+      - "-c"
+      - |
+        cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io &&
+        ./hack/bump-centos-version.sh &&
+        SHORT_SHA=$(git rev-parse --short HEAD) &&
+        GIT_ASKPASS=../project-infra/hack/git-askpass.sh ../project-infra/hack/git-pr.sh \
+          --command "PHASES=linux BYPASS_PMAN_CHANGE_CHECK=true ./publish.sh" \
+          --repo kubevirtci \
+          --branch bump-centos-stream \
+          --target main \
+          --summary "Automatic bump of CentOS Stream to latest" \
+          --labels skip-review &&
+        # For passing centos image tag to dependent (s390x) prow job
+        image_tag=$(cat cluster-provision/k8s/base-image | cut -d ':' -f 2) &&
+        echo "$image_tag" > amd64-centos9-$SHORT_SHA &&
+        gsutil cp ./amd64-centos9-$SHORT_SHA gs://kubevirt-prow/release/kubevirt/kubevirtci/amd64-centos9-$SHORT_SHA
+      # docker-in-docker needs privileged mode
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          memory: "52Gi"
+- name: periodic-kubevirtci-bump-centos-base-s390x
+  cron: "0 4 * * 2" #Triggered at same time as x86 job so that both will run on same commit
+  annotations:
+    testgrid-create-test-group: "false"
+  decoration_config:
+    timeout: 2h
+  max_concurrency: 1
+  extra_refs:
+  - org: kubevirt
+    repo: kubevirtci
+    base_ref: main
+    workdir: true
+  labels:
+    preset-podman-in-container-enabled: "true"
+    preset-kubevirtci-quay-credential: "true"
+    preset-gcs-credentials: "true"
+  cluster: prow-s390x-workloads
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/golang:v20260715-af3e234
+      command:
+      - "/usr/local/bin/runner.sh"
+      - "/bin/bash"
+      - "-c"
+      - |
+        # For getting centos image tag from amd64 prow job and use same for s390x and manifest-list images
+        SHORT_SHA=$(git rev-parse --short HEAD) &&
+        GCS_FILE_PATH=release/kubevirt/kubevirtci/amd64-centos9-$SHORT_SHA &&
+        CHECK_INTERVAL=30 &&
+        source /usr/local/bin/gcs_restapi.sh &&
+        while true; do
+            if stat_gcs_file kubevirt-prow "$GCS_FILE_PATH" "false"; then
+                echo "File $GCS_FILE_PATH is now available."
+                break
+            else
+                echo "File $GCS_FILE_PATH not found. Checking again in $CHECK_INTERVAL seconds."
+                sleep $CHECK_INTERVAL
+            fi
+        done
+        # Add retry mechanism for reading file content to handle GCS eventual consistency
+        MAX_RETRIES=5
+        RETRY_COUNT=0
+        RETRY_INTERVAL=5
+        while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            KUBEVIRTCI_TAG=$(cat_gcs_file kubevirt-prow "$GCS_FILE_PATH" "false")
+            if [ $? -eq 0 ] && [ -n "$KUBEVIRTCI_TAG" ]; then
+                echo "Successfully fetched KUBEVIRTCI_TAG: $KUBEVIRTCI_TAG"
+                break
+            else
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                    echo "Failed to fetch KUBEVIRTCI_TAG (attempt $RETRY_COUNT/$MAX_RETRIES). Retrying in $RETRY_INTERVAL seconds..."
+                    sleep $RETRY_INTERVAL
+                else
+                    echo "Failed to fetch KUBEVIRTCI_TAG after $MAX_RETRIES attempts"
+                    exit 1
+                fi
+            fi
+        done
+        export KUBEVIRTCI_TAG &&
+        cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io &&
+        ./hack/bump-centos-version.sh &&
+        export PHASES=linux; export BYPASS_PMAN_CHANGE_CHECK=true; ./publish.sh &&
+        rm_gcs_file kubevirt-prow "$GCS_FILE_PATH"
+      env:
+      - name: GIMME_GO_VERSION
+        value: "1.26.0"
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          memory: "52Gi"
+- name: periodic-kubevirtci-bump-centos10-base
+  cron: "0 4 * * 3"
+  annotations:
+    testgrid-create-test-group: "false"
+  decoration_config:
+    timeout: 2h
+  max_concurrency: 1
+  extra_refs:
+  - org: kubevirt
+    repo: kubevirtci
+    base_ref: main
+    workdir: true
+  - org: kubevirt
+    repo: project-infra
+    base_ref: main
+  labels:
+    preset-docker-mirror-proxy: "true"
+    preset-github-credentials: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-kubevirtci-quay-credential: "true"
+    preset-gcs-credentials: "true"
+  cluster: prow-workloads
+  spec:
+    containers:
+    - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -179,7 +296,7 @@ periodics:
         cat $QUAY_PASSWORD | podman login --username $(<$QUAY_USER) --password-stdin quay.io
         PROVISION_CENTOS_VERSION=10 ./hack/bump-centos-version.sh
         SHORT_SHA=$(git rev-parse --short HEAD)
-        GIT_ASKPASS=../project-infra/hack/git-askpass.sh ../project-infra/hack/git-pr.sh \
+        ../project-infra/hack/git-pr.sh \
         --command "PROVISION_CENTOS_VERSION=10 PHASES=linux BYPASS_PMAN_CHANGE_CHECK=true ./publish.sh" \
         --repo kubevirtci \
         --branch bump-centos10-stream \
@@ -200,7 +317,6 @@ periodics:
   cron: "0 4 * * 3" #Triggered at same time as x86 job so that both will run on same commit
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 2h
   max_concurrency: 1
@@ -216,7 +332,7 @@ periodics:
   cluster: prow-s390x-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260707-cacb217
+    - image: quay.io/kubevirtci/golang:v20260715-af3e234
       command:
       - "/usr/local/bin/entrypoint.sh"
       - "/bin/bash"
@@ -259,7 +375,6 @@ periodics:
   cron: "0 */12 * * *"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 1h
   max_concurrency: 1
@@ -279,7 +394,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+      - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
         command: ["/bin/sh", "-ce"]
         args:
           - |

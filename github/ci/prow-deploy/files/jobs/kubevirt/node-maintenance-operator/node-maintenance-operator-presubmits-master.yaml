@@ -10,7 +10,6 @@ presubmits:
       fork-per-release: "true"
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -19,7 +18,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -41,7 +40,6 @@ presubmits:
       fork-per-release: "true"
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -50,7 +48,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"

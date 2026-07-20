@@ -8,7 +8,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -17,7 +16,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
@@ -39,7 +38,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -48,7 +46,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"

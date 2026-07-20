@@ -6,7 +6,6 @@ postsubmits:
       always_run: true
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       decoration_config:
         timeout: 6h
       max_concurrency: 1
@@ -30,7 +29,7 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang:v20260707-cacb217
+        - image: quay.io/kubevirtci/golang:v20260715-af3e234
           command:
           - "/usr/local/bin/entrypoint.sh"
           - "/bin/bash"
@@ -63,7 +62,6 @@ postsubmits:
       always_run: true
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       decoration_config:
         timeout: 1h
       max_concurrency: 1
@@ -81,7 +79,7 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang:v20260707-cacb217
+        - image: quay.io/kubevirtci/golang:v20260715-af3e234
           command:
           - "/usr/local/bin/runner.sh"
           - "/bin/bash"
@@ -103,7 +101,6 @@ postsubmits:
       always_run: true
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       decoration_config:
         timeout: 4h
       max_concurrency: 1
@@ -123,7 +120,7 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang:v20260707-cacb217
+        - image: quay.io/kubevirtci/golang:v20260715-af3e234
           command:
           - "/usr/local/bin/entrypoint.sh"
           - "/bin/bash"
@@ -184,7 +181,6 @@ postsubmits:
       always_run: true
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       decoration_config:
         timeout: 1h
       max_concurrency: 1
@@ -199,7 +195,7 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang:v20260707-cacb217
+        - image: quay.io/kubevirtci/golang:v20260715-af3e234
           command:
           - "/usr/local/bin/runner.sh"
           - "/bin/bash"

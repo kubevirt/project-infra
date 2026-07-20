@@ -2,7 +2,6 @@ presubmits:
   kubevirt/qe-tools:
   - name: pull-qe-tools-make-test
     always_run: true
-    decorate: true
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
@@ -11,7 +10,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         args:
         resources:
           requests:

@@ -7,7 +7,6 @@ presubmits:
     always_run: true
     skip_report: false
     optional: false
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -16,7 +15,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20260707-cacb217
+        - image: quay.io/kubevirtci/golang:v20260715-af3e234
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"

@@ -18,10 +18,9 @@ import (
 	"github.com/sirupsen/logrus"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/test-infra/pkg/flagutil"
 	v1 "sigs.k8s.io/prow/pkg/client/clientset/versioned/typed/prowjobs/v1"
 	"sigs.k8s.io/prow/pkg/config/secret"
-	prowflagutil "sigs.k8s.io/prow/pkg/flagutil"
+	"sigs.k8s.io/prow/pkg/flagutil"
 	"sigs.k8s.io/prow/pkg/git/v2"
 	"sigs.k8s.io/prow/pkg/interrupts"
 	"sigs.k8s.io/prow/pkg/pluginhelp/externalplugins"
@@ -40,7 +39,7 @@ type options struct {
 	jobsNs         string
 	alwaysRun      bool
 	cacheDir       string
-	github         prowflagutil.GitHubOptions
+	github         flagutil.GitHubOptions
 }
 
 func (o *options) validate() {
@@ -145,7 +144,7 @@ func main() {
 	prowClient, err := v1.NewForConfig(config)
 	mustSucceed(err, "Could not instantiate a Prow client from the given kubeconfig.")
 
-	if err := secret.Add(opts.github.TokenPath, opts.hmacSecretFile); err != nil {
+	if err := secret.Add(opts.hmacSecretFile); err != nil {
 		logrus.WithError(err).Fatalf("Failed to start secrets agent.")
 	}
 

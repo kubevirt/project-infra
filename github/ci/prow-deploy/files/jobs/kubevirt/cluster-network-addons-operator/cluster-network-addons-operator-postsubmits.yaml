@@ -7,7 +7,6 @@ postsubmits:
       - ^release-.*$
       annotations:
         testgrid-create-test-group: "false"
-      decorate: true
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
@@ -17,12 +16,12 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/bash"
               - "-c"
-              - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && GITHUB_USER=kubevirt-bot GITHUB_TOKEN=$(cat /etc/github/oauth) ./automation/release.sh"
+              - "cat $QUAY_PASSWORD | docker login --username $(cat $QUAY_USER) --password-stdin=true quay.io && GITHUB_USER=kubevirt-bot GITHUB_TOKEN=$(cat /etc/github/token) ./automation/release.sh"
             # docker-in-docker needs privileged mode
             securityContext:
               privileged: true

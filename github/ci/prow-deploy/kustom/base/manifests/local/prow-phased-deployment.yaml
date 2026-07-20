@@ -17,10 +17,12 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: phased
-          image: quay.io/kubevirtci/phased:v20260711-7a66da0
+          image: quay.io/kubevirtci/phased:v202607171347-5a548bb
           imagePullPolicy: IfNotPresent
           args:
-            - --github-token-path=/etc/github/oauth
+            # Not using KubeVirt CI Prow GitHub App Credentials because the
+            # trigger plugin ignore comments from its own bot user.
+            - --github-token-path=/etc/github/token
             - --github-endpoint=http://ghproxy
             - --github-endpoint=https://api.github.com
             - --cache-dir=/var/run/cache
@@ -34,7 +36,7 @@ spec:
             - name: hmac
               mountPath: /etc/webhook
               readOnly: true
-            - name: oauth
+            - name: github-token
               mountPath: /etc/github
               readOnly: true
             - name: plugins
@@ -43,13 +45,23 @@ spec:
             - name: cache
               mountPath: /var/run/cache
               readOnly: false
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
       volumes:
         - name: hmac
           secret:
             secretName: hmac-token
-        - name: oauth
+        - name: github-token
           secret:
             secretName: commenter-oauth-token
+            items:
+              - key: oauth
+                path: token
         - name: plugins
           configMap:
             name: plugins

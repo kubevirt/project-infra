@@ -5,7 +5,6 @@ postsubmits:
       run_if_changed: "image/.*"
       branches:
         - main
-      decorate: true
       decoration_config:
         timeout: 1h
       max_concurrency: 1
@@ -20,7 +19,7 @@ postsubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20260707-cacb217
+          - image: quay.io/kubevirtci/golang:v20260715-af3e234
             env:
               - name: COMMON_INSTANCETYPES_CRI
                 value: podman

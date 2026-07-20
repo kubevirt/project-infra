@@ -6,6 +6,8 @@ prowjob_namespace: kubevirt-prow-jobs
 pod_namespace: kubevirt-prow-jobs
 log_level: debug
 
+decorate_all_jobs: true
+
 # https://docs.prow.k8s.io/docs/components/core/deck/
 # https://pkg.go.dev/sigs.k8s.io/prow/pkg/config#Deck
 deck:
@@ -96,10 +98,10 @@ plank:
           - http://ghproxy
           - https://api.github.com
         utility_images:
-          clonerefs: us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260709-bcf4297e5
-          entrypoint: us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260709-bcf4297e5
-          initupload: us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260709-bcf4297e5
-          sidecar: us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260709-bcf4297e5
+          clonerefs: us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260714-0633879af
+          entrypoint: us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260714-0633879af
+          initupload: us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260714-0633879af
+          sidecar: us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260714-0633879af
         grace_period: 15s
         timeout: 2h
   pod_pending_timeout: 60m
@@ -213,6 +215,7 @@ tide:
     kubevirt/redfish-controller: merge
     kubevirt/kubevirt-observability-controller: squash
     kubevirt/vdpa-network-binding-plugin: merge
+    kubevirt/plugins: merge
   queries:
   - repos:
     - kubevirt/dra-pci-driver
@@ -292,6 +295,7 @@ tide:
     - kubevirt/kubevirt-aie
     - kubevirt/kubevirt-aie-webhook
     - kubevirt/kubevirt-observability-controller
+    - kubevirt/plugins
     labels:
     - lgtm
     - approved
@@ -481,6 +485,10 @@ branch-protection:
             release-1.8-aie-nv:
               protect: true
               allow_force_pushes: true
+        plugins:
+          branches:
+            main:
+              protect: true
         project-infra:
           branches:
             main:
@@ -886,7 +894,7 @@ presets:
   volumes:
   - name: github-token
     secret:
-      secretName: oauth-token
+      secretName: github-token
       defaultMode: 0400
   volumeMounts:
     - name: github-token

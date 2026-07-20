@@ -5,7 +5,6 @@ presubmits:
       - release-v1.38
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 5h
       grace_period: 5m
@@ -36,7 +35,6 @@ presubmits:
       - release-v1.38
     always_run: true
     optional: false
-    decorate: true
     decoration_config:
       timeout: 5h
       grace_period: 5m
@@ -69,7 +67,6 @@ presubmits:
     cluster: prow-workloads
     always_run: true
     optional: true
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -97,7 +94,6 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     always_run: true
     optional: true
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -126,7 +122,6 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     always_run: true
     optional: true
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m
@@ -155,7 +150,6 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     always_run: true
     optional: true
-    decorate: true
     decoration_config:
       timeout: 1h
       grace_period: 5m

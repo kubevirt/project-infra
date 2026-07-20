@@ -3,7 +3,6 @@ periodics:
     cron: 0 2 * * 1
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
     max_concurrency: 1
@@ -19,7 +18,7 @@ periodics:
       preset-github-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+      - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
         env:
         command: [ "/bin/bash", "-ce" ]
         args:
@@ -45,7 +44,6 @@ periodics:
     cron: 0 2 * * 1
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 1h
     max_concurrency: 1
@@ -61,7 +59,7 @@ periodics:
       preset-github-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+      - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
         env:
         command: [ "/bin/bash", "-ce" ]
         args:

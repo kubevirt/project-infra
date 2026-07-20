@@ -57,7 +57,7 @@ func gatherOptions() options {
 	o := options{}
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	fs.BoolVar(&o.dryRun, "dry-run", true, "Whether the file should get modified or just modifications printed to stdout.")
-	fs.StringVar(&o.TokenPath, "github-token-path", "/etc/github/oauth", "Path to the file containing the GitHub OAuth secret.")
+	fs.StringVar(&o.TokenPath, "github-token-path", "/etc/github/token", "Path to the file containing the GitHub OAuth secret.")
 	fs.StringVar(&o.endpoint, "github-endpoint", "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
 	fs.StringVar(&o.jobConfigPathKubevirtciPresubmit, "job-config-path-kubevirtci-presubmit", "", "The directory of the k8s providers")
 	fs.StringVar(&o.k8sReleaseSemver, "k8s-release-semver", "", "The semver of the k8s release to create a presubmit for")
@@ -182,7 +182,6 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 		Optional:  true,
 		JobBase: config.JobBase{
 			UtilityConfig: config.UtilityConfig{
-				Decorate: &yes,
 				DecorationConfig: &prowjobs.DecorationConfig{
 					Timeout: &prowjobs.Duration{Duration: 3 * time.Hour},
 				},

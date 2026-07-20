@@ -7,7 +7,6 @@ periodics:
     testgrid-alert-email: afrosi@redhat.com, victortoso@redhat.com
     testgrid-num-failures-to-alert: "1"
     testgrid-alert-stale-results-hours: "1"
-  decorate: true
   decoration_config:
     timeout: 3h
   max_concurrency: 1
@@ -22,7 +21,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+    - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
       command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"

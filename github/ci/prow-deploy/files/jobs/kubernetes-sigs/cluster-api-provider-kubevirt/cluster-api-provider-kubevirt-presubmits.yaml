@@ -2,7 +2,6 @@ presubmits:
   kubernetes-sigs/cluster-api-provider-kubevirt:
   - always_run: true
     optional: true
-    decorate: true
     skip_report: true
     cluster: prow-workloads
     decoration_config:
@@ -22,7 +21,7 @@ presubmits:
         - /bin/sh
         - -c
         - make functest
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: 16Gi
@@ -37,7 +36,6 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     optional: true
-    decorate: true
     skip_report: true
     cluster: prow-workloads
     decoration_config:
@@ -57,7 +55,7 @@ presubmits:
             - /bin/sh
             - -c
             - make functest
-          image: quay.io/kubevirtci/golang:v20260707-cacb217
+          image: quay.io/kubevirtci/golang:v20260715-af3e234
           resources:
             requests:
               memory: 16Gi

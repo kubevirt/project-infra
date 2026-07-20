@@ -14,7 +14,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   spec:
     containers:
     - args:
@@ -28,7 +27,7 @@ periodics:
         CONTRIBUTIONS_OUTPUT_FILE_NAME="${ARTIFACTS}/contributions-report.yaml"
 
         go run ./generators/cmd/contributions \
-          --github-token /etc/github/oauth \
+          --github-token /etc/github/token \
           --report-output-file-path ${CONTRIBUTIONS_OUTPUT_FILE_NAME} \
           --months 12
 
@@ -74,7 +73,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ce
-      image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+      image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
       securityContext:
         privileged: true
       resources:

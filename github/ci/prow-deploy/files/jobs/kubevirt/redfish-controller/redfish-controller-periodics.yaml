@@ -1,7 +1,6 @@
 periodics:
 - name: periodic-redfish-controller-push-nightly-main
   cron: "2 4 * * *"
-  decorate: true
   annotations:
     testgrid-create-test-group: "false"
   decoration_config:
@@ -19,7 +18,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260707-cacb217
+    - image: quay.io/kubevirtci/golang:v20260715-af3e234
       command:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"

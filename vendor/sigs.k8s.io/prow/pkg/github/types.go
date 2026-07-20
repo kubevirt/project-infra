@@ -1109,6 +1109,9 @@ const (
 	PrivacySecret = "secret"
 	// PrivacyClosed memberships are visible to org members.
 	PrivacyClosed = "closed"
+
+	// TeamTypeEnterprise identifies teams managed at the enterprise level.
+	TeamTypeEnterprise = "enterprise"
 )
 
 // Team is a github organizational team
@@ -1118,6 +1121,7 @@ type Team struct {
 	Slug         string         `json:"slug"`
 	Description  string         `json:"description,omitempty"`
 	Privacy      string         `json:"privacy,omitempty"`
+	Type         string         `json:"type,omitempty"`
 	Parent       *Team          `json:"parent,omitempty"`         // Only present in responses
 	ParentTeamID *int           `json:"parent_team_id,omitempty"` // Only valid in creates/edits
 	Permission   TeamPermission `json:"permission,omitempty"`
@@ -1191,8 +1195,11 @@ type TeamMembership struct {
 // OrgInvitation contains Login and other details about the invitation.
 type OrgInvitation struct {
 	TeamMember
-	Email   string     `json:"email"`
-	Inviter TeamMember `json:"inviter"`
+	ID           int        `json:"id"`
+	Email        string     `json:"email"`
+	Inviter      TeamMember `json:"inviter"`
+	FailedAt     time.Time  `json:"failed_at,omitempty"`
+	FailedReason string     `json:"failed_reason,omitempty"`
 }
 
 // UserRepoInvitation is returned by repo invitation obtained by user.
@@ -1200,6 +1207,19 @@ type UserRepoInvitation struct {
 	InvitationID int                 `json:"id"`
 	Repository   *Repo               `json:"repository,omitempty"`
 	Permission   RepoPermissionLevel `json:"permissions"`
+}
+
+// CollaboratorRepoInvitation contains details about repository invitations returned by list repository invitations endpoint.
+//
+// See https://docs.github.com/en/rest/collaborators/invitations#list-repository-invitations
+type CollaboratorRepoInvitation struct {
+	InvitationID int                 `json:"id"`
+	Repository   *Repo               `json:"repository,omitempty"`
+	Invitee      *User               `json:"invitee,omitempty"`
+	Inviter      *User               `json:"inviter,omitempty"`
+	Permission   RepoPermissionLevel `json:"permissions"`
+	CreatedAt    string              `json:"created_at"`
+	URL          string              `json:"url"`
 }
 
 // OrgPermissionLevel is admin, and member

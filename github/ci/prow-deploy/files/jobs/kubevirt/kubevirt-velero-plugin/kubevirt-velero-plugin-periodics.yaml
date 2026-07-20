@@ -1,7 +1,6 @@
 periodics:
 - name: periodic-kvp-push-nightly-build-main
   cron: "2 2 * * *"
-  decorate: true
   annotations:
     testgrid-dashboards: kubevirt-velero-plugin-periodics
   decoration_config:
@@ -22,7 +21,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+    - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
       command:
         - "/usr/local/bin/runner.sh"
         - "/bin/bash"

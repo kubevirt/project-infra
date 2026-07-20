@@ -3,11 +3,12 @@ periodics:
   cron: "5 1 * * *"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
+  labels:
+    preset-github-credentials: "true"
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20260711-7a66da0
+    - image: quay.io/kubevirtci/flakefinder:v202607171347-5a548bb
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -15,7 +16,7 @@ periodics:
       - /usr/bin/flakefinder
       args:
       - --dry-run=false
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - --merged=168h
       - --report_output_child_path=nmstate/kubernetes-nmstate
       - --org=nmstate
@@ -23,15 +24,10 @@ periodics:
       - --skip_results_before_start_of_report=false
       - --pr_base_branch=main
       volumeMounts:
-      - name: token
-        mountPath: /etc/github
       - name: gcs
         mountPath: /etc/gcs
         readOnly: true
     volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
     - name: gcs
       secret:
         secretName: gcs
@@ -39,11 +35,12 @@ periodics:
   cron: "45 0 * * *"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
+  labels:
+    preset-github-credentials: "true"
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20260711-7a66da0
+    - image: quay.io/kubevirtci/flakefinder:v202607171347-5a548bb
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -51,7 +48,7 @@ periodics:
       - /usr/bin/flakefinder
       args:
       - --dry-run=false
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - --merged=24h
       - --report_output_child_path=nmstate/kubernetes-nmstate
       - --org=nmstate
@@ -59,15 +56,10 @@ periodics:
       - --skip_results_before_start_of_report=false
       - --pr_base_branch=main
       volumeMounts:
-      - name: token
-        mountPath: /etc/github
       - name: gcs
         mountPath: /etc/gcs
         readOnly: true
     volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
     - name: gcs
       secret:
         secretName: gcs
@@ -75,11 +67,12 @@ periodics:
   interval: 168h
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
+  labels:
+    preset-github-credentials: "true"
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20260711-7a66da0
+    - image: quay.io/kubevirtci/flakefinder:v202607171347-5a548bb
       env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/gcs/service-account.json
@@ -87,7 +80,7 @@ periodics:
       - /usr/bin/flakefinder
       args:
       - --dry-run=false
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - --merged=672h
       - --report_output_child_path=nmstate/kubernetes-nmstate
       - --org=nmstate
@@ -95,15 +88,10 @@ periodics:
       - --skip_results_before_start_of_report=false
       - --pr_base_branch=main
       volumeMounts:
-      - name: token
-        mountPath: /etc/github
       - name: gcs
         mountPath: /etc/gcs
         readOnly: true
     volumes:
-    - name: token
-      secret:
-        secretName: oauth-token
     - name: gcs
       secret:
         secretName: gcs
@@ -111,7 +99,6 @@ periodics:
   cron: "0 2 * * *"
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 3h
     grace_period: 5m
@@ -130,7 +117,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         securityContext:
           privileged: true
         resources:

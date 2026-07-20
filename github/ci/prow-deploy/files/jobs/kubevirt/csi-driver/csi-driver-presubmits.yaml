@@ -10,7 +10,6 @@ presubmits:
       always_run: true
       optional: false
       skip_report: false
-      decorate: true
       decoration_config:
         timeout: 1h
         grace_period: 5m
@@ -21,7 +20,7 @@ presubmits:
         preset-shared-images: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20260707-cacb217
+          - image: quay.io/kubevirtci/golang:v20260715-af3e234
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -46,7 +45,6 @@ presubmits:
       always_run: true
       optional: false
       skip_report: false
-      decorate: true
       decoration_config:
         timeout: 1h
         grace_period: 5m
@@ -57,7 +55,7 @@ presubmits:
         preset-shared-images: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20260707-cacb217
+          - image: quay.io/kubevirtci/golang:v20260715-af3e234
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -82,7 +80,6 @@ presubmits:
       always_run: true
       optional: false
       skip_report: false
-      decorate: true
       decoration_config:
         timeout: 1h
         grace_period: 5m
@@ -93,7 +90,7 @@ presubmits:
         preset-shared-images: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20260707-cacb217
+          - image: quay.io/kubevirtci/golang:v20260715-af3e234
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -118,7 +115,6 @@ presubmits:
       always_run: true
       optional: false
       skip_report: false
-      decorate: true
       decoration_config:
         timeout: 7h
         grace_period: 5m
@@ -131,7 +127,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20260707-cacb217
+          - image: quay.io/kubevirtci/golang:v20260715-af3e234
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -156,7 +152,6 @@ presubmits:
       always_run: true
       optional: false
       skip_report: false
-      decorate: true
       decoration_config:
         timeout: 7h
         grace_period: 5m
@@ -169,7 +164,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20260707-cacb217
+          - image: quay.io/kubevirtci/golang:v20260715-af3e234
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -194,7 +189,6 @@ presubmits:
       always_run: true
       optional: false
       skip_report: false
-      decorate: true
       decoration_config:
         timeout: 7h
         grace_period: 5m
@@ -207,7 +201,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20260707-cacb217
+          - image: quay.io/kubevirtci/golang:v20260715-af3e234
             command:
               - "/usr/local/bin/runner.sh"
               - "/bin/sh"
@@ -231,7 +225,6 @@ presubmits:
       always_run: false
       skip_report: true
       optional: true
-      decorate: true
       decoration_config:
         timeout: 1h
         grace_period: 10m
@@ -241,7 +234,7 @@ presubmits:
         preset-bazel-cache: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
             env:
               - name: COVERALLS_TOKEN_FILE
                 value: /root/.docker/secrets/coveralls/token

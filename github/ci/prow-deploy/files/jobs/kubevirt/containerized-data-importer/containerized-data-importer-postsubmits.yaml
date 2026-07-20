@@ -8,7 +8,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 2h
       grace_period: 5m
@@ -18,7 +17,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+      - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -45,7 +44,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 2h
       grace_period: 5m
@@ -55,7 +53,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+      - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -80,7 +78,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m
@@ -91,14 +88,14 @@ postsubmits:
       preset-github-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+      - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
         - name: GH_CLI_VERSION
           value: "1.5.0"
         - name: GITHUB_TOKEN_PATH
-          value: /etc/github/oauth
+          value: /etc/github/token
         - name: GITHUB_REPOSITORY
           value: kubevirt/containerized-data-importer
         - name: GIT_USER_NAME
@@ -120,7 +117,6 @@ postsubmits:
     skip_report: true
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m
@@ -131,14 +127,14 @@ postsubmits:
       preset-github-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+      - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
         - name: GH_CLI_VERSION
           value: "1.5.0"
         - name: GITHUB_TOKEN_PATH
-          value: /etc/github/oauth
+          value: /etc/github/token
         - name: GITHUB_REPOSITORY
           value: kubevirt/containerized-data-importer
         - name: GIT_USER_NAME
@@ -161,7 +157,6 @@ postsubmits:
     run_if_changed: "hack/build/docker/builder/.*"
     annotations:
       testgrid-create-test-group: "false"
-    decorate: true
     decoration_config:
       timeout: 3h
       grace_period: 5m
@@ -173,7 +168,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+      - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -197,7 +192,6 @@ postsubmits:
     annotations:
       testgrid-create-test-group: "false"
     always_run: true
-    decorate: true
     decoration_config:
       grace_period: 10m0s
       timeout: 1h0m0s
@@ -215,7 +209,7 @@ postsubmits:
         env:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
-        image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
             memory: 8Gi

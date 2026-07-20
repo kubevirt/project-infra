@@ -2,7 +2,6 @@ presubmits:
   kubevirt/community:
   - always_run: true
     cluster: kubevirt-prow-control-plane
-    decorate: true
     extra_refs:
     - org: kubevirt
       repo: project-infra
@@ -20,7 +19,7 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-ce"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: "1Gi"
@@ -28,7 +27,6 @@ presubmits:
             memory: "1Gi"
   - always_run: false
     cluster: kubevirt-prow-control-plane
-    decorate: true
     extra_refs:
     - org: kubevirt
       repo: project-infra
@@ -48,7 +46,7 @@ presubmits:
         env:
         - name: GOLANGCI_LINT_VERSION
           value: "v2.4.0"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: "1Gi"
@@ -56,7 +54,6 @@ presubmits:
             memory: "1Gi"
   - always_run: false
     cluster: kubevirt-prow-control-plane
-    decorate: true
     extra_refs:
     - org: kubevirt
       repo: project-infra
@@ -71,7 +68,7 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-ce"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: "1Gi"
@@ -79,7 +76,6 @@ presubmits:
             memory: "1Gi"
   - always_run: false
     cluster: kubevirt-prow-control-plane
-    decorate: true
     extra_refs:
     - org: kubevirt
       repo: project-infra
@@ -96,7 +92,7 @@ presubmits:
         - "/usr/local/bin/runner.sh"
         - "/bin/sh"
         - "-ce"
-        image: quay.io/kubevirtci/golang:v20260707-cacb217
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
           requests:
             memory: "1Gi"

@@ -6,7 +6,6 @@ presubmits:
         - release-0.79
       always_run: true
       optional: false
-      decorate: true
       decoration_config:
         timeout: 4h
         grace_period: 5m
@@ -36,7 +35,6 @@ presubmits:
         - release-0.79
       always_run: true
       optional: false
-      decorate: true
       decoration_config:
         timeout: 3h
         grace_period: 5m
@@ -66,7 +64,6 @@ presubmits:
         - release-0.79
       always_run: true
       optional: false
-      decorate: true
       decoration_config:
         timeout: 3h
         grace_period: 5m
@@ -96,7 +93,6 @@ presubmits:
         - release-0.79
       always_run: true
       optional: false
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -127,7 +123,6 @@ presubmits:
         - release-0.79
       always_run: true
       optional: false
-      decorate: true
       decoration_config:
         timeout: 3h
         grace_period: 5m
@@ -156,7 +151,6 @@ presubmits:
         - release-0.79
       always_run: true
       optional: false
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -187,7 +181,6 @@ presubmits:
         - release-0.79
       always_run: true
       optional: false
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -218,7 +211,6 @@ presubmits:
         - release-0.79
       always_run: true
       optional: false
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -249,7 +241,6 @@ presubmits:
         - release-0.79
       always_run: true
       optional: false
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h

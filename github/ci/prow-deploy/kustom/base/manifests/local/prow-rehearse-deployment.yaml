@@ -18,17 +18,24 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: rehearse
-          image: quay.io/kubevirtci/rehearse:v20260711-7a66da0
+          image: quay.io/kubevirtci/rehearse:v202607171347-5a548bb
           imagePullPolicy: IfNotPresent
           args:
             - --dry-run=false
-            - --github-token-path=/etc/github/oauth
             - --github-endpoint=http://ghproxy
             - --github-endpoint=https://api.github.com
+            - --github-app-id=$(GITHUB_APP_ID)
+            - --github-app-private-key-path=/etc/github/cert
             - --cache-dir=/var/run/cache
             - --jobs-config-base=github/ci/prow-deploy/files/jobs
             - --prow-config-path=github/ci/prow-deploy/kustom/base/configs/current/config/config.yaml
             - --always-run=false
+          env:
+            - name: GITHUB_APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: github-token
+                  key: appid
           ports:
             - name: http
               containerPort: 9900
@@ -36,7 +43,7 @@ spec:
             - name: hmac
               mountPath: /etc/webhook
               readOnly: true
-            - name: oauth
+            - name: github-token
               mountPath: /etc/github
               readOnly: true
             - name: plugins
@@ -45,13 +52,20 @@ spec:
             - name: cache
               mountPath: /var/run/cache
               readOnly: false
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
       volumes:
         - name: hmac
           secret:
             secretName: hmac-token
-        - name: oauth
+        - name: github-token
           secret:
-            secretName: oauth-token
+            secretName: github-token
         - name: plugins
           configMap:
             name: plugins

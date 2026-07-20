@@ -71,11 +71,13 @@ import (
 	"go/doc"
 	"go/parser"
 	"go/token"
+	"maps"
 	"path/filepath"
 	"reflect"
 	"regexp"
 	"strings"
 	"sync"
+	"unicode"
 
 	"github.com/clarketm/json"
 	yaml3 "gopkg.in/yaml.v3"
@@ -160,7 +162,7 @@ type Comment struct {
 }
 
 // marshal marshals the object into JSON then converts JSON to YAML and returns the YAML.
-func marshal(o interface{}) ([]byte, error) {
+func marshal(o any) ([]byte, error) {
 	j, err := json.Marshal(o)
 	if err != nil {
 		return nil, fmt.Errorf("error marshaling into JSON: %w", err)
@@ -177,7 +179,7 @@ func marshal(o interface{}) ([]byte, error) {
 // jsonToYaml Converts JSON to YAML.
 func jsonToYaml(j []byte) ([]byte, error) {
 	// Convert the JSON to an object.
-	var jsonObj interface{}
+	var jsonObj any
 	// We are using yaml.Unmarshal here (instead of json.Unmarshal) because the
 	// Go JSON library doesn't try to pick the right number type (int, float,
 	// etc.) when unmarshalling to interface{}, it just picks float64
@@ -227,7 +229,7 @@ func fmtRawDoc(rawDoc string) string {
 	// Ignore all lines after ---.
 	rawDoc = strings.Split(rawDoc, "---")[0]
 
-	for _, line := range strings.Split(rawDoc, "\n") {
+	for line := range strings.SplitSeq(rawDoc, "\n") {
 		line = strings.TrimSpace(line) // Trim leading and trailing whitespace.
 		switch {
 		case strings.HasPrefix(line, "TODO"): // Ignore one line TODOs.
@@ -239,7 +241,7 @@ func fmtRawDoc(rawDoc string) string {
 	}
 
 	postDoc := strings.TrimRight(buffer.String(), "\n")               // Remove last newline.
-	postDoc = strings.Replace(postDoc, "\t", " ", -1)                 // Replace tabs with spaces.
+	postDoc = strings.ReplaceAll(postDoc, "\t", " ")                  // Replace tabs with spaces.
 	postDoc = regexp.MustCompile(` +`).ReplaceAllString(postDoc, " ") // Compress multiple spaces to a single space.
 
 	return postDoc
@@ -281,6 +283,7 @@ func fieldIsInlined(field *ast.Field, tag string) bool {
 func fieldType(field *ast.Field, recurse bool) (string, bool) {
 	typeName := ""
 	isObj, isSelect := false, false
+	seenNonNilObj := false
 
 	// Find leaf node.
 	ast.Inspect(field, func(n ast.Node) bool {
@@ -289,9 +292,24 @@ func fieldType(field *ast.Field, recurse bool) (string, bool) {
 			// First node is always a field; skip.
 			return true
 		case *ast.Ident:
-			// Encountered a type, overwrite typeName and isObj.
+			// Encountered a type, overwrite typeName.
 			typeName = x.Name
-			isObj = x.Obj != nil || isSelect
+			// Track if we've ever seen a non-nil Obj for this identifier.
+			// Once we've seen it, don't let subsequent nil Objs clear it.
+			// Only consider it an object if the Obj is a TypeSpec (user-defined type).
+			if x.Obj != nil && x.Obj.Kind == ast.Typ {
+				seenNonNilObj = true
+			}
+			// For Go 1.25 compatibility: When x.Obj is nil (which can happen for type
+			// references in Go 1.25), use a heuristic: if the type name is capitalized
+			// and not a builtin, it's likely a user-defined struct type.
+			if x.Obj == nil && !seenNonNilObj && typeName != "" && len(typeName) > 0 {
+				firstChar := rune(typeName[0])
+				if unicode.IsUpper(firstChar) && !isBuiltinType(typeName) {
+					seenNonNilObj = true
+				}
+			}
+			isObj = seenNonNilObj || isSelect
 		case *ast.SelectorExpr:
 			// SelectorExpr are not object types yet reference one, thus continue with DFS.
 			isSelect = true
@@ -303,10 +321,20 @@ func fieldType(field *ast.Field, recurse bool) (string, bool) {
 	return typeName, isObj
 }
 
+func isBuiltinType(typeName string) bool {
+	switch typeName {
+	case "bool", "string", "int", "int8", "int16", "int32", "int64",
+		"uint", "uint8", "uint16", "uint32", "uint64", "uintptr",
+		"byte", "rune", "float32", "float64", "complex64", "complex128":
+		return true
+	}
+	return false
+}
+
 // getType returns the type's name within its package for a defined type. For other (non-defined) types it returns the empty string.
-func getType(typ interface{}) string {
+func getType(typ any) string {
 	t := reflect.TypeOf(typ)
-	if t.Kind() == reflect.Ptr {
+	if t.Kind() == reflect.Pointer {
 		return t.Elem().Name()
 	}
 	return t.Name()
@@ -370,9 +398,7 @@ func (cm *CommentMap) genDocMap(packageFiles []string, rawFiles map[string][]byt
 	// struct is missing
 	for typeSpecName, inlined := range inlineFields {
 		for _, inlinedType := range inlined {
-			for tagName, comment := range cm.comments[inlinedType] {
-				cm.comments[typeSpecName][tagName] = comment
-			}
+			maps.Copy(cm.comments[typeSpecName], cm.comments[inlinedType])
 		}
 	}
 
@@ -451,7 +477,7 @@ func (cm *CommentMap) addPackage(paths []string, rawFiles map[string][]byte, imp
 }
 
 // GenYaml generates a fully commented YAML snippet for a given plugin configuration.
-func (cm *CommentMap) GenYaml(config interface{}) (string, error) {
+func (cm *CommentMap) GenYaml(config any) (string, error) {
 	var buffer bytes.Buffer
 
 	encoder := yaml3.NewEncoder(&buffer)
@@ -466,7 +492,7 @@ func (cm *CommentMap) GenYaml(config interface{}) (string, error) {
 
 // EncodeYaml encodes a fully commented YAML snippet for a given plugin configuration
 // using the given encoder.
-func (cm *CommentMap) EncodeYaml(config interface{}, encoder *yaml3.Encoder) error {
+func (cm *CommentMap) EncodeYaml(config any, encoder *yaml3.Encoder) error {
 	cm.RLock()
 	defer cm.RUnlock()
 

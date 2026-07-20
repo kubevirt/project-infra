@@ -6,16 +6,15 @@ periodics:
   labels:
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20260711-7a66da0
+    - image: quay.io/kubevirtci/flakefinder:v202607171347-5a548bb
       command:
       - /usr/bin/flakefinder
       args:
       - --dry-run=false
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - --merged=168h
       - --report_output_child_path=kubevirt/cluster-network-addons-operator
       - --repo=cluster-network-addons-operator
@@ -28,16 +27,15 @@ periodics:
   labels:
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20260711-7a66da0
+    - image: quay.io/kubevirtci/flakefinder:v202607171347-5a548bb
       command:
       - /usr/bin/flakefinder
       args:
       - --dry-run=false
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - --merged=24h
       - --report_output_child_path=kubevirt/cluster-network-addons-operator
       - --repo=cluster-network-addons-operator
@@ -50,16 +48,15 @@ periodics:
   labels:
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v20260711-7a66da0
+    - image: quay.io/kubevirtci/flakefinder:v202607171347-5a548bb
       command:
       - /usr/bin/flakefinder
       args:
       - --dry-run=false
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - --merged=672h
       - --report_output_child_path=kubevirt/cluster-network-addons-operator
       - --repo=cluster-network-addons-operator
@@ -67,7 +64,6 @@ periodics:
       - --pr_base_branch=main
 - name: periodic-cnao-workflow-k8s-nightly
   cron: "2 2 * * *"
-  decorate: true
   annotations:
     testgrid-create-test-group: "false"
   decoration_config:
@@ -88,7 +84,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+      - image: quay.io/kubevirtci/golang:v20260715-af3e234
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"

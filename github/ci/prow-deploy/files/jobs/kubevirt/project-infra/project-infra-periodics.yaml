@@ -1,7 +1,6 @@
 periodics:
 - name: periodic-project-infra-retester
   interval: 1h  # Retest at most 1 PR every hour, which should not DOS the queue.
-  decorate: true
   annotations:
     testgrid-create-test-group: "false"
   cluster: kubevirt-prow-control-plane
@@ -11,14 +10,14 @@ periodics:
     base_ref: main
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260707-cacb217
+    - image: quay.io/kubevirtci/golang:v20260715-af3e234
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/sh"
       - "-ce"
       - >
         go run ./robots/retester
-        --token=/etc/github/oauth
+        --token=/etc/github/token
         --ceiling=1
         --confirm
       env:
@@ -31,17 +30,19 @@ periodics:
     - name: token
       secret:
         secretName:  commenter-oauth-token
+        items:
+        - key: oauth
+          path: token
 - name: periodic-project-infra-stale-issues
   interval: 1h
   annotations:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -53,7 +54,7 @@ periodics:
           -label:lifecycle/rotten
           is:public
       - --updated=2160h
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=Issues go stale after 90d of inactivity.
         Mark the issue as fresh with `/remove-lifecycle stale`.
@@ -71,11 +72,10 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -86,7 +86,7 @@ periodics:
           label:lifecycle/stale
           -label:lifecycle/rotten
       - --updated=720h
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=Stale issues rot after 30d of inactivity.
         Mark the issue as fresh with `/remove-lifecycle rotten`.
@@ -104,11 +104,10 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -118,7 +117,7 @@ periodics:
           -label:lifecycle/frozen
           label:lifecycle/rotten
       - --updated=720h
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=Rotten issues close after 30d of inactivity.
         Reopen the issue with `/reopen`.
@@ -134,11 +133,10 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -150,7 +148,7 @@ periodics:
           -label:lifecycle/rotten
           is:public
       - --updated=1080h
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=There has been no activity on this PR for 45 days.
         To protect limited CI resources, it has been automatically labelled 'stale'.
@@ -173,11 +171,10 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -188,7 +185,7 @@ periodics:
           label:lifecycle/stale
           -label:lifecycle/rotten
       - --updated=336h
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=There has been no activity on this PR for 59 days and it has been stale for 14 days.
         To protect limited CI resources, it has been automatically labelled 'rotten' and will be closed in 7 days.
@@ -210,11 +207,10 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -224,7 +220,7 @@ periodics:
           -label:lifecycle/frozen
           label:lifecycle/rotten
       - --updated=168h
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=There has been no activity on this PR for 66 days and it has been rotten for 7 days.
         To protect limited CI resources, it has been automatically closed.
@@ -245,11 +241,10 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -264,7 +259,7 @@ periodics:
           -review:changes-requested
           is:public
       - --updated=168h
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=Pull requests that are marked with `lgtm` should receive a review
         from an approver within 1 week.
@@ -281,11 +276,10 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -295,7 +289,7 @@ periodics:
           is:pr
           label:needs-approver-review
           is:public
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=/remove-label needs-approver-review
       - --include-closed
@@ -306,11 +300,10 @@ periodics:
   interval: 1h
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: gcr.io/k8s-staging-test-infra/commenter:v20260515-778139c32d
+    - image: gcr.io/k8s-staging-test-infra/commenter:v20260714-c52c557180
       command:
       - /ko-app/commenter
       args:
@@ -320,7 +313,7 @@ periodics:
           is:pr
           author:app/dependabot
           -label:skip-review
-      - --token=/etc/github/oauth
+      - --token=/etc/github/token
       - |-
         --comment=Dependabot PRs are automatically labeled for merge
         once all required presubmit tests pass.
@@ -337,13 +330,15 @@ periodics:
     - name: token
       secret:
         secretName: commenter-oauth-token
+        items:
+        - key: oauth
+          path: token
 - name: periodic-project-infra-autoowners
   interval: 24h
   annotations:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   extra_refs:
   - org: kubevirt
     repo: project-infra
@@ -367,7 +362,7 @@ periodics:
       - --target-dir=.
       - --target-subdir=github/ci/prow-deploy/files
       - --config-subdir=jobs
-      - --github-token-path=/etc/github/oauth
+      - --github-token-path=/etc/github/token
       - --git-signoff=true
 - name: periodic-update-flakefinder-indexpage
   interval: 24h
@@ -375,7 +370,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-gcs-credentials: "true"
-  decorate: true
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
@@ -392,7 +386,6 @@ periodics:
   labels:
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -415,7 +408,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+      - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -453,7 +446,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -470,7 +462,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+      - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -495,7 +487,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -512,7 +503,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+      - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -536,7 +527,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -553,7 +543,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+      - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
         command: ["/bin/sh", "-ce"]
         args:
           - |
@@ -579,7 +569,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -593,7 +582,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+      - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
         command:
         - "/bin/bash"
         - -c
@@ -614,7 +603,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -631,7 +619,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+      - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -666,7 +654,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -680,7 +667,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+      - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -702,7 +689,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -716,7 +702,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+      - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -748,7 +734,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 2h30m
     grace_period: 5m
@@ -763,14 +748,14 @@ periodics:
   spec:
     containers:
     - name: peribolos
-      image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260709-bcf4297e5
+      image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260714-0633879af
       command:
       - /ko-app/peribolos
       args:
       - --github-endpoint=http://ghproxy
       - --github-endpoint=https://api.github.com
       - --config-path=github/ci/prow-deploy/kustom/base/configs/current/orgs/orgs.yaml
-      - --github-token-path=/etc/github/oauth
+      - --github-token-path=/etc/github/token
       - --fix-org=true
       - --fix-org-members=true
       - --fix-repos=true
@@ -791,7 +776,6 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -806,7 +790,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+    - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -828,7 +812,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 10m
     grace_period: 5m
@@ -840,7 +823,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+    - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
       command: [/bin/sh, -ce]
       args:
       - |
@@ -866,7 +849,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-docker-mirror-proxy: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -878,7 +860,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+    - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
       command: ["/bin/sh"]
       args:
       - "-ce"
@@ -895,7 +877,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -909,7 +890,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+      - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
         command:
         - /usr/local/bin/runner.sh
         - /bin/bash
@@ -933,7 +914,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -947,7 +927,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+    - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -969,7 +949,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -983,7 +962,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+    - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -1000,7 +979,6 @@ periodics:
           memory: "200Mi"
 - name: periodic-project-infra-mirror-istioctl
   cron: "25 1 * * 1"
-  decorate: true
   annotations:
     testgrid-create-test-group: "false"
   decoration_config:
@@ -1018,7 +996,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+      - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         env:
           - name: BUCKET_DIR
             value: kubevirtci-istioctl-mirror
@@ -1039,7 +1017,6 @@ periodics:
     testgrid-create-test-group: "false"
   labels:
     preset-github-credentials: "true"
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -1053,7 +1030,7 @@ periodics:
     securityContext:
       runAsUser: 0
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260711-7a66da0
+    - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
       command:
       - /usr/local/bin/runner.sh
       - /bin/sh
@@ -1076,7 +1053,6 @@ periodics:
   max_concurrency: 1
   annotations:
     testgrid-create-test-group: "false"
-  decorate: true
   decoration_config:
     timeout: 4h
     grace_period: 5m
@@ -1116,7 +1092,6 @@ periodics:
 - annotations:
     testgrid-create-test-group: "false"
   cluster: kubevirt-prow-control-plane
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -1135,7 +1110,7 @@ periodics:
   name: periodic-project-infra-check-prow-jobconfigs
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260707-cacb217
+    - image: quay.io/kubevirtci/golang:v20260715-af3e234
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/sh"
@@ -1155,7 +1130,6 @@ periodics:
 - annotations:
     testgrid-create-test-group: "false"
   cluster: kubevirt-prow-control-plane
-  decorate: true
   decoration_config:
     timeout: 1h
     grace_period: 5m
@@ -1173,7 +1147,7 @@ periodics:
   name: periodic-project-infra-perf-report-creator
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260707-cacb217
+    - image: quay.io/kubevirtci/golang:v20260715-af3e234
       env:
         - name: KUBEVIRT_PROVIDER
           value: k8s-1.34
@@ -1222,7 +1196,6 @@ periodics:
     testgrid-num-failures-to-alert: "1"
     testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
   cluster: kubevirt-prow-control-plane
-  decorate: true
   decoration_config:
     timeout: 5m
     grace_period: 1m
@@ -1239,7 +1212,7 @@ periodics:
   spec:
     containers:
     - &cluster_livez_container
-      image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+      image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -1350,7 +1323,6 @@ periodics:
     testgrid-num-failures-to-alert: "1"
     testgrid-alert-email: kubevirt-ci-maintainers@redhat.com
   cluster: kubevirt-prow-control-plane
-  decorate: true
   decoration_config:
     timeout: 15m
     grace_period: 5m
@@ -1366,7 +1338,7 @@ periodics:
   max_concurrency: 1
   spec:
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+    - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash

@@ -24,13 +24,13 @@ func TestHandlePREvent(t *testing.T) {
 	}{
 		{
 			name:        "ignore bot during label",
-			user:        "bot",
+			user:        testutils.Bot,
 			eventAction: github.PullRequestActionLabeled,
 			eventLabel:  "release-blocker/release-v0.1",
 		},
 		{
 			name:        "ignore bot during unlabel",
-			user:        "bot",
+			user:        testutils.Bot,
 			eventAction: github.PullRequestActionLabeled,
 			eventLabel:  "release-blocker/release-v0.1",
 		},
@@ -79,16 +79,10 @@ func TestHandlePREvent(t *testing.T) {
 			IssueCommentsAdded:  []string{},
 			IssueLabelsExisting: []string{},
 			OrgMembers:          make(map[string][]string),
-			RepoBranches: []github.Branch{
-				{
-					Name: "release-v0.1",
-				},
-			},
 		}
 		s := &Server{
-			ghc:     fc,
-			botName: "bot",
-			log:     logrus.WithField("plugin", pluginName),
+			ghc: fc,
+			log: logrus.WithField("plugin", pluginName),
 		}
 
 		if tc.hasLabel {
@@ -165,13 +159,13 @@ func TestHandleIssueEvent(t *testing.T) {
 	}{
 		{
 			name:        "ignore bot during label",
-			user:        "bot",
+			user:        testutils.Bot,
 			eventAction: github.IssueActionLabeled,
 			eventLabel:  "release-blocker/release-v0.1",
 		},
 		{
 			name:        "ignore bot during unlabel",
-			user:        "bot",
+			user:        testutils.Bot,
 			eventAction: github.IssueActionLabeled,
 			eventLabel:  "release-blocker/release-v0.1",
 		},
@@ -220,16 +214,10 @@ func TestHandleIssueEvent(t *testing.T) {
 			IssueCommentsAdded:  []string{},
 			IssueLabelsExisting: []string{},
 			OrgMembers:          make(map[string][]string),
-			RepoBranches: []github.Branch{
-				{
-					Name: "release-v0.1",
-				},
-			},
 		}
 		s := &Server{
-			ghc:     fc,
-			botName: "bot",
-			log:     logrus.WithField("plugin", pluginName),
+			ghc: fc,
+			log: logrus.WithField("plugin", pluginName),
 		}
 
 		if tc.hasLabel {
@@ -400,11 +388,6 @@ func TestHandleIssueComment(t *testing.T) {
 			IssueCommentsAdded:  []string{},
 			IssueLabelsExisting: []string{},
 			OrgMembers:          make(map[string][]string),
-			RepoBranches: []github.Branch{
-				{
-					Name: "release-v0.1",
-				},
-			},
 		}
 
 		foc := &testutils.FakeOwnersClient{

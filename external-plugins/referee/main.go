@@ -32,12 +32,11 @@ import (
 	"github.com/shurcooL/githubv4"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
-	"k8s.io/test-infra/pkg/flagutil"
 	"kubevirt.io/project-infra/external-plugins/referee/ghgraphql"
 	"kubevirt.io/project-infra/external-plugins/referee/metrics"
 	"kubevirt.io/project-infra/external-plugins/referee/server"
 	"sigs.k8s.io/prow/pkg/config/secret"
-	prowflagutil "sigs.k8s.io/prow/pkg/flagutil"
+	"sigs.k8s.io/prow/pkg/flagutil"
 	"sigs.k8s.io/prow/pkg/interrupts"
 	"sigs.k8s.io/prow/pkg/pluginhelp/externalplugins"
 )
@@ -53,7 +52,7 @@ type options struct {
 	dryRun                               bool
 	maximumNumberOfAllowedRetestComments int
 
-	github                    prowflagutil.GitHubOptions
+	github                    flagutil.GitHubOptions
 	webhookSecretFile         string
 	team                      string
 	initialRetestRepositories string
@@ -117,18 +116,13 @@ func main() {
 
 	log := logrus.StandardLogger().WithField("plugin", server.PluginName)
 
-	if err := secret.Add(o.github.TokenPath, o.webhookSecretFile); err != nil {
+	if err := secret.Add(o.webhookSecretFile); err != nil {
 		logrus.WithError(err).Fatal("Error starting secrets agent.")
 	}
 
-	githubClient, err := o.github.GitHubClientWithAccessToken(string(secret.GetSecret(o.github.TokenPath)))
+	githubClient, err := o.github.GitHubClient(o.dryRun)
 	if err != nil {
 		logrus.WithError(err).Fatal("error getting github client")
-	}
-
-	botUserData, err := githubClient.BotUser()
-	if err != nil {
-		logrus.WithError(err).Fatal("Error getting bot name.")
 	}
 
 	token, err := os.ReadFile(o.github.TokenPath)
@@ -146,7 +140,6 @@ func main() {
 
 	pluginServer := &server.Server{
 		TokenGenerator: secret.GetTokenGenerator(o.webhookSecretFile),
-		BotName:        botUserData.Name,
 		Team:           o.team,
 
 		GithubClient:    githubClient,

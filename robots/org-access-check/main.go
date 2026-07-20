@@ -60,7 +60,7 @@ type AccessPermissionsToRepositoriesToCollaborators map[string]RepositoriesToCol
 
 func (o *options) Validate() error {
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-	fs.StringVar(&o.tokenPath, "github-token-path", "/etc/github/oauth", "Path to the file containing the GitHub OAuth secret.")
+	fs.StringVar(&o.tokenPath, "github-token-path", "/etc/github/token", "Path to the file containing the GitHub OAuth secret.")
 	fs.StringVar(&o.endpoint, "github-endpoint", "https://api.github.com/", "GitHub's API endpoint (may differ for enterprise).")
 	fs.StringVar(&o.org, "org", "kubevirt", "The GitHub org")
 	fs.BoolVar(&o.debugLogging, "v", false, "verbose aka debug logging")

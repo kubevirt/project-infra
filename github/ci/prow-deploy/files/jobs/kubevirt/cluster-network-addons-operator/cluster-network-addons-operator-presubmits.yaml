@@ -8,7 +8,6 @@ presubmits:
         fork-per-release: "true"
       always_run: true
       optional: false
-      decorate: true
       decoration_config:
         timeout: 4h
         grace_period: 5m
@@ -22,7 +21,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
             securityContext:
               privileged: true
             resources:
@@ -40,7 +39,6 @@ presubmits:
         fork-per-release: "true"
       always_run: true
       optional: false
-      decorate: true
       decoration_config:
         timeout: 3h
         grace_period: 5m
@@ -54,7 +52,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
             securityContext:
               privileged: true
             resources:
@@ -72,7 +70,6 @@ presubmits:
         fork-per-release: "true"
       always_run: true
       optional: true
-      decorate: true
       decoration_config:
         timeout: 3h
         grace_period: 5m
@@ -82,7 +79,7 @@ presubmits:
         preset-podman-in-container-enabled: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
             securityContext:
               privileged: true
             resources:
@@ -103,7 +100,6 @@ presubmits:
         fork-per-release: "true"
       always_run: true
       optional: false
-      decorate: true
       decoration_config:
         timeout: 3h
         grace_period: 5m
@@ -117,7 +113,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
             securityContext:
               privileged: true
             resources:
@@ -135,7 +131,6 @@ presubmits:
         fork-per-release: "true"
       always_run: true
       optional: false
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -150,7 +145,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
             securityContext:
               privileged: true
             resources:
@@ -168,7 +163,6 @@ presubmits:
         fork-per-release: "true"
       always_run: true
       optional: false
-      decorate: true
       decoration_config:
         timeout: 3h
         grace_period: 5m
@@ -181,7 +175,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
             securityContext:
               privileged: true
             resources:
@@ -199,7 +193,6 @@ presubmits:
         fork-per-release: "true"
       always_run: true
       optional: false
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -214,7 +207,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
             securityContext:
               privileged: true
             resources:
@@ -232,7 +225,6 @@ presubmits:
         fork-per-release: "true"
       always_run: true
       optional: false
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -247,7 +239,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
             securityContext:
               privileged: true
             resources:
@@ -265,7 +257,6 @@ presubmits:
         fork-per-release: "true"
       always_run: true
       optional: false
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -280,7 +271,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
             securityContext:
               privileged: true
             resources:
@@ -298,7 +289,6 @@ presubmits:
         fork-per-release: "true"
       always_run: true
       optional: false
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -313,7 +303,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
             securityContext:
               privileged: true
             resources:
@@ -330,7 +320,6 @@ presubmits:
       annotations:
         fork-per-release: "true"
       always_run: true
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -345,7 +334,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
             securityContext:
               privileged: true
             resources:
@@ -363,7 +352,6 @@ presubmits:
         fork-per-release: "true"
       always_run: true
       optional: false
-      decorate: true
       skip_report: false
       decoration_config:
         timeout: 3h
@@ -378,7 +366,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260707-cacb217
+          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
             securityContext:
               privileged: true
             resources:

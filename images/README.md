@@ -6,7 +6,7 @@ Contains configurations for container images that are used by KubeVirt CI Prow j
 `publish_image.sh`
 ------------------
 
-You can use the above script to build and publish images to `quay.io` (provided you have the quay credentials)
+Builds and publishes a single-arch image to `quay.io` (requires quay credentials).
 
 Example:
 
@@ -14,7 +14,12 @@ Example:
 ./publish_image.sh -b golang quay.io kubevirtci
 ```
 
-builds the image in folder `images/golang` and tags it with `quay.io/kubevirtci/golang:v20211232-abcdefgh` where the tag is calculated from date and current git commit id when building 
+builds the image in folder `images/golang` and tags it with `quay.io/kubevirtci/golang:v20211232-abcdefgh` where the tag is calculated from date and current git commit id when building.
+
+`publish_multiarch_image.sh`
+----------------------------
+
+Builds and publishes multi-architecture images (amd64, arm64, s390x) to `quay.io`. Supports `-a` flag to build amd64 only, `-b` for build-only (no push), and `-l` to use a local base image.
 
 
 Updating published images

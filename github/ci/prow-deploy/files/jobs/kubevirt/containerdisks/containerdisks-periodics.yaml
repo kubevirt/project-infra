@@ -4,7 +4,6 @@ periodics:
     testgrid-alert-email: nestor.acuna@ibm.com, ashok.pariya@ibm.com
   cluster: prow-s390x-workloads
   cron: 0 1 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 7h0m0s
@@ -31,7 +30,7 @@ periodics:
         value: "true"
       - name: PROMOTE_DRY_RUN
         value: "true"
-      image: quay.io/kubevirtci/golang:v20260707-cacb217
+      image: quay.io/kubevirtci/golang:v20260715-af3e234
       resources:
         requests:
           memory: 16Gi
@@ -42,7 +41,6 @@ periodics:
     testgrid-alert-email: fmatouschek@redhat.com, lyarwood@redhat.com
   cluster: prow-workloads
   cron: 0 2 * * *
-  decorate: true
   decoration_config:
     grace_period: 5m0s
     timeout: 7h0m0s
@@ -70,7 +68,7 @@ periodics:
       env:
       - name: GO_MOD_PATH
         value: "go.mod"
-      image: quay.io/kubevirtci/golang:v20260707-cacb217
+      image: quay.io/kubevirtci/golang:v20260715-af3e234
       resources:
         requests:
           memory: 16Gi
