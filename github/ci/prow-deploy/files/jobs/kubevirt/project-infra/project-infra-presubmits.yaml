@@ -22,10 +22,11 @@ presubmits:
         resources:
           requests:
             memory: "500Mi"
-        securityContext:
+        securityContext: &unprivileged_sc
           allowPrivilegeEscalation: false
           capabilities:
             drop: [ALL]
+          runAsNonRoot: true
           seccompProfile:
             type: RuntimeDefault
   - name: pull-project-infra-test-robots
@@ -872,6 +873,7 @@ presubmits:
     annotations:
       testgrid-create-test-group: "false"
     labels:
+      preset-github-app-id: "true"
       preset-github-credentials: "true"
     decoration_config:
       timeout: 3h
@@ -886,21 +888,24 @@ presubmits:
         - /ko-app/peribolos
         # when changing the peribolos settings below, please align the peribolos settings from the periodic job!
         args:
-        - --github-endpoint=http://ghproxy
-        - --github-endpoint=https://api.github.com
         - --config-path=github/ci/prow-deploy/kustom/base/configs/current/orgs/orgs.yaml
-        - --github-token-path=/etc/github/token
+        - --github-endpoint=http://ghproxy.kubevirt-prow.svc.cluster.local
+        - --github-endpoint=https://api.github.com
+        - --github-app-id=$(GITHUB_APP_ID)
+        - --github-app-private-key-path=/etc/github/cert
+        - --allow-repo-archival
         - --fix-org=true
         - --fix-org-members=true
         - --fix-repos=true
+        - --fix-teams=true
         - --fix-team-members=true
         - --fix-team-repos=true
-        - --fix-teams=true
-        - --allow-repo-archival
+        - --require-self=false
         - --confirm=false
         resources:
           requests:
             memory: "200Mi"
+        securityContext: *unprivileged_sc
   - name: pull-prow-kubevirt-labels-update-precheck
     run_if_changed: '^github/ci/prow-deploy/kustom/base/configs/current/labels/labels\.yaml$'
     annotations:

@@ -733,6 +733,7 @@ periodics:
   annotations:
     testgrid-create-test-group: "false"
   labels:
+    preset-github-app-id: "true"
     preset-github-credentials: "true"
   decoration_config:
     timeout: 2h30m
@@ -741,6 +742,7 @@ periodics:
   - org: kubevirt
     repo: project-infra
     base_ref: main
+    clone_depth: 1
     workdir: true
   interval: 2h
   max_concurrency: 1
@@ -751,22 +753,32 @@ periodics:
       image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20260714-0633879af
       command:
       - /ko-app/peribolos
+      # when changing the peribolos settings below, please align the peribolos settings from the presubmit job!
       args:
-      - --github-endpoint=http://ghproxy
-      - --github-endpoint=https://api.github.com
       - --config-path=github/ci/prow-deploy/kustom/base/configs/current/orgs/orgs.yaml
-      - --github-token-path=/etc/github/token
+      - --github-endpoint=http://ghproxy.kubevirt-prow.svc.cluster.local
+      - --github-endpoint=https://api.github.com
+      - --github-app-id=$(GITHUB_APP_ID)
+      - --github-app-private-key-path=/etc/github/cert
+      - --allow-repo-archival
       - --fix-org=true
       - --fix-org-members=true
       - --fix-repos=true
+      - --fix-teams=true
       - --fix-team-members=true
       - --fix-team-repos=true
-      - --fix-teams=true
-      - --allow-repo-archival
+      - --require-self=false
       - --confirm=true
       resources:
         requests:
           memory: "200Mi"
+      securityContext: &unprivileged_sc
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: [ALL]
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
 - name: periodic-project-infra-prow-bump
   cron: "10 6 * * 5"
   max_concurrency: 1
@@ -833,15 +845,10 @@ periodics:
           --branch prow-sync-manifests \
           --repo project-infra \
           --target main
-      securityContext:
-        allowPrivilegeEscalation: false
-        capabilities:
-          drop: [ALL]
-        seccompProfile:
-          type: RuntimeDefault
       resources:
         requests:
           memory: 100Mi
+      securityContext: *unprivileged_sc
 - name: periodic-project-infra-check-docker-proxy-ca-cert
   cron: "25 8 * * 5"
   max_concurrency: 1
