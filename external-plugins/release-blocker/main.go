@@ -80,7 +80,6 @@ func main() {
 		}
 	})
 
-	botUserData, err := githubClient.BotUser()
 	if err != nil {
 		logrus.WithError(err).Fatal("Error getting bot name.")
 	}
@@ -95,7 +94,6 @@ func main() {
 
 	server := &Server{
 		tokenGenerator: secret.GetTokenGenerator(o.webhookSecretFile),
-		botName:        botUserData.Login,
 
 		ghc:          githubClient,
 		log:          log,

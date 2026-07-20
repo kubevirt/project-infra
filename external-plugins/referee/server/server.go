@@ -72,13 +72,13 @@ func HelpProvider(_ []config.OrgRepo) (*pluginhelp.PluginHelp, error) {
 
 type githubClient interface {
 	CreateComment(org, repo string, number int, comment string) error
+	BotUserChecker() (func(candidate string) bool, error)
 }
 
 // Server implements http.Handler. It validates incoming GitHub webhooks and
 // then dispatches them to the appropriate plugins.
 type Server struct {
 	TokenGenerator func() []byte
-	BotName        string
 
 	Log *logrus.Entry
 
@@ -251,7 +251,11 @@ func (s *Server) handlePullRequestComment(ic github.IssueCommentEvent) error {
 		for _, item := range prTimeLineForLastCommit.PRTimeLineItems {
 			switch item.ItemType {
 			case ghgraphql.HoldComment:
-				if item.Item.Author.Login == s.BotName {
+				isBot, err := s.GithubClient.BotUserChecker()
+				if err != nil {
+					return fmt.Errorf("failed to construct bot user checker: %w", err)
+				}
+				if isBot(item.Item.Author.Login) {
 					log.Infof("skipping due to previous hold set by user %s", item.Item.Author.Login)
 					return nil
 				}
