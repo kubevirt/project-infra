@@ -75,40 +75,34 @@ const defaultProwCommand = "sig compute"
 
 // resolveProwCommand maps a Ginkgo test label (e.g. "sig-compute-migrations")
 // to a Prow command string (e.g. "sig compute") using the following resolution:
-//  1. Alias: known renames (sig-monitoring → sig observability)
-//  2. Direct match: label suffix matches a valid SIG or WG
-//  3. Prefix match: progressively shorter prefixes of the label suffix
-//  4. Fallback: "sig compute"
+//
+// At each prefix level (full label, then progressively shorter dash-delimited
+// prefixes), check the alias map first, then the valid set. This ensures that
+// compound labels built on aliased bases (e.g. "sig-monitoring-alerts") resolve
+// through the alias ("sig observability") rather than falling through to the
+// default.
 func resolveProwCommand(ginkgoLabel string, validSIGs, validWGs map[string]bool) string {
-	if cmd, ok := ginkgoLabelAliases[ginkgoLabel]; ok {
-		return cmd
-	}
-
 	if suffix, ok := strings.CutPrefix(ginkgoLabel, "sig-"); ok {
-		if validSIGs[suffix] {
-			return "sig " + suffix
+		return resolveGroupCommand("sig", "sig-", suffix, validSIGs)
+	}
+	if suffix, ok := strings.CutPrefix(ginkgoLabel, "wg-"); ok {
+		return resolveGroupCommand("wg", "wg-", suffix, validWGs)
+	}
+	return defaultProwCommand
+}
+
+func resolveGroupCommand(kind, labelPrefix, suffix string, valid map[string]bool) string {
+	for i := len(suffix); i >= 0; i-- {
+		if i < len(suffix) && suffix[i] != '-' {
+			continue
 		}
-		for i := len(suffix) - 1; i >= 0; i-- {
-			if suffix[i] == '-' {
-				prefix := suffix[:i]
-				if validSIGs[prefix] {
-					return "sig " + prefix
-				}
-			}
+		candidate := suffix[:i]
+		if cmd, ok := ginkgoLabelAliases[labelPrefix+candidate]; ok {
+			return cmd
 		}
-	} else if suffix, ok := strings.CutPrefix(ginkgoLabel, "wg-"); ok {
-		if validWGs[suffix] {
-			return "wg " + suffix
-		}
-		for i := len(suffix) - 1; i >= 0; i-- {
-			if suffix[i] == '-' {
-				prefix := suffix[:i]
-				if validWGs[prefix] {
-					return "wg " + prefix
-				}
-			}
+		if valid[candidate] {
+			return kind + " " + candidate
 		}
 	}
-
 	return defaultProwCommand
 }
