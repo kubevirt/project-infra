@@ -74,6 +74,7 @@ func init() {
 	autoQuarantineCmd.PersistentFlags().DurationVar(&quarantineOpts.minFailureInterval, "min-failure-interval", 24*time.Hour, "minimum time span between recent failures to confirm a consistent pattern")
 	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.jobConfigPath, "job-config-path", "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml", "path to the Prow presubmit job config YAML used to determine required lanes")
 	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.jobConfigOrgRepo, "job-config-org-repo", "kubevirt/kubevirt", "org/repo key for looking up presubmits in the job config")
+	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.labelsYAMLPath, "labels-yaml", "github/ci/prow-deploy/kustom/base/configs/current/labels/labels.yaml", "path to the Prow labels.yaml file used to determine valid SIG/WG labels")
 	quarantineOpts.prDescriptionOutputFileOpts = options.NewOutputFileOptions(
 		"pr-description-*.md",
 		options.WithOverwrite(),
@@ -110,6 +111,12 @@ func AutoQuarantine(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return err
 	}
+
+	validSIGs, validWGs, err := loadValidGroupsFromLabelsFile(quarantineOpts.labelsYAMLPath)
+	if err != nil {
+		return fmt.Errorf("could not load valid SIG/WG labels: %w", err)
+	}
+	log.Infof("loaded %d SIG and %d WG labels from %q", len(validSIGs), len(validWGs), quarantineOpts.labelsYAMLPath)
 
 	requiredJobs, err := loadRequiredJobNames(quarantineOpts.jobConfigPath, quarantineOpts.jobConfigOrgRepo)
 	if err != nil {
@@ -160,7 +167,7 @@ func AutoQuarantine(_ *cobra.Command, _ []string) error {
 		return err
 	}
 
-	testsPerSIG := groupTestsBySIG(testsToQuarantine)
+	testsPerSIG := groupTestsBySIG(testsToQuarantine, validSIGs, validWGs)
 
 	err = writePRDescriptionToFile(quarantineOpts.prDescriptionOutputFileOpts.OutputFile, testsPerSIG)
 	if err != nil {
@@ -246,19 +253,16 @@ func quarantineTests(testsToQuarantine []*TestToQuarantine) error {
 	return nil
 }
 
-func groupTestsBySIG(testsToQuarantine []*TestToQuarantine) TestsPerSIG {
+func groupTestsBySIG(testsToQuarantine []*TestToQuarantine, validSIGs, validWGs map[string]bool) TestsPerSIG {
 	testsPerSIG := TestsPerSIG{}
-	sigLabelMatcher := ginkgo.NewRegexLabelMatcher(fmt.Sprintf(`^(%s)$`, strings.Join([]string{"sig-compute", "sig-storage", "sig-network", "sig-monitoring"}, "|")))
+	sigOrWGMatcher := ginkgo.NewRegexLabelMatcher(`^(sig|wg)-[a-z][-a-z0-9]*$`)
 	for _, testToQuarantine := range testsToQuarantine {
-		sigLabels := ginkgo.ExtractLabels(*testToQuarantine.SpecReport, sigLabelMatcher)
-		var firstSIGLabel string
-		if len(sigLabels) == 0 {
-			firstSIGLabel = "undefined"
-		} else {
-			firstSIGLabel = sigLabels[0]
+		labels := ginkgo.ExtractLabels(*testToQuarantine.SpecReport, sigOrWGMatcher)
+		prowCmd := defaultProwCommand
+		if len(labels) > 0 {
+			prowCmd = resolveProwCommand(labels[0], validSIGs, validWGs)
 		}
-		sigKey := strings.TrimPrefix(firstSIGLabel, "sig-")
-		testsPerSIG[sigKey] = append(testsPerSIG[sigKey], testToQuarantine)
+		testsPerSIG[prowCmd] = append(testsPerSIG[prowCmd], testToQuarantine)
 	}
 	return testsPerSIG
 }

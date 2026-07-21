@@ -42,6 +42,7 @@ type autoQuarantineOptions struct {
 
 	jobConfigPath    string
 	jobConfigOrgRepo string
+	labelsYAMLPath   string
 
 	prDescriptionOutputFileOpts *options.OutputFileOptions
 }

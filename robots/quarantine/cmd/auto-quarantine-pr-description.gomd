@@ -31,7 +31,7 @@ Auto-quarantine flaky tests
 [{{ $buildURL.Interval }}]({{ $buildURL.URL }}) {{ end }}
 {{ end }}
 {{ end }}
-/sig {{ $sig }}
+/{{ $sig }}
 {{ end }}
 
 /kind flake
