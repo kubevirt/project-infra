@@ -906,11 +906,13 @@ presubmits:
           requests:
             memory: "200Mi"
         securityContext: *unprivileged_sc
-  - name: pull-prow-kubevirt-labels-update-precheck
+  - &label_sync_job
+    name: pull-prow-kubevirt-labels-update-precheck
     run_if_changed: '^github/ci/prow-deploy/kustom/base/configs/current/labels/labels\.yaml$'
     annotations:
       testgrid-create-test-group: "false"
     labels:
+      preset-github-app-id: "true"
       preset-github-credentials: "true"
     decoration_config:
       timeout: 1h
@@ -919,37 +921,33 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - name: label-sync
+      - &label_sync_container
+        name: label-sync
         image: gcr.io/k8s-staging-test-infra/label_sync:v20260714-c52c557180
         command: [ "/ko-app/label_sync" ]
         args:
         - --config=github/ci/prow-deploy/kustom/base/configs/current/labels/labels.yaml
+        - --github-endpoint=http://ghproxy.kubevirt-prow.svc.cluster.local
+        - --github-endpoint=https://api.github.com
+        - --github-app-id=$(GITHUB_APP_ID)
+        - --github-app-private-key-path=/etc/github/cert
         - --confirm=false
         - --orgs=kubevirt
-        - --token=/etc/github/token
+        securityContext: *unprivileged_sc
       restartPolicy: Never
-  - name: pull-prow-nmstate-labels-update-precheck
-    run_if_changed: '^github/ci/prow-deploy/kustom/base/configs/current/labels/labels\.yaml$'
-    annotations:
-      testgrid-create-test-group: "false"
-    labels:
-      preset-github-credentials: "true"
-    decoration_config:
-      timeout: 1h
-      grace_period: 5m
-    cluster: kubevirt-prow-control-plane
-    max_concurrency: 1
+  - <<: *label_sync_job
+    name: pull-prow-nmstate-labels-update-precheck
     spec:
       containers:
-      - name: label-sync
-        image: gcr.io/k8s-staging-test-infra/label_sync:v20260714-c52c557180
-        command: [ "/ko-app/label_sync" ]
+      - <<: *label_sync_container
         args:
         - --config=github/ci/prow-deploy/kustom/base/configs/current/labels/labels.yaml
+        - --github-endpoint=http://ghproxy.kubevirt-prow.svc.cluster.local
+        - --github-endpoint=https://api.github.com
+        - --github-app-id=$(GITHUB_APP_ID)
+        - --github-app-private-key-path=/etc/github/cert
         - --confirm=false
         - --only=nmstate/kubernetes-nmstate
-        - --token=/etc/github/token
-      restartPolicy: Never
   - annotations:
       testgrid-create-test-group: "false"
     cluster: kubevirt-prow-control-plane
