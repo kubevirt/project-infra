@@ -26,7 +26,7 @@ periodics:
       env:
       - name: GO_MOD_PATH
         value: "go.mod"
-      image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
+      image: quay.io/kubevirtci/pr-creator:v20260720-3862709
       resources:
         requests:
           memory: 200Mi
@@ -48,7 +48,7 @@ periodics:
     base_ref: main
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
+    - image: quay.io/kubevirtci/pr-creator:v20260720-3862709
       env:
       - name: VIRT_TEMPLATE_BRANCH
         value: release-0.2
@@ -94,7 +94,7 @@ periodics:
     base_ref: release-1.8
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260717-5a548bb
+    - image: quay.io/kubevirtci/pr-creator:v20260720-3862709
       env:
       - name: VIRT_TEMPLATE_BRANCH
         value: release-0.1
