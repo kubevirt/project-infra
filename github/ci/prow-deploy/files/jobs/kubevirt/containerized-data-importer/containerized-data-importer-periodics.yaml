@@ -9,7 +9,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v202607171347-5a548bb
+    - image: quay.io/kubevirtci/flakefinder:v202607200935-3862709
       command:
       - /usr/bin/flakefinder
       args:
@@ -30,7 +30,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v202607171347-5a548bb
+    - image: quay.io/kubevirtci/flakefinder:v202607200935-3862709
       command:
       - /usr/bin/flakefinder
       args:
@@ -51,7 +51,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v202607171347-5a548bb
+    - image: quay.io/kubevirtci/flakefinder:v202607200935-3862709
       command:
       - /usr/bin/flakefinder
       args:
