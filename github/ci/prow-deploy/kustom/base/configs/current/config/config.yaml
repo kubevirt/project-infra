@@ -674,7 +674,13 @@ branch-protection:
     nmstate:
       repos:
         kubernetes-nmstate:
-          protect: true
+          # Protect only main: repo-level "protect: true" stamps every
+          # branch, including bot-managed PR head branches (copilot/*,
+          # dependabot/*, ...), locking the bots out of their own branches
+          # since required status checks reject any direct push.
+          branches:
+            main:
+              protect: true
 
 push_gateway:
   endpoint: pushgateway
