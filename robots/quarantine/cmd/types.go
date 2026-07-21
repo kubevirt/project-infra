@@ -72,6 +72,7 @@ type TestToQuarantine struct {
 	RelevantImpacts   []searchci.Impact
 	HasRecentFailures bool
 	SpecReport        *types.SpecReport
+	ProwCommands      []string
 }
 
 type TestsPerSIG map[string][]*TestToQuarantine

@@ -167,9 +167,9 @@ func AutoQuarantine(_ *cobra.Command, _ []string) error {
 		return err
 	}
 
-	testsPerSIG := groupTestsBySIG(testsToQuarantine, validSIGs, validWGs)
+	resolveTestProwCommands(testsToQuarantine, validSIGs, validWGs)
 
-	err = writePRDescriptionToFile(quarantineOpts.prDescriptionOutputFileOpts.OutputFile, testsPerSIG)
+	err = writePRDescriptionToFile(quarantineOpts.prDescriptionOutputFileOpts.OutputFile, testsToQuarantine)
 	if err != nil {
 		return err
 	}
@@ -253,21 +253,26 @@ func quarantineTests(testsToQuarantine []*TestToQuarantine) error {
 	return nil
 }
 
-func groupTestsBySIG(testsToQuarantine []*TestToQuarantine, validSIGs, validWGs map[string]bool) TestsPerSIG {
-	testsPerSIG := TestsPerSIG{}
+func resolveTestProwCommands(testsToQuarantine []*TestToQuarantine, validSIGs, validWGs map[string]bool) {
 	sigOrWGMatcher := ginkgo.NewRegexLabelMatcher(`^(sig|wg)-[a-z][-a-z0-9]*$`)
 	for _, testToQuarantine := range testsToQuarantine {
 		labels := ginkgo.ExtractLabels(*testToQuarantine.SpecReport, sigOrWGMatcher)
-		prowCmd := defaultProwCommand
-		if len(labels) > 0 {
-			prowCmd = resolveProwCommand(labels[0], validSIGs, validWGs)
+		if len(labels) == 0 {
+			testToQuarantine.ProwCommands = []string{defaultProwCommand}
+			continue
 		}
-		testsPerSIG[prowCmd] = append(testsPerSIG[prowCmd], testToQuarantine)
+		seen := map[string]bool{}
+		for _, label := range labels {
+			cmd := resolveProwCommand(label, validSIGs, validWGs)
+			if !seen[cmd] {
+				seen[cmd] = true
+				testToQuarantine.ProwCommands = append(testToQuarantine.ProwCommands, cmd)
+			}
+		}
 	}
-	return testsPerSIG
 }
 
-func writePRDescriptionToFile(outputFileName string, testsPerSIG TestsPerSIG) error {
+func writePRDescriptionToFile(outputFileName string, testsToQuarantine []*TestToQuarantine) error {
 	if outputFileName == "" {
 		return fmt.Errorf("output file name must not be empty")
 	}
@@ -281,7 +286,7 @@ func writePRDescriptionToFile(outputFileName string, testsPerSIG TestsPerSIG) er
 			log.Errorf("failed to write output file: %v", err2)
 		}
 	}()
-	err = reportTemplate.Execute(outputFile, testsPerSIG)
+	err = reportTemplate.Execute(outputFile, testsToQuarantine)
 	if err != nil {
 		return fmt.Errorf("could not execute template: %w", err)
 	}
