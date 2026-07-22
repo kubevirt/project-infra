@@ -23,7 +23,7 @@ data:
       gcs:
         bucket: kubevirt-prow
         pathStrategy: explicit
-        credentialsSecret: gcs
+        credentialsSecret: gcs-credentials
     repos:
       kubevirt/project-infra:
         testPackages: "./external-plugins/... ./releng/... ./robots/... ./cmd/... ./pkg/..."

@@ -909,15 +909,11 @@ presets:
     preset-gcs-credentials: "true"
   env:
   - name: GOOGLE_APPLICATION_CREDENTIALS
-    value: /etc/gcs/service-account.json
-  volumes:
-  - name: gcs
-    secret:
-      secretName: gcs
-      defaultMode: 0400
+    value: /etc/gcs-credentials/service-account.json
   volumeMounts:
-  - name: gcs
-    mountPath: /etc/gcs
+  # Note: `gcs-credentials` volume is defined by default from Job decoration
+  - name: gcs-credentials
+    mountPath: /etc/gcs-credentials
     readOnly: true
 - labels:
     preset-pgp-bot-key: "true"

@@ -95,14 +95,15 @@ See job configurations [here](../../github/ci/prow-deploy/files/jobs/kubevirt/ku
     INFO[0000] Reading...                                    path=/tmp/prowjob.yaml
     INFO[0000] Converting job into docker run command...     job=periodic-publish-flakefinder-xxx-report
     local /etc/github path ("token" mount): /path/to/home/.tokens/etc/github
-    local /etc/gcs path ("gcs" mount): /path/to/home/.gcs/credentials
+    local /etc/gcs-credentials path ("gcs-credentials" mount): /path/to/home/.gcs/credentials
     "docker" "run" "--rm=true" \
      "--name=phaino-24602-1" \
      "--entrypoint=/app/robots/flakefinder/app.binary" \                        
      "-e" \                                                                     
-     "GOOGLE_APPLICATION_CREDENTIALS=/etc/gcs/service-account.json" \
+     "GOOGLE_APPLICATION_CREDENTIALS=/etc/gcs-credentials/service-account.json" \
      "-v" \
      "/path/to/home/.tokens/etc/github:/etc/github" \
+     "/path/to/home/.gcs/credentials:/etc/gcs-credentials" \
      ...
     INFO[0007] Starting job...                               job=periodic-publish-flakefinder-xxx-report
     INFO[0007] Waiting for job to finish...                  container=phaino-24602-1 job=periodic-publish-flakefinder-reports                                                                    

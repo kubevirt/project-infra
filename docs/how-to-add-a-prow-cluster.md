@@ -149,7 +149,7 @@ all is done and close it.
 #### Create secrets that are required for the jobs.
 
 > [!NOTE]
-> Currently there's only the `gcs` secret required.
+> Currently there's only the `gcs-credentials` secret required.
 
 Now we can create Prow job configurations that have the `cluster` field set to the name we provided above.
 

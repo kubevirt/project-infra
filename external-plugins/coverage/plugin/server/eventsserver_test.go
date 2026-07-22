@@ -40,7 +40,7 @@ var _ = Describe("GitHubEventsServer", func() {
 				Namespace: "test-namespace",
 				Image:     "test-image:latest",
 				Cluster:   "test-cluster",
-				GCS:       handler.GCSConfig{Bucket: "test-bucket", CredentialsSecret: "gcs"},
+				GCS:       handler.GCSConfig{Bucket: "test-bucket", CredentialsSecret: "gcs-credentials"},
 				UtilityImages: handler.UtilityImagesConfig{
 					CloneRefs:  "clonerefs:latest",
 					InitUpload: "initupload:latest",

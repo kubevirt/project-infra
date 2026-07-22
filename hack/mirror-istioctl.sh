@@ -20,5 +20,5 @@ mkdir -p $LOCAL_ISTIOCTL_DIR
     done
 )
 
-gcloud auth activate-service-account --key-file=/etc/gcs/service-account.json
+gcloud auth activate-service-account --key-file=/etc/gcs-credentials/service-account.json
 gsutil rsync -d -r $LOCAL_ISTIOCTL_DIR gs://$BUCKET_DIR
