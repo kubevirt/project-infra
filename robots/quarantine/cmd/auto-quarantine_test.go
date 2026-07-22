@@ -43,8 +43,8 @@ var _ = Describe("auto-quarantine", func() {
 			Expect(os.Remove(tempFile.Name())).ToNot(HaveOccurred())
 		})
 		DescribeTable("contains expected",
-			func(testsPerSIG TestsPerSIG, expectedSubstrings []string) {
-				Expect(writePRDescriptionToFile(tempFile.Name(), testsPerSIG)).ToNot(HaveOccurred())
+			func(tests []*TestToQuarantine, expectedSubstrings []string) {
+				Expect(writePRDescriptionToFile(tempFile.Name(), tests)).ToNot(HaveOccurred())
 				bytes, err := os.ReadFile(tempFile.Name())
 				content := string(bytes)
 				Expect(err).ToNot(HaveOccurred())
@@ -59,41 +59,56 @@ to contain
 %s`, content, expectedSubstring))
 				}
 			},
-			Entry("succeeds", TestsPerSIG{}, []string{}),
-			Entry("iterates over sigs",
-				TestsPerSIG{
-					"compute": []*TestToQuarantine{},
+			Entry("succeeds with empty list", []*TestToQuarantine{}, []string{}),
+			Entry("renders sig command",
+				[]*TestToQuarantine{
+					{
+						Test:         &flakestats.TopXTest{Name: "test"},
+						ProwCommands: []string{"sig compute"},
+					},
 				},
 				[]string{"/sig compute"},
 			),
-			Entry("iterates over tests",
-				TestsPerSIG{
-					"compute": []*TestToQuarantine{
-						{
-							Test: &flakestats.TopXTest{
-								Name:                   "[sig-compute] whatever test",
-								AllFailures:            nil,
-								FailuresPerDay:         nil,
-								FailuresPerLane:        nil,
-								NoteHasBeenQuarantined: false,
-							},
-							TimeRange:   "24h",
-							SearchCIURL: "https://search.ci.kubevirt.io",
-							RelevantImpacts: []searchci.Impact{
-								{
-									URL:          "https://relevant-impact-url",
-									Percent:      42,
-									URLToDisplay: "https://relevant-impact-display-url",
-									BuildURLs: []searchci.JobBuildURL{
-										{
-											URL:      "https://job-build-url",
-											Interval: 37 * time.Minute,
-										},
+			Entry("renders wg command",
+				[]*TestToQuarantine{
+					{
+						Test:         &flakestats.TopXTest{Name: "test"},
+						ProwCommands: []string{"wg aie"},
+					},
+				},
+				[]string{"/wg aie"},
+			),
+			Entry("renders multiple commands for one test",
+				[]*TestToQuarantine{
+					{
+						Test:         &flakestats.TopXTest{Name: "multi-sig test"},
+						ProwCommands: []string{"sig compute", "sig storage"},
+					},
+				},
+				[]string{"/sig compute", "/sig storage"},
+			),
+			Entry("renders test details",
+				[]*TestToQuarantine{
+					{
+						Test: &flakestats.TopXTest{
+							Name: "[sig-compute] whatever test",
+						},
+						TimeRange:   "24h",
+						SearchCIURL: "https://search.ci.kubevirt.io",
+						RelevantImpacts: []searchci.Impact{
+							{
+								URL:          "https://relevant-impact-url",
+								Percent:      42,
+								URLToDisplay: "https://relevant-impact-display-url",
+								BuildURLs: []searchci.JobBuildURL{
+									{
+										URL:      "https://job-build-url",
+										Interval: 37 * time.Minute,
 									},
 								},
 							},
-							SpecReport: nil,
 						},
+						ProwCommands: []string{"sig compute"},
 					},
 				},
 				[]string{
@@ -109,150 +124,110 @@ to contain
 			),
 		)
 	})
-	When("grouping tests", func() {
+	When("resolving test prow commands", func() {
+		var validSIGs, validWGs map[string]bool
+
+		BeforeEach(func() {
+			validSIGs = map[string]bool{
+				"compute":       true,
+				"network":       true,
+				"storage":       true,
+				"observability": true,
+				"scale":         true,
+			}
+			validWGs = map[string]bool{
+				"arch-s390x": true,
+				"arch-arm":   true,
+				"aie":        true,
+			}
+		})
+
 		DescribeTable("it",
-			func(testsToQuarantine []*TestToQuarantine, expected TestsPerSIG) {
-				Expect(groupTestsBySIG(testsToQuarantine)).To(BeEquivalentTo(expected))
+			func(test *TestToQuarantine, expectedCommands []string) {
+				tests := []*TestToQuarantine{test}
+				resolveTestProwCommands(tests, validSIGs, validWGs)
+				Expect(tests[0].ProwCommands).To(Equal(expectedCommands))
 			},
-			Entry("puts each into its sig group",
-				[]*TestToQuarantine{
-					{
-						Test: &flakestats.TopXTest{
-							Name: "compute test",
-						},
-						SpecReport: &SpecReport{
-							LeafNodeLabels: []string{
-								"sig-compute",
-							},
-						},
-					},
-					{
-						Test: &flakestats.TopXTest{
-							Name: "network test",
-						},
-						SpecReport: &SpecReport{
-							LeafNodeLabels: []string{
-								"sig-network",
-							},
-						},
-					},
-					{
-						Test: &flakestats.TopXTest{
-							Name: "storage test",
-						},
-						SpecReport: &SpecReport{
-							LeafNodeLabels: []string{
-								"sig-storage",
-							},
-						},
+			Entry("resolves single sig label",
+				&TestToQuarantine{
+					Test: &flakestats.TopXTest{Name: "compute test"},
+					SpecReport: &SpecReport{
+						LeafNodeLabels: []string{"sig-compute"},
 					},
 				},
-				TestsPerSIG{
-					"compute": []*TestToQuarantine{
-						{
-							Test: &flakestats.TopXTest{
-								Name: "compute test",
-							},
-							SpecReport: &SpecReport{
-								LeafNodeLabels: []string{
-									"sig-compute",
-								},
-							},
-						},
-					},
-					"network": []*TestToQuarantine{
-						{
-							Test: &flakestats.TopXTest{
-								Name: "network test",
-							},
-							SpecReport: &SpecReport{
-								LeafNodeLabels: []string{
-									"sig-network",
-								},
-							},
-						},
-					},
-					"storage": []*TestToQuarantine{
-						{
-							Test: &flakestats.TopXTest{
-								Name: "storage test",
-							},
-							SpecReport: &SpecReport{
-								LeafNodeLabels: []string{
-									"sig-storage",
-								},
-							},
-						},
-					},
-				},
+				[]string{"sig compute"},
 			),
-			Entry("puts a test with multiple sigs into one group",
-				[]*TestToQuarantine{
-					{
-						Test: &flakestats.TopXTest{
-							Name: "compute storage test",
-						},
-						SpecReport: &SpecReport{
-							LeafNodeLabels: []string{
-								"sig-compute",
-								"sig-storage",
-							},
-						},
+			Entry("resolves multiple distinct sig labels",
+				&TestToQuarantine{
+					Test: &flakestats.TopXTest{Name: "compute storage test"},
+					SpecReport: &SpecReport{
+						LeafNodeLabels: []string{"sig-compute", "sig-storage"},
 					},
 				},
-				TestsPerSIG{
-					"compute": []*TestToQuarantine{
-						{
-							Test: &flakestats.TopXTest{
-								Name: "compute storage test",
-							},
-							SpecReport: &SpecReport{
-								LeafNodeLabels: []string{
-									"sig-compute",
-									"sig-storage",
-								},
-							},
-						},
-					},
-				},
+				[]string{"sig compute", "sig storage"},
 			),
-			Entry("puts a test with multiple sigs into the topmost sig group",
-				[]*TestToQuarantine{
-					{
-						Test: &flakestats.TopXTest{
-							Name: "compute storage test",
-						},
-						SpecReport: &SpecReport{
-							ContainerHierarchyLabels: [][]string{
-								{
-									"sig-compute",
-								},
-							},
-							LeafNodeLabels: []string{
-								"sig-storage",
-							},
-						},
+			Entry("resolves container and leaf labels",
+				&TestToQuarantine{
+					Test: &flakestats.TopXTest{Name: "compute storage test"},
+					SpecReport: &SpecReport{
+						ContainerHierarchyLabels: [][]string{{"sig-compute"}},
+						LeafNodeLabels:           []string{"sig-storage"},
 					},
 				},
-				TestsPerSIG{
-					"compute": []*TestToQuarantine{
-						{
-							Test: &flakestats.TopXTest{
-								Name: "compute storage test",
-							},
-							SpecReport: &SpecReport{
-								ContainerHierarchyLabels: [][]string{
-									{
-										"sig-compute",
-									},
-								},
-								LeafNodeLabels: []string{
-									"sig-storage",
-								},
-							},
-						},
+				[]string{"sig compute", "sig storage"},
+			),
+			Entry("deduplicates when prefix resolves to same sig",
+				&TestToQuarantine{
+					Test: &flakestats.TopXTest{Name: "migration test"},
+					SpecReport: &SpecReport{
+						ContainerHierarchyLabels: [][]string{{"sig-compute"}},
+						LeafNodeLabels:           []string{"sig-compute-migrations"},
 					},
 				},
+				[]string{"sig compute"},
+			),
+			Entry("maps sig-operator to sig compute via fallback",
+				&TestToQuarantine{
+					Test: &flakestats.TopXTest{Name: "operator test"},
+					SpecReport: &SpecReport{
+						ContainerHierarchyLabels: [][]string{{"sig-operator"}},
+					},
+				},
+				[]string{"sig compute"},
+			),
+			Entry("maps sig-compute-migrations to sig compute via prefix match",
+				&TestToQuarantine{
+					Test: &flakestats.TopXTest{Name: "migration test"},
+					SpecReport: &SpecReport{
+						LeafNodeLabels: []string{"sig-compute-migrations"},
+					},
+				},
+				[]string{"sig compute"},
+			),
+			Entry("maps sig-monitoring to sig observability via alias",
+				&TestToQuarantine{
+					Test: &flakestats.TopXTest{Name: "monitoring test"},
+					SpecReport: &SpecReport{
+						LeafNodeLabels: []string{"sig-monitoring"},
+					},
+				},
+				[]string{"sig observability"},
+			),
+			Entry("maps wg-s390x to wg arch-s390x via alias",
+				&TestToQuarantine{
+					Test: &flakestats.TopXTest{Name: "s390x test"},
+					SpecReport: &SpecReport{
+						LeafNodeLabels: []string{"wg-s390x"},
+					},
+				},
+				[]string{"wg arch-s390x"},
+			),
+			Entry("falls back to sig compute when no label present",
+				&TestToQuarantine{
+					Test:       &flakestats.TopXTest{Name: "unlabeled test"},
+					SpecReport: &SpecReport{},
+				},
+				[]string{"sig compute"},
 			),
 		)
 	})

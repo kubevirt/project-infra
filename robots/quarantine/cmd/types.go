@@ -42,6 +42,7 @@ type autoQuarantineOptions struct {
 
 	jobConfigPath    string
 	jobConfigOrgRepo string
+	labelsYAMLPath   string
 
 	prDescriptionOutputFileOpts *options.OutputFileOptions
 }
@@ -71,6 +72,7 @@ type TestToQuarantine struct {
 	RelevantImpacts   []searchci.Impact
 	HasRecentFailures bool
 	SpecReport        *types.SpecReport
+	ProwCommands      []string
 }
 
 type TestsPerSIG map[string][]*TestToQuarantine

@@ -18,20 +18,19 @@
 
 */ -}}
 
-{{- /* gotype: kubevirt.io/project-infra/robots/quarantine/cmd.TestsPerSIG */ -}}
+{{- /* gotype: []*kubevirt.io/project-infra/robots/quarantine/cmd.TestToQuarantine */ -}}
 
 Auto-quarantine flaky tests
 
-{{ range $sig, $testsToQuarantine := . }}
-{{ range $testToQuarantine := $testsToQuarantine }}
+{{ range $testToQuarantine := . }}
 ### `{{ $testToQuarantine.Test.Name }}`
 {{ range $relevantImpact := $testToQuarantine.RelevantImpacts -}}
 [🔎]({{ $testToQuarantine.SearchCIURL }}) **{{ $relevantImpact.Percent }}%** over **{{ $testToQuarantine.TimeRange }}**
 [{{ $relevantImpact.URLToDisplay }}]({{ $relevantImpact.URL }}): Failures: {{ range $buildURL := $relevantImpact.BuildURLs -}}
 [{{ $buildURL.Interval }}]({{ $buildURL.URL }}) {{ end }}
 {{ end }}
+{{ range $prowCmd := $testToQuarantine.ProwCommands }}/{{ $prowCmd }}
 {{ end }}
-/sig {{ $sig }}
 {{ end }}
 
 /kind flake
