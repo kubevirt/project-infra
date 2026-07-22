@@ -546,7 +546,8 @@ presubmits:
             memory: 16Gi
         securityContext:
           privileged: true
-  - always_run: true
+  # TODO: revert once the prow-s390x-workloads cluster is healthy
+  - always_run: false
     cluster: prow-s390x-workloads
     decoration_config:
       timeout: 4h0m0s
