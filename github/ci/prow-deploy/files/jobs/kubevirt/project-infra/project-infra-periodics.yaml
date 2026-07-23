@@ -1083,13 +1083,13 @@ periodics:
       - name: CLUSTER_TTL
         value: 30 minutes ago
       - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/gcs/virtci-service-account.json
+        value: /etc/gcs-credentials/virtci-service-account.json
       resources:
         requests:
           memory: "300Mi"
       volumeMounts:
       - name: virtci-gcs
-        mountPath: /etc/gcs
+        mountPath: /etc/gcs-credentials
         readOnly: true
     volumes:
     - name: virtci-gcs

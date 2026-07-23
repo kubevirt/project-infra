@@ -134,7 +134,7 @@ var _ = Describe("generateCoverageJob", func() {
 				GCS: GCSConfig{
 					Bucket:            "kubevirt-prow",
 					PathStrategy:      "explicit",
-					CredentialsSecret: "gcs",
+					CredentialsSecret: "gcs-credentials",
 				},
 			},
 			Repos: map[string]JobConfig{
@@ -177,7 +177,7 @@ var _ = Describe("generateCoverageJob", func() {
 		Entry("container image", func(j prowapi.ProwJob) string { return j.Spec.PodSpec.Containers[0].Image }, "quay.io/kubevirtci/covreport:latest"),
 		Entry("GCS bucket", func(j prowapi.ProwJob) string { return j.Spec.DecorationConfig.GCSConfiguration.Bucket }, "kubevirt-prow"),
 		Entry("GCS path strategy", func(j prowapi.ProwJob) string { return string(j.Spec.DecorationConfig.GCSConfiguration.PathStrategy) }, string(prowapi.PathStrategyExplicit)),
-		Entry("GCS credentials secret", func(j prowapi.ProwJob) string { return *j.Spec.DecorationConfig.GCSCredentialsSecret }, "gcs"),
+		Entry("GCS credentials secret", func(j prowapi.ProwJob) string { return *j.Spec.DecorationConfig.GCSCredentialsSecret }, "gcs-credentials"),
 		Entry("GO_MOD_PATH env", func(j prowapi.ProwJob) string {
 			for _, env := range j.Spec.PodSpec.Containers[0].Env {
 				if env.Name == "GO_MOD_PATH" {
@@ -286,7 +286,7 @@ var _ = Describe("Handle", func() {
 					Cluster:           "test-cluster",
 					CoverageThreshold: 70,
 					GitHubTokenSecret: "commenter-oauth-token",
-					GCS:               GCSConfig{Bucket: "test-bucket", CredentialsSecret: "gcs"},
+					GCS:               GCSConfig{Bucket: "test-bucket", CredentialsSecret: "gcs-credentials"},
 					UtilityImages: UtilityImagesConfig{
 						CloneRefs:  "clonerefs:latest",
 						InitUpload: "initupload:latest",
@@ -562,7 +562,7 @@ defaults:
     sidecar: sc
   gcs:
     bucket: test-bucket
-    credentialsSecret: gcs
+    credentialsSecret: gcs-credentials
 repos:
   org/repo:
     testPackages: "./..."
@@ -585,7 +585,7 @@ defaults:
     sidecar: sc
   gcs:
     bucket: test-bucket
-    credentialsSecret: gcs
+    credentialsSecret: gcs-credentials
 repos:
   org/repo:
     testPackages: "./..."
@@ -609,7 +609,7 @@ defaults:
     sidecar: sc
   gcs:
     bucket: test-bucket
-    credentialsSecret: gcs
+    credentialsSecret: gcs-credentials
 repos:
   org/repo:
     testPackages: "./..."
@@ -633,7 +633,7 @@ defaults:
     sidecar: sc
   gcs:
     bucket: test-bucket
-    credentialsSecret: gcs
+    credentialsSecret: gcs-credentials
 repos:
   org/repo:
     testPackages: "./..."
@@ -656,7 +656,7 @@ defaults:
     sidecar: sc
   gcs:
     bucket: test-bucket
-    credentialsSecret: gcs
+    credentialsSecret: gcs-credentials
 repos:
   org/repo:
     testPackages: "./..."
