@@ -1,0 +1,50 @@
+periodics:
+- name: periodic-kubevirt-migration-controller-e2e-latest-kubevirt
+  cron: "10 2 * * *"
+  decorate: true
+  annotations:
+    testgrid-dashboards: kubevirt-migration-controller-periodics
+    testgrid-alert-email: akalenyu@redhat.com, awels@redhat.com, jpeimer@redhat.com, joscasta@redhat.com
+    testgrid-num-failures-to-alert: "1"
+  decoration_config:
+    timeout: 3h
+    grace_period: 5m
+  max_concurrency: 1
+  labels:
+    preset-podman-in-container-enabled: "true"
+    preset-docker-mirror: "true"
+    preset-shared-images: "true"
+  extra_refs:
+    - org: kubevirt
+      repo: kubevirt-migration-operator
+      base_ref: main
+      workdir: true
+    - org: kubevirt
+      repo: kubevirt-migration-controller
+      base_ref: main
+  cluster: prow-workloads
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+    - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+      command:
+        - "/usr/local/bin/runner.sh"
+        - "/bin/sh"
+        - "-c"
+        - |
+          export KUBEVIRT_NUM_NODES=2
+          export KUBEVIRT_STORAGE=rook-ceph-default
+
+          # Deploy the migration operator
+          make cluster-up
+          make cluster-sync
+
+          # Run controller e2e tests
+          cd ../kubevirt-migration-controller
+          ./hack/run-e2e.sh
+      securityContext:
+        privileged: true
+      resources:
+        requests:
+          memory: "52Gi"
