@@ -120,6 +120,7 @@ orgs:
       - Sreeja1725
       - sseago
       - stu-gott
+      - suPer8Hu
       - TheRealSibasishBehera
       - tiraboschi
       - vamsikrishna-siddu
@@ -132,6 +133,7 @@ orgs:
       - yanirq
       - zhencliu
       - zhlhahaha
+  
     members_can_create_repositories: false
     name: KubeVirt
     repos:
