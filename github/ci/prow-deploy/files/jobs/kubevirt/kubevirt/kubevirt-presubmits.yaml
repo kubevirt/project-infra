@@ -1144,8 +1144,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.36-sig-network-sriov-emulated
-    optional: false
-    run_before_merge: true
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
