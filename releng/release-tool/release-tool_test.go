@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -499,5 +500,45 @@ func TestConfigureReleaseJob(t *testing.T) {
 	}
 	if err != nil {
 		t.Errorf("got unexpected error %s", err)
+	}
+}
+
+func TestAppendVersionSuffixToJobNames(t *testing.T) {
+	tempDir, err := os.MkdirTemp("", "appendVersionSuffix-*")
+	if err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+	defer func(path string) {
+		err := os.RemoveAll(path)
+		if err != nil {
+			log.Warnf("failed to remove temp dir %s", tempDir)
+		}
+	}(tempDir)
+
+	tempFile := filepath.Join(tempDir, "kubevirt-presubmits-1.6.yaml")
+	input, err := os.ReadFile("testdata/jobconfig/kubevirt-presubmits-1.6.yaml")
+	if err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+	err = os.WriteFile(tempFile, input, os.ModePerm)
+	if err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+
+	err = appendVersionSuffixToJobNames(tempFile, "1.6")
+	if err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+
+	jobConfig, err := config.ReadJobConfig(tempFile)
+	if err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+	for _, presubmits := range jobConfig.PresubmitsStatic {
+		for _, presubmit := range presubmits {
+			if !strings.HasSuffix(presubmit.Name, "-1.6") {
+				t.Errorf("expected job name %q to have suffix -1.6", presubmit.Name)
+			}
+		}
 	}
 }
