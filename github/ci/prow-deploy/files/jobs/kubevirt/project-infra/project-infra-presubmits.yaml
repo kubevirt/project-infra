@@ -98,27 +98,6 @@ presubmits:
             memory: "4Gi"
           limits:
             memory: "4Gi"
-  - name: pull-project-infra-test-external-plugins
-    run_if_changed: "external-plugins/.*|go.mod"
-    cluster: kubevirt-prow-control-plane
-    optional: false
-    spec:
-      containers:
-      - image: quay.io/kubevirtci/golang:v20260715-af3e234
-        command:
-        - "/usr/local/bin/runner.sh"
-        - "/bin/sh"
-        - "-ce"
-        - |
-          go test ./external-plugins/...
-        env:
-        - name: GIMME_GO_VERSION
-          value: "1.25.1"
-        resources:
-          requests:
-            memory: "4Gi"
-          limits:
-            memory: "4Gi"
   - name: pull-project-infra-test-github-ci-services
     run_if_changed: "github/ci/services/.*|go.mod"
     optional: false
@@ -489,54 +468,6 @@ presubmits:
               memory: "1Gi"
             limits:
               memory: "1Gi"
-  - name: build-release-blocker-image
-    always_run: false
-    run_if_changed: "^(robots|images)/release-blocker/.*|pkg/.*|go.mod|go.sum"
-    labels:
-      preset-podman-in-container-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
-      preset-project-infra-image-build-linux: "true"
-    cluster: kubevirt-prow-control-plane
-    spec:
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/bash"
-            - "-ce"
-            - "cd images && ./publish_image.sh -b -e release-blocker quay.io kubevirtci"
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "1Gi"
-            limits:
-              memory: "1Gi"
-  - name: build-referee-image
-    always_run: false
-    run_if_changed: "^(external-plugins|images)/referee/.*|pkg/.*|go.mod|go.sum"
-    labels:
-      preset-podman-in-container-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
-      preset-project-infra-image-build-linux: "true"
-    cluster: kubevirt-prow-control-plane
-    spec:
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/bash"
-            - "-ce"
-            - "cd images && ./publish_image.sh -b -e referee quay.io kubevirtci"
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "1Gi"
-            limits:
-              memory: "1Gi"
   - name: build-ginkgo-tests-image
     always_run: false
     run_if_changed: "^(robots|images)/ginkgo-tests/.*|pkg/.*|go.mod|go.sum"
@@ -639,54 +570,6 @@ presubmits:
               memory: "1Gi"
             limits:
               memory: "1Gi"
-  - name: build-rehearse-image
-    always_run: false
-    run_if_changed: "^(external-plugins|images)/rehearse/.*|pkg/.*|go.mod|go.sum"
-    labels:
-      preset-podman-in-container-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
-      preset-project-infra-image-build-linux: "true"
-    cluster: kubevirt-prow-control-plane
-    spec:
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/bash"
-            - "-ce"
-            - "cd images && ./publish_image.sh -b -e rehearse quay.io kubevirtci"
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "1Gi"
-            limits:
-              memory: "1Gi"
-  - name: build-phased-image
-    always_run: false
-    run_if_changed: "images/phased/.*|external-plugins/phased/.*|pkg/.*|go.mod|go.sum"
-    labels:
-      preset-podman-in-container-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
-      preset-project-infra-image-build-linux: "true"
-    cluster: kubevirt-prow-control-plane
-    spec:
-      containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/bash"
-            - "-ce"
-            - "cd images && ./publish_image.sh -b -e phased quay.io kubevirtci"
-          securityContext:
-            privileged: true
-          resources:
-            requests:
-              memory: "1Gi"
-            limits:
-              memory: "1Gi"
   - name: build-test-label-analyzer-image
     always_run: false
     run_if_changed: "images/test-label-analyzer/.*|robots/test-label-analyzer/.*|pkg/.*|go.mod|go.sum"
@@ -711,30 +594,104 @@ presubmits:
               memory: "1Gi"
             limits:
               memory: "1Gi"
-  - name: build-test-subset-image
-    always_run: false
-    run_if_changed: "images/test-subset/.*|external-plugins/test-subset/.*|pkg/.*|go.mod|go.sum"
-    labels:
-      preset-podman-in-container-enabled: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
-      preset-project-infra-image-build-linux: "true"
+  # Jobs related to KubeVirt Prow in-house external plugins
+  - name: pull-project-infra-test-external-plugins
+    run_if_changed: "external-plugins/.*|go.mod"
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-          command:
-            - "/usr/local/bin/runner.sh"
-            - "/bin/bash"
-            - "-ce"
-            - "cd images && ./publish_image.sh -b -e test-subset quay.io kubevirtci"
-          securityContext:
-            privileged: true
+        - image: quay.io/kubevirtci/golang:v20260715-af3e234
+          command: [/usr/local/bin/entrypoint.sh]
+          args:
+            - /bin/bash
+            - -ceu
+            - go test ./external-plugins/...
+          env:
+            - name: GO_MOD_PATH
+              value: go.mod
           resources:
             requests:
-              memory: "1Gi"
+              memory: 4Gi
             limits:
-              memory: "1Gi"
+              memory: 4Gi
+  - &build_prow_plugin_image_job
+    name: build-prow-plugin-coverage-image
+    run_if_changed: "external-plugins/coverage/.*|pkg/.*|go.mod|go.sum"
+    cluster: kubevirt-prow-control-plane
+    labels:
+       preset-docker-mirror-proxy: "true"
+       preset-podman-in-container-enabled: "true"
+    spec:
+      containers:
+        - &build_prow_plugin_image_container
+          image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+          command: [/usr/local/bin/entrypoint.sh]
+          args:
+            - /bin/bash
+            - -ceu
+            - |
+              podman image build . \
+                --build-arg="PROW_PLUGIN=${PROW_PLUGIN}" \
+                --file="external-plugins/Containerfile" \
+                --volume="${PWD}:/workspace" \
+                --security-opt="label=disable" \
+                --tag="quay.io/kubevirtci/${PROW_PLUGIN}"
+          env:
+            - name: PROW_PLUGIN
+              value: coverage
+          resources:
+            requests:
+              memory: 1Gi
+            limits:
+              memory: 1Gi
+          # Containerized podman requires privileged mode
+          securityContext:
+            privileged: true
+  - <<: *build_prow_plugin_image_job
+    name: build-prow-plugin-phased-image
+    run_if_changed: "external-plugins/phased/.*|pkg/.*|go.mod|go.sum"
+    spec:
+      containers:
+        - <<: *build_prow_plugin_image_container
+          env:
+            - name: PROW_PLUGIN
+              value: phased
+  - <<: *build_prow_plugin_image_job
+    name: build-prow-plugin-referee-image
+    run_if_changed: "external-plugins/referee/.*|pkg/.*|go.mod|go.sum"
+    spec:
+      containers:
+        - <<: *build_prow_plugin_image_container
+          env:
+            - name: PROW_PLUGIN
+              value: referee
+  - <<: *build_prow_plugin_image_job
+    name: build-prow-plugin-rehearse-image
+    run_if_changed: "external-plugins/rehearse/.*|pkg/.*|go.mod|go.sum"
+    spec:
+      containers:
+        - <<: *build_prow_plugin_image_container
+          env:
+            - name: PROW_PLUGIN
+              value: rehearse
+  - <<: *build_prow_plugin_image_job
+    name: build-prow-plugin-release-blocker-image
+    run_if_changed: "external-plugins/release-blocker/.*|pkg/.*|go.mod|go.sum"
+    spec:
+      containers:
+        - <<: *build_prow_plugin_image_container
+          env:
+            - name: PROW_PLUGIN
+              value: release-blocker
+  - <<: *build_prow_plugin_image_job
+    name: build-prow-plugin-test-subset-image
+    run_if_changed: "external-plugins/test-subset/.*|pkg/.*|go.mod|go.sum"
+    spec:
+      containers:
+        - <<: *build_prow_plugin_image_container
+          env:
+            - name: PROW_PLUGIN
+              value: test-subset
   - name: pull-project-infra-prow-deploy-test
     always_run: false
     run_if_changed: "github/ci/prow-deploy/(defaults|hack|kustom|tasks|templates|vars)/.*|github/ci/prow-deploy/files/[^/]+$|github/ci/prow-deploy/[^/]+$"

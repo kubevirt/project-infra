@@ -5,13 +5,13 @@ CONTAINER_REPO := quay.io/kubevirtci/$(CONTAINER_IMAGE)
 all: format test push
 
 build:
-	go build ./plugin/...
+	go build ./...
 
 format:
 	gofmt -w .
 
 test:
-	go test ./plugin/...
+	go test ./...
 
 push:
 	cd ../../images && ./publish_image.sh -e $(CONTAINER_IMAGE) quay.io kubevirtci

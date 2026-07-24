@@ -1,4 +1,4 @@
-package main_test
+package plugin
 
 import (
 	"encoding/json"
