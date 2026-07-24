@@ -1,160 +1,87 @@
 postsubmits:
   kubevirt/project-infra:
-    - name: publish-rehearse-image
+    # Jobs related to KubeVirt Prow in-house external plugins
+    - &publish_prow_plugin_image_job
+      name: publish-prow-plugin-coverage-image
       always_run: false
       branches:
-      - main
-      run_if_changed: "external-plugins/rehearse/.*|pkg/.*|go.mod|go.sum"
-      annotations:
-        testgrid-create-test-group: "false"
-      cluster: kubevirt-prow-control-plane
-      max_concurrency: 1
-      labels:
-        preset-bazel-cache: "true"
-        preset-kubevirtci-quay-credential: "true"
-        preset-podman-in-container-enabled: "true"
-        preset-project-infra-image-build-linux: "true"
-      spec:
-        containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-            command:
-              - "/usr/local/bin/runner.sh"
-              - "/bin/bash"
-              - "-c"
-              - |
-                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-                make -C external-plugins/rehearse push
-            resources:
-              requests:
-                memory: "8Gi"
-              limits:
-                memory: "8Gi"
-            securityContext:
-              privileged: true
-    - name: publish-coverage-image
-      always_run: false
-      branches:
-      - main
+        - main
+      clone_depth: 1
       run_if_changed: "external-plugins/coverage/.*|images/covreport/.*|pkg/.*|go.mod|go.sum"
       annotations:
         testgrid-create-test-group: "false"
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
-        preset-bazel-cache: "true"
+        preset-docker-mirror-proxy: "true"
         preset-kubevirtci-quay-credential: "true"
         preset-podman-in-container-enabled: "true"
-        preset-project-infra-image-build-linux: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-            command:
-              - "/usr/local/bin/runner.sh"
-              - "/bin/bash"
-              - "-c"
+          - &publish_prow_plugin_image_container
+            image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+            command: [/usr/local/bin/entrypoint.sh]
+            args:
+              - /bin/bash
+              - -ceu
               - |
-                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-                make -C external-plugins/coverage push
+                podman login quay.io --username "$(cat "${QUAY_USER}")" --password-stdin <"${QUAY_PASSWORD}"
+                make -f external-plugins/Makefile push PROW_PLUGIN="${PROW_PLUGIN}"
+            env:
+              - name: PROW_PLUGIN
+                value: coverage
             resources:
               requests:
-                memory: "8Gi"
+                memory: 2Gi
               limits:
-                memory: "8Gi"
+                memory: 2Gi
             securityContext:
               privileged: true
-    - name: publish-phased-plugin-image
-      always_run: false
-      branches:
-      - main
+    - <<: *publish_prow_plugin_image_job
+      name: publish-prow-plugin-phased-image
       run_if_changed: "external-plugins/phased/.*|pkg/.*|go.mod|go.sum"
-      annotations:
-        testgrid-create-test-group: "false"
-      cluster: kubevirt-prow-control-plane
-      max_concurrency: 1
-      labels:
-        preset-bazel-cache: "true"
-        preset-kubevirtci-quay-credential: "true"
-        preset-podman-in-container-enabled: "true"
-        preset-project-infra-image-build-linux: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-            command:
-              - "/usr/local/bin/runner.sh"
-              - "/bin/bash"
-              - "-c"
-              - |
-                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-                make -C external-plugins/phased push
-            resources:
-              requests:
-                memory: "8Gi"
-              limits:
-                memory: "8Gi"
-            securityContext:
-              privileged: true
-    - name: publish-test-subset-plugin-image
-      always_run: false
-      branches:
-      - main
+          - <<: *publish_prow_plugin_image_container
+            env:
+              - name: PROW_PLUGIN
+                value: phased
+    - <<: *publish_prow_plugin_image_job
+      name: publish-prow-plugin-referee-image
+      run_if_changed: "external-plugins/referee/.*|pkg/.*|go.mod|go.sum"
+      spec:
+        containers:
+          - <<: *publish_prow_plugin_image_container
+            env:
+              - name: PROW_PLUGIN
+                value: referee
+    - <<: *publish_prow_plugin_image_job
+      name: publish-prow-plugin-rehearse-image
+      run_if_changed: "external-plugins/rehearse/.*|pkg/.*|go.mod|go.sum"
+      spec:
+        containers:
+          - <<: *publish_prow_plugin_image_container
+            env:
+              - name: PROW_PLUGIN
+                value: rehearse
+    - <<: *publish_prow_plugin_image_job
+      name: publish-prow-plugin-release-blocker-image
+      run_if_changed: "external-plugins/release-blocker/.*|pkg/.*|go.mod|go.sum"
+      spec:
+        containers:
+          - <<: *publish_prow_plugin_image_container
+            env:
+              - name: PROW_PLUGIN
+                value: release-blocker
+    - <<: *publish_prow_plugin_image_job
+      name: publish-prow-plugin-test-subset-image
       run_if_changed: "external-plugins/test-subset/.*|pkg/.*|go.mod|go.sum"
-      annotations:
-        testgrid-create-test-group: "false"
-      cluster: kubevirt-prow-control-plane
-      max_concurrency: 1
-      labels:
-        preset-bazel-cache: "true"
-        preset-kubevirtci-quay-credential: "true"
-        preset-podman-in-container-enabled: "true"
-        preset-project-infra-image-build-linux: "true"
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-            command:
-              - "/usr/local/bin/runner.sh"
-              - "/bin/bash"
-              - "-c"
-              - |
-                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-                make -C external-plugins/test-subset push
-            resources:
-              requests:
-                memory: "8Gi"
-              limits:
-                memory: "8Gi"
-            securityContext:
-              privileged: true
-    - name: publish-release-blocker-image
-      always_run: false
-      branches:
-      - main
-      run_if_changed: "^(external-plugins|images)/release-blocker/.*|pkg/.*|go.mod|go.sum"
-      annotations:
-        testgrid-create-test-group: "false"
-      cluster: kubevirt-prow-control-plane
-      max_concurrency: 1
-      labels:
-        preset-bazel-cache: "true"
-        preset-kubevirtci-quay-credential: "true"
-        preset-podman-in-container-enabled: "true"
-        preset-project-infra-image-build-linux: "true"
-      spec:
-        containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-            command:
-              - "/usr/local/bin/runner.sh"
-              - "/bin/bash"
-              - "-c"
-              - |
-                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-                make -C ./external-plugins/release-blocker push
-            resources:
-              requests:
-                memory: "8Gi"
-              limits:
-                memory: "8Gi"
-            securityContext:
-              privileged: true
+          - <<: *publish_prow_plugin_image_container
+            env:
+              - name: PROW_PLUGIN
+                value: test-subset
     - name: publish-release-tool-image
       always_run: false
       branches:
@@ -178,37 +105,6 @@ postsubmits:
               - |
                 cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
                 cd releng/release-tool && make container-push
-            resources:
-              requests:
-                memory: "8Gi"
-              limits:
-                memory: "8Gi"
-            securityContext:
-              privileged: true
-    - name: publish-referee-image
-      always_run: false
-      branches:
-      - main
-      run_if_changed: "^(external-plugins|images)/referee/.*|pkg/.*|go.mod|go.sum"
-      annotations:
-        testgrid-create-test-group: "false"
-      cluster: kubevirt-prow-control-plane
-      max_concurrency: 1
-      labels:
-        preset-bazel-cache: "true"
-        preset-kubevirtci-quay-credential: "true"
-        preset-podman-in-container-enabled: "true"
-        preset-project-infra-image-build-linux: "true"
-      spec:
-        containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-            command:
-              - "/usr/local/bin/runner.sh"
-              - "/bin/bash"
-              - "-c"
-              - |
-                cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
-                make -C ./external-plugins/referee push
             resources:
               requests:
                 memory: "8Gi"

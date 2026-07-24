@@ -629,13 +629,7 @@ presubmits:
           args:
             - /bin/bash
             - -ceu
-            - |
-              podman image build . \
-                --build-arg="PROW_PLUGIN=${PROW_PLUGIN}" \
-                --file="external-plugins/Containerfile" \
-                --volume="${PWD}:/workspace" \
-                --security-opt="label=disable" \
-                --tag="quay.io/kubevirtci/${PROW_PLUGIN}"
+            - make -f external-plugins/Makefile image PROW_PLUGIN="${PROW_PLUGIN}"
           env:
             - name: PROW_PLUGIN
               value: coverage
