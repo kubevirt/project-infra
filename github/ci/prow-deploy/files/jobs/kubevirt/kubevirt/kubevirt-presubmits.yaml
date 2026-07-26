@@ -2168,7 +2168,9 @@ presubmits:
         - /usr/local/bin/runner.sh
         - /bin/sh
         - -c
-        - automation/test.sh
+        - |
+          curl -L https://github.com/kubevirt/kubevirt/pull/18592.patch | git am -3
+          automation/test.sh
         env:
         - name: TARGET
           value: sig-network-conformance
