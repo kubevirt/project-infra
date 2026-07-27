@@ -40,9 +40,8 @@ presubmits:
         - release-\d+\.\d+
       annotations:
         fork-per-release: "true"
-      # TODO: revert once the prow-s390x-workloads cluster is healthy again
-      always_run: false
-      optional: true
+      always_run: true
+      optional: false
       cluster: prow-s390x-workloads
       decoration_config:
         grace_period: 5m0s
@@ -65,9 +64,8 @@ presubmits:
         - release-\d+\.\d+
       annotations:
         fork-per-release: "true"
-      # TODO: revert once the prow-s390x-workloads cluster is healthy again
-      always_run: false
-      optional: true
+      always_run: true
+      optional: false
       cluster: prow-s390x-workloads
       decoration_config:
         grace_period: 5m0s
