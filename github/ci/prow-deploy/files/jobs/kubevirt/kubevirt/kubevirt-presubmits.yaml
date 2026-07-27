@@ -78,7 +78,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 1
-    name: pull-kubevirt-e2e-k8s-1.34-windows2016
+    name: pull-kubevirt-e2e-k8s-1.36-windows2016
     run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
