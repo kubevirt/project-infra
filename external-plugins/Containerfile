@@ -1,0 +1,21 @@
+FROM quay.io/kubevirtci/golang:v20260715-af3e234 AS builder
+
+ARG PROW_PLUGIN
+ARG GOMAXPROCS=4
+
+RUN /usr/local/bin/entrypoint.sh /bin/bash -c ' \
+    set -eux -o pipefail; \
+    go env -w CGO_ENABLED=0 GOPROXY=off; \
+    time go build -o /go/bin/prow-plugin-${PROW_PLUGIN} ./external-plugins/${PROW_PLUGIN}/ \
+'
+
+FROM gcr.io/k8s-staging-test-infra/git:v20260512-1f34ef0df3
+
+ARG PROW_PLUGIN
+
+COPY --from=builder --chmod=755 --chown=root:root \
+    /go/bin/prow-plugin-${PROW_PLUGIN} /usr/bin/
+
+ENV PROW_PLUGIN=${PROW_PLUGIN}
+
+ENTRYPOINT ["/bin/sh", "-c", "exec /usr/bin/prow-plugin-${PROW_PLUGIN} \"$@\"", "prow-plugin"]
