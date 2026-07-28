@@ -1,5 +1,40 @@
 presubmits:
   kubevirt/kubevirtci:
+  - name: pull-kubevirtci-bump-fedora-provision-image
+    always_run: false
+    annotations:
+      testgrid-create-test-group: "false"
+    decoration_config:
+      timeout: 1h
+    max_concurrency: 1
+    extra_refs:
+    - org: kubevirt
+      repo: project-infra
+      base_ref: main
+      clone_depth: 1
+      workdir: true
+    labels:
+      preset-github-credentials: "true"
+    cluster: kubevirt-prow-control-plane
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/pr-creator:v20260723-ca75c4e
+        command: ["/bin/sh", "-ce"]
+        args:
+        - |
+          git-pr.sh \
+            --command "./hack/bump-fedora-images-version.sh ../kubevirtci/cluster-provision/centos9/Dockerfile ../kubevirtci/cluster-provision/centos10/Dockerfile" \
+            --description-command "echo 'Bump fedora provisioning base to latest version'" \
+            --branch bump-fedora-provision \
+            --repo-path ../kubevirtci \
+            --repo kubevirtci \
+            --target main \
+            --missing-labels lgtm,approved,do-not-merge/hold
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "200Mi"
   - always_run: false
     annotations:
       k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni

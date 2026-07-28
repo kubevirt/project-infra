@@ -72,43 +72,6 @@ periodics:
       resources:
         requests:
           memory: "8Gi"
-- name: periodic-kubevirtci-bump-fedora-provision-image
-  cron: "5 3 * * 4"
-  annotations:
-    testgrid-create-test-group: "false"
-  decoration_config:
-    timeout: 1h
-  max_concurrency: 1
-  extra_refs:
-  - org: kubevirt
-    repo: project-infra
-    base_ref: main
-    workdir: true
-  - org: kubevirt
-    repo: kubevirtci
-    base_ref: main
-  labels:
-    preset-github-credentials: "true"
-  cluster: kubevirt-prow-control-plane
-  spec:
-    containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260723-ca75c4e
-      command: ["/bin/sh", "-ce"]
-      args:
-      - |
-        git-pr.sh \
-          --command "./hack/bump-fedora-images-version.sh ../kubevirtci/cluster-provision/centos9/Dockerfile ../kubevirtci/cluster-provision/centos10/Dockerfile" \
-          --description-command "echo 'Bump fedora provisioning base to latest version'" \
-          --branch bump-fedora-provision \
-          --repo-path ../kubevirtci \
-          --repo kubevirtci \
-          --target main \
-          --missing-labels lgtm,approved,do-not-merge/hold
-      securityContext:
-        privileged: true
-      resources:
-        requests:
-          memory: "200Mi"
 - name: periodic-kubevirtci-bump-cdi
   cron: "30 1 * * *"
   annotations:
