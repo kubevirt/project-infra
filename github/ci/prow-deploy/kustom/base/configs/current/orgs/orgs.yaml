@@ -1098,6 +1098,13 @@ orgs:
           - vladikr
         repos:
           application-aware-quota: admin
+      controller-lifecycle-operator-sdk-maintainers:
+        description: Maintainers of controller lifecycle operator sdk project
+        members:
+          - akalenyu
+          - mhenriks
+        repos:
+          controller-lifecycle-operator-sdk: admin
       kubevirt-migration-controller-maintainers:
         description: Maintainers of kubevirt migrations controller project
         members:

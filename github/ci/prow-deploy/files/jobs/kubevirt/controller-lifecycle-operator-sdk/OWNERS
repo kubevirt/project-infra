@@ -1,14 +1,9 @@
 filters:
-  ".*":
-    reviewers:
-      - jakub-dzon
-      - machacekondra
-      - masayag
-      - pkliczewski
-      - mhenriks
+  .*:
     approvers:
-      - jakub-dzon
-      - machacekondra
-      - masayag
-      - pkliczewski
-      - mhenriks
+    - akalenyu
+    - mhenriks
+    reviewers:
+    - akalenyu
+    - mhenriks
+options: {}

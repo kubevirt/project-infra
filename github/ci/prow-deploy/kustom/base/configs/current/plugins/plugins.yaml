@@ -719,6 +719,7 @@ approve:
   - kubevirt/enhancements
   - kubevirt/irsa-mutation-webhook
   - kubevirt/virt-template
+  - kubevirt/controller-lifecycle-operator-sdk
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
   - kubevirt/vm-file-restore-operator
@@ -871,6 +872,7 @@ lgtm:
   - kubevirt/enhancements
   - kubevirt/irsa-mutation-webhook
   - kubevirt/virt-template
+  - kubevirt/controller-lifecycle-operator-sdk
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
   - kubevirt/vm-file-restore-operator
@@ -939,6 +941,7 @@ triggers:
   - kubevirt/enhancements
   - kubevirt/irsa-mutation-webhook
   - kubevirt/virt-template
+  - kubevirt/controller-lifecycle-operator-sdk
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
   - kubevirt/vm-file-restore-operator
