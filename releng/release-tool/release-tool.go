@@ -198,7 +198,8 @@ func (r *releaseData) generateReleaseNotes() error {
 	writeString(fmt.Sprintf("%d people contributed to this release:\n\n", numContributors))
 
 	for _, contributor := range contributorList {
-		if strings.Contains(contributor, "kubevirt-bot") {
+		if strings.Contains(contributor, "kubevirt-bot") ||
+			strings.Contains(contributor, "kubevirt-prow") {
 			// skip the bot
 			continue
 		}

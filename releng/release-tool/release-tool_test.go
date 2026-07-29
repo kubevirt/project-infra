@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -458,6 +459,58 @@ func TestNewTag(t *testing.T) {
 		if entry != expectedGitCommands[i] {
 			t.Errorf("expected command %s and got %s", expectedGitCommands[i], entry)
 		}
+	}
+}
+
+func TestGenerateReleaseNotesSkipsBots(t *testing.T) {
+	r := standardSetup()
+	defer standardCleanup(&r)
+
+	r.tag = "v0.2.0"
+	r.tagBranch = "release-0.2"
+	r.previousTag = "v0.1.0"
+
+	err := os.MkdirAll(r.repoDir, 0755)
+	if err != nil {
+		t.Fatalf("failed to create repoDir: %s", err)
+	}
+
+	gitCommand = func(arg ...string) (string, error) {
+		for _, a := range arg {
+			switch a {
+			case "log":
+				return "abc1234 some commit message\n", nil
+			case "shortlog":
+				return "     5\tAlice <alice@example.com>\n     3\tkubevirt-bot <bot@kubevirt.io>\n     2\tBob <bob@example.com>\n     1\tkubevirt-prow <prow@kubevirt.io>\n", nil
+			case "diff":
+				return "10 files changed, 200 insertions(+), 50 deletions(-)", nil
+			}
+		}
+		return "", nil
+	}
+
+	err = r.generateReleaseNotes()
+	if err != nil {
+		t.Fatalf("unexpected error: %s", err)
+	}
+
+	content, err := os.ReadFile(r.releaseNotesFile)
+	if err != nil {
+		t.Fatalf("failed to read release notes: %s", err)
+	}
+
+	notes := string(content)
+	if strings.Contains(notes, "kubevirt-bot") {
+		t.Error("release notes should not contain kubevirt-bot")
+	}
+	if strings.Contains(notes, "kubevirt-prow") {
+		t.Error("release notes should not contain kubevirt-prow")
+	}
+	if !strings.Contains(notes, "Alice") {
+		t.Error("release notes should contain Alice")
+	}
+	if !strings.Contains(notes, "Bob") {
+		t.Error("release notes should contain Bob")
 	}
 }
 
