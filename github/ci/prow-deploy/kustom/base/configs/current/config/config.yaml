@@ -916,6 +916,11 @@ presets:
     mountPath: /etc/gcs-credentials
     readOnly: true
 - labels:
+    preset-go-test-cache-bucket: "true"
+  env:
+  - name: GO_TEST_CACHE_BUCKET
+    value: gs://kubevirt-go-cache/go-test-cache
+- labels:
     preset-pgp-bot-key: "true"
   volumeMounts:
   - mountPath: /etc/pgp
