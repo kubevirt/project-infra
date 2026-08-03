@@ -1460,6 +1460,8 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
+        - name: KUBEVIRT_STORAGE
+          value: rook-ceph-default
         image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
