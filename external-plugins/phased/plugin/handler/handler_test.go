@@ -287,6 +287,26 @@ var _ = Describe("findNextPhaseToTrigger", func() {
 	})
 })
 
+var _ = DescribeTable("isPRNotMergeable",
+	func(pr github.PullRequest, expected bool) {
+		Expect(isPRNotMergeable(pr)).To(Equal(expected))
+	},
+	Entry("normal open PR", github.PullRequest{State: "open"}, false),
+	Entry("draft PR", github.PullRequest{State: "open", Draft: true}, true),
+	Entry("already merged", github.PullRequest{State: "open", Merged: true}, true),
+	Entry("closed state", github.PullRequest{State: "closed"}, true),
+	Entry("Mergable explicitly false", github.PullRequest{State: "open", Mergable: new(bool)}, true),
+	Entry("Mergable explicitly true", func() github.PullRequest {
+		m := true
+		return github.PullRequest{State: "open", Mergable: &m}
+	}(), false),
+	Entry("Mergable nil", github.PullRequest{State: "open"}, false),
+	Entry("draft with Mergable true", func() github.PullRequest {
+		m := true
+		return github.PullRequest{State: "open", Draft: true, Mergable: &m}
+	}(), true),
+)
+
 var _ = Describe("presubmitCache", func() {
 	It("returns miss on empty cache", func() {
 		c := presubmitCache{ttl: 5}

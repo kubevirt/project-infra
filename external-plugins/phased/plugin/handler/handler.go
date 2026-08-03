@@ -42,7 +42,7 @@ type GitHubEvent struct {
 	Payload []byte
 }
 
-type githubClientInterface interface {
+type githubClient interface {
 	GetPullRequest(org, repo string, number int) (*github.PullRequest, error)
 	GetPullRequests(org, repo string) ([]github.PullRequest, error)
 	CreateComment(org, repo string, number int, comment string) error
@@ -89,7 +89,7 @@ func (c *presubmitCache) set(presubmits []config.Presubmit) {
 type GitHubEventsHandler struct {
 	eventsChan       <-chan *GitHubEvent
 	logger           *logrus.Logger
-	ghClient         githubClientInterface
+	ghClient         githubClient
 	gitClientFactory gitv2.ClientFactory
 	prowConfigPath   string
 	jobsConfigBase   string
@@ -100,7 +100,7 @@ type GitHubEventsHandler struct {
 func NewGitHubEventsHandler(
 	eventsChan <-chan *GitHubEvent,
 	logger *logrus.Logger,
-	ghClient githubClientInterface,
+	ghClient githubClient,
 	prowConfigPath string,
 	jobsConfigBase string,
 	prowLocation string,
@@ -185,6 +185,10 @@ func (h *GitHubEventsHandler) handlePullRequestEvent(log *logrus.Entry, event *g
 	toTest, err := listRequiredManual(h.ghClient, *pr, presubmits)
 	if err != nil {
 		log.WithError(err).Errorf("listRequiredManual failed")
+		return
+	}
+	if toTest == nil {
+		log.Debug("nothing to test")
 		return
 	}
 
@@ -312,6 +316,12 @@ func (h *GitHubEventsHandler) findPRsForSHA(org, repo, sha string) ([]github.Pul
 }
 
 func (h *GitHubEventsHandler) handlePhaseTransition(log *logrus.Entry, pr github.PullRequest, statusMap map[string]string) {
+	shouldSkip := isPRNotMergeable(pr)
+	if shouldSkip {
+		log.Debug("pr not mergeable")
+		return
+	}
+
 	if pr.Base.Ref != "main" && pr.Base.Ref != "master" {
 		return
 	}
@@ -343,7 +353,7 @@ func (h *GitHubEventsHandler) handlePhaseTransition(log *logrus.Entry, pr github
 	triggerPhaseJobs(log, h.ghClient, pr, phaseJobs[nextPhase], completedPhase, nextPhase, statusMap)
 }
 
-func triggerPhaseJobs(log *logrus.Entry, ghClient githubClientInterface, pr github.PullRequest, jobs []config.Presubmit, completedPhase, nextPhase int, statusMap map[string]string) {
+func triggerPhaseJobs(log *logrus.Entry, ghClient githubClient, pr github.PullRequest, jobs []config.Presubmit, completedPhase, nextPhase int, statusMap map[string]string) {
 	org := pr.Base.Repo.Owner.Login
 	repo := pr.Base.Repo.Name
 
@@ -435,12 +445,10 @@ func fetchRemoteFile(url string) ([]byte, error) {
 	return body, nil
 }
 
-func listRequiredManual(ghClient githubClientInterface, pr github.PullRequest, presubmits []config.Presubmit) ([]config.Presubmit, error) {
-	if pr.Draft || pr.Merged || pr.State != "open" {
-		return nil, nil
-	}
-
-	if pr.Mergable != nil && !*pr.Mergable {
+func listRequiredManual(ghClient githubClient, pr github.PullRequest, presubmits []config.Presubmit) ([]config.Presubmit, error) {
+	shouldSkip := isPRNotMergeable(pr)
+	if shouldSkip {
+		log.Debug("pr not mergeable")
 		return nil, nil
 	}
 
@@ -452,6 +460,17 @@ func listRequiredManual(ghClient githubClientInterface, pr github.PullRequest, p
 	}
 
 	return toTest, nil
+}
+
+func isPRNotMergeable(pr github.PullRequest) bool {
+	if pr.Draft || pr.Merged || pr.State != "open" {
+		return true
+	}
+
+	if pr.Mergable != nil && !*pr.Mergable {
+		return true
+	}
+	return false
 }
 
 var defaultManualRequiredFilter = manualRequiredFilter{}
@@ -466,7 +485,7 @@ func (f manualRequiredFilter) ShouldRun(p config.Presubmit) (shouldRun bool, for
 
 func (f manualRequiredFilter) Name() string { return "manualRequiredFilter" }
 
-func testRequested(ghClient githubClientInterface, pr github.PullRequest, requestedJobs []config.Presubmit) error {
+func testRequested(ghClient githubClient, pr github.PullRequest, requestedJobs []config.Presubmit) error {
 	org, repo, err := pi_github.OrgRepo(pr.Base.Repo.FullName)
 	if err != nil {
 		log.WithError(err).Errorf("Could not parse repo name: %s", pr.Base.Repo.FullName)
