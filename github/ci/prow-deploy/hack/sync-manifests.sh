@@ -41,9 +41,12 @@ latest_prow_version=$(
     curl https://us-docker.pkg.dev/v2/k8s-infra-prow/images/prow-controller-manager/tags/list \
         | yq -r '
             .manifest | to_entries
-            | map(.value) | sort_by(.timeUploadedMs)
-            | .[-1].tag[]
-            | select(test("^(v?\d{8}-(?:v\d(?:[.-]\d+)*-g)?[0-9a-f]{6,10})$"))
+            # List all existing tags sorted by upload timestamp in ascending order
+            | map(.value) | sort_by(.timeUploadedMs) | map(.tag) | flatten
+            # Filter out tags not matching a release pattern (e.g: SBOM)
+            | map(select(test("^(v?\d{8}-(?:v\d(?:[.-]\d+)*-g)?[0-9a-f]{6,10})$")))
+            # Return the newest matching tag
+            | .[-1]
           '
 )
 
