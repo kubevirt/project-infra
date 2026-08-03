@@ -27,9 +27,23 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	log "github.com/sirupsen/logrus"
 	flakestats "kubevirt.io/project-infra/pkg/flake-stats"
 	"kubevirt.io/project-infra/pkg/searchci"
 )
+
+// entryRecordingHook records the last log entry fired against the logger it is attached to,
+// so that tests can assert on the level a given code path logged at.
+type entryRecordingHook struct {
+	lastEntry *log.Entry
+}
+
+func (h *entryRecordingHook) Levels() []log.Level { return log.AllLevels }
+
+func (h *entryRecordingHook) Fire(entry *log.Entry) error {
+	h.lastEntry = entry
+	return nil
+}
 
 var _ = Describe("auto-quarantine", func() {
 	When("Writing pr description", func() {
@@ -458,6 +472,58 @@ to contain
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(result).To(BeEmpty())
+		})
+
+		It("logs at warning level for unmatched tests that are not quarantined", func() {
+			stubCandidate([]searchci.Impact{
+				newImpact(requiredLane, 10),
+			})
+			hook := &entryRecordingHook{}
+			originalHooks := log.StandardLogger().Hooks
+			log.AddHook(hook)
+			defer log.StandardLogger().ReplaceHooks(originalHooks)
+
+			test := newTopXTest(testName)
+			test.NoteHasBeenQuarantined = false
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{test},
+				reportsContaining("completely different test"),
+				map[string]struct{}{requiredLane: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(BeEmpty())
+			entry := hook.lastEntry
+			Expect(entry).ToNot(BeNil())
+			Expect(entry.Level).To(Equal(log.WarnLevel))
+			Expect(entry.Message).To(ContainSubstring("could not find file for"))
+		})
+
+		It("logs at info level for unmatched tests that are already quarantined", func() {
+			stubCandidate([]searchci.Impact{
+				newImpact(requiredLane, 10),
+			})
+			hook := &entryRecordingHook{}
+			originalHooks := log.StandardLogger().Hooks
+			log.AddHook(hook)
+			defer log.StandardLogger().ReplaceHooks(originalHooks)
+
+			test := newTopXTest(testName)
+			test.NoteHasBeenQuarantined = true
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{test},
+				reportsContaining("completely different test"),
+				map[string]struct{}{requiredLane: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(BeEmpty())
+			entry := hook.lastEntry
+			Expect(entry).ToNot(BeNil())
+			Expect(entry.Level).To(Equal(log.InfoLevel))
+			Expect(entry.Message).To(ContainSubstring("could not find file for"))
 		})
 
 		It("propagates error from getQuarantineCandidate", func() {
