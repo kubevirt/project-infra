@@ -50,4 +50,4 @@ do
     mirror_crio_repo_for_version $i
 done
 
-gsutil rsync -d -r $LOCAL_MIRROR_DIR gs://$BUCKET_DIR
+gcloud storage rsync --delete-unmatched-destination-objects -r "$LOCAL_MIRROR_DIR" "gs://$BUCKET_DIR"

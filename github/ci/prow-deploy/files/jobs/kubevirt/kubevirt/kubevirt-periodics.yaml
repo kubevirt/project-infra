@@ -129,7 +129,7 @@ periodics:
         go run ./robots/merge-commit-summary \
           --days-in-the-past 7 \
           --output-file "${report_dir}/index.html"
-        gsutil cp "${report_dir}/*" "gs://kubevirt-prow/reports/merge-commit-summary/kubevirt/kubevirt/last-seven-days/"
+        gcloud storage cp "${report_dir}/*" "gs://kubevirt-prow/reports/merge-commit-summary/kubevirt/kubevirt/last-seven-days/"
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -165,7 +165,7 @@ periodics:
         report_dir="/tmp/per-test-results/last-six-months"
         mkdir -p "${report_dir}"
         go run ./robots/per-test-execution --months 6 --output-directory "${report_dir}"
-        gsutil cp "${report_dir}/*" "gs://kubevirt-prow/reports/per-test-results/kubevirt/kubevirt/last-six-months/"
+        gcloud storage cp "${report_dir}/*" "gs://kubevirt-prow/reports/per-test-results/kubevirt/kubevirt/last-six-months/"
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -194,7 +194,7 @@ periodics:
     - args:
       - |
         go run ./robots/quarantine report --output-file "/tmp/index.html"
-        gsutil cp "/tmp/index.html" "gs://kubevirt-prow/reports/most-flaky-tests/kubevirt/kubevirt/"
+        gcloud storage cp "/tmp/index.html" "gs://kubevirt-prow/reports/most-flaky-tests/kubevirt/kubevirt/"
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -344,12 +344,12 @@ periodics:
         git show -s --format=%H > _out/commit
         echo ${build_date} > _out/build_date
         bucket_dir="kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${build_date}"
-        gsutil cp ./_out/manifests/release/kubevirt-operator.yaml ./_out/manifests/release/kubevirt-cr.yaml _out/manifests/release/conformance.yaml gs://$bucket_dir/
-        gsutil cp -r ./_out/manifests/testing gs://$bucket_dir/
-        gsutil cp ./_out/tests/tests.test gs://$bucket_dir/testing/
-        gsutil cp ./_out/cmd/dump/dump gs://$bucket_dir/testing/dump
-        gsutil cp ./_out/commit gs://$bucket_dir/commit
-        gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest
+        gcloud storage cp ./_out/manifests/release/kubevirt-operator.yaml ./_out/manifests/release/kubevirt-cr.yaml _out/manifests/release/conformance.yaml gs://$bucket_dir/
+        gcloud storage cp -r ./_out/manifests/testing gs://$bucket_dir/
+        gcloud storage cp ./_out/tests/tests.test gs://$bucket_dir/testing/
+        gcloud storage cp ./_out/cmd/dump/dump gs://$bucket_dir/testing/dump
+        gcloud storage cp ./_out/commit gs://$bucket_dir/commit
+        gcloud storage cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest
         unset DOCKER_TAG # we want to publish to main
         export PULL_BASE_REF=main
         export GIT_ASKPASS="$(pwd)/automation/git-askpass.sh"
@@ -394,12 +394,12 @@ periodics:
       - /bin/sh
       - -c
       - |
-        set -e; latest_build=$(gsutil cat gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest); delete_before_seconds=$(date -d "$latest_build - 4 weeks" +%s); for nightly_build_dir in $(gsutil ls gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/ | grep -E '[0-9]+\/$'); do
+        set -e; latest_build=$(gcloud storage cat gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest); delete_before_seconds=$(date -d "$latest_build - 4 weeks" +%s); for nightly_build_dir in $(gcloud storage ls gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/ | grep -E '[0-9]+\/$'); do
           build_date=$(echo "${nightly_build_dir}" | sed -E 's#^.*/([0-9]+)/$#\1#g');
           bd_seconds=$(date -d "$build_date" +%s);
           if [ $bd_seconds -lt $delete_before_seconds ]; then
             echo "Deleting $nightly_build_dir";
-            gsutil -m rm -r ${nightly_build_dir};
+            gcloud storage rm -r ${nightly_build_dir};
           fi;
         done
       image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
@@ -1637,7 +1637,7 @@ periodics:
       - -ce
       - |
         go run ./robots/test-label-analyzer stats --config-name=quarantine --test-file-path=/home/prow/go/src/github.com/kubevirt/kubevirt/tests --remote-url=https://github.com/kubevirt/kubevirt/%s/tests > /tmp/quarantine.json
-        gsutil cp /tmp/quarantine.json gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/quarantine.json
+        gcloud storage cp /tmp/quarantine.json gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/quarantine.json
       command:
       - /bin/sh
       env:
@@ -1670,13 +1670,13 @@ periodics:
           '--filter-lane-regex=.*-root$' \
           --output-file ${output_file} \
           --overwrite-output-file=true
-        gsutil cp ${output_file} gs://kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/
+        gcloud storage cp ${output_file} gs://kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/
 
         # generate index page with calendar
         index_output_file=/tmp/flake-stats-14days.html
         go run ./robots/flake-stats-index-page \
           --output-file-path ${index_output_file}
-        gsutil cp ${index_output_file} gs://kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/
+        gcloud storage cp ${index_output_file} gs://kubevirt-prow/reports/flakefinder/kubevirt/kubevirt/
       command:
       - /bin/sh
       env:
