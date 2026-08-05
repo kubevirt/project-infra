@@ -816,6 +816,10 @@ label:
       - restricted-labels-kubevirt
       label: approved-vep
 
+    - allowed_users:
+        - kubevirt-bot
+      label: ok-to-rehearse
+
 # https://docs.prow.k8s.io/docs/components/plugins/lgtm/
 lgtm:
 - repos:
