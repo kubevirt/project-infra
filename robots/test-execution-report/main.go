@@ -57,10 +57,12 @@ var defaultConfigBytes []byte
 var reportTemplate string
 
 type Config struct {
-	JobNamePattern  string `yaml:"jobNamePattern"`
-	TestNamePattern string `yaml:"testNamePattern"`
-	jobPattern      *regexp.Regexp
-	testPattern     *regexp.Regexp
+	JobNamePattern         string `yaml:"jobNamePattern"`
+	PeriodicJobNamePattern string `yaml:"periodicJobNamePattern"`
+	TestNamePattern        string `yaml:"testNamePattern"`
+	jobPattern             *regexp.Regexp
+	periodicJobPattern     *regexp.Regexp
+	testPattern            *regexp.Regexp
 }
 
 type ReportData struct {
@@ -70,6 +72,7 @@ type ReportData struct {
 	QuarantinedTests map[string]bool
 	SkippedTests     map[string]bool
 	Jobs             []string
+	PeriodicJobs     map[string]bool
 	Matrix           map[string]map[string]int
 	StatusLabels     map[string]int
 	StartOfReport    string
@@ -87,12 +90,13 @@ var opts struct {
 	configFile string
 	outputFile string
 	baseURL    string
+	source     string
 	dryRun     bool
 }
 
 var rootCmd = &cobra.Command{
 	Use:   "test-execution-report",
-	Short: "Creates an HTML report showing which tests are run on which presubmit lane",
+	Short: "Creates an HTML report showing which tests are run on which presubmit and/or periodic lane",
 	RunE:  run,
 }
 
@@ -106,6 +110,7 @@ func init() {
 	rootCmd.Flags().StringVar(&opts.configFile, "config-file", "", "YAML config file (default: embedded config)")
 	rootCmd.Flags().StringVar(&opts.outputFile, "output-file", "", "output HTML file path (default: temp file)")
 	rootCmd.Flags().StringVar(&opts.baseURL, "base-url", "https://prow.ci.kubevirt.io", "Prow deck base URL for links")
+	rootCmd.Flags().StringVar(&opts.source, "source", "presubmit", "data source: presubmit, periodic, or all")
 	rootCmd.Flags().BoolVar(&opts.dryRun, "dry-run", false, "list matching jobs and exit")
 }
 
@@ -116,8 +121,16 @@ func main() {
 }
 
 func run(cmd *cobra.Command, args []string) error {
-	if opts.token == "" {
-		return fmt.Errorf("--token is required")
+	source := opts.source
+	if source != "presubmit" && source != "periodic" && source != "all" {
+		return fmt.Errorf("--source must be one of: presubmit, periodic, all")
+	}
+
+	includePresubmit := source == "presubmit" || source == "all"
+	includePeriodic := source == "periodic" || source == "all"
+
+	if includePresubmit && opts.token == "" {
+		return fmt.Errorf("--token is required for presubmit source")
 	}
 
 	cfg, err := loadConfig()
@@ -125,19 +138,20 @@ func run(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("loading config: %w", err)
 	}
 
-	jobPattern := cfg.jobPattern
-	testPattern := cfg.testPattern
+	if includePresubmit && cfg.jobPattern == nil {
+		return fmt.Errorf("jobNamePattern is required for presubmit source")
+	}
+	if includePeriodic && cfg.periodicJobPattern == nil {
+		return fmt.Errorf("periodicJobNamePattern is required for periodic source")
+	}
 
-	if err := secret.Add(opts.token); err != nil {
-		return fmt.Errorf("loading token: %v", err)
+	if includePresubmit {
+		if err := secret.Add(opts.token); err != nil {
+			return fmt.Errorf("loading token: %v", err)
+		}
 	}
 
 	ctx := context.Background()
-
-	ghClient := github.NewClient(oauth2.NewClient(ctx, oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: string(secret.GetSecret(opts.token))},
-	)))
-	query := ghapi.NewQuery(ghClient, opts.org, opts.repo, opts.baseBranch)
 
 	storageClient, err := storage.NewClient(ctx)
 	if err != nil {
@@ -147,45 +161,30 @@ func run(cmd *cobra.Command, args []string) error {
 	endOfReport := time.Now()
 	startOfReport := endOfReport.Add(-opts.startFrom)
 
-	log.Infof("Querying merged PRs from %s to %s", startOfReport.Format(time.RFC3339), endOfReport.Format(time.RFC3339))
-	changes, err := query.Query(ctx, startOfReport, endOfReport)
-	if err != nil {
-		return fmt.Errorf("querying PRs: %v", err)
-	}
-	log.Infof("Found %d merged PRs", len(changes))
-
-	if len(changes) == 0 {
-		log.Warn("no merged PRs found in time window")
-		return nil
-	}
-
 	var allResults []*flakefinder.JobResult
-	repoPath := strings.Join([]string{opts.org, opts.repo}, "/")
-	for _, change := range changes {
-		results, err := flakefinder.FindUnitTestFiles(ctx, storageClient, opts.bucket, repoPath, change, startOfReport, true)
+	periodicJobs := map[string]bool{}
+
+	if includePresubmit {
+		presubmitResults, err := fetchPresubmitResults(ctx, storageClient, cfg, startOfReport, endOfReport)
 		if err != nil {
-			log.Warnf("failed to load JUnit for PR %d: %v", change.ID(), err)
-			continue
+			return err
 		}
-		allResults = append(allResults, results...)
+		allResults = append(allResults, presubmitResults...)
 	}
 
-	batchResults, err := flakefinder.FindUnitTestFilesForBatchJobs(ctx, storageClient, opts.bucket, nil, changes, startOfReport, endOfReport)
-	if err != nil {
-		log.Warnf("failed to load batch job JUnit: %v", err)
-	}
-	allResults = append(allResults, batchResults...)
-
-	// Filter by job name pattern
-	var filtered []*flakefinder.JobResult
-	for _, r := range allResults {
-		if jobPattern.MatchString(r.Job) {
-			filtered = append(filtered, r)
+	if includePeriodic {
+		periodicResults, err := fetchPeriodicResults(ctx, storageClient, cfg, startOfReport, endOfReport)
+		if err != nil {
+			return err
+		}
+		allResults = append(allResults, periodicResults...)
+		for _, r := range periodicResults {
+			periodicJobs[r.Job] = true
 		}
 	}
 
 	jobSet := map[string]struct{}{}
-	for _, r := range filtered {
+	for _, r := range allResults {
 		jobSet[r.Job] = struct{}{}
 	}
 	jobs := sortedKeys(jobSet)
@@ -202,7 +201,7 @@ func run(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	matrix := buildMatrix(filtered, testPattern)
+	matrix := buildMatrix(allResults, cfg.testPattern)
 
 	testNames, skippedTests, quarantinedTests := classifyTests(matrix)
 
@@ -217,6 +216,7 @@ func run(cmd *cobra.Command, args []string) error {
 		QuarantinedTests: quarantinedTests,
 		SkippedTests:     skippedTests,
 		Jobs:             jobs,
+		PeriodicJobs:     periodicJobs,
 		Matrix:           matrix,
 		StatusLabels: map[string]int{
 			"ExecNoData":      ExecNoData,
@@ -252,6 +252,77 @@ func run(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
+func fetchPresubmitResults(ctx context.Context, storageClient *storage.Client, cfg *Config, startOfReport, endOfReport time.Time) ([]*flakefinder.JobResult, error) {
+	ghClient := github.NewClient(oauth2.NewClient(ctx, oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: string(secret.GetSecret(opts.token))},
+	)))
+	query := ghapi.NewQuery(ghClient, opts.org, opts.repo, opts.baseBranch)
+
+	log.Infof("Querying merged PRs from %s to %s", startOfReport.Format(time.RFC3339), endOfReport.Format(time.RFC3339))
+	changes, err := query.Query(ctx, startOfReport, endOfReport)
+	if err != nil {
+		return nil, fmt.Errorf("querying PRs: %v", err)
+	}
+	log.Infof("Found %d merged PRs", len(changes))
+
+	if len(changes) == 0 {
+		log.Warn("no merged PRs found in time window")
+		return nil, nil
+	}
+
+	var allResults []*flakefinder.JobResult
+	repoPath := strings.Join([]string{opts.org, opts.repo}, "/")
+	for _, change := range changes {
+		results, err := flakefinder.FindUnitTestFiles(ctx, storageClient, opts.bucket, repoPath, change, startOfReport, true)
+		if err != nil {
+			log.Warnf("failed to load JUnit for PR %d: %v", change.ID(), err)
+			continue
+		}
+		allResults = append(allResults, results...)
+	}
+
+	batchResults, err := flakefinder.FindUnitTestFilesForBatchJobs(ctx, storageClient, opts.bucket, nil, changes, startOfReport, endOfReport)
+	if err != nil {
+		log.Warnf("failed to load batch job JUnit: %v", err)
+	}
+	allResults = append(allResults, batchResults...)
+
+	var filtered []*flakefinder.JobResult
+	for _, r := range allResults {
+		if cfg.jobPattern.MatchString(r.Job) {
+			filtered = append(filtered, r)
+		}
+	}
+
+	return filtered, nil
+}
+
+func fetchPeriodicResults(ctx context.Context, storageClient *storage.Client, cfg *Config, startOfReport, endOfReport time.Time) ([]*flakefinder.JobResult, error) {
+	jobDir := "logs"
+	log.Infof("Listing periodic jobs from gs://%s/%s/", opts.bucket, jobDir)
+
+	periodicJobDirs, err := flakefinder.ListGcsObjects(ctx, storageClient, opts.bucket, jobDir+"/", "/")
+	if err != nil {
+		return nil, fmt.Errorf("listing periodic job directories: %v", err)
+	}
+
+	var allResults []*flakefinder.JobResult
+	for _, dir := range periodicJobDirs {
+		if !cfg.periodicJobPattern.MatchString(dir) {
+			continue
+		}
+		log.Infof("Fetching JUnit for periodic job %s", dir)
+		results, err := flakefinder.FindUnitTestFilesForPeriodicJob(ctx, storageClient, opts.bucket, []string{jobDir, dir}, startOfReport, endOfReport)
+		if err != nil {
+			log.Warnf("failed to load JUnit for periodic job %s: %v", dir, err)
+			continue
+		}
+		allResults = append(allResults, results...)
+	}
+
+	return allResults, nil
+}
+
 func loadConfig() (*Config, error) {
 	var raw []byte
 	if opts.configFile != "" {
@@ -268,12 +339,17 @@ func loadConfig() (*Config, error) {
 	if err = yaml.UnmarshalStrict(raw, &cfg); err != nil {
 		return nil, err
 	}
-	if cfg.JobNamePattern == "" {
-		return nil, fmt.Errorf("jobNamePattern is required")
+	if cfg.JobNamePattern != "" {
+		cfg.jobPattern, err = regexp.Compile(cfg.JobNamePattern)
+		if err != nil {
+			return nil, fmt.Errorf("invalid regexp for jobNamePattern: %w", err)
+		}
 	}
-	cfg.jobPattern, err = regexp.Compile(cfg.JobNamePattern)
-	if err != nil {
-		return nil, fmt.Errorf("invalid regexp for jobNamePattern: %w", err)
+	if cfg.PeriodicJobNamePattern != "" {
+		cfg.periodicJobPattern, err = regexp.Compile(cfg.PeriodicJobNamePattern)
+		if err != nil {
+			return nil, fmt.Errorf("invalid regexp for periodicJobNamePattern: %w", err)
+		}
 	}
 	if cfg.TestNamePattern == "" {
 		return nil, fmt.Errorf("testNamePattern is required")
