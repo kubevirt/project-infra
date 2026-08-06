@@ -248,17 +248,19 @@ func fetchPresubmitResults(ctx context.Context, storageClient *storage.Client, c
 	repoPrefix := path.Join("pr-logs", "pull", opts.org+"_"+opts.repo)
 
 	var allResults []*flakefinder.JobResult
-	consecutiveStale := 0
-	const maxConsecutiveStale = 20
+	consecutiveEmpty := 0
+	const maxConsecutiveEmpty = 50
 
-	for prNum := startPR; prNum > 0 && consecutiveStale < maxConsecutiveStale; prNum-- {
+	for prNum := startPR; prNum > 0 && consecutiveEmpty < maxConsecutiveEmpty; prNum-- {
 		prDir := path.Join(repoPrefix, strconv.Itoa(prNum))
 		jobDirs, err := flakefinder.ListGcsObjects(ctx, storageClient, opts.bucket, prDir+"/", "/")
 		if err != nil {
 			log.Warnf("failed to list jobs for PR %d: %v", prNum, err)
+			consecutiveEmpty++
 			continue
 		}
 		if len(jobDirs) == 0 {
+			consecutiveEmpty++
 			continue
 		}
 
@@ -292,7 +294,10 @@ func fetchPresubmitResults(ctx context.Context, storageClient *storage.Client, c
 				log.Warnf("failed to read finished.json attrs for PR %d job %s build %d: %v", prNum, jobName, latestBuild, err)
 				continue
 			}
-			if attrs.Created.Before(startOfReport) || attrs.Created.After(endOfReport) {
+			if attrs.Created.Before(startOfReport) {
+				continue
+			}
+			if attrs.Created.After(endOfReport) {
 				continue
 			}
 
@@ -316,9 +321,9 @@ func fetchPresubmitResults(ctx context.Context, storageClient *storage.Client, c
 		}
 
 		if prHasRecentBuild {
-			consecutiveStale = 0
+			consecutiveEmpty = 0
 		} else {
-			consecutiveStale++
+			consecutiveEmpty++
 		}
 	}
 
