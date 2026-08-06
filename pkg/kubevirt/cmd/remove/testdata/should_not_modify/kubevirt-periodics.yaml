@@ -682,11 +682,11 @@ periodics:
         git show -s --format=%H > _out/commit
         echo ${build_date} > _out/build_date
         bucket_dir="kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${build_date}"
-        gsutil cp ./_out/manifests/release/kubevirt-operator.yaml ./_out/manifests/release/kubevirt-cr.yaml _out/manifests/release/conformance.yaml gs://$bucket_dir/
-        gsutil cp -r ./_out/manifests/testing gs://$bucket_dir/
-        gsutil cp ./_out/tests/tests.test gs://$bucket_dir/testing/
-        gsutil cp ./_out/commit gs://$bucket_dir/commit
-        gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest
+        gcloud storage cp ./_out/manifests/release/kubevirt-operator.yaml ./_out/manifests/release/kubevirt-cr.yaml _out/manifests/release/conformance.yaml gs://$bucket_dir/
+        gcloud storage cp -r ./_out/manifests/testing gs://$bucket_dir/
+        gcloud storage cp ./_out/tests/tests.test gs://$bucket_dir/testing/
+        gcloud storage cp ./_out/commit gs://$bucket_dir/commit
+        gcloud storage cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest
       env:
       - name: DOCKER_PREFIX
         value: quay.io/kubevirt
@@ -752,11 +752,11 @@ periodics:
         git show -s --format=%H > _out/commit
         echo ${build_date} > _out/build_date
         bucket_dir="kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/${build_date}"
-        gsutil cp ./_out/manifests/release/kubevirt-operator.yaml gs://$bucket_dir/kubevirt-operator-arm64.yaml
-        gsutil cp ./_out/manifests/release/kubevirt-cr.yaml gs://$bucket_dir/kubevirt-cr-arm64.yaml
-        gsutil cp -r ./_out/manifests/testing gs://$bucket_dir/testing-arm64
-        gsutil cp ./_out/commit gs://$bucket_dir/commit-arm64
-        gsutil cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest-arm64
+        gcloud storage cp ./_out/manifests/release/kubevirt-operator.yaml gs://$bucket_dir/kubevirt-operator-arm64.yaml
+        gcloud storage cp ./_out/manifests/release/kubevirt-cr.yaml gs://$bucket_dir/kubevirt-cr-arm64.yaml
+        gcloud storage cp -r ./_out/manifests/testing gs://$bucket_dir/testing-arm64
+        gcloud storage cp ./_out/commit gs://$bucket_dir/commit-arm64
+        gcloud storage cp ./_out/build_date gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest-arm64
       env:
       - name: DOCKER_PREFIX
         value: quay.io/kubevirt
@@ -790,12 +790,12 @@ periodics:
       - /bin/sh
       - -c
       - |
-        set -e; latest_build=$(gsutil cat gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest); delete_before_seconds=$(date -d "$latest_build - 4 weeks" +%s); for nightly_build_dir in $(gsutil ls gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/ | grep -E '[0-9]+\/$'); do
+        set -e; latest_build=$(gcloud storage cat gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/latest); delete_before_seconds=$(date -d "$latest_build - 4 weeks" +%s); for nightly_build_dir in $(gcloud storage ls gs://kubevirt-prow/devel/nightly/release/kubevirt/kubevirt/ | grep -E '[0-9]+\/$'); do
           build_date=$(echo "${nightly_build_dir}" | sed -E 's#^.*/([0-9]+)/$#\1#g');
           bd_seconds=$(date -d "$build_date" +%s);
           if [ $bd_seconds -lt $delete_before_seconds ]; then
             echo "Deleting $nightly_build_dir";
-            gsutil -m rm -r ${nightly_build_dir};
+            gcloud storage rm -r ${nightly_build_dir};
           fi;
         done
       image: quay.io/kubevirtci/bootstrap:v20210906-994b913

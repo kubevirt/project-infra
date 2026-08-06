@@ -831,7 +831,7 @@ postsubmits:
               --github-token-path '' \
               --output-file /tmp/periodics.html
 
-            gsutil cp /tmp/presubmits*.html /tmp/periodics.html gs://kubevirt-prow/reports/e2ejobs/kubevirt/kubevirt
+            gcloud storage cp /tmp/presubmits*.html /tmp/periodics.html gs://kubevirt-prow/reports/e2ejobs/kubevirt/kubevirt
           resources:
             requests:
               memory: "200Mi"

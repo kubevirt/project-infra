@@ -41,9 +41,9 @@ postsubmits:
             # Gets git tag created by above publish.sh run
             KUBEVIRTCI_TAG=$(git tag --points-at HEAD | head -1) &&
             echo "$KUBEVIRTCI_TAG" > latest &&
-            gsutil cp ./latest gs://kubevirt-prow/release/kubevirt/kubevirtci/latest &&
+            gcloud storage cp ./latest gs://kubevirt-prow/release/kubevirt/kubevirtci/latest &&
             echo "$KUBEVIRTCI_TAG" > amd64-$SHORT_SHA &&
-            gsutil cp ./amd64-$SHORT_SHA gs://kubevirt-prow/release/kubevirt/kubevirtci/amd64-$SHORT_SHA
+            gcloud storage cp ./amd64-$SHORT_SHA gs://kubevirt-prow/release/kubevirt/kubevirtci/amd64-$SHORT_SHA
           # docker-in-docker needs privileged mode
           env:
           - name: GO_MOD_PATH

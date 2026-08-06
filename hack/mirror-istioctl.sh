@@ -21,4 +21,4 @@ mkdir -p $LOCAL_ISTIOCTL_DIR
 )
 
 gcloud auth activate-service-account --key-file=/etc/gcs-credentials/service-account.json
-gsutil rsync -d -r $LOCAL_ISTIOCTL_DIR gs://$BUCKET_DIR
+gcloud storage rsync --delete-unmatched-destination-objects -r "$LOCAL_ISTIOCTL_DIR" "gs://$BUCKET_DIR"

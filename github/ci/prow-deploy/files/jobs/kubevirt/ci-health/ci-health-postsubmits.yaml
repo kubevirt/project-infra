@@ -29,7 +29,7 @@ postsubmits:
               for SIG in "${SIGS_TO_REPORT[@]}"; do
                 go run ./cmd/html-report --sig $SIG --results-path ./output/kubevirt/kubevirt/results.json --path /tmp/
               done
-              gsutil cp /tmp/sig*.html gs://kubevirt-prow/reports/sig-failure-reports/
+              gcloud storage cp /tmp/sig*.html gs://kubevirt-prow/reports/sig-failure-reports/
           resources:
             requests:
               memory: "200Mi"

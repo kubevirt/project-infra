@@ -147,7 +147,7 @@ periodics:
         # For passing centos image tag to dependent (s390x) prow job
         image_tag=$(cat cluster-provision/k8s/base-image | cut -d ':' -f 2) &&
         echo "$image_tag" > amd64-centos9-$SHORT_SHA &&
-        gsutil cp ./amd64-centos9-$SHORT_SHA gs://kubevirt-prow/release/kubevirt/kubevirtci/amd64-centos9-$SHORT_SHA
+        gcloud storage cp ./amd64-centos9-$SHORT_SHA gs://kubevirt-prow/release/kubevirt/kubevirtci/amd64-centos9-$SHORT_SHA
       # docker-in-docker needs privileged mode
       securityContext:
         privileged: true
@@ -270,7 +270,7 @@ periodics:
         # For passing centos image tag to dependent (s390x) prow job
         image_tag=$(cut -d ':' -f 2 cluster-provision/k8s/base-image-centos10)
         echo "$image_tag" > amd64-centos10-$SHORT_SHA
-        gsutil cp ./amd64-centos10-$SHORT_SHA gs://kubevirt-prow/release/kubevirt/kubevirtci/amd64-centos10-$SHORT_SHA
+        gcloud storage cp ./amd64-centos10-$SHORT_SHA gs://kubevirt-prow/release/kubevirt/kubevirtci/amd64-centos10-$SHORT_SHA
       securityContext:
         privileged: true
       resources:
