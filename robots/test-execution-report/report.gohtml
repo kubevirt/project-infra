@@ -281,7 +281,7 @@
         <th></th>
         <th></th>
         {{ range $job := $.Jobs }}
-            <th class="vertical"><a href="{{ $.BaseURL }}/job-history/gs/{{ $.Bucket }}/pr-logs/directory/{{ $job }}">{{ $job }}</a></th>
+            <th class="vertical"><a href="https://testgrid.k8s.io/kubevirt-{{ if index $.PeriodicJobs $job }}periodics{{ else }}presubmits{{ end }}#{{ $job }}">{{ $job }}</a></th>
         {{ end }}
     </tr>
     {{ range $row, $test := $.TestNames }}
