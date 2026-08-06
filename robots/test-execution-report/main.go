@@ -59,6 +59,8 @@ var reportTemplate string
 type Config struct {
 	JobNamePattern  string `yaml:"jobNamePattern"`
 	TestNamePattern string `yaml:"testNamePattern"`
+	jobPattern      *regexp.Regexp
+	testPattern     *regexp.Regexp
 }
 
 type ReportData struct {
@@ -120,11 +122,11 @@ func run(cmd *cobra.Command, args []string) error {
 
 	cfg, err := loadConfig()
 	if err != nil {
-		return fmt.Errorf("loading config: %v", err)
+		return fmt.Errorf("loading config: %w", err)
 	}
 
-	jobPattern := regexp.MustCompile(cfg.JobNamePattern)
-	testPattern := regexp.MustCompile(cfg.TestNamePattern)
+	jobPattern := cfg.jobPattern
+	testPattern := cfg.testPattern
 
 	if err := secret.Add(opts.token); err != nil {
 		return fmt.Errorf("loading token: %v", err)
@@ -204,7 +206,10 @@ func run(cmd *cobra.Command, args []string) error {
 
 	testNames, skippedTests, quarantinedTests := classifyTests(matrix)
 
-	configBytes, _ := yaml.Marshal(cfg)
+	configBytes, err := yaml.Marshal(cfg)
+	if err != nil {
+		return err
+	}
 	data := ReportData{
 		BaseURL:          opts.baseURL,
 		Bucket:           opts.bucket,
@@ -259,8 +264,23 @@ func loadConfig() (*Config, error) {
 		raw = defaultConfigBytes
 	}
 	var cfg Config
-	if err := yaml.Unmarshal(raw, &cfg); err != nil {
+	var err error
+	if err = yaml.UnmarshalStrict(raw, &cfg); err != nil {
 		return nil, err
+	}
+	if cfg.JobNamePattern == "" {
+		return nil, fmt.Errorf("jobNamePattern is required")
+	}
+	cfg.jobPattern, err = regexp.Compile(cfg.JobNamePattern)
+	if err != nil {
+		return nil, fmt.Errorf("invalid regexp for jobNamePattern: %w", err)
+	}
+	if cfg.TestNamePattern == "" {
+		return nil, fmt.Errorf("testNamePattern is required")
+	}
+	cfg.testPattern, err = regexp.Compile(cfg.TestNamePattern)
+	if err != nil {
+		return nil, fmt.Errorf("invalid regexp for testNamePattern: %w", err)
 	}
 	return &cfg, nil
 }
