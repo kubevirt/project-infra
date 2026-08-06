@@ -2527,6 +2527,15 @@ presubmits:
             exit 1
           fi
 
+          # Remove Podman's PID limit for build containers.
+          # MSHV tests are run on high vCPU (~192) test machines, which allows a very high level of parallelism across compiler, linker, and test actions.
+          # Under the default Podman PID limit, the build can exhaust the container's PID cgroup allocation, resulting in fork rejected by pids controller, resource temporarily unavailable, and Go runtime failures such as failed to create new OS thread.
+          # Setting pids_limit=-1 removes this artificial constraint and allows Bazel to fully utilize the available compute resources.
+          sed -i '/^\[containers\]/,/^\[/ {
+            /pids_limit=/d
+            /^\[containers\]/a pids_limit=-1
+          }' /etc/containers/containers.conf
+
           # Configure KubeVirt to use latest Libvirt version and the custom QEMU version
           make CUSTOM_REPO=custom-repo.yaml LIBVIRT_VERSION="0:11.10.0-12.el9" QEMU_VERSION="$QEMU_VERSION" SINGLE_ARCH="x86_64" rpm-deps
 
