@@ -25,22 +25,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
-	"github.com/google/go-github/v28/github"
 	"github.com/joshdk/go-junit"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"golang.org/x/oauth2"
-	"sigs.k8s.io/prow/pkg/config/secret"
 	"sigs.k8s.io/yaml"
 
 	"kubevirt.io/project-infra/pkg/flakefinder"
-	ghapi "kubevirt.io/project-infra/pkg/flakefinder/github"
 )
 
 const (
@@ -49,6 +47,8 @@ const (
 	ExecRan
 	ExecQuarantined
 )
+
+var releaseBranchSuffix = regexp.MustCompile(`-\d+\.\d+$`)
 
 //go:embed default-config.yaml
 var defaultConfigBytes []byte
@@ -81,10 +81,8 @@ type ReportData struct {
 }
 
 var opts struct {
-	token      string
 	org        string
 	repo       string
-	baseBranch string
 	bucket     string
 	startFrom  time.Duration
 	configFile string
@@ -101,12 +99,10 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.Flags().StringVar(&opts.token, "token", "", "path to GitHub token (required)")
 	rootCmd.Flags().StringVar(&opts.org, "org", "kubevirt", "GitHub organization")
 	rootCmd.Flags().StringVar(&opts.repo, "repo", "kubevirt", "GitHub repository")
-	rootCmd.Flags().StringVar(&opts.baseBranch, "pr-base-branch", "main", "base branch for PR query")
 	rootCmd.Flags().StringVar(&opts.bucket, "bucket", flakefinder.BucketName, "GCS bucket name")
-	rootCmd.Flags().DurationVar(&opts.startFrom, "start-from", 14*24*time.Hour, "time window for merged PRs")
+	rootCmd.Flags().DurationVar(&opts.startFrom, "start-from", 14*24*time.Hour, "time window for report data")
 	rootCmd.Flags().StringVar(&opts.configFile, "config-file", "", "YAML config file (default: embedded config)")
 	rootCmd.Flags().StringVar(&opts.outputFile, "output-file", "", "output HTML file path (default: temp file)")
 	rootCmd.Flags().StringVar(&opts.baseURL, "base-url", "https://prow.ci.kubevirt.io", "Prow deck base URL for links")
@@ -129,10 +125,6 @@ func run(cmd *cobra.Command, args []string) error {
 	includePresubmit := source == "presubmit" || source == "all"
 	includePeriodic := source == "periodic" || source == "all"
 
-	if includePresubmit && opts.token == "" {
-		return fmt.Errorf("--token is required for presubmit source")
-	}
-
 	cfg, err := loadConfig()
 	if err != nil {
 		return fmt.Errorf("loading config: %w", err)
@@ -143,12 +135,6 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 	if includePeriodic && cfg.periodicJobPattern == nil {
 		return fmt.Errorf("periodicJobNamePattern is required for periodic source")
-	}
-
-	if includePresubmit {
-		if err := secret.Add(opts.token); err != nil {
-			return fmt.Errorf("loading token: %v", err)
-		}
 	}
 
 	ctx := context.Background()
@@ -253,48 +239,149 @@ func run(cmd *cobra.Command, args []string) error {
 }
 
 func fetchPresubmitResults(ctx context.Context, storageClient *storage.Client, cfg *Config, startOfReport, endOfReport time.Time) ([]*flakefinder.JobResult, error) {
-	ghClient := github.NewClient(oauth2.NewClient(ctx, oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: string(secret.GetSecret(opts.token))},
-	)))
-	query := ghapi.NewQuery(ghClient, opts.org, opts.repo, opts.baseBranch)
-
-	log.Infof("Querying merged PRs from %s to %s", startOfReport.Format(time.RFC3339), endOfReport.Format(time.RFC3339))
-	changes, err := query.Query(ctx, startOfReport, endOfReport)
+	startPR, err := resolveLatestPR(ctx, storageClient, cfg)
 	if err != nil {
-		return nil, fmt.Errorf("querying PRs: %v", err)
+		return nil, fmt.Errorf("resolving latest PR number: %v", err)
 	}
-	log.Infof("Found %d merged PRs", len(changes))
+	log.Infof("Starting presubmit scan from PR %d", startPR)
 
-	if len(changes) == 0 {
-		log.Warn("no merged PRs found in time window")
-		return nil, nil
-	}
+	repoPrefix := path.Join("pr-logs", "pull", opts.org+"_"+opts.repo)
 
 	var allResults []*flakefinder.JobResult
-	repoPath := strings.Join([]string{opts.org, opts.repo}, "/")
-	for _, change := range changes {
-		results, err := flakefinder.FindUnitTestFiles(ctx, storageClient, opts.bucket, repoPath, change, startOfReport, true)
+	consecutiveStale := 0
+	const maxConsecutiveStale = 20
+
+	for prNum := startPR; prNum > 0 && consecutiveStale < maxConsecutiveStale; prNum-- {
+		prDir := path.Join(repoPrefix, strconv.Itoa(prNum))
+		jobDirs, err := flakefinder.ListGcsObjects(ctx, storageClient, opts.bucket, prDir+"/", "/")
 		if err != nil {
-			log.Warnf("failed to load JUnit for PR %d: %v", change.ID(), err)
+			log.Warnf("failed to list jobs for PR %d: %v", prNum, err)
 			continue
 		}
-		allResults = append(allResults, results...)
-	}
+		if len(jobDirs) == 0 {
+			continue
+		}
 
-	batchResults, err := flakefinder.FindUnitTestFilesForBatchJobs(ctx, storageClient, opts.bucket, nil, changes, startOfReport, endOfReport)
-	if err != nil {
-		log.Warnf("failed to load batch job JUnit: %v", err)
-	}
-	allResults = append(allResults, batchResults...)
+		prHasRecentBuild := false
+		for _, jobName := range jobDirs {
+			if !cfg.jobPattern.MatchString(jobName) {
+				continue
+			}
+			if releaseBranchSuffix.MatchString(jobName) {
+				continue
+			}
+			jobDir := path.Join(prDir, jobName)
+			buildDirs, err := flakefinder.ListGcsObjects(ctx, storageClient, opts.bucket, jobDir+"/", "/")
+			if err != nil {
+				log.Warnf("failed to list builds for PR %d job %s: %v", prNum, jobName, err)
+				continue
+			}
+			builds := flakefinder.SortBuilds(buildDirs)
+			if len(builds) == 0 {
+				continue
+			}
 
-	var filtered []*flakefinder.JobResult
-	for _, r := range allResults {
-		if cfg.jobPattern.MatchString(r.Job) {
-			filtered = append(filtered, r)
+			latestBuild := builds[0]
+			buildDir := path.Join(jobDir, strconv.Itoa(latestBuild))
+			finishedPath := path.Join(buildDir, "finished.json")
+
+			attrs, err := flakefinder.ReadGcsObjectAttrs(ctx, storageClient, opts.bucket, finishedPath)
+			if err == storage.ErrObjectNotExist {
+				continue
+			} else if err != nil {
+				log.Warnf("failed to read finished.json attrs for PR %d job %s build %d: %v", prNum, jobName, latestBuild, err)
+				continue
+			}
+			if attrs.Created.Before(startOfReport) || attrs.Created.After(endOfReport) {
+				continue
+			}
+
+			prHasRecentBuild = true
+			profilePath := path.Join(buildDir, "artifacts", "junit.functest.xml")
+			data, err := flakefinder.ReadGcsObject(ctx, storageClient, opts.bucket, profilePath)
+			if err == storage.ErrObjectNotExist {
+				log.Infof("no junit.functest.xml for PR %d job %s build %d", prNum, jobName, latestBuild)
+				continue
+			} else if err != nil {
+				log.Warnf("failed to read JUnit for PR %d job %s: %v", prNum, jobName, err)
+				continue
+			}
+
+			report, err := junit.Ingest(data)
+			if err != nil {
+				log.Warnf("failed to parse JUnit for PR %d job %s: %v", prNum, jobName, err)
+				continue
+			}
+			allResults = append(allResults, &flakefinder.JobResult{Job: jobName, JUnit: report, BuildNumber: latestBuild, PR: prNum})
+		}
+
+		if prHasRecentBuild {
+			consecutiveStale = 0
+		} else {
+			consecutiveStale++
 		}
 	}
 
-	return filtered, nil
+	return allResults, nil
+}
+
+func resolveLatestPR(ctx context.Context, storageClient *storage.Client, cfg *Config) (int, error) {
+	jobDirs, err := flakefinder.ListGcsObjects(ctx, storageClient, opts.bucket, "pr-logs/directory/", "/")
+	if err != nil {
+		return 0, fmt.Errorf("listing presubmit job directories: %v", err)
+	}
+
+	var bestJob string
+	var bestBuildID int
+	for _, dir := range jobDirs {
+		if !cfg.jobPattern.MatchString(dir) {
+			continue
+		}
+		if releaseBranchSuffix.MatchString(dir) {
+			continue
+		}
+		latestBuildPath := path.Join("pr-logs", "directory", dir, "latest-build.txt")
+		data, err := flakefinder.ReadGcsObject(ctx, storageClient, opts.bucket, latestBuildPath)
+		if err != nil {
+			log.Debugf("skipping job %s: cannot read latest-build.txt: %v", dir, err)
+			continue
+		}
+		buildID, err := strconv.Atoi(strings.TrimSpace(string(data)))
+		if err != nil {
+			continue
+		}
+		if buildID > bestBuildID {
+			bestBuildID = buildID
+			bestJob = dir
+		}
+	}
+	if bestJob == "" {
+		return 0, fmt.Errorf("no active job matching pattern %q found in pr-logs/directory/", cfg.JobNamePattern)
+	}
+	log.Infof("Using reference job %s (build %d) to find latest PR number", bestJob, bestBuildID)
+
+	aliasPath := path.Join("pr-logs", "directory", bestJob, strconv.Itoa(bestBuildID)+".txt")
+	aliasData, err := flakefinder.ReadGcsObject(ctx, storageClient, opts.bucket, aliasPath)
+	if err != nil {
+		return 0, fmt.Errorf("reading alias file %s: %v", aliasPath, err)
+	}
+
+	return parsePRFromAliasPath(string(aliasData), opts.org+"_"+opts.repo)
+}
+
+func parsePRFromAliasPath(aliasContent, repoSlug string) (int, error) {
+	content := strings.TrimSpace(aliasContent)
+	parts := strings.Split(content, "/")
+	for i, part := range parts {
+		if part == repoSlug && i+1 < len(parts) {
+			prNum, err := strconv.Atoi(parts[i+1])
+			if err != nil {
+				return 0, fmt.Errorf("cannot parse PR number from alias path %q: %v", content, err)
+			}
+			return prNum, nil
+		}
+	}
+	return 0, fmt.Errorf("repo slug %q not found in alias path %q", repoSlug, content)
 }
 
 func fetchPeriodicResults(ctx context.Context, storageClient *storage.Client, cfg *Config, startOfReport, endOfReport time.Time) ([]*flakefinder.JobResult, error) {
