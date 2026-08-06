@@ -310,11 +310,10 @@ periodics:
       - /ko-app/commenter
       args:
       - |-
-        --query=org:kubevirt
+        --query=repo:kubevirt/project-infra
           is:closed
           is:pr
           label:ok-to-rehearse
-          is:public
       - --token=/etc/github/token
       - |-
         --comment=/remove-label ok-to-rehearse
