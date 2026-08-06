@@ -106,6 +106,7 @@ type githubClient interface {
 	GetPullRequest(org, repo string, number int) (*github.PullRequest, error)
 	CreateComment(org, repo string, number int, comment string) error
 	GetIssueLabels(org, repo string, number int) ([]github.Label, error)
+	RemoveLabel(org, repo string, number int, label string) error
 }
 
 type repoOwnersClient interface {
@@ -190,7 +191,7 @@ func (h *GitHubEventsHandler) handleIssueComment(log *logrus.Entry, event *githu
 
 func (h *GitHubEventsHandler) shouldActOnPREvent(event *github.PullRequestEvent) bool {
 	switch event.Action {
-	case github.PullRequestActionOpened, github.PullRequestActionSynchronize:
+	case github.PullRequestActionOpened, github.PullRequestActionSynchronize, github.PullRequestActionClosed:
 		return true
 	default:
 		return false
@@ -319,6 +320,26 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 	if err != nil {
 		log.WithError(err).Errorf("Could not get org/repo from the event")
 	}
+
+	// When a pull request is closed and has the OKToRehearse label, remove it
+	if event.Action == github.PullRequestActionClosed {
+		labels, err := h.ghClient.GetIssueLabels(org, repo, event.PullRequest.Number)
+		if err != nil {
+			log.WithError(err).Errorf("could not get labels for PR number %d", event.PullRequest.Number)
+			return
+		}
+		for _, label := range labels {
+			if label.Name == OKToRehearse {
+				err := h.ghClient.RemoveLabel(org, repo, event.PullRequest.Number, label.Name)
+				if err != nil {
+					log.WithError(err).Errorf("could not remove label %s from PR number %d", label.Name, event.PullRequest.Number)
+				}
+				break
+			}
+		}
+		return
+	}
+
 	pr, err := h.ghClient.GetPullRequest(org, repo, event.PullRequest.Number)
 	if err != nil {
 		log.WithError(err).Errorf("Could not get PR number %d", event.PullRequest.Number)
