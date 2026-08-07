@@ -53,7 +53,7 @@ presubmits:
           limits:
             memory: "4Gi"
   - name: pull-project-infra-check-presubmits
-    run_if_changed: "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml"
+    run_if_changed: "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml|hack/check-run-before-merge-env.sh"
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
@@ -63,6 +63,7 @@ presubmits:
         - "/bin/sh"
         - "-ce"
         - |
+          hack/check-run-before-merge-env.sh github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml
           go run ./robots/kubevirt check presubmits \
            --job-config-path-kubevirt-presubmits=github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml \
            --github-token-path='' \
