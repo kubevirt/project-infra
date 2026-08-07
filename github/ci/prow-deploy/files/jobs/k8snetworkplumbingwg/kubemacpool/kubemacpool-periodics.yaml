@@ -9,7 +9,7 @@ periodics:
       preset-github-credentials: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/flakefinder:v202607282323-f2d39b9
+        - image: quay.io/kubevirtci/flakefinder:v202608060958-3896ee5
           command:
           - /usr/bin/flakefinder
           args:
@@ -31,7 +31,7 @@ periodics:
       preset-github-credentials: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/flakefinder:v202607282323-f2d39b9
+        - image: quay.io/kubevirtci/flakefinder:v202608060958-3896ee5
           command:
           - /usr/bin/flakefinder
           args:
@@ -53,7 +53,7 @@ periodics:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-        - image: quay.io/kubevirtci/flakefinder:v202607282323-f2d39b9
+        - image: quay.io/kubevirtci/flakefinder:v202608060958-3896ee5
           command:
           - /usr/bin/flakefinder
           args:
