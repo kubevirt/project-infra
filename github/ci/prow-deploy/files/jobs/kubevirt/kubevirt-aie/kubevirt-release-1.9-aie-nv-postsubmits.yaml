@@ -35,7 +35,7 @@ postsubmits:
         - |
           cat "$QUAY_PASSWORD" | podman login --username "$(cat "$QUAY_USER")" --password-stdin=true quay.io
           cp /etc/bazel.bazelrc ./ci.bazelrc
-          DOCKER_TAG="$(date +%Y%m%d)_$(git rev-parse --short=10 HEAD)" \
+          DOCKER_TAG="1.9-aie-nv_$(date +%Y%m%d)_$(git rev-parse --short=10 HEAD)" \
             BUILD_ARCH=amd64,crossbuild-aarch64 \
             PUSH_TARGETS=virt-launcher \
             make bazel-push-images
