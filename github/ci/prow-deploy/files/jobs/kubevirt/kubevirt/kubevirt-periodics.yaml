@@ -508,50 +508,6 @@ periodics:
         type: Directory
       name: vfio
 - annotations:
-    testgrid-dashboards: kubevirt-periodics
-    testgrid-days-of-results: "60"
-  cluster: prow-workloads
-  cron: 0 23 * * 6
-  decoration_config:
-    grace_period: 5m0s
-    timeout: 4h0m0s
-  extra_refs:
-  - base_ref: main
-    org: kubevirt
-    repo: kubevirt
-    clone_depth: 1
-  labels:
-    preset-bazel-cache: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-podman-in-container-enabled: "true"
-    preset-podman-shared-images: "true"
-    preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.36-sig-network-sriov-emulated
-  spec:
-    containers:
-    - command:
-      - /usr/local/bin/runner.sh
-      - /bin/sh
-      - -c
-      - automation/test.sh
-      env:
-      - name: KUBEVIRT_QUARANTINE
-        value: "true"
-      - name: TARGET
-        value: k8s-1.36-emulated-igb
-      - name: KUBEVIRT_WITH_ETC_IN_MEMORY
-        value: "true"
-      - name: KUBEVIRT_WITH_ETC_CAPACITY
-        value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-      resources:
-        requests:
-          memory: 52Gi
-      securityContext:
-        privileged: true
-    nodeSelector:
-      type: bare-metal-external
-- annotations:
     testgrid-create-test-group: "false"
   cluster: kubevirt-prow-control-plane
   cron: 15 22 * * 0
