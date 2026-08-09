@@ -215,6 +215,7 @@ tide:
     kubevirt/redfish-controller: merge
     kubevirt/kubevirt-observability-controller: squash
     kubevirt/vdpa-network-binding-plugin: merge
+    kubevirt/vhostuser-network-binding-plugin: merge
     kubevirt/plugins: merge
   queries:
   - repos:
@@ -246,6 +247,7 @@ tide:
     - kubevirt/ci-health
     - kubevirt/redfish-controller
     - kubevirt/vdpa-network-binding-plugin
+    - kubevirt/vhostuser-network-binding-plugin
     labels:
     - lgtm
     - approved
@@ -651,6 +653,10 @@ branch-protection:
             main:
               protect: true
         vdpa-network-binding-plugin:
+          branches:
+            main:
+              protect: true
+        vhostuser-network-binding-plugin:
           branches:
             main:
               protect: true
