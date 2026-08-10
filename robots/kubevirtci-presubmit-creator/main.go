@@ -183,7 +183,7 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 		JobBase: config.JobBase{
 			UtilityConfig: config.UtilityConfig{
 				DecorationConfig: &prowjobs.DecorationConfig{
-					Timeout: &prowjobs.Duration{Duration: 3 * time.Hour},
+					Timeout: &prowjobs.Duration{Duration: 3*time.Hour + 30*time.Minute},
 				},
 			},
 			Name:           fmt.Sprintf("check-provision-k8s-%s.%s", semver.Major, semver.Minor),
@@ -202,15 +202,21 @@ func CreatePresubmitJobForRelease(semver *querier.SemVer) config.Presubmit {
 					{
 						Image: golangImage,
 						Command: []string{
-							"/usr/local/bin/runner.sh",
+							"/usr/local/bin/entrypoint.sh",
+						},
+						Args: []string{
 							"/bin/sh",
 							"-c",
 							fmt.Sprintf("cd cluster-provision/k8s/%s.%s && ../provision.sh", semver.Major, semver.Minor),
 						},
 						Env: []v1.EnvVar{
 							{
-								Name:  "GIMME_GO_VERSION",
-								Value: "1.24.7",
+								Name:  "GO_MOD_PATH",
+								Value: "cluster-provision/gocli/go.mod",
+							},
+							{
+								Name:  "PROVISION_CENTOS_VERSION",
+								Value: "10",
 							},
 						},
 						SecurityContext: &v1.SecurityContext{

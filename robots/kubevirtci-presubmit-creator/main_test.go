@@ -28,7 +28,9 @@ func TestCreateBumpedJobForRelease(t *testing.T) {
 							Containers: []v1.Container{
 								{
 									Command: []string{
-										"/usr/local/bin/runner.sh",
+										"/usr/local/bin/entrypoint.sh",
+									},
+									Args: []string{
 										"/bin/sh",
 										"-c",
 										"cd cluster-provision/k8s/1.37 && ../provision.sh",
@@ -53,7 +55,9 @@ func TestCreateBumpedJobForRelease(t *testing.T) {
 							Containers: []v1.Container{
 								{
 									Command: []string{
-										"/usr/local/bin/runner.sh",
+										"/usr/local/bin/entrypoint.sh",
+									},
+									Args: []string{
 										"/bin/sh",
 										"-c",
 										"cd cluster-provision/k8s/1.42 && ../provision.sh",

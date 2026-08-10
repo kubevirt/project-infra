@@ -521,66 +521,6 @@ presubmits:
             memory: 1Gi
         securityContext:
           privileged: true
-  - always_run: false
-    cluster: prow-s390x-workloads
-    decoration_config:
-      timeout: 4h0m0s
-    labels:
-      preset-kubevirtci-check-provision-env: "true"
-      preset-podman-in-container-enabled: "true"
-    max_concurrency: 3
-    name: check-provision-k8s-1.32-s390x
-    optional: true
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/entrypoint.sh
-        - /bin/sh
-        - -c
-        - cd cluster-provision/k8s/1.32 && ../provision.sh
-        env:
-        - name: GO_MOD_PATH
-          value: cluster-provision/gocli/go.mod
-        - name: SLIM
-          value: "true"
-        - name: RUN_KUBEVIRT_CONFORMANCE
-          value: "false"
-        image: quay.io/kubevirtci/golang:v20260715-af3e234
-        resources:
-          requests:
-            memory: 16Gi
-        securityContext:
-          privileged: true
-  - always_run: false
-    cluster: prow-s390x-workloads
-    decoration_config:
-      timeout: 4h0m0s
-    labels:
-      preset-kubevirtci-check-provision-env: "true"
-      preset-podman-in-container-enabled: "true"
-    max_concurrency: 3
-    name: check-provision-k8s-1.33-s390x
-    optional: true
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/entrypoint.sh
-        - /bin/sh
-        - -c
-        - cd cluster-provision/k8s/1.33 && ../provision.sh
-        env:
-        - name: GO_MOD_PATH
-          value: cluster-provision/gocli/go.mod
-        - name: SLIM
-          value: "true"
-        - name: RUN_KUBEVIRT_CONFORMANCE
-          value: "false"
-        image: quay.io/kubevirtci/golang:v20260715-af3e234
-        resources:
-          requests:
-            memory: 16Gi
-        securityContext:
-          privileged: true
   - always_run: true
     cluster: prow-s390x-workloads
     decoration_config:
@@ -818,3 +758,68 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - always_run: true
+    cluster: prow-workloads
+    decoration_config:
+      timeout: 3h30m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-check-provision-env: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 3
+    name: check-provision-k8s-1.37
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/entrypoint.sh
+        args:
+        - /bin/sh
+        - -c
+        - cd cluster-provision/k8s/1.37 && ../provision.sh
+        env:
+        - name: GO_MOD_PATH
+          value: cluster-provision/gocli/go.mod
+        - name: PROVISION_CENTOS_VERSION
+          value: "10"
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
+        resources:
+          requests:
+            memory: 16Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    cluster: prow-s390x-workloads
+    decoration_config:
+      timeout: 4h0m0s
+    labels:
+      preset-kubevirtci-check-provision-env: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 3
+    name: check-provision-k8s-1.37-s390x
+    optional: true
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/entrypoint.sh
+        args:
+        - /bin/sh
+        - -c
+        - cd cluster-provision/k8s/1.37 && ../provision.sh
+        env:
+        - name: GO_MOD_PATH
+          value: cluster-provision/gocli/go.mod
+        - name: PROVISION_CENTOS_VERSION
+          value: "10"
+        - name: SLIM
+          value: "true"
+        - name: RUN_KUBEVIRT_CONFORMANCE
+          value: "false"
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
+        resources:
+          requests:
+            memory: 16Gi
+        securityContext:
+          privileged: true
