@@ -21,14 +21,14 @@ However, unlike Correctness tests, Performance testing jobs do not use KubeVirtC
 Because running performance tests is time consuming, we do not want to run them too often. On the other hand, performing them infrequently implies late identification and accumulation of regressions. Note that they would not run by default on every open PR due to resource, costs, and other constraints. So, we choose the following middle ground:
 
 | Day | |
-| ------------- |:-------------:| 
-| Mon | [100 VMs density perf test](../github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml#L791)  @ 04:41 AM UTC <br /> [scale VMs density perf test](../github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml#L878)  @ 03:41 PM UTC |
-| Tue | 100 VMs density perf test  @ 04:41 AM UTC <br /> scale VMs density perf test  @ 03:41 PM UTC |
-| Wed | 100 VMs density perf test  @ 04:41 AM UTC <br /> scale VMs density perf test  @ 03:41 PM UTC |
-| Thu | 100 VMs density perf test  @ 04:41 AM UTC <br /> scale VMs density perf test  @ 03:41 PM UTC |
-| Fri | 100 VMs density perf test  @ 04:41 AM UTC <br /> scale VMs density perf test  @ 03:41 PM UTC |
-| Sat | 100 VMs density perf test  @ 04:41 AM UTC <br /> scale VMs density perf test  @ 03:41 PM UTC |
-| Sun | 100 VMs density perf test  @ 04:41 AM UTC <br /> scale VMs density perf test  @ 03:41 PM UTC |
+| ------------- |:-------------:|
+| Mon | [scale VMs density perf test](../github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml)  @ 03:41 PM UTC |
+| Tue | scale VMs density perf test  @ 03:41 PM UTC |
+| Wed | scale VMs density perf test  @ 03:41 PM UTC |
+| Thu | scale VMs density perf test  @ 03:41 PM UTC |
+| Fri | scale VMs density perf test  @ 03:41 PM UTC |
+| Sat | scale VMs density perf test  @ 03:41 PM UTC |
+| Sun | scale VMs density perf test  @ 03:41 PM UTC |
 
 Running a performance jobs every day would:
 * help capture regressions daily
@@ -36,11 +36,7 @@ Running a performance jobs every day would:
 * ensure a good release signal
 
 ## Test configuration
-* The 100 VM density perf test is a prow job that runs a small scale burst density performance test once a day by creating 100 VMIs in the performance cluster, wait for all to be in the running state, collect metrics and delete them all.
-Testgrid [link](https://testgrid.k8s.io/kubevirt-periodics#periodic-kubevirt-performance-cluster-100-density-test&width=20).
-
-
-* Scale VM density perf test is a prow job that runs a medium scale burst density performance test once a day creating 400, 600, up to 800 VMIs in the performance cluster. 
+* Scale VM density perf test is a prow job that runs a medium scale burst density performance test once a day creating 400, 600, up to 800 VMIs in the performance cluster.
 Waiting for a cool down interval between each scenario. We create up to 200 VMIs per node to avoid overload the node, more info [here](https://2022.fosdem.sojourner.rocks/event/12559).
 Testgrid [link](https://testgrid.k8s.io/kubevirt-periodics#periodic-kubevirt-performance-cluster-scale-density-test&width=20).
 
@@ -77,7 +73,7 @@ Regarding the hardware configuration, all nodes are homogeneous, with 2 Intel(R)
 
 ## Exposed services
 
-* deck: "periodic-kubevirt-performance-cluster-100-density-test" and  "periodic-kubevirt-performance-cluster-scale-density-test" jobs in Prow UI, available at https://prow.ci.kubevirt.io
+* deck: "periodic-kubevirt-performance-cluster-scale-density-test" job in Prow UI, available at https://prow.ci.kubevirt.io
 
 * grafana: available at http://52.117.69.106:30000/d/V1Qq_IBM_za0/kubevirt-control-plane
 
