@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -39,21 +40,30 @@ func NewRecordDateWithAverage(rdps []RecordDataPoint) RecordData {
 	return r
 }
 
-func readRecord(path string) (*Record, error) {
+func readRecord(path string) (record *Record, err error) {
 	f, err := os.Open(path)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return nil, nil
 		}
-		return nil, err
+		return nil, fmt.Errorf("open %s: %w", path, err)
 	}
-	defer f.Close()
+	defer func() {
+		if cerr := f.Close(); cerr != nil {
+			closeErr := fmt.Errorf("close %s: %w", path, cerr)
+			if err != nil {
+				err = errors.Join(err, closeErr)
+			} else {
+				err = closeErr
+			}
+		}
+	}()
 
-	var record Record
-	if err := json.NewDecoder(f).Decode(&record); err != nil {
-		return nil, err
+	var decoded Record
+	if err = json.NewDecoder(f).Decode(&decoded); err != nil {
+		return nil, fmt.Errorf("decode %s: %w", path, err)
 	}
-	return &record, nil
+	return &decoded, nil
 }
 
 func dataPointKey(dp RecordDataPoint) string {
@@ -102,7 +112,7 @@ func calculateAVGAndWriteOutput(results map[YearWeek][]ResultWithDate, objType s
 			outputDirPath := filepath.Join(outputDir, objType, metric, getMondayOfWeekDate(yw.Year, yw.Week), "data")
 			err := os.MkdirAll(outputDirPath, 0755)
 			if err != nil {
-				return err
+				return fmt.Errorf("mkdir %s: %w", outputDirPath, err)
 			}
 			outputPath := filepath.Join(outputDirPath, "results.json")
 			fmt.Println("writing output to", outputPath)
@@ -127,17 +137,23 @@ func calculateAVGAndWriteOutput(results map[YearWeek][]ResultWithDate, objType s
 			record.Data = NewRecordDateWithAverage(rdp)
 			f, err := os.Create(outputPath)
 			if err != nil {
-				return err
+				return fmt.Errorf("create %s: %w", outputPath, err)
 			}
 			e := json.NewEncoder(f)
 			e.SetIndent("", "  ")
 			err = e.Encode(&record)
 			closeErr := f.Close()
+			if err != nil && closeErr != nil {
+				return errors.Join(
+					fmt.Errorf("encode %s: %w", outputPath, err),
+					fmt.Errorf("close %s: %w", outputPath, closeErr),
+				)
+			}
 			if err != nil {
-				return err
+				return fmt.Errorf("encode %s: %w", outputPath, err)
 			}
 			if closeErr != nil {
-				return closeErr
+				return fmt.Errorf("close %s: %w", outputPath, closeErr)
 			}
 		}
 	}

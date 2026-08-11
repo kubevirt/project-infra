@@ -93,7 +93,9 @@ func TestCalculateAVGAndWriteOutputMergesExisting(t *testing.T) {
 	if err := json.NewEncoder(f).Encode(&existing); err != nil {
 		t.Fatal(err)
 	}
-	f.Close()
+	if err := f.Close(); err != nil {
+		t.Fatal(err)
+	}
 
 	incomingDate := time.Date(2026, 7, 10, 8, 0, 0, 0, time.UTC)
 	results := map[YearWeek][]ResultWithDate{

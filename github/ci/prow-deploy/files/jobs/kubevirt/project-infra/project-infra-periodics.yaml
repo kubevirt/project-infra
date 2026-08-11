@@ -1170,7 +1170,7 @@ periodics:
     repo: project-infra
     base_ref: main
     workdir: true
-  interval: 168h
+  cron: "0 20 * * 1"
   labels:
     preset-bazel-cache: "true"
     preset-gcs-credentials: "true"
