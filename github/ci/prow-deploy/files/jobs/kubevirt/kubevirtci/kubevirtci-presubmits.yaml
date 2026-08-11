@@ -460,7 +460,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    skip_if_only_changed: '^[^/]+\.md$'
     cluster: prow-workloads
     decoration_config:
       timeout: 20m0s
@@ -581,7 +582,8 @@ presubmits:
             memory: 16Gi
         securityContext:
           privileged: true
-  - always_run: true
+  - always_run: false
+    skip_if_only_changed: '^[^/]+\.md$'
     cluster: prow-s390x-workloads
     decoration_config:
       timeout: 4h0m0s
@@ -611,7 +613,8 @@ presubmits:
             memory: 16Gi
         securityContext:
           privileged: true
-  - always_run: true
+  - always_run: false
+    skip_if_only_changed: '^[^/]+\.md$'
     cluster: prow-workloads
     decoration_config:
       timeout: 3h0m0s
@@ -640,7 +643,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    skip_if_only_changed: '^[^/]+\.md$'
     cluster: prow-workloads
     decoration_config:
       timeout: 3h0m0s
@@ -698,7 +702,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    skip_if_only_changed: '^[^/]+\.md$'
     cluster: prow-workloads
     decoration_config:
       timeout: 3h0m0s
@@ -788,7 +793,8 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
+    skip_if_only_changed: '^[^/]+\.md$'
     cluster: prow-workloads
     decoration_config:
       timeout: 3h0m0s
