@@ -39,6 +39,59 @@ func NewRecordDateWithAverage(rdps []RecordDataPoint) RecordData {
 	return r
 }
 
+func readRecord(path string) (*Record, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	defer f.Close()
+
+	var record Record
+	if err := json.NewDecoder(f).Decode(&record); err != nil {
+		return nil, err
+	}
+	return &record, nil
+}
+
+func dataPointKey(dp RecordDataPoint) string {
+	if dp.Date == nil {
+		return ""
+	}
+	return dp.Date.UTC().Format(time.RFC3339Nano)
+}
+
+func mergeDataPoints(existing, incoming []RecordDataPoint) []RecordDataPoint {
+	byDate := map[string]RecordDataPoint{}
+	order := make([]string, 0, len(existing)+len(incoming))
+
+	add := func(dp RecordDataPoint) {
+		key := dataPointKey(dp)
+		if key == "" {
+			return
+		}
+		if _, ok := byDate[key]; !ok {
+			order = append(order, key)
+		}
+		byDate[key] = dp
+	}
+
+	for _, dp := range existing {
+		add(dp)
+	}
+	for _, dp := range incoming {
+		add(dp)
+	}
+
+	merged := make([]RecordDataPoint, 0, len(order))
+	for _, key := range order {
+		merged = append(merged, byDate[key])
+	}
+	return merged
+}
+
 func calculateAVGAndWriteOutput(results map[YearWeek][]ResultWithDate, objType string, outputDir string, metrics ...string) error {
 	for _, metric := range metrics {
 		for yw := range results {
@@ -61,6 +114,15 @@ func calculateAVGAndWriteOutput(results map[YearWeek][]ResultWithDate, objType s
 					Date:  result.Date,
 				})
 			}
+
+			existing, err := readRecord(outputPath)
+			if err != nil {
+				return err
+			}
+			if existing != nil {
+				rdp = mergeDataPoints(existing.Data.DataPoints, rdp)
+			}
+
 			record.NumberOfDays = 7
 			record.Data = NewRecordDateWithAverage(rdp)
 			f, err := os.Create(outputPath)
@@ -70,8 +132,12 @@ func calculateAVGAndWriteOutput(results map[YearWeek][]ResultWithDate, objType s
 			e := json.NewEncoder(f)
 			e.SetIndent("", "  ")
 			err = e.Encode(&record)
+			closeErr := f.Close()
 			if err != nil {
 				return err
+			}
+			if closeErr != nil {
+				return closeErr
 			}
 		}
 	}

@@ -16,6 +16,13 @@ perf-report-creator results --credentials-file=${CREDENTIALS_FILE} --output-dir 
 # scrape kwok density test results
 perf-report-creator results --credentials-file=${CREDENTIALS_FILE} --output-dir ${OUTPUT_DIR}/results --since 168h0s --performance-job-name periodic-kubevirt-e2e-${KUBEVIRT_PROVIDER}-sig-performance-kwok
 
+# Seed weekly output with already published data so weekly-report can merge
+# instead of overwriting earlier days in the same ISO week.
+if [ -d "${BENCHMARKS_DIR}/weekly" ]; then
+  mkdir -p "${OUTPUT_DIR}/weekly"
+  cp -a "${BENCHMARKS_DIR}/weekly/." "${OUTPUT_DIR}/weekly/"
+fi
+
 # aggregate sig-performance ${KUBEVIRT_PROVIDER} results in weekly directory
 perf-report-creator weekly-report --output-dir=${OUTPUT_DIR}/weekly/periodic-kubevirt-e2e-${KUBEVIRT_PROVIDER}-sig-performance \
   --results-dir=${OUTPUT_DIR}/results/periodic-kubevirt-e2e-${KUBEVIRT_PROVIDER}-sig-performance \
