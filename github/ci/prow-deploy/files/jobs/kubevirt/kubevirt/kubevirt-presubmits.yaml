@@ -1142,7 +1142,6 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.36-sig-network-sriov-emulated
-    optional: false
     run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
@@ -1520,49 +1519,6 @@ presubmits:
     cluster: prow-workloads
     decoration_config:
       grace_period: 5m0s
-      timeout: 4h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.34-sig-storage-root
-    optional: true
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.34-sig-storage
-        - name: FEATURE_GATES
-          value: Root
-        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
-          value: "true"
-        - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-        resources:
-          requests:
-            memory: 52Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decoration_config:
-      grace_period: 5m0s
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
@@ -1765,172 +1721,6 @@ presubmits:
           requests:
             cpu: "12"
             memory: 73Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 4h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.34-sig-network
-    run_before_merge: true
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.34-sig-network
-        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
-          value: "true"
-        - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-        resources:
-          requests:
-            memory: 52Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 4h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.34-sig-storage
-    run_before_merge: true
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.34-sig-storage
-        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
-          value: "true"
-        - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-        resources:
-          requests:
-            memory: 52Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 7h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.34-sig-compute
-    run_before_merge: true
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.34-sig-compute-parallel
-        - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
-          value: --usb 30M --usb 40M
-        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
-          value: "true"
-        - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-        resources:
-          requests:
-            memory: 52Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 7h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-      preset-shared-images: "true"
-    max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.34-sig-operator
-    run_before_merge: true
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.34-sig-operator
-        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
-          value: "true"
-        - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-        resources:
-          requests:
-            memory: 52Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -2364,10 +2154,10 @@ presubmits:
     max_concurrency: 4
     name: pull-kubevirt-e2e-k8s-1.36-sig-performance-kube-burner
     optional: true
-    skip_branches:
-    - release-\d+\.\d+
     reporter_config:
       slack: {}
+    skip_branches:
+    - release-\d+\.\d+
     spec:
       containers:
       - command:
@@ -2430,7 +2220,6 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    optional: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2446,6 +2235,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.36-sig-compute-dra
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2457,7 +2247,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: "k8s-1.36-sig-compute-dra-gpu"
+          value: k8s-1.36-sig-compute-dra-gpu
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
@@ -2479,7 +2269,6 @@ presubmits:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-hyperv-workloads
-    decorate: true
     decoration_config:
       grace_period: 5m0s
       timeout: 7h0m0s
@@ -2558,7 +2347,6 @@ presubmits:
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
           value: "8h"
         image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
-        name: ""
         resources:
           requests:
             memory: 18Gi
