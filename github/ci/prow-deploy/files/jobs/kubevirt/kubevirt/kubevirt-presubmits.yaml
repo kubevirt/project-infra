@@ -2557,7 +2557,7 @@ presubmits:
           value: docker.io/harshitg/qemu-rpms:qemu-10.2.0-w-cpuid # TODO Change this to stable image after testing
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
           value: "8h"
-        image: quay.io/kubevirtci/bootstrap:v20251218-e7a7fc9
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         name: ""
         resources:
           requests:
