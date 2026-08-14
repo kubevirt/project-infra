@@ -58,10 +58,10 @@ data:
             name: github-token
             key: cert
           utility_images:
-            clonerefs: us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260729-7f8580d8d
-            entrypoint: us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260729-7f8580d8d
-            initupload: us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260729-7f8580d8d
-            sidecar: us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260729-7f8580d8d
+            clonerefs: us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260812-7e14d3334
+            entrypoint: us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260812-7e14d3334
+            initupload: us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260812-7e14d3334
+            sidecar: us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260812-7e14d3334
 
     tide:
       queries:
