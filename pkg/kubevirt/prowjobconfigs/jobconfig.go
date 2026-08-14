@@ -27,10 +27,10 @@ import (
 const OrgAndRepoForJobConfig = "kubevirt/kubevirt"
 
 var SigNames = []string{
-	"sig-network",
-	"sig-storage",
 	"sig-compute",
+	"sig-network",
 	"sig-operator",
+	"sig-storage",
 }
 
 var cronRegex *regexp.Regexp
@@ -44,14 +44,30 @@ func init() {
 }
 
 func CreatePresubmitJobName(latestReleaseSemver *querier.SemVer, sigName string) string {
+	switch sigName {
+	case "sig-network":
+		sigName += "-smoke"
+	}
+
 	return fmt.Sprintf("pull-kubevirt-e2e-k8s-%s.%s-%s", latestReleaseSemver.Major, latestReleaseSemver.Minor, sigName)
+}
+
+func CreatePresubmitTargetValue(latestReleaseSemver *querier.SemVer, sigName string) string {
+	switch sigName {
+	case "sig-compute":
+		sigName += "-parallel"
+	case "sig-network":
+		sigName += "-smoke"
+	}
+
+	return fmt.Sprintf("k8s-%s.%s-%s", latestReleaseSemver.Major, latestReleaseSemver.Minor, sigName)
 }
 
 func CreatePeriodicJobName(latestReleaseSemver *querier.SemVer, sigName string) string {
 	return fmt.Sprintf("periodic-kubevirt-e2e-k8s-%s.%s-%s", latestReleaseSemver.Major, latestReleaseSemver.Minor, sigName)
 }
 
-func CreateTargetValue(latestReleaseSemver *querier.SemVer, sigName string) string {
+func CreatePeriodicTargetValue(latestReleaseSemver *querier.SemVer, sigName string) string {
 	return fmt.Sprintf("k8s-%s.%s-%s", latestReleaseSemver.Major, latestReleaseSemver.Minor, sigName)
 }
 

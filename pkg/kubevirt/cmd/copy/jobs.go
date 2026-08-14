@@ -37,6 +37,9 @@ import (
 const (
 	shortUse                      = "kubevirt copy jobs creates copies of the periodic and presubmit SIG jobs for latest kubevirtci providers"
 	sourceAndTargetReleaseDoExist = 2
+
+	defaultJobConfigPathKubevirtPresubmits = "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml"
+	defaultJobConfigPathKubevirtPeriodics  = "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml"
 )
 
 type copyJobOptions struct {
@@ -82,8 +85,8 @@ func CopyJobsCommand() *cobra.Command {
 }
 
 func init() {
-	copyJobsCommand.PersistentFlags().StringVar(&copyJobsOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", "", "The path to the kubevirt presubmit job definitions")
-	copyJobsCommand.PersistentFlags().StringVar(&copyJobsOpts.jobConfigPathKubevirtPeriodics, "job-config-path-kubevirt-periodics", "", "The path to the kubevirt periodic job definitions")
+	copyJobsCommand.PersistentFlags().StringVar(&copyJobsOpts.jobConfigPathKubevirtPresubmits, "job-config-path-kubevirt-presubmits", defaultJobConfigPathKubevirtPresubmits, "The path to the kubevirt presubmit job definitions")
+	copyJobsCommand.PersistentFlags().StringVar(&copyJobsOpts.jobConfigPathKubevirtPeriodics, "job-config-path-kubevirt-periodics", defaultJobConfigPathKubevirtPeriodics, "The path to the kubevirt periodic job definitions")
 	copyJobsCommand.PersistentFlags().StringVar(&copyJobsOpts.k8sReleaseSemver, "k8s-release-semver", "", "The semver of the k8s release to create the jobs for, or (as default) empty string to create for latest release")
 }
 
@@ -218,23 +221,24 @@ func copyPresubmitJobsForNewProvider(jobConfig *config.JobConfig, targetProvider
 
 		log.Log().WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Info("Copying source to target job")
 
+		oldJob := allPresubmitJobs[sourceJobName]
 		newJob := config.Presubmit{}
 		newJob.Annotations = make(map[string]string)
-		for k, v := range allPresubmitJobs[sourceJobName].Annotations {
+		for k, v := range oldJob.Annotations {
 			newJob.Annotations[k] = v
 		}
-		newJob.Cluster = allPresubmitJobs[sourceJobName].Cluster
-		newJob.Decorate = allPresubmitJobs[sourceJobName].Decorate
-		newJob.DecorationConfig = allPresubmitJobs[sourceJobName].DecorationConfig.DeepCopy()
-		copy(newJob.ExtraRefs, allPresubmitJobs[sourceJobName].ExtraRefs)
+		newJob.Cluster = oldJob.Cluster
+		newJob.Decorate = oldJob.Decorate
+		newJob.DecorationConfig = oldJob.DecorationConfig.DeepCopy()
+		copy(newJob.ExtraRefs, oldJob.ExtraRefs)
 		newJob.Labels = make(map[string]string)
-		for k, v := range allPresubmitJobs[sourceJobName].Labels {
+		for k, v := range oldJob.Labels {
 			newJob.Labels[k] = v
 		}
-		newJob.MaxConcurrency = allPresubmitJobs[sourceJobName].MaxConcurrency
-		newJob.Spec = allPresubmitJobs[sourceJobName].Spec.DeepCopy()
-		newJob.Brancher.SkipBranches = allPresubmitJobs[sourceJobName].Brancher.SkipBranches
-		newJob.Brancher.Branches = allPresubmitJobs[sourceJobName].Brancher.Branches
+		newJob.MaxConcurrency = oldJob.MaxConcurrency
+		newJob.Spec = oldJob.Spec.DeepCopy()
+		newJob.Brancher.SkipBranches = oldJob.Brancher.SkipBranches
+		newJob.Brancher.Branches = oldJob.Brancher.Branches
 
 		newJob.AlwaysRun = false
 		for index, envVar := range newJob.Spec.Containers[0].Env {
@@ -242,7 +246,7 @@ func copyPresubmitJobsForNewProvider(jobConfig *config.JobConfig, targetProvider
 				continue
 			}
 			newEnvVar := *envVar.DeepCopy()
-			newEnvVar.Value = prowjobconfigs.CreateTargetValue(targetProviderReleaseSemver, sigName)
+			newEnvVar.Value = prowjobconfigs.CreatePresubmitTargetValue(targetProviderReleaseSemver, sigName)
 			newJob.Spec.Containers[0].Env[index] = newEnvVar
 			break
 		}
@@ -279,25 +283,26 @@ func copyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderR
 
 		log.Log().WithField("targetJobName", targetJobName).WithField("sourceJobName", sourceJobName).Info("Copying source to target job")
 
+		oldJob := allPeriodicJobs[sourceJobName]
 		newJob := config.Periodic{}
 		newJob.Annotations = make(map[string]string)
-		for k, v := range allPeriodicJobs[sourceJobName].Annotations {
+		for k, v := range oldJob.Annotations {
 			newJob.Annotations[k] = v
 		}
-		newJob.Cluster = allPeriodicJobs[sourceJobName].Cluster
-		newJob.Cron = prowjobconfigs.AdvanceCronExpression(allPeriodicJobs[sourceJobName].Cron)
-		newJob.Decorate = allPeriodicJobs[sourceJobName].Decorate
-		newJob.DecorationConfig = allPeriodicJobs[sourceJobName].DecorationConfig.DeepCopy()
-		copy(newJob.ExtraRefs, allPeriodicJobs[sourceJobName].ExtraRefs)
+		newJob.Cluster = oldJob.Cluster
+		newJob.Cron = prowjobconfigs.AdvanceCronExpression(oldJob.Cron)
+		newJob.Decorate = oldJob.Decorate
+		newJob.DecorationConfig = oldJob.DecorationConfig.DeepCopy()
+		copy(newJob.ExtraRefs, oldJob.ExtraRefs)
 		newJob.Labels = make(map[string]string)
-		for k, v := range allPeriodicJobs[sourceJobName].Labels {
+		for k, v := range oldJob.Labels {
 			newJob.Labels[k] = v
 		}
-		newJob.MaxConcurrency = allPeriodicJobs[sourceJobName].MaxConcurrency
-		newJob.ReporterConfig = allPeriodicJobs[sourceJobName].ReporterConfig.DeepCopy()
-		newJob.Spec = allPeriodicJobs[sourceJobName].Spec.DeepCopy()
+		newJob.MaxConcurrency = oldJob.MaxConcurrency
+		newJob.ReporterConfig = oldJob.ReporterConfig.DeepCopy()
+		newJob.Spec = oldJob.Spec.DeepCopy()
 
-		newJob.UtilityConfig.ExtraRefs = append(newJob.UtilityConfig.ExtraRefs, allPeriodicJobs[sourceJobName].UtilityConfig.ExtraRefs...)
+		newJob.UtilityConfig.ExtraRefs = append(newJob.UtilityConfig.ExtraRefs, oldJob.UtilityConfig.ExtraRefs...)
 
 		for containerIndex, container := range newJob.Spec.Containers {
 			for envVarIndex, envVar := range container.Env {
@@ -305,7 +310,7 @@ func copyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderR
 					continue
 				}
 				newEnvVar := *envVar.DeepCopy()
-				newEnvVar.Value = prowjobconfigs.CreateTargetValue(targetProviderReleaseSemver, sigName)
+				newEnvVar.Value = prowjobconfigs.CreatePeriodicTargetValue(targetProviderReleaseSemver, sigName)
 				newJob.Spec.Containers[containerIndex].Env[envVarIndex] = newEnvVar
 				break
 			}

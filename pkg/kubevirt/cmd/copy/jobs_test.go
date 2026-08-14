@@ -810,7 +810,7 @@ func createPresubmitJobForRelease(semver *querier.SemVer, sigName string, always
 							},
 							{
 								Name:  "TARGET",
-								Value: prowjobconfigs.CreateTargetValue(semver, sigName),
+								Value: prowjobconfigs.CreatePresubmitTargetValue(semver, sigName),
 							},
 						},
 					},

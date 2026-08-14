@@ -28,7 +28,7 @@ type SigComputeJob struct {
 }
 
 var (
-	sigComputeJobNameRegex = regexp.MustCompile(`^pull-kubevirt-e2e-k8s-(\d+\.\d+)-sig-compute(-serial)?$`)
+	sigComputeJobNameRegex = regexp.MustCompile(`^pull-kubevirt-e2e-k8s-(\d+\.\d+)-sig-compute(-(migrations|serial))?$`)
 	k8sVersionRegex        = regexp.MustCompile(`k8s-(\d+)\.(\d+)`)
 )
 

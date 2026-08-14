@@ -511,7 +511,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 0 23 * * 6
+  cron: 0 0 * * *
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -1342,7 +1342,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 0 6,18 * * *
+  cron: 0 9,21 * * *
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -1389,7 +1389,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 0 9,21 * * *
+  cron: 0 0,12 * * *
   decoration_config:
     grace_period: 5m0s
     timeout: 5h0m0s
@@ -1438,7 +1438,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 0 3,15 * * *
+  cron: 0 6,18 * * *
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -1691,7 +1691,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 0 0,12 * * *
+  cron: 0 3,15 * * *
   decoration_config:
     grace_period: 5m0s
     timeout: 3h0m0s
@@ -1783,7 +1783,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 55 2,8,14,20 * * *
+  cron: 25 0,6,12,18 * * *
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -1828,7 +1828,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 45 3,9,15,21 * * *
+  cron: 15 1,7,13,19 * * *
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -1873,7 +1873,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 5 2,8,14,20 * * *
+  cron: 0 0,6,12,18 * * *
   decoration_config:
     grace_period: 5m0s
     timeout: 5h0m0s
@@ -1922,7 +1922,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 20 3,9,15,21 * * *
+  cron: 50 0,6,12,18 * * *
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -2072,7 +2072,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 35 4,10,16,22 * * *
+  cron: 55 2,8,14,20 * * *
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -2117,7 +2117,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 25 5,11,17,23 * * *
+  cron: 45 3,9,15,21 * * *
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -2162,7 +2162,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 10 4,10,16,22 * * *
+  cron: 5 2,8,14,20 * * *
   decoration_config:
     grace_period: 5m0s
     timeout: 5h0m0s
@@ -2211,7 +2211,7 @@ periodics:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
   cluster: prow-workloads
-  cron: 0 5,11,17,23 * * *
+  cron: 20 3,9,15,21 * * *
   decoration_config:
     grace_period: 5m0s
     timeout: 4h0m0s
@@ -2244,6 +2244,214 @@ periodics:
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
         value: 1G
+      image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+      resources:
+        requests:
+          memory: 52Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 10 4,10,16,22 * * *
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 5h0m0s
+  extra_refs:
+  - base_ref: main
+    clone_depth: 1
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.37-sig-compute
+  spec:
+    containers:
+    - args:
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      command:
+      - /usr/local/bin/runner.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.37-sig-compute
+      - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+        value: --usb 30M --usb 40M
+      - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
+        value: 4h45m
+      - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+        value: "true"
+      - name: KUBEVIRT_WITH_ETC_CAPACITY
+        value: 1G
+      - name: KUBEVIRT_CENTOS_STREAM_VERSION
+        value: "10"
+      - name: KUBEVIRT_CS10_BUILDER_VERSION
+        value: 2606301559-b9f50e380a
+      image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+      resources:
+        requests:
+          memory: 52Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 35 4,10,16,22 * * *
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    clone_depth: 1
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.37-sig-network
+  spec:
+    containers:
+    - args:
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      command:
+      - /usr/local/bin/runner.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.37-sig-network
+      - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+        value: "true"
+      - name: KUBEVIRT_WITH_ETC_CAPACITY
+        value: 1G
+      - name: KUBEVIRT_CENTOS_STREAM_VERSION
+        value: "10"
+      - name: KUBEVIRT_CS10_BUILDER_VERSION
+        value: 2606301559-b9f50e380a
+      image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+      resources:
+        requests:
+          memory: 52Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 0 5,11,17,23 * * *
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    clone_depth: 1
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.37-sig-operator
+  spec:
+    containers:
+    - args:
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      command:
+      - /usr/local/bin/runner.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.37-sig-operator
+      - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+        value: "true"
+      - name: KUBEVIRT_WITH_ETC_CAPACITY
+        value: 1G
+      - name: KUBEVIRT_CENTOS_STREAM_VERSION
+        value: "10"
+      - name: KUBEVIRT_CS10_BUILDER_VERSION
+        value: 2606301559-b9f50e380a
+      image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+      resources:
+        requests:
+          memory: 52Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 25 5,11,17,23 * * *
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    clone_depth: 1
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.37-sig-storage
+  spec:
+    containers:
+    - args:
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      command:
+      - /usr/local/bin/runner.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.37-sig-storage
+      - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+        value: "true"
+      - name: KUBEVIRT_WITH_ETC_CAPACITY
+        value: 1G
+      - name: KUBEVIRT_CENTOS_STREAM_VERSION
+        value: "10"
+      - name: KUBEVIRT_CS10_BUILDER_VERSION
+        value: 2606301559-b9f50e380a
       image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
       resources:
         requests:
