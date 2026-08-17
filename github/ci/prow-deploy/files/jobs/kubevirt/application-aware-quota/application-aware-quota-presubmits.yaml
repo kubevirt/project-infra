@@ -91,6 +91,38 @@ presubmits:
           resources:
             requests:
               memory: "52Gi"
+  - name: pull-aaq-functest-s390x
+    skip_branches:
+      - release-v\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: true
+    decoration_config:
+      timeout: 5h
+      grace_period: 5m
+    max_concurrency: 1
+    cluster: prow-s390x-workloads
+    labels:
+      preset-podman-in-container-enabled: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+          env:
+            - name: TARGET
+              value: "k8s-1.34"
+            - name: BUILD_ARCHES
+              value: "s390x"
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "automation/test.sh"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "52Gi"
   - name: pull-aaq-unit-test-s390x
     skip_branches:
       - release-v\d+\.\d+
