@@ -160,7 +160,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 4
