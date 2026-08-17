@@ -2312,10 +2312,6 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        - name: KUBEVIRT_CENTOS_STREAM_VERSION
-          value: "10"
-        - name: KUBEVIRT_CS10_BUILDER_VERSION
-          value: 2606301559-b9f50e380a
         image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
@@ -2358,10 +2354,6 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        - name: KUBEVIRT_CENTOS_STREAM_VERSION
-          value: "10"
-        - name: KUBEVIRT_CS10_BUILDER_VERSION
-          value: 2606301559-b9f50e380a
         image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
@@ -2403,10 +2395,6 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        - name: KUBEVIRT_CENTOS_STREAM_VERSION
-          value: "10"
-        - name: KUBEVIRT_CS10_BUILDER_VERSION
-          value: 2606301559-b9f50e380a
         image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
@@ -2449,10 +2437,6 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        - name: KUBEVIRT_CENTOS_STREAM_VERSION
-          value: "10"
-        - name: KUBEVIRT_CS10_BUILDER_VERSION
-          value: 2606301559-b9f50e380a
         image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
