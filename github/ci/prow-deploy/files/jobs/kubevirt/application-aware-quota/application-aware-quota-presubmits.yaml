@@ -109,6 +109,8 @@ presubmits:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
           env:
+            - name: TARGET
+              value: "k8s-1.34"
             - name: BUILD_ARCHES
               value: "s390x"
           command:
