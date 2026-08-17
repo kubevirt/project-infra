@@ -40,7 +40,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20240911-16816d3

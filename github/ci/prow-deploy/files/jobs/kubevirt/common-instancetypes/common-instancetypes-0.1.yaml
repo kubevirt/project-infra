@@ -30,7 +30,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
-      preset-bazel-cache: "true"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"

@@ -40,7 +40,6 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
@@ -68,7 +67,6 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
@@ -96,7 +94,6 @@ presubmits:
     labels:
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-bazel-cache: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/bootstrap:v20220728-1410a63
