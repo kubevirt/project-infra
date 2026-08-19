@@ -102,8 +102,6 @@ presubmits:
     run_if_changed: "github/ci/services/.*|go.mod"
     optional: false
     cluster: kubevirt-prow-control-plane
-    labels:
-      preset-bazel-cache: "true"
     spec:
       containers:
       - image: quay.io/kubevirtci/golang:v20260715-af3e234
@@ -476,7 +474,6 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     max_concurrency: 1
     labels:
-      preset-bazel-cache: "true"
       preset-kubevirtci-quay-credential: "true"
       preset-podman-in-container-enabled: "true"
       preset-project-infra-image-build-linux: "true"
@@ -798,8 +795,6 @@ presubmits:
             runAsUser: 0
   - name: pull-project-infra-check-testgrid-config
     run_if_changed: '^github/ci/prow-deploy/files/jobs/.*$|^github/ci/testgrid/gen-config\.yaml$|^github/ci/testgrid/default\.yaml$'
-    labels:
-      preset-bazel-cache: "true"
     annotations:
       testgrid-create-test-group: "false"
     cluster: kubevirt-prow-control-plane

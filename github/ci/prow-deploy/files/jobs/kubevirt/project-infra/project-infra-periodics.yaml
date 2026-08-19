@@ -1172,7 +1172,6 @@ periodics:
     workdir: true
   interval: 168h
   labels:
-    preset-bazel-cache: "true"
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   max_concurrency: 1

@@ -92,7 +92,6 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
-        preset-bazel-cache: "true"
         preset-kubevirtci-quay-credential: "true"
         preset-project-infra-image-build-linux: "true"
       spec:
@@ -122,7 +121,6 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
-        preset-bazel-cache: "true"
         preset-kubevirtci-quay-credential: "true"
         preset-podman-in-container-enabled: "true"
         preset-project-infra-image-build-linux: "true"
@@ -154,7 +152,6 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
-        preset-bazel-cache: "true"
         preset-kubevirtci-quay-credential: "true"
         preset-podman-in-container-enabled: "true"
         preset-project-infra-image-build-linux: "true"
@@ -704,7 +701,6 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-        preset-bazel-cache: "true"
         preset-project-infra-image-build-linux: "true"
       spec:
         containers:
@@ -735,7 +731,6 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-kubevirtci-quay-credential: "true"
-        preset-bazel-cache: "true"
         preset-project-infra-image-build-linux: "true"
       spec:
         containers:
