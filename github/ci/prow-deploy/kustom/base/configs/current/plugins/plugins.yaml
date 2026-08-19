@@ -887,6 +887,8 @@ lgtm:
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
   - kubevirt/vm-file-restore-operator
+  - kubevirt/kubevirt-aie
+  - kubevirt/kubevirt-aie-webhook
   - kubevirt/ci-health
   - kubevirt/redfish-controller
   - kubevirt/kubevirt-observability-controller
