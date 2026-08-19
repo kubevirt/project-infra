@@ -1,6 +1,6 @@
 periodics:
 - name: periodic-koc-test
-  cron: "0 1 * * *"
+  cron: "17 3 * * *"
   annotations:
     testgrid-create-test-group: "false"
   decoration_config:
@@ -28,7 +28,7 @@ periodics:
           requests:
             memory: "4Gi"
 - name: periodic-koc-functest
-  cron: "0 1 * * *"
+  cron: "43 3 * * *"
   annotations:
     testgrid-create-test-group: "false"
   decoration_config:
