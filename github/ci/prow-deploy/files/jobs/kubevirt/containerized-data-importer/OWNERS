@@ -12,6 +12,7 @@ filters:
     - awels
     - mhenriks
     reviewers:
+    - acedus
     - aglitke
     - akalenyu
     - alromeros
