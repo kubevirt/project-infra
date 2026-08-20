@@ -85,13 +85,14 @@ func (t TestToQuarantine) String() string {
 	return fmt.Sprintf("TestToQuarantine{Test: %+v, SearchCIURL: %q, RelevantImpacts: %+v}", t.Test, t.SearchCIURL, t.RelevantImpacts)
 }
 
-func NewMostFlakyTestsTemplateData(mostFlakyTestsBySig map[string]TestsPerSIG, sigs []string, testNames []string) MostFlakyTestsTemplateData {
+func NewMostFlakyTestsTemplateData(mostFlakyTestsBySig map[string]TestsPerSIG, sigs []string, testNames []string, requiredJobs map[string]struct{}) MostFlakyTestsTemplateData {
 	return MostFlakyTestsTemplateData{
 		ReportCreation:      time.Now(),
 		MostFlakyTestsBySig: mostFlakyTestsBySig,
 		SIGs:                sigs,
 		TestNames:           testNames,
 		TimeRanges:          mostFlakyTestsTimeRanges,
+		RequiredJobs:        requiredJobs,
 	}
 }
 
@@ -101,4 +102,16 @@ type MostFlakyTestsTemplateData struct {
 	MostFlakyTestsBySig map[string]TestsPerSIG
 	SIGs                []string
 	TestNames           []string
+	RequiredJobs        map[string]struct{}
+}
+
+// IsOptionalLane reports whether a search.ci job name is not a required presubmit.
+// Jobs missing from the required set (optional, skip_report, release-branch suffixes,
+// or otherwise unknown) are tagged optional.
+func (d MostFlakyTestsTemplateData) IsOptionalLane(laneName string) bool {
+	if laneName == "" {
+		return true
+	}
+	_, required := d.RequiredJobs[laneName]
+	return !required
 }

@@ -74,6 +74,8 @@ func init() {
 	mostFlakyTestsReportCmd.PersistentFlags().DurationVar(&quarantineOpts.maxFailureAge, "max-failure-age", 72*time.Hour, "maximum age of failures to consider as recent")
 	mostFlakyTestsReportCmd.PersistentFlags().IntVar(&quarantineOpts.minRecentFailures, "min-recent-failures", 2, "minimum number of recent failures required per lane")
 	mostFlakyTestsReportCmd.PersistentFlags().DurationVar(&quarantineOpts.minFailureInterval, "min-failure-interval", 24*time.Hour, "minimum time span between recent failures to confirm a consistent pattern")
+	mostFlakyTestsReportCmd.PersistentFlags().StringVar(&quarantineOpts.jobConfigPath, "job-config-path", "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml", "path to the Prow presubmit job config YAML used to determine required vs optional lanes")
+	mostFlakyTestsReportCmd.PersistentFlags().StringVar(&quarantineOpts.jobConfigOrgRepo, "job-config-org-repo", "kubevirt/kubevirt", "org/repo key for looking up presubmits in the job config")
 }
 
 var sigMatcher = regexp.MustCompile(`\[(sig-[^]]+)]`)
@@ -93,6 +95,15 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return err
 	}
+	requiredJobs, err := loadRequiredJobNames(quarantineOpts.jobConfigPath, quarantineOpts.jobConfigOrgRepo)
+	if err != nil {
+		return fmt.Errorf("could not load required job names: %w", err)
+	}
+	if len(requiredJobs) == 0 {
+		return fmt.Errorf("no required jobs found in %q for %q", quarantineOpts.jobConfigPath, quarantineOpts.jobConfigOrgRepo)
+	}
+	log.Infof("loaded %d required job names from %q", len(requiredJobs), quarantineOpts.jobConfigPath)
+
 	topXTests, err := flakestats.NewFlakeStatsAggregate(reportOpts).AggregateData()
 	if err != nil {
 		return fmt.Errorf("error while aggregating data: %w", err)
@@ -110,7 +121,7 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 	if err != nil {
 		return fmt.Errorf("could not create temp file: %w", err)
 	}
-	err = reportTemplate.Execute(outputFile, NewMostFlakyTestsTemplateData(mostFlakyTestsBySig, sigs, testNames))
+	err = reportTemplate.Execute(outputFile, NewMostFlakyTestsTemplateData(mostFlakyTestsBySig, sigs, testNames, requiredJobs))
 	if err != nil {
 		return fmt.Errorf("could not execute template: %w", err)
 	}
