@@ -25,7 +25,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: hook
-          image: us-docker.pkg.dev/k8s-infra-prow/images/hook:v20260812-7e14d3334
+          image: us-docker.pkg.dev/k8s-infra-prow/images/hook:v20260819-7593870dc
           imagePullPolicy: Always
           args:
             - --dry-run=false
