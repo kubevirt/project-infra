@@ -85,13 +85,14 @@ func (t TestToQuarantine) String() string {
 	return fmt.Sprintf("TestToQuarantine{Test: %+v, SearchCIURL: %q, RelevantImpacts: %+v}", t.Test, t.SearchCIURL, t.RelevantImpacts)
 }
 
-func NewMostFlakyTestsTemplateData(mostFlakyTestsBySig map[string]TestsPerSIG, sigs []string, testNames []string) MostFlakyTestsTemplateData {
+func NewMostFlakyTestsTemplateData(mostFlakyTestsBySig map[string]TestsPerSIG, sigs []string, testNames []string, requiredJobs map[string]struct{}) MostFlakyTestsTemplateData {
 	return MostFlakyTestsTemplateData{
 		ReportCreation:      time.Now(),
 		MostFlakyTestsBySig: mostFlakyTestsBySig,
 		SIGs:                sigs,
 		TestNames:           testNames,
 		TimeRanges:          mostFlakyTestsTimeRanges,
+		RequiredJobs:        requiredJobs,
 	}
 }
 
@@ -101,4 +102,18 @@ type MostFlakyTestsTemplateData struct {
 	MostFlakyTestsBySig map[string]TestsPerSIG
 	SIGs                []string
 	TestNames           []string
+	RequiredJobs        map[string]struct{}
+}
+
+// IsOptionalLane reports whether a search.ci job name is not a required presubmit.
+// Jobs missing from the required set (optional, skip_report, release-branch suffixes,
+// or otherwise unknown) are tagged optional. Release-suffixed names are still tagged
+// optional because they are absent from the main presubmit file; the report JS keeps
+// the release-branch checkbox independent of the optional checkbox.
+func (d MostFlakyTestsTemplateData) IsOptionalLane(urlToDisplay string) bool {
+	if urlToDisplay == "" {
+		return true
+	}
+	_, required := d.RequiredJobs[urlToDisplay]
+	return !required
 }
