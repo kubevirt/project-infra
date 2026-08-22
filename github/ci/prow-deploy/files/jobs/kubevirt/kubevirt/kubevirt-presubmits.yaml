@@ -465,6 +465,9 @@ presubmits:
     decoration_config:
       grace_period: 5m0s
       timeout: 2h0m0s
+    labels:
+      preset-gcs-credentials: "true"
+      preset-go-test-cache-bucket: "true"
     name: pull-kubevirt-unit-test-s390x
     skip_branches:
     - release-\d+\.\d+
@@ -473,7 +476,7 @@ presubmits:
       - command:
         - /usr/local/bin/runner.sh
         - /bin/sh
-        - -c
+        - -ce
         - make go-test
         image: quay.io/kubevirtci/golang:v20260715-af3e234
         resources:
@@ -490,6 +493,8 @@ presubmits:
       grace_period: 5m0s
       timeout: 2h0m0s
     labels:
+      preset-gcs-credentials: "true"
+      preset-go-test-cache-bucket: "true"
       preset-gomaxprocs-4: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-unit-test-arm64
@@ -500,8 +505,8 @@ presubmits:
       - command:
         - /usr/local/bin/runner.sh
         - /bin/sh
-        - -c
-        - make test
+        - -ce
+        - make go-test
         image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
@@ -709,6 +714,8 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
+      preset-gcs-credentials: "true"
+      preset-go-test-cache-bucket: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-unit-test
     skip_branches:
@@ -718,8 +725,8 @@ presubmits:
       - command:
         - /usr/local/bin/runner.sh
         - /bin/sh
-        - -c
-        - make test
+        - -ce
+        - make go-test
         image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
         resources:
           requests:
