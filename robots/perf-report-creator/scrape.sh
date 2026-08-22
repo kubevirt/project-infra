@@ -1,3 +1,5 @@
+set -euo pipefail
+
 CREDENTIALS_FILE=${1}
 BENCHMARKS_DIR=${2}
 OUTPUT_DIR=${3:-output}
@@ -9,12 +11,24 @@ if [ -z "${KUBEVIRT_PROVIDER}" ]; then
     exit 1
 fi
 
+# The scrape window overlaps the previous ISO week so that late artifact
+# uploads and job start time drift are still picked up. Overlapping runs are
+# deduplicated when weekly-report merges into the published data.
+SINCE=${SINCE:-192h0s}
+
 # scrape sig-performance ${KUBEVIRT_PROVIDER} results
-perf-report-creator results --credentials-file=${CREDENTIALS_FILE} --output-dir ${OUTPUT_DIR}/results --since 168h0s --performance-job-name periodic-kubevirt-e2e-${KUBEVIRT_PROVIDER}-sig-performance
+perf-report-creator results --credentials-file=${CREDENTIALS_FILE} --output-dir ${OUTPUT_DIR}/results --since ${SINCE} --performance-job-name periodic-kubevirt-e2e-${KUBEVIRT_PROVIDER}-sig-performance
 # scrape 100 density test results
-perf-report-creator results --credentials-file=${CREDENTIALS_FILE} --output-dir ${OUTPUT_DIR}/results --since 168h0s --performance-job-name periodic-kubevirt-performance-cluster-100-density-test
+perf-report-creator results --credentials-file=${CREDENTIALS_FILE} --output-dir ${OUTPUT_DIR}/results --since ${SINCE} --performance-job-name periodic-kubevirt-performance-cluster-100-density-test
 # scrape kwok density test results
-perf-report-creator results --credentials-file=${CREDENTIALS_FILE} --output-dir ${OUTPUT_DIR}/results --since 168h0s --performance-job-name periodic-kubevirt-e2e-${KUBEVIRT_PROVIDER}-sig-performance-kwok
+perf-report-creator results --credentials-file=${CREDENTIALS_FILE} --output-dir ${OUTPUT_DIR}/results --since ${SINCE} --performance-job-name periodic-kubevirt-e2e-${KUBEVIRT_PROVIDER}-sig-performance-kwok
+
+# Seed weekly output with already published data so weekly-report can merge
+# instead of overwriting earlier days in the same ISO week.
+if [ -d "${BENCHMARKS_DIR}/weekly" ]; then
+  mkdir -p "${OUTPUT_DIR}/weekly"
+  cp -a "${BENCHMARKS_DIR}/weekly/." "${OUTPUT_DIR}/weekly/"
+fi
 
 # aggregate sig-performance ${KUBEVIRT_PROVIDER} results in weekly directory
 perf-report-creator weekly-report --output-dir=${OUTPUT_DIR}/weekly/periodic-kubevirt-e2e-${KUBEVIRT_PROVIDER}-sig-performance \

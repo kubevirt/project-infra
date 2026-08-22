@@ -404,16 +404,9 @@ func getWeeklyVMResults(results *Collection) (map[YearWeek][]ResultWithDate, err
 }
 
 func getMondayOfWeekDate(year, week int) string {
-	// Get the first Monday of the Year
-	firstDayOfYear := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
-	daysUntilFirstMonday := int(time.Monday - firstDayOfYear.Weekday())
-	if daysUntilFirstMonday < 0 {
-		daysUntilFirstMonday += 7
-	}
-
-	// create a time.Time object representing the Monday of the ISO Week
-	weekMonday := firstDayOfYear.AddDate(0, 0, daysUntilFirstMonday+((week-1)*7))
-
-	// print the Monday in ISO format
+	// Jan 4 is always in ISO week 1. Find that week's Monday, then offset by week-1.
+	jan4 := time.Date(year, time.January, 4, 0, 0, 0, 0, time.UTC)
+	week1Monday := jan4.AddDate(0, 0, -int((jan4.Weekday()+6)%7))
+	weekMonday := week1Monday.AddDate(0, 0, (week-1)*7)
 	return weekMonday.Format("2006-01-02")
 }
