@@ -76,6 +76,74 @@ presubmits:
             resources:
               requests:
                 memory: "50Gi"
+    - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.35-s390x
+      skip_branches:
+        - release-\d+\.\d+
+      annotations:
+        fork-per-release: "true"
+        testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
+      always_run: true
+      optional: true
+      decorate: true
+      decoration_config:
+        timeout: 8h
+        grace_period: 5m
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-podman-shared-images: "true"
+      cluster: prow-s390x-workloads
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "export TARGET=k8s-1.35 && export SLIM=true && automation/test.sh"
+            env:
+              - name: GO_MOD_PATH
+                value: "go.mod"
+              - name: GINKGO_LABELS
+                value: '!OpenShift && !SINGLE_NODE_ONLY'
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "50Gi"
+    - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.36-s390x
+      skip_branches:
+        - release-\d+\.\d+
+      annotations:
+        fork-per-release: "true"
+        testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
+      always_run: true
+      optional: true
+      decorate: true
+      decoration_config:
+        timeout: 8h
+        grace_period: 5m
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-podman-shared-images: "true"
+      cluster: prow-s390x-workloads
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/golang:v20260612-73bc71e
+            command:
+              - "/usr/local/bin/runner.sh"
+              - "/bin/sh"
+              - "-c"
+              - "export TARGET=k8s-1.36 && export SLIM=true && automation/test.sh"
+            env:
+              - name: GO_MOD_PATH
+                value: "go.mod"
+              - name: GINKGO_LABELS
+                value: '!OpenShift && !SINGLE_NODE_ONLY'
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "50Gi"
     - name: build-hco-test-utils-image
       always_run: false
       branches:
