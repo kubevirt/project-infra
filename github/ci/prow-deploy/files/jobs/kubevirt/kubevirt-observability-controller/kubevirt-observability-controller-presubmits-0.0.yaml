@@ -1,11 +1,9 @@
 presubmits:
   kubevirt/kubevirt-observability-controller:
   - name: pull-koc-unit-test
-    skip_branches:
-      - release-\d+\.\d+
+    branches:
+      - release-0.0
     cluster: kubevirt-prow-control-plane
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: false
     decoration_config:
@@ -23,11 +21,9 @@ presubmits:
             requests:
               memory: "4Gi"
   - name: pull-koc-generate-verify
-    skip_branches:
-      - release-\d+\.\d+
+    branches:
+      - release-0.0
     cluster: kubevirt-prow-control-plane
-    annotations:
-      fork-per-release: "true"
     always_run: true
     optional: false
     decoration_config:
@@ -45,10 +41,8 @@ presubmits:
             requests:
               memory: "4Gi"
   - name: pull-koc-functest
-    skip_branches:
-      - release-\d+\.\d+
-    annotations:
-      fork-per-release: "true"
+    branches:
+      - release-0.0
     always_run: true
     optional: false
     decoration_config:
