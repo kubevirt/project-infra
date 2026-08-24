@@ -1,10 +1,10 @@
 ---
 presubmits:
   k8snetworkplumbingwg/kubemacpool:
-    - name: pull-kubemacpool-unit-test-v0.51
+    - name: pull-kubemacpool-unit-test-v0.52
       context: pull-kubemacpool-unit-test
       branches:
-        - release-0.51
+        - release-0.52
       always_run: true
       optional: false
       decoration_config:
@@ -27,10 +27,10 @@ presubmits:
               - "-c"
               - "automation/check-patch.unit-test.sh"
 
-    - name: pull-kubemacpool-e2e-k8s-v0.51
+    - name: pull-kubemacpool-e2e-k8s-v0.52
       context: pull-kubemacpool-e2e-k8s
       branches:
-        - release-0.51
+        - release-0.52
       always_run: true
       optional: false
       cluster: prow-workloads
