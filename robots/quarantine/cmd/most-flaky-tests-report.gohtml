@@ -354,7 +354,8 @@
     <div class="container">
         <h1>Most Flaky Tests Report</h1>
         <div class="header-controls">
-            <label><input type="checkbox" id="show-release-lanes" onchange="toggleReleaseLanes()"> Show release branch lanes</label>
+            <label><input type="checkbox" id="show-release-lanes" onchange="applyLaneFilters()"> Show release branch lanes</label>
+            <label><input type="checkbox" id="show-optional-lanes" onchange="applyLaneFilters()"> Show optional lanes</label>
             <label><input type="checkbox" id="show-approaching" onchange="toggleApproaching()"> Highlight approaching quarantine</label>
             <input type="text" id="test-filter" placeholder="Filter tests..." oninput="filterTests()">
         </div>
@@ -398,7 +399,7 @@
                                 <div class="test-card-body">
                                     {{ range $mostFlakyTest := $mostFlakyTests }}
                                         {{ range $relevantImpact := $mostFlakyTest.RelevantImpacts -}}
-                                            <div class="impact-entry" data-lane="{{ $relevantImpact.URLToDisplay }}" data-impact="{{ $relevantImpact.Percent }}" data-timerange="{{ $mostFlakyTest.TimeRange }}">
+                                            <div class="impact-entry" data-lane="{{ $relevantImpact.URLToDisplay }}" data-optional="{{ $.IsOptionalLane $relevantImpact.URLToDisplay }}" data-impact="{{ $relevantImpact.Percent }}" data-timerange="{{ $mostFlakyTest.TimeRange }}">
                                                 <div class="impact-row-top">
                                                     <span class="impact-percent" data-percent="{{ $relevantImpact.Percent }}">{{ $relevantImpact.Percent }}%</span>
                                                     <span class="impact-time">{{ $mostFlakyTest.TimeRange }}</span>
@@ -462,15 +463,21 @@
         });
     }
 
-    function toggleReleaseLanes() {
-        var show = document.getElementById('show-release-lanes').checked;
+    function applyLaneFilters() {
+        var showRelease = document.getElementById('show-release-lanes').checked;
+        var showOptional = document.getElementById('show-optional-lanes').checked;
         document.querySelectorAll('.impact-entry').forEach(function(el) {
-            var lane = el.getAttribute('data-lane');
-            if (releaseLanePattern.test(lane)) {
-                el.style.display = show ? '' : 'none';
-            }
+            var lane = el.getAttribute('data-lane') || '';
+            var optional = el.getAttribute('data-optional') === 'true';
+            var isReleaseLane = releaseLanePattern.test(lane);
+            var hide = (!showRelease && isReleaseLane) || (!showOptional && optional && !isReleaseLane);
+            el.style.display = hide ? 'none' : '';
         });
         document.querySelectorAll('.test-card').forEach(function(card) {
+            if (card.getAttribute('data-filtered') === '1') {
+                card.style.display = 'none';
+                return;
+            }
             var entries = card.querySelectorAll('.impact-entry');
             var anyVisible = false;
             entries.forEach(function(el) {
@@ -479,6 +486,7 @@
             card.style.display = (entries.length > 0 && !anyVisible) ? 'none' : '';
         });
         updateSIGCounts();
+        toggleApproaching();
     }
 
     function filterTests() {
@@ -491,10 +499,7 @@
                 card.setAttribute('data-filtered', '1');
             }
         });
-        toggleReleaseLanes();
-        document.querySelectorAll('.test-card[data-filtered="1"]').forEach(function(card) {
-            card.style.display = 'none';
-        });
+        applyLaneFilters();
     }
 
     function updateSIGCounts() {
@@ -540,7 +545,7 @@
     }
 
     applyImpactColors();
-    toggleReleaseLanes();
+    applyLaneFilters();
     updateSIGCounts();
 </script>
 </body>
