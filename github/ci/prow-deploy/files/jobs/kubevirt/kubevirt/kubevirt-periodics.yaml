@@ -2297,7 +2297,6 @@ periodics:
     timeout: 4h0m0s
   extra_refs:
   - base_ref: main
-    clone_depth: 1
     org: kubevirt
     repo: kubevirt
   labels:
