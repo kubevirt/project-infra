@@ -1957,7 +1957,7 @@ presubmits:
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-k8s-1.36-sig-compute-serial
+    name: pull-kubevirt-e2e-k8s-1.37-sig-compute-serial
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1969,7 +1969,7 @@ presubmits:
         - automation/test.sh
         env:
         - name: TARGET
-          value: k8s-1.36-sig-compute-serial
+          value: k8s-1.37-sig-compute-serial
         - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
           value: --usb 30M --usb 40M
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
