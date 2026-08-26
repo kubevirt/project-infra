@@ -601,3 +601,35 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
+  - always_run: false
+    run_if_changed: "artifacts/almalinux/.*"
+    annotations:
+      testgrid-create-test-group: "false"
+    cluster: prow-s390x-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 3
+    name: pull-containerdisks-pipeline-almalinux-10-s390x
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/entrypoint.sh
+        - /bin/sh
+        - -c
+        - ./pipeline.sh
+        env:
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        - name: FOCUS
+          value: "almalinux:10"
+        - name: KUBEVIRT_NESTED_VIRTUALIZATION_REQUIRED
+          value: "true"
+        image: quay.io/kubevirtci/golang:v20260715-af3e234
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
