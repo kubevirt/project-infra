@@ -4,3 +4,4 @@ DOCKER_OPTS="${DOCKER_OPTS} --ipv6"
 DOCKER_OPTS="${DOCKER_OPTS} --fixed-cidr-v6 2001:db8:1::/64"
 export http_proxy=http://docker-mirror-proxy.kubevirt-prow.svc:3128
 export https_proxy=http://docker-mirror-proxy.kubevirt-prow.svc:3128
+export no_proxy=localhost,127.0.0.1,registry

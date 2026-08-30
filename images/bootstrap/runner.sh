@@ -75,10 +75,11 @@ if [[ "${PODMAN_IN_CONTAINER_ENABLED}" == "true" ]]; then
     (
         export HTTP_PROXY=${CONTAINER_HTTP_PROXY}
         export HTTPS_PROXY=${CONTAINER_HTTPS_PROXY}
+        export NO_PROXY=${CONTAINER_NO_PROXY}
         export KIND_EXPERIMENTAL_PROVIDER="podman"
 
         mkdir -p ${PODMAN_SOCKET_PATH}
-      
+
         podman system service \
                 -t 0 \
                 unix://${PODMAN_SOCKET} \
@@ -99,7 +100,7 @@ if [[ "${PODMAN_IN_CONTAINER_ENABLED}" == "true" ]]; then
             sleep ${WAIT_N}
         else
             echo "Reached maximum attempts, not waiting any longer..."
-	    echo "Podman daemon failed to start successfully"
+            echo "Podman daemon failed to start successfully"
             cat /var/log/podman.log
             exit 1
         fi
