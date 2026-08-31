@@ -629,6 +629,12 @@ orgs:
         has_projects: true
         has_wiki: true
         has_issues: true
+      kubevirt-no-bazel:
+        description: Fork of Kubevirt for development and testing of bazel removal changes.
+        default_branch: main
+        has_projects: true
+        has_wiki: true
+        has_issues: true
     teams:
       QE:
         description: ""
@@ -1190,3 +1196,16 @@ orgs:
           - MarSik
         repos:
           redfish-controller: admin
+      kubevirt-no-bazel-maintainers:
+        description: "Maintainers of kubevirt-no-bazel"
+        members:
+          - dhiller
+          - dollierp
+          - enp0s3
+          - jschintag
+          - lyarwood
+          - nekkunti
+          - vamsikrishna-siddu
+          - Whitedyl
+        repos:
+          kubevirt-no-bazel: admin
