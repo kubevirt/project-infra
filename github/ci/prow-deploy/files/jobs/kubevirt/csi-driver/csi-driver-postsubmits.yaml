@@ -19,7 +19,7 @@ postsubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20260715-af3e234
+          - image: quay.io/kubevirtci/golang:v20260830-8316684
             env:
               - name: REGISTRY
                 value: quay.io/kubevirt
@@ -54,7 +54,7 @@ postsubmits:
         preset-kubevirtci-quay-credential: "false"
       spec:
         containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+        - image: quay.io/kubevirtci/bootstrap:v20260830-8316684
           env:
           - name: DOCKER_REPO
             value: quay.io/kubevirt

@@ -10,7 +10,7 @@ periodics:
     base_ref: main
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260715-af3e234
+    - image: quay.io/kubevirtci/golang:v20260830-8316684
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/sh"
@@ -892,7 +892,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+    - image: quay.io/kubevirtci/bootstrap:v20260830-8316684
       command: ["/bin/sh"]
       args:
       - "-ce"
@@ -1028,7 +1028,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+      - image: quay.io/kubevirtci/bootstrap:v20260830-8316684
         env:
           - name: BUCKET_DIR
             value: kubevirtci-istioctl-mirror
@@ -1142,7 +1142,7 @@ periodics:
   name: periodic-project-infra-check-prow-jobconfigs
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260715-af3e234
+    - image: quay.io/kubevirtci/golang:v20260830-8316684
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/sh"
@@ -1178,7 +1178,7 @@ periodics:
   name: periodic-project-infra-perf-report-creator
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260715-af3e234
+    - image: quay.io/kubevirtci/golang:v20260830-8316684
       env:
         - name: KUBEVIRT_PROVIDER
           value: k8s-1.36
@@ -1243,7 +1243,7 @@ periodics:
   spec:
     containers:
     - &cluster_livez_container
-      image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+      image: quay.io/kubevirtci/bootstrap:v20260830-8316684
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash
@@ -1369,7 +1369,7 @@ periodics:
   max_concurrency: 1
   spec:
     containers:
-    - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+    - image: quay.io/kubevirtci/bootstrap:v20260830-8316684
       command:
       - /usr/local/bin/runner.sh
       - /bin/bash

@@ -24,7 +24,7 @@ postsubmits:
       preset-pgp-bot-key: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260715-af3e234
+      - image: quay.io/kubevirtci/golang:v20260830-8316684
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -69,7 +69,7 @@ postsubmits:
       preset-gcs-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+      - image: quay.io/kubevirtci/bootstrap:v20260830-8316684
         command: [ "/usr/local/bin/runner.sh", "/bin/sh", "-c" ]
         args:
         - |
@@ -106,7 +106,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260715-af3e234
+      - image: quay.io/kubevirtci/golang:v20260830-8316684
         env:
         - name: DOCKER_PREFIX
           value: quay.io/kubevirt
@@ -143,7 +143,7 @@ postsubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+        - image: quay.io/kubevirtci/bootstrap:v20260830-8316684
           env:
             - name: COVERALLS_TOKEN_FILE
               value: /root/.docker/secrets/coveralls/token
@@ -181,7 +181,7 @@ postsubmits:
       preset-bazel-cache: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+        - image: quay.io/kubevirtci/bootstrap:v20260830-8316684
           env:
             - name: FOSSA_TOKEN_FILE
               value: /root/.docker/secrets/fossa/token
@@ -225,7 +225,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+        - image: quay.io/kubevirtci/bootstrap:v20260830-8316684
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
@@ -260,7 +260,7 @@ postsubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+        - image: quay.io/kubevirtci/bootstrap:v20260830-8316684
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/bash"
