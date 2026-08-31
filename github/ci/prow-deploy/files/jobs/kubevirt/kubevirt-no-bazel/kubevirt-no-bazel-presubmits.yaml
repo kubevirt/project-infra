@@ -1,0 +1,371 @@
+presubmits:
+  kubevirt/kubevirt-no-bazel:
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    name: pull-kubevirt-no-bazel-build
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
+        image: quay.io/kubevirtci/bootstrap:v20260830-8316684
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    name: pull-kubevirt-no-bazel-build-arm64
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
+        env:
+        - name: BUILD_ARCH
+          value: crossbuild-aarch64
+        image: quay.io/kubevirtci/bootstrap:v20260830-8316684
+        resources:
+          requests:
+            memory: 8Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    name: pull-kubevirt-no-bazel-build-s390x
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
+        env:
+        - name: BUILD_ARCH
+          value: crossbuild-s390x
+        image: quay.io/kubevirtci/bootstrap:v20260830-8316684
+        resources:
+          requests:
+            memory: 8Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    name: pull-kubevirt-no-bazel-unit-test
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - make test
+        image: quay.io/kubevirtci/bootstrap:v20260830-8316684
+        resources:
+          requests:
+            cpu: "4"
+            memory: 24Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-arm64-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 2h0m0s
+    labels:
+      preset-gomaxprocs-4: "true"
+      preset-podman-in-container-enabled: "true"
+    name: pull-kubevirt-no-bazel-unit-test-arm64
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - make test
+        image: quay.io/kubevirtci/bootstrap:v20260830-8316684
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-s390x-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 2h0m0s
+    name: pull-kubevirt-no-bazel-unit-test-s390x
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - make go-test
+        image: quay.io/kubevirtci/golang:v20260830-8316684
+        resources:
+          requests:
+            memory: 8Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-no-bazel-generate
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make generate-verify
+        image: quay.io/kubevirtci/bootstrap:v20260830-8316684
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+    cluster: kubevirt-prow-control-plane
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-no-bazel-verify-go-mod
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - cp /etc/bazel.bazelrc ./ci.bazelrc && make deps-sync && hack/verify-generate.sh
+        image: quay.io/kubevirtci/bootstrap:v20260830-8316684
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-no-bazel-code-lint
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - |
+          make lint
+        image: quay.io/kubevirtci/bootstrap:v20260830-8316684
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 7h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-no-bazel-e2e-k8s-1.36-sig-compute
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.36-sig-compute-parallel
+        - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+          value: --usb 30M --usb 40M
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: 1G
+        image: quay.io/kubevirtci/bootstrap:v20260830-8316684
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-arm64-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-gomaxprocs-16: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 4
+    name: pull-kubevirt-no-bazel-e2e-kind-1.36-sig-compute-arm64
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -ce
+        - |
+          automation/test.sh
+        env:
+        - name: TARGET
+          value: kind-1.36-wg-arm64
+        - name: KUBEVIRT_NUM_NODES
+          value: "2"
+        image: quay.io/kubevirtci/bootstrap:v20260830-8316684
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /sys/fs/cgroup
+          name: cgroup
+      volumes:
+      - hostPath:
+          path: /sys/fs/cgroup
+          type: Directory
+        name: cgroup
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-s390x-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-kubevirt-s390x-icr-credential: "true"
+    max_concurrency: 3
+    name: pull-kubevirt-no-bazel-e2e-k8s-1.34-s390x
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -ce
+        - |
+          cat $ICR_PASSWORD | podman login icr.io --username $(cat $ICR_USER) --password-stdin=true
+          automation/test.sh
+        env:
+        - name: TARGET
+          value: k8s-1.34-wg-s390x
+        - name: KUBEVIRT_SLIM
+          value: "true"
+        - name: KUBEVIRT_BUILDER_IMAGE
+          value: icr.io/kubevirt/builder:2608020842-b8b04c190d
+        image: quay.io/kubevirtci/golang:v20260830-8316684
+        resources:
+          requests:
+            memory: 21Gi
+        securityContext:
+          privileged: true
