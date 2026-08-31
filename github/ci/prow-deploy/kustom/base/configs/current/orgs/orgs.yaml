@@ -996,6 +996,14 @@ orgs:
           web-ui: write
           web-ui-components: write
           web-ui-operator: write
+      wg-arch-ppc64le:
+        description: >-
+          Working group which takes care of all things related to supporting
+          ppc64le architecture on KubeVirt.
+          Ref: https://github.com/kubevirt/community/blob/main/wg-arch-ppc64le/charter.md
+        members:
+          - pkenchap
+        privacy: closed
       wg-arch-s390x:
         description: >-
           Working group which takes care of all things related to supporting
