@@ -2177,7 +2177,7 @@ presubmits:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: KUBEVIRTCI_CONTAINER_SUFFIX
-          value: 2606261100-91633356
+          value: 2608311229-dbec3e2e
         image: quay.io/kubevirtci/bootstrap:v20260830-8316684
         resources:
           requests:
