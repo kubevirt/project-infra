@@ -50,6 +50,8 @@ default:
       color: c5def5
     - name: wg/aie
       color: E3F582
+    - name: wg/arch-ppc64le
+      color: E3F582
     - name: wg/arch-s390x
       color: E3F582
     - name: kind/bug
@@ -68,8 +70,9 @@ default:
 				"storage": true,
 			}))
 			Expect(wgs).To(Equal(map[string]bool{
-				"aie":        true,
-				"arch-s390x": true,
+				"aie":          true,
+				"arch-ppc64le": true,
+				"arch-s390x":   true,
 			}))
 		})
 
@@ -106,9 +109,10 @@ default:
 				"scale":         true,
 			}
 			validWGs = map[string]bool{
-				"arch-s390x": true,
-				"arch-arm":   true,
-				"aie":        true,
+				"arch-s390x":  true,
+				"arch-arm":    true,
+				"arch-ppc64le": true,
+				"aie":         true,
 			}
 		})
 
@@ -128,6 +132,7 @@ default:
 			Entry("compound alias for sig-performance-latency", "sig-performance-latency", "sig scale"),
 			Entry("alias for wg-s390x", "wg-s390x", "wg arch-s390x"),
 			Entry("alias for wg-arm64", "wg-arm64", "wg arch-arm"),
+			Entry("alias for wg-ppc64le", "wg-ppc64le", "wg arch-ppc64le"),
 			Entry("compound alias for wg-s390x-ci", "wg-s390x-ci", "wg arch-s390x"),
 			Entry("fallback for sig-operator", "sig-operator", "sig compute"),
 			Entry("direct WG match", "wg-aie", "wg aie"),
