@@ -1121,6 +1121,7 @@ orgs:
         description: Maintainers of vm file restore operator project
         members:
           - arnongilboa
+          - ema-aka-young
           - noamasu
         repos:
           vm-file-restore-operator: admin
