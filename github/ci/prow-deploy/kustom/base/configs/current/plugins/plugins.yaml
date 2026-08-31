@@ -285,6 +285,14 @@ plugins:
     - release-note
     - trigger
 
+  kubevirt/kubevirt-no-bazel:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
+
   kubevirt/kubevirt-ansible:
     plugins:
     - release-note
@@ -738,6 +746,7 @@ approve:
   - kubevirt/vdpa-network-binding-plugin
   - kubevirt/vhostuser-network-binding-plugin
   - kubevirt/plugins
+  - kubevirt/kubevirt-no-bazel
   require_self_approval: true
   lgtm_acts_as_approve: false
   ignore_review_state: true
@@ -895,6 +904,7 @@ lgtm:
   - kubevirt/vdpa-network-binding-plugin
   - kubevirt/vhostuser-network-binding-plugin
   - kubevirt/plugins
+  - kubevirt/kubevirt-no-bazel
   review_acts_as_lgtm: true
 
 override:
@@ -966,6 +976,8 @@ triggers:
   - kubevirt/vhostuser-network-binding-plugin
   - kubevirt/plugins
   ignore_ok_to_test: true
+- repos:
+  - kubevirt/kubevirt-no-bazel
 - repos:
   - virtblocks/virtblocks
   ignore_ok_to_test: true
