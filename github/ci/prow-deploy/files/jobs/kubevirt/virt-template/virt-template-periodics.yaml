@@ -60,13 +60,24 @@ periodics:
       - -c
       - |
         export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
-        latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/virt-template/releases | jq -r '.[] | select(.target_commitish == '\""${VIRT_TEMPLATE_BRANCH}"\"') | .tag_name' | head -n1)
-        description="Automated update of virt-template to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated virt-template to ${latest_version}\n\\\`\\\`\\\`"
+        release=$(curl --fail -s https://api.github.com/repos/kubevirt/virt-template/releases | jq -c --arg branch "${VIRT_TEMPLATE_BRANCH}" 'map(select(.target_commitish == $branch)) | first')
+        latest_version=$(echo "${release}" | jq -r '.tag_name')
+        release_notes=$(echo "${release}" | jq -r '.body // ""' | tr -d '\r' | sed 's/@//g')
+
+        cat >/tmp/pr-description <<EOF
+        Automated update of virt-template to ${latest_version}
+
+        ${release_notes}
+
+        \`\`\`release-note
+        Updated virt-template to ${latest_version}
+        \`\`\`
+        EOF
 
         git-pr.sh \
           --command "cd ../kubevirt && hack/virt-template/bump.sh ${VIRT_TEMPLATE_BRANCH} && make generate" \
           --repo-path ../kubevirt \
-          --description-command "echo -e \"${description}\"" \
+          --description-command "cat /tmp/pr-description" \
           --repo kubevirt \
           --branch update-virt-template-main \
           --target "${KUBEVIRT_BRANCH}" \
@@ -106,13 +117,24 @@ periodics:
       - -c
       - |
         export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
-        latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/virt-template/releases | jq -r '.[] | select(.target_commitish == '\""${VIRT_TEMPLATE_BRANCH}"\"') | .tag_name' | head -n1)
-        description="[release-1.9] Automated update of virt-template to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated virt-template to ${latest_version}\n\\\`\\\`\\\`"
+        release=$(curl --fail -s https://api.github.com/repos/kubevirt/virt-template/releases | jq -c --arg branch "${VIRT_TEMPLATE_BRANCH}" 'map(select(.target_commitish == $branch)) | first')
+        latest_version=$(echo "${release}" | jq -r '.tag_name')
+        release_notes=$(echo "${release}" | jq -r '.body // ""' | tr -d '\r' | sed 's/@//g')
+
+        cat >/tmp/pr-description <<EOF
+        [release-1.9] Automated update of virt-template to ${latest_version}
+
+        ${release_notes}
+
+        \`\`\`release-note
+        Updated virt-template to ${latest_version}
+        \`\`\`
+        EOF
 
         git-pr.sh \
           --command "cd ../kubevirt && hack/virt-template/bump.sh ${VIRT_TEMPLATE_BRANCH} && make generate" \
           --repo-path ../kubevirt \
-          --description-command "echo -e \"${description}\"" \
+          --description-command "cat /tmp/pr-description" \
           --repo kubevirt \
           --branch update-virt-template-release-1.9 \
           --target "${KUBEVIRT_BRANCH}" \
@@ -152,13 +174,24 @@ periodics:
       - -c
       - |
         export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
-        latest_version=$(curl --fail -s https://api.github.com/repos/kubevirt/virt-template/releases | jq -r '.[] | select(.target_commitish == '\""${VIRT_TEMPLATE_BRANCH}"\"') | .tag_name' | head -n1)
-        description="[release-1.8] Automated update of virt-template to ${latest_version}\n\n\\\`\\\`\\\`release-note\nUpdated virt-template to ${latest_version}\n\\\`\\\`\\\`"
+        release=$(curl --fail -s https://api.github.com/repos/kubevirt/virt-template/releases | jq -c --arg branch "${VIRT_TEMPLATE_BRANCH}" 'map(select(.target_commitish == $branch)) | first')
+        latest_version=$(echo "${release}" | jq -r '.tag_name')
+        release_notes=$(echo "${release}" | jq -r '.body // ""' | tr -d '\r' | sed 's/@//g')
+
+        cat >/tmp/pr-description <<EOF
+        [release-1.8] Automated update of virt-template to ${latest_version}
+
+        ${release_notes}
+
+        \`\`\`release-note
+        Updated virt-template to ${latest_version}
+        \`\`\`
+        EOF
 
         git-pr.sh \
           --command "cd ../kubevirt && hack/virt-template/bump.sh ${VIRT_TEMPLATE_BRANCH} && make generate" \
           --repo-path ../kubevirt \
-          --description-command "echo -e \"${description}\"" \
+          --description-command "cat /tmp/pr-description" \
           --repo kubevirt \
           --branch update-virt-template-release-1.8 \
           --target "${KUBEVIRT_BRANCH}" \
