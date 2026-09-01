@@ -87,16 +87,6 @@ It is used to test the support of the [s390x] architecture in KubeVirt.
 [IBM]: https://www.ibm.com/
 [s390x]: https://docs.kernel.org/arch/s390/index.html
 
-## Prow s390x e2e test
-
-This KubevirtCI external cluster leveraging an `IBM/S390` processor is provided by [IBM].
-
-In Prow’s configuration, it is referenced using the name `prow-s390x-e2e-test`.
-
-It is used to run test lanes for [s390x e2e testing].
-
-[s390x e2e testing]: https://prow.ci.kubevirt.io/?job=*-e2e-test-S390X*
-
 ## Prow s390x OpenShift
 
 This KubevirtCI external cluster leveraging an `IBM/S390` processor is provided by [IBM].
