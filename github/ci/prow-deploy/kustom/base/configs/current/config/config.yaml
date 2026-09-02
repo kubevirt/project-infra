@@ -937,8 +937,8 @@ presets:
 - labels:
     preset-project-infra-image-build-linux: "true"
   env:
-    - name: GIMME_GO_VERSION
-      value: "1.25.1"
+    - name: GO_MOD_PATH
+      value: "/project-infra/go.mod"
     - name: GOFLAGS
       value: "-mod=vendor -ldflags=-extldflags=\"-static\""
     - name: CGO_ENABLED

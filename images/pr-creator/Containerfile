@@ -15,17 +15,16 @@ ENV GOPROXY=https://proxy.golang.org|direct \
 # - https://gitlab.com/qemu-project/qemu/-/issues/2738
 # - https://github.com/openshift/dpu-operator/pull/308
 ENV GOMAXPROCS=3
-ENV GIMME_GO_VERSION=1.25.1
 
 RUN set -x && \
     git clone --depth 1 --revision 03e5768a447b55381f7517a9d27bb51831893d31 https://github.com/kubernetes/test-infra.git && \
     cd ./test-infra && \
-    /usr/local/bin/runner.sh /bin/sh -cex 'go mod vendor && time go build -tags netgo -o /usr/local/bin/pr-creator ./robots/pr-creator' && \
+    /usr/local/bin/entrypoint.sh /bin/sh -cex 'go mod vendor && time go build -tags netgo -o /usr/local/bin/pr-creator ./robots/pr-creator' && \
     chmod +x /usr/local/bin/pr-creator
 
 RUN set -x && \
     cd /project-infra && \
-    /usr/local/bin/runner.sh /bin/sh -cex 'time go build -tags netgo -o /usr/local/bin/labels-checker ./robots/labels-checker' && \
+    /usr/local/bin/entrypoint.sh /bin/sh -cex 'time go build -tags netgo -o /usr/local/bin/labels-checker ./robots/labels-checker' && \
     chmod +x /usr/local/bin/labels-checker
 
 FROM quay.io/kubevirtci/golang:v20260830-8316684 AS final

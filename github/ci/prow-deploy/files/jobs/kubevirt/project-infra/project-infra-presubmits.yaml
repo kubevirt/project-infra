@@ -37,14 +37,14 @@ presubmits:
       containers:
       - image: quay.io/kubevirtci/golang:v20260830-8316684
         command:
-        - "/usr/local/bin/runner.sh"
+        - "/usr/local/bin/entrypoint.sh"
         - "/bin/sh"
         - "-ce"
         - |
           go test ./robots/... ./pkg/...
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.25.1"
+        - name: GO_MOD_PATH
+          value: go.mod
         - name: GOFLAGS
           value: "-mod=vendor"
         resources:
@@ -59,7 +59,7 @@ presubmits:
       containers:
       - image: quay.io/kubevirtci/golang:v20260830-8316684
         command:
-        - "/usr/local/bin/runner.sh"
+        - "/usr/local/bin/entrypoint.sh"
         - "/bin/sh"
         - "-ce"
         - |
@@ -68,8 +68,8 @@ presubmits:
            --github-token-path='' \
            --dry-run=false
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.26.4"
+        - name: GO_MOD_PATH
+          value: go.mod
         - name: GOFLAGS
           value: "-mod=vendor"
         resources:
@@ -85,14 +85,14 @@ presubmits:
       containers:
       - image: quay.io/kubevirtci/golang:v20260830-8316684
         command:
-        - "/usr/local/bin/runner.sh"
+        - "/usr/local/bin/entrypoint.sh"
         - "/bin/sh"
         - "-ce"
         - |
           go test ./releng/...
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.25.1"
+        - name: GO_MOD_PATH
+          value: go.mod
         resources:
           requests:
             memory: "4Gi"
@@ -106,11 +106,14 @@ presubmits:
       containers:
       - image: quay.io/kubevirtci/golang:v20260830-8316684
         command:
-        - "/usr/local/bin/runner.sh"
+        - "/usr/local/bin/entrypoint.sh"
         - "/bin/sh"
         - "-ce"
         - |
           go build ./github/ci/services/...
+        env:
+        - name: GO_MOD_PATH
+          value: go.mod
         resources:
           requests:
             memory: "4Gi"
@@ -124,15 +127,15 @@ presubmits:
     spec:
       containers:
       - command:
-        - "/usr/local/bin/runner.sh"
+        - "/usr/local/bin/entrypoint.sh"
         - "/bin/sh"
         - "-ce"
         - |
           curl -sSfL https://golangci-lint.run/install.sh | sh -s -- -b ${GOPATH}/bin ${GOLANGCI_LINT_VERSION}
           make lint
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.26.4"
+        - name: GO_MOD_PATH
+          value: go.mod
         - name: GOLANGCI_LINT_VERSION
           value: "v2.12.2"
         image: quay.io/kubevirtci/golang:v20260830-8316684
@@ -727,7 +730,7 @@ presubmits:
       containers:
         - image: quay.io/kubevirtci/golang:v20260830-8316684
           command:
-            - "/usr/local/bin/runner.sh"
+            - "/usr/local/bin/entrypoint.sh"
             - "/bin/sh"
             - "-ce"
             - |
@@ -742,8 +745,8 @@ presubmits:
 
               go test ./github/ci/services/ci-search/e2e/...
           env:
-          - name: GIMME_GO_VERSION
-            value: "1.25.1"
+          - name: GO_MOD_PATH
+            value: go.mod
           resources:
             requests:
               memory: "16Gi"
@@ -768,7 +771,7 @@ presubmits:
     spec:
       containers:
         - command:
-            - "/usr/local/bin/runner.sh"
+            - "/usr/local/bin/entrypoint.sh"
             - "/bin/bash"
             - "-ce"
             - |
@@ -782,8 +785,8 @@ presubmits:
 
               ./github/ci/services/grafana/hack/test.sh
           env:
-          - name: GIMME_GO_VERSION
-            value: "1.25.1"
+          - name: GO_MOD_PATH
+            value: go.mod
           image: quay.io/kubevirtci/golang:v20260830-8316684
           resources:
             requests:
@@ -906,10 +909,10 @@ presubmits:
       containers:
       - image: quay.io/kubevirtci/golang:v20260830-8316684
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.25.1"
+        - name: GO_MOD_PATH
+          value: go.mod
         command:
-        - "/usr/local/bin/runner.sh"
+        - "/usr/local/bin/entrypoint.sh"
         - "/bin/sh"
         - "-ce"
         - |
