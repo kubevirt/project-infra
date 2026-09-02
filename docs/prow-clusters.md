@@ -66,16 +66,6 @@ It is used to test the support of the [HyperV] hypervisor in KubeVirt.
 [Azure]: https://azure.microsoft.com/
 [HyperV]: https://learn.microsoft.com/windows-server/virtualization/hyper-v/
 
-## Prow Performance
-
-This KubevirtCI external cluster hosted on [IBM Cloud Classic] and leveraging bare-metal servers is provided by [Red Hat].
-
-In Prow’s configuration, it is referenced using the name `kubevirt-performance`.
-
-It is used to run test lanes for [performance jobs].
-
-[performance jobs]: https://prow.ci.kubevirt.io/?job=*kubevirt-performance*
-
 ## Prow s390x Workloads
 
 This federated cluster leveraging an `IBM/S390` processor is provided by [IBM].

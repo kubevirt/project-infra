@@ -1,4 +1,5 @@
-# Performance Cluster
+# Performance Testing
+
 Code changes may affect system behavior, scalability, and performance. So we currently have two types of tests needed to validate kubevirt code. These are:
 * Correctness tests - e2e tests verifying expected system behaviors
 * Performance tests - e2e tests to test system performance
@@ -13,22 +14,18 @@ Correctness tests run as unit and functional tests for each PR, and performance 
 ## Prow cluster
 The CI/CD system for performance testing is based on [Prow], a Kubernetes CI system, using the same control plane system as the Correctness tests. Therefore, all test statuses can be viewed in the same testgrid.
 
-However, unlike Correctness tests, Performance testing jobs do not use KubeVirtCI, which creates a Kubernetes cluster in a virtual machine. Instead, a pre-built cluster on top of baremetal nodes is used due to performance reasons. Most specially because we want to avoid the performance implications of nested virtualization. Moreover, unlike Correctness tests, only one Performance test job can run at a time to avoid performance interference from workload collocation.
-
-
-
 ## Automated performance cluster tests
 Because running performance tests is time consuming, we do not want to run them too often. On the other hand, performing them infrequently implies late identification and accumulation of regressions. Note that they would not run by default on every open PR due to resource, costs, and other constraints. So, we choose the following middle ground:
 
 | Day | |
 | ------------- |:-------------:|
-| Mon | [scale VMs density perf test](../github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml)  @ 03:41 PM UTC |
-| Tue | scale VMs density perf test  @ 03:41 PM UTC |
-| Wed | scale VMs density perf test  @ 03:41 PM UTC |
-| Thu | scale VMs density perf test  @ 03:41 PM UTC |
-| Fri | scale VMs density perf test  @ 03:41 PM UTC |
-| Sat | scale VMs density perf test  @ 03:41 PM UTC |
-| Sun | scale VMs density perf test  @ 03:41 PM UTC |
+| Mon | [kubevirt e2e perf test](../github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml) @ 00:00, 08:00, 16:00 UTC |
+| Tue | kubevirt e2e perf test @ 00:00, 08:00, 16:00 UTC |
+| Wed | kubevirt e2e perf test @ 00:00, 08:00, 16:00 UTC |
+| Thu | kubevirt e2e perf test @ 00:00, 08:00, 16:00 UTC |
+| Fri | kubevirt e2e perf test @ 00:00, 08:00, 16:00 UTC |
+| Sat | kubevirt e2e perf test @ 00:00, 08:00, 16:00 UTC |
+| Sun | kubevirt e2e perf test @ 00:00, 08:00, 16:00 UTC |
 
 Running a performance jobs every day would:
 * help capture regressions daily
@@ -36,9 +33,9 @@ Running a performance jobs every day would:
 * ensure a good release signal
 
 ## Test configuration
-* Scale VM density perf test is a prow job that runs a medium scale burst density performance test once a day creating 400, 600, up to 800 VMIs in the performance cluster.
-Waiting for a cool down interval between each scenario. We create up to 200 VMIs per node to avoid overload the node, more info [here](https://2022.fosdem.sojourner.rocks/event/12559).
-Testgrid [link](https://testgrid.k8s.io/kubevirt-periodics#periodic-kubevirt-performance-cluster-scale-density-test&width=20).
+* KubeVirt e2e perf test is a prow job that runs a medium scale burst density performance test every day creating up to 100 VMIs in the performance cluster.
+Waiting for a cool down interval between each scenario. We create up to 100 VMIs per node to avoid overload the node, more info [here](https://2022.fosdem.sojourner.rocks/event/12559).
+Testgrid [link](https://testgrid.k8s.io/kubevirt-periodics#periodic-kubevirt-e2e-k8s-1.36-sig-performance).
 
 ## Metrics
 To analyze the performance regression, we are interested in latency, throughput, and resource utilization metrics. To this end, we continually collect and report on the measurements described above as part of the project testing framework.
@@ -57,25 +54,19 @@ Another important metric is the tail latency for KubeVirt API operations. The 99
 A high creation rate is crucial for scalability, on a large scale system the system throughput will affect the overall performance. Throughput is measured as the number of VMI running per second.
 
 
-## Cluster Configuration
-The cluster is a Kubernetes cluster managed on baremetal nodes in the IBM cloud. For the software layer, the cluster is configured with Kubernetes 1.21.3, where each node has CentOS Linux 8. The Kubernetes cluster consists of 3 master nodes and 3 worker nodes, the etcd cluster runs in the master nodes. 
-
-Regarding the hardware configuration, all nodes are homogeneous, with 2 Intel(R) Xeon(R) Platinum 8260 CPUs @ 2.40GHz where each processor has 24 cores and 2 hyper-threads per core, thus with a total of 96 CPUs. In addition, each node has 128GB of DRAM, 10Gbps network bandwidth, and 1.6T of SCSI disk.
-
-
 ## Components
 * Load generator: [perfscale-load-generator](https://github.com/kubevirt/kubevirt/tree/main/tools/perfscale-load-generator), which is a tool aimed at stressing the Kubernetes and KubeVirt control plane by creating several objects (e.g., VM, VMI, and VMIReplicaSet).
 
-* Monitoring stack: prometheus, node-exporter, and grafana. 
+* Monitoring stack: prometheus, node-exporter, and grafana.
    * Prometheus retains data for up to 3 months.
    * Various dashboards including a KubeVirt control-plane dashboard.
 
 
 ## Exposed services
 
-* deck: "periodic-kubevirt-performance-cluster-scale-density-test" job in Prow UI, available at https://prow.ci.kubevirt.io
+* deck: "periodic-kubevirt-e2e-k8s-\*-sig-performance" job in Prow UI, available at https://prow.ci.kubevirt.io
 
-* grafana: available at http://52.117.69.106:30000/d/V1Qq_IBM_za0/kubevirt-control-plane
+* grafana: available at https://grafana.ci.kubevirt.io
 
 * ci-search: available at https://search.ci.kubevirt.io
 
