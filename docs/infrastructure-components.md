@@ -112,22 +112,6 @@ flowchart LR
         S390XJobs --> S390XWorkers
     end
 
-    subgraph PerfCluster["prow-performance"]
-        subgraph PCJobsNS["kubevirt-prow-jobs"]
-            PCJobs["`Performance
-                    Test Jobs`"]
-        end
-        subgraph PCMonitoring["Monitoring"]
-            PCPrometheus["Prometheus Stack"]
-        end
-        subgraph PCWorkers["Worker Nodes"]
-            PCBMs["6 Bare Metal Servers"]
-        end
-
-        PCJobs --> PCPrometheus
-        PCJobs --> PCWorkers
-    end
-
     subgraph AMDCluster["amd-workloads"]
         subgraph AMDJobsNS["kubevirt-prow-jobs"]
             AMDJobs["`AMD Test Jobs`"]
@@ -273,7 +257,9 @@ testing and the image artifacts are stored here.
 
 ### Workloads
 
-This is a self managed cluster with bare metals as workers. It runs the e2e jobs.
+This is a self managed cluster with bare metals as workers. It runs the e2e and [performance] jobs.
+
+[performance]: performance-testing.md
 
 #### Context
 
@@ -320,10 +306,6 @@ provided separately, they are not included in Prow's main kubeconfig.
 ### ARM cluster
 
 Used to run ARM test jobs.
-
-### Performance cluster
-
-Runs [performance-related jobs](performance-cluster.md).
 
 [Prow]: https://github.com/kubernetes-sigs/prow#readme
 ["Life of a Prow Job"]: https://docs.prow.k8s.io/docs/life-of-a-prow-job/

@@ -1294,14 +1294,6 @@ periodics:
       - name: CLUSTER_KUBECONFIG_NAME
         value: prow-hyperv-workloads
 - <<: *cluster_livez_job
-  name: periodic-project-infra-prow-kubevirt-performance-livez
-  spec:
-    containers:
-    - <<: *cluster_livez_container
-      env:
-      - name: CLUSTER_KUBECONFIG_NAME
-        value: kubevirt-performance
-- <<: *cluster_livez_job
   name: periodic-project-infra-prow-s390x-workloads-livez
   annotations:
     <<: *cluster_livez_annotations
