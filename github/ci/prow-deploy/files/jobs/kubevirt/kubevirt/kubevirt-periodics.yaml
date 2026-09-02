@@ -739,58 +739,101 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
+    description: "Runs unit tests and uploads Go test cache for arm64 presubmits"
   cluster: prow-arm64-workloads
-  cron: 40 4 * * *
+  cron: 10 * * * *
   decoration_config:
     grace_period: 5m0s
     timeout: 2h0m0s
   extra_refs:
   - base_ref: main
+    clone_depth: 1
     org: kubevirt
     repo: kubevirt
   labels:
-    preset-bazel-unnested: "false"
+    preset-gcs-credentials: "true"
+    preset-go-test-cache-bucket: "true"
     preset-gomaxprocs-4: "true"
-  max_concurrency: 10
-  name: periodic-kubevirt-unit-test-Arm64
+    preset-podman-in-container-enabled: "true"
+  max_concurrency: 1
+  name: periodic-kubevirt-unit-test-arm64
   spec:
     containers:
     - command:
       - /usr/local/bin/runner.sh
       - /bin/sh
-      - -c
-      - make test
+      - -ce
+      - make go-test-cache-save
       image: quay.io/kubevirtci/bootstrap:v20260830-8316684
       resources:
         requests:
-          memory: 8Gi
+          memory: 12Gi
       securityContext:
         privileged: true
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
+    description: "Runs unit tests and uploads Go test cache for s390x presubmits"
   cluster: prow-s390x-workloads
-  cron: 40 5 * * *
+  cron: 30 * * * *
   decoration_config:
     grace_period: 5m0s
     timeout: 2h0m0s
   extra_refs:
   - base_ref: main
+    clone_depth: 1
     org: kubevirt
     repo: kubevirt
-  max_concurrency: 10
+  labels:
+    preset-gcs-credentials: "true"
+    preset-go-test-cache-bucket: "true"
+  max_concurrency: 1
   name: periodic-kubevirt-unit-test-s390x
   spec:
     containers:
     - command:
       - /usr/local/bin/runner.sh
       - /bin/sh
-      - -c
-      - make go-test
+      - -ce
+      - make go-test-cache-save
       image: quay.io/kubevirtci/golang:v20260830-8316684
       resources:
         requests:
-          memory: 8Gi
+          memory: 12Gi
+      securityContext:
+        privileged: true
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+    description: "Runs unit tests hourly and uploads Go test cache to GCS for presubmit reuse"
+  cluster: prow-workloads
+  cron: 50 * * * *
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 1h0m0s
+  extra_refs:
+  - base_ref: main
+    clone_depth: 1
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-gcs-credentials: "true"
+    preset-go-test-cache-bucket: "true"
+    preset-podman-in-container-enabled: "true"
+  max_concurrency: 1
+  name: periodic-kubevirt-unit-test
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -ce
+      - make go-test-cache-save
+      image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+      resources:
+        requests:
+          cpu: "4"
+          memory: 24Gi
       securityContext:
         privileged: true
 - annotations:
