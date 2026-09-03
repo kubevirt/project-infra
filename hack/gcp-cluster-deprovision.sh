@@ -71,6 +71,10 @@ DISK_FILTER="creationTimestamp.date('%Y-%m-%dT%H:%M%z')<${gce_cluster_age_cutoff
 gcloud --project="${GCP_PROJECT}" compute disks list --filter "${DISK_FILTER}" --uri \
   | xargs -r --max-procs='10' gcloud --project="${GCP_PROJECT}" compute disks delete --quiet
 
+IMAGE_FILTER="creationTimestamp.date('%Y-%m-%dT%H:%M%z')<${gce_cluster_age_cutoff} AND description:'Image created by GCE-PD CSI Driver' AND sourceDisk.basename():pvc-"
+gcloud --project="${GCP_PROJECT}" compute images list --no-standard-images --filter "${IMAGE_FILTER}" --uri \
+  | xargs -r --max-procs='10' gcloud --project="${GCP_PROJECT}" compute images delete --quiet
+
 SNAPSHOT_FILTER="creationTimestamp.date('%Y-%m-%dT%H:%M%z')<${gce_cluster_age_cutoff} AND description:'Snapshot created by GCE-PD CSI Driver' AND sourceDisk.basename():pvc-"
 gcloud --project="${GCP_PROJECT}" compute snapshots list --filter "${SNAPSHOT_FILTER}" --uri \
   | xargs -r --max-procs='10' gcloud --project="${GCP_PROJECT}" compute snapshots delete --quiet
