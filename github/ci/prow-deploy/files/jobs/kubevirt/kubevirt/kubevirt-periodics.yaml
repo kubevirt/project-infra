@@ -22,7 +22,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v202608310133-605e093
+      image: quay.io/kubevirtci/flakefinder:v202609021950-bc09d46
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -47,7 +47,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v202608310133-605e093
+      image: quay.io/kubevirtci/flakefinder:v202609021950-bc09d46
       resources:
         requests:
           cpu: 500m
@@ -75,7 +75,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v202608310133-605e093
+      image: quay.io/kubevirtci/flakefinder:v202609021950-bc09d46
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -591,7 +591,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ceu
-      image: quay.io/kubevirtci/pr-creator:v20260809-12a13ee
+      image: quay.io/kubevirtci/pr-creator:v20260902-bc09d46
       resources:
         requests:
           memory: 8Gi
@@ -637,7 +637,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ceu
-      image: quay.io/kubevirtci/pr-creator:v20260809-12a13ee
+      image: quay.io/kubevirtci/pr-creator:v20260902-bc09d46
       resources:
         requests:
           memory: 8Gi
@@ -829,7 +829,7 @@ periodics:
       - /bin/sh
       - -ce
       - make go-test-cache-save
-      image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+      image: quay.io/kubevirtci/bootstrap:v20260830-8316684
       resources:
         requests:
           cpu: "4"
@@ -1464,7 +1464,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ce
-      image: quay.io/kubevirtci/pr-creator:v20260809-12a13ee
+      image: quay.io/kubevirtci/pr-creator:v20260902-bc09d46
       resources:
         requests:
           memory: 200Mi
@@ -1496,7 +1496,7 @@ periodics:
       - --output-gcs-url=gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/index.html
       command:
       - /usr/bin/test-label-analyzer
-      image: quay.io/kubevirtci/test-label-analyzer:v202608310132-605e093
+      image: quay.io/kubevirtci/test-label-analyzer:v202609021950-bc09d46
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -2009,7 +2009,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/pr-creator:v20260809-12a13ee
+      image: quay.io/kubevirtci/pr-creator:v20260902-bc09d46
       resources: {}
     nodeSelector:
       type: bare-metal-external
