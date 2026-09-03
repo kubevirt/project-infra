@@ -1,15 +1,4 @@
 ---
-# schedule on cachenode
-- op: add
-  path: /spec/template/spec/nodeSelector
-  value:
-    ci.kubevirt.io/cachenode: "true"
-- op: add
-  path: /spec/template/spec/tolerations
-  value:
-    - key: "ci.kubevirt.io/cachenode"
-      operator: "Exists"
-      effect: "NoSchedule"
 # setup data hostPath
 - op: add
   path: /spec/template/spec/volumes/0
@@ -22,10 +11,3 @@
   value:
     name: storage
     mountPath: /docker_mirror_cache
-# set cpu resources
-- op: replace
-  path: /spec/template/spec/containers/0/resources/limits/cpu
-  value: "700m"
-- op: replace
-  path: /spec/template/spec/containers/0/resources/requests/cpu
-  value: "700m"

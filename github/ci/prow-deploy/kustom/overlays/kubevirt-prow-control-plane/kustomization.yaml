@@ -1,4 +1,4 @@
-# Requires kustomize v3
+---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
@@ -95,6 +95,10 @@ patches:
       kind: PersistentVolumeClaim
       name: ghproxy
     path: patches/StrategicMerge/ghproxy.yaml
+  - target:
+      <<: *deployment_target
+      name: docker-mirror-proxy
+    path: patches/JsonRFC6902/docker_mirror_deployment.yaml
 
   # namespaces
   - target:

@@ -1,3 +1,4 @@
+---
 - name: set configs dir
   set_fact:
     configs_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/configs/'
@@ -6,8 +7,3 @@
   file:
     path: '{{ configs_dir }}'
     state: directory
-
-- name: create mirror-proxy-config
-  copy:
-    content: '{{ dockerMirrorProxyCA.crt }}'
-    dest: '{{ components_dir }}/docker-mirror-proxy/base/configs/ca.crt'
