@@ -21,7 +21,13 @@ set -o pipefail
 GO_MOD_PATH=${GO_MOD_PATH:-}
 
 if [[ -n ${GO_MOD_PATH} && -f ${GO_MOD_PATH} ]]; then
-  export GIMME_GO_VERSION="$(grep -E '^go' "${GO_MOD_PATH}" | cut -d' ' -f 2)"
+  toolchain_version="$(grep -E '^toolchain go' "${GO_MOD_PATH}" | cut -d' ' -f2 | sed 's/^go//')"
+  if [[ -n ${toolchain_version} ]]; then
+    export GIMME_GO_VERSION="${toolchain_version}"
+  else
+    # Fallback to go directive for repos without toolchain line
+    export GIMME_GO_VERSION="$(grep -E '^go ' "${GO_MOD_PATH}" | cut -d' ' -f2)"
+  fi
 fi
 
 # actually start bootstrap and the job, under the runner (which handles dind etc.)
