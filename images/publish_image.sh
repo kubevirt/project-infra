@@ -25,7 +25,7 @@ main() {
                     "--env=CGO_ENABLED=${CGO_ENABLED}"
                     "--env=GOOS=${GOOS}"
                     "--env=GOARCH=${GOARCH}"
-                    "--env=GIMME_GO_VERSION=${GIMME_GO_VERSION}"
+                    "--env=GO_MOD_PATH=${GO_MOD_PATH:-/project-infra/go.mod}"
                 )
                 ;;
             h)

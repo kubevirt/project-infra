@@ -1,6 +1,7 @@
 FROM quay.io/kubevirtci/golang:v20260830-8316684 as builder
+ENV GO_MOD_PATH=/project-infra/go.mod
 RUN cd /project-infra/ && \
-    /usr/local/bin/runner.sh /bin/sh -c "env GOPROXY=off go build -tags netgo -o /go/bin/release-tool ./releng/release-tool"
+    /usr/local/bin/entrypoint.sh /bin/sh -c "env GOPROXY=off go build -tags netgo -o /go/bin/release-tool ./releng/release-tool"
 
 FROM quay.io/kubevirtci/release-tool-base:v20250214-0d9df61
 COPY ./entrypoint.sh /usr/sbin/entrypoint.sh

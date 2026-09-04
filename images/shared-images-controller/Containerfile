@@ -1,7 +1,5 @@
 FROM quay.io/kubevirtci/golang:v20260830-8316684 as builder
 
-ENV GIMME_GO_VERSION=1.25.1
-
 WORKDIR /workspace
 
 RUN dnf install -y gpgme-devel device-mapper-devel btrfs-progs-devel
@@ -12,11 +10,11 @@ COPY go.mod go.mod
 
 COPY go.sum go.sum
 
-RUN /usr/local/bin/runner.sh /bin/sh -c "go mod download"
+RUN /usr/local/bin/entrypoint.sh /bin/sh -c "go mod download"
 
 COPY ./ ./
 
-RUN /usr/local/bin/runner.sh /bin/sh -c "go build ."
+RUN /usr/local/bin/entrypoint.sh /bin/sh -c "go build ."
 
 FROM quay.io/kubevirtci/bootstrap:v20260830-8316684
 

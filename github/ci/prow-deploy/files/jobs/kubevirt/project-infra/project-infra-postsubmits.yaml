@@ -637,7 +637,7 @@ postsubmits:
           runAsUser: 0
         containers:
         - command:
-            - "/usr/local/bin/runner.sh"
+            - "/usr/local/bin/entrypoint.sh"
             - "/bin/bash"
             - "-ce"
             - |
@@ -656,8 +656,8 @@ postsubmits:
 
               ./github/ci/services/grafana/hack/deploy.sh "${environment}"
           env:
-          - name: GIMME_GO_VERSION
-            value: "1.25.1"
+          - name: GO_MOD_PATH
+            value: go.mod
           image: quay.io/kubevirtci/golang:v20260830-8316684
           resources:
             requests:
@@ -799,10 +799,10 @@ postsubmits:
         containers:
         - image: quay.io/kubevirtci/golang:v20260830-8316684
           env:
-          - name: GIMME_GO_VERSION
-            value: "1.25.1"
+          - name: GO_MOD_PATH
+            value: go.mod
           command:
-          - /usr/local/bin/runner.sh
+          - /usr/local/bin/entrypoint.sh
           - /bin/sh
           - -ce
           args:
@@ -848,8 +848,10 @@ postsubmits:
             value: kubevirt/ci-performance-benchmarks
           - name: GITHUB_TOKEN_PATH
             value: /etc/github/token
+          - name: GO_MOD_PATH
+            value: go.mod
           command:
-          - /usr/local/bin/runner.sh
+          - /usr/local/bin/entrypoint.sh
           - /bin/sh
           - -c
           args:
