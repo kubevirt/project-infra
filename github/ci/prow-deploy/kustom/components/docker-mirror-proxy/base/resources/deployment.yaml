@@ -20,7 +20,7 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
       - name: mirror-proxy
-        image: ghcr.io/rpardini/docker-registry-proxy:0.6.2
+        image: ghcr.io/rpardini/docker-registry-proxy:0.7.0
         env:
         - name: ENABLE_MANIFEST_CACHE
           value: "true"
@@ -64,6 +64,10 @@ spec:
           limits:
             cpu: 300m
             memory: 3Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          seccompProfile:
+            type: RuntimeDefault
       volumes:
       - name: ca-public
         configMap:

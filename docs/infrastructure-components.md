@@ -329,7 +329,7 @@ Runs [performance-related jobs](performance-cluster.md).
 ["Life of a Prow Job"]: https://docs.prow.k8s.io/docs/life-of-a-prow-job/
 [sequence diagram]: https://docs.prow.k8s.io/images/pr-interactions-sequence.svg
 [ci-search]: https://github.com/openshift/ci-search
-[docker proxy]: https://github.com/rpardini/docker-registry-proxy
+[docker proxy]: docker-mirror-proxy.md
 [cert-manager]: https://cert-manager.io/docs/
 [greenhouse]: https://github.com/kubernetes/test-infra/tree/1b4b11a/greenhouse
 [automation secrets]: https://github.com/kubevirt/secrets/blob/master/secrets.tar.asc

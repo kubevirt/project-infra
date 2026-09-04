@@ -1,16 +1,5 @@
 ---
-# sets resources
-- op: replace
-  path: /spec/template/spec/containers/0/resources
-  value:
-    requests:
-      cpu: 4
-      memory: 8Gi
-    limits:
-      cpu: 4
-      memory: 8Gi
-
-# KubeVirt Prow workloads cluster does not provide IPv6 connectivity to Pods
+# KubeVirt Prow control-plane cluster does not provide IPv6 connectivity to Pods
 - op: add
   path: /spec/template/spec/containers/0/env/-
   value:

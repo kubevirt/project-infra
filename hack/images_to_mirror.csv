@@ -7,4 +7,3 @@ docker.io,grafana/grafana:7.5.4,quay.io/kubevirtci
 docker.io,istio/install-cni:1.30.2,quay.io/kubevirtci
 docker.io,istio/pilot:1.30.2,quay.io/kubevirtci
 docker.io,istio/proxyv2:1.30.2,quay.io/kubevirtci
-docker.io,rpardini/docker-registry-proxy:0.6.2,quay.io/kubevirtci
