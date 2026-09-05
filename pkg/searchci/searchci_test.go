@@ -82,7 +82,7 @@ tests/compute/vm_lifecycle.go:51
 						},
 						{
 							URL:      "https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/kubevirt_kubevirt/14802/pull-kubevirt-e2e-k8s-1.30-sig-compute/1930397210671845376",
-							Interval: time.Hour * 24 * 6,
+							Interval: time.Hour * 24 * 7,
 						},
 					},
 				},
@@ -335,6 +335,37 @@ tests/migration/namespace.go:236
 			72*time.Hour, 2, time.Duration(0),
 			true,
 		),
+		Entry("filters impact when oldest failure is a 3-day search.ci bucket (upper bound 96h)",
+			Impact{
+				BuildURLs: []JobBuildURL{
+					{Interval: 47 * time.Hour},
+					{Interval: parseSearchCIAge(3, "days")},
+				},
+			},
+			72*time.Hour, 2, 24*time.Hour,
+			false,
+		),
+		Entry("keeps impact when oldest failure is a 2-day search.ci bucket (upper bound 72h)",
+			Impact{
+				BuildURLs: []JobBuildURL{
+					{Interval: 4 * time.Hour},
+					{Interval: parseSearchCIAge(2, "days")},
+				},
+			},
+			72*time.Hour, 2, 24*time.Hour,
+			true,
+		),
+	)
+
+	DescribeTable("parseSearchCIAge",
+		func(amount int, unit string, expected time.Duration) {
+			Expect(parseSearchCIAge(amount, unit)).To(Equal(expected))
+		},
+		Entry("minutes stay exact", 34, "minutes", 34*time.Minute),
+		Entry("hours stay exact", 47, "hours", 47*time.Hour),
+		Entry("2 days ago rounds up to 72h", 2, "days", 72*time.Hour),
+		Entry("3 days ago rounds up to 96h", 3, "days", 96*time.Hour),
+		Entry("4 days ago rounds up to 120h", 4, "days", 120*time.Hour),
 	)
 
 	Context("ScrapeImpacts", func() {

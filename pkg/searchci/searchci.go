@@ -119,23 +119,28 @@ func ScrapeImpact(body string) []Impact {
 				log.Fatalf("unparseable amount %q", timeAmountStr)
 			}
 			unitWord := submatch[8]
-			var duration time.Duration
-			switch {
-			case unitWord == "minutes":
-				duration = time.Minute * time.Duration(timeAmount)
-			case unitWord == "hours":
-				duration = time.Hour * time.Duration(timeAmount)
-			case unitWord == "days":
-				duration = time.Hour * 24 * time.Duration(timeAmount)
-			}
 			jobBuild := JobBuildURL{
 				URL:      viewJobBuildURL,
-				Interval: duration,
+				Interval: parseSearchCIAge(timeAmount, unitWord),
 			}
 			result[len(result)-1].BuildURLs = append(result[len(result)-1].BuildURLs, jobBuild)
 		}
 	}
 	return result
+}
+
+// parseSearchCIAge converts a search.ci relative timestamp into a duration.
+func parseSearchCIAge(amount int, unit string) time.Duration {
+	switch unit {
+	case "minutes":
+		return time.Minute * time.Duration(amount)
+	case "hours":
+		return time.Hour * time.Duration(amount)
+	case "days":
+		return time.Hour * 24 * time.Duration(amount+1)
+	default:
+		return 0
+	}
 }
 
 type FilterOpt func(i Impact) bool
