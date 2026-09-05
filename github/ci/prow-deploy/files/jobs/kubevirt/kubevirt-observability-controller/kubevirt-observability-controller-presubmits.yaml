@@ -13,7 +13,7 @@ presubmits:
       grace_period: 5m
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20260830-8316684
+        - image: quay.io/kubevirtci/golang:v20260904-f27fe5a
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -35,7 +35,7 @@ presubmits:
       grace_period: 5m
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20260830-8316684
+        - image: quay.io/kubevirtci/golang:v20260904-f27fe5a
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -64,7 +64,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20260830-8316684
+        - image: quay.io/kubevirtci/golang:v20260904-f27fe5a
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
