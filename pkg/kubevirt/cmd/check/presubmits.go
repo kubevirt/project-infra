@@ -40,11 +40,12 @@ var checkPresubmitsOpts = checkPresubmitsOptions{}
 
 var checkPresubmitsCommand = &cobra.Command{
 	Use:   "presubmits",
-	Short: "kubevirt check presubmits validates the sig-compute TARGET configuration for the latest k8s version",
-	Long: `kubevirt check presubmits validates the sig-compute TARGET configuration for the latest k8s version
+	Short: "kubevirt check presubmits validates sig-compute and sig-network presubmit invariants",
+	Long: `kubevirt check presubmits validates sig-compute and sig-network presubmit invariants
 
-For the latest Kubernetes version found in the presubmit job definitions, it checks that
-the sig-compute-serial job has a -serial TARGET and the plain sig-compute job has a -parallel TARGET.`,
+For the latest Kubernetes version found in the presubmit job definitions it checks that
+the sig-compute-serial job has a -serial TARGET and the plain sig-compute job has a -parallel TARGET.
+It also checks that the latest stable sig-network lane configuration stays coherent with the sig-network-smoke lane.`,
 	RunE: runCheckPresubmits,
 }
 
@@ -67,14 +68,29 @@ func runCheckPresubmits(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to read jobconfig %s: %v", checkPresubmitsOpts.jobConfigPathKubevirtPresubmits, err)
 	}
 
-	jobs := prowjobconfigs.CollectSigComputeJobs(&jobConfig)
+	var errs []string
+	errs = append(errs, validateSigComputeTargets(&jobConfig)...)
+	errs = append(errs, validateSigNetworkSkipSmokeEnv(&jobConfig)...)
+
+	if len(errs) > 0 {
+		for _, e := range errs {
+			fmt.Fprintln(cmd.OutOrStderr(), e)
+		}
+		return fmt.Errorf("presubmit validation failed")
+	}
+
+	return nil
+}
+
+func validateSigComputeTargets(jobConfig *config.JobConfig) []string {
+	jobs := prowjobconfigs.CollectSigComputeJobs(jobConfig)
 	if len(jobs) == 0 {
-		return fmt.Errorf("no sig-compute jobs found")
+		return []string{"no sig-compute jobs found"}
 	}
 
 	latestVersion, err := prowjobconfigs.FindLatestK8sVersionFromJobs(jobs)
 	if err != nil {
-		return err
+		return []string{err.Error()}
 	}
 
 	serialJobName := fmt.Sprintf("pull-kubevirt-e2e-k8s-%s-sig-compute-serial", latestVersion)
@@ -96,12 +112,52 @@ func runCheckPresubmits(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	if len(errs) > 0 {
-		for _, e := range errs {
-			fmt.Fprintln(cmd.OutOrStderr(), e)
-		}
-		return fmt.Errorf("sig-compute TARGET validation failed for k8s version %s", latestVersion)
+	return errs
+}
+
+func validateSigNetworkSkipSmokeEnv(jobConfig *config.JobConfig) []string {
+	jobs := prowjobconfigs.CollectSigNetworkJobs(jobConfig)
+	if len(jobs) == 0 {
+		return []string{"no sig-network jobs found"}
 	}
 
-	return nil
+	var errs []string
+	var smokeVersion string
+	var skipSmokeVersions []string
+
+	for _, job := range jobs {
+		if job.IsSmoke {
+			if smokeVersion != "" {
+				errs = append(errs, fmt.Sprintf("multiple sig-network-smoke jobs found: %q and k8s-%s", job.Name, smokeVersion))
+				continue
+			}
+			smokeVersion = job.K8sVersion
+			continue
+		}
+
+		if job.SkipSmokeEnv == "true" {
+			skipSmokeVersions = append(skipSmokeVersions, job.K8sVersion)
+			continue
+		}
+		if job.SkipSmokeEnv != "" {
+			errs = append(errs, fmt.Sprintf("job %q has SKIP_SMOKE=%q, expected \"true\"", job.Name, job.SkipSmokeEnv))
+		}
+	}
+
+	if smokeVersion == "" {
+		errs = append(errs, "no sig-network-smoke job found")
+	}
+
+	switch len(skipSmokeVersions) {
+	case 0:
+		errs = append(errs, "no plain sig-network job has SKIP_SMOKE=true")
+	case 1:
+		if smokeVersion != "" && skipSmokeVersions[0] != smokeVersion {
+			errs = append(errs, fmt.Sprintf("sig-network-smoke runs on k8s-%s, but SKIP_SMOKE=true is set on sig-network k8s-%s", smokeVersion, skipSmokeVersions[0]))
+		}
+	default:
+		errs = append(errs, fmt.Sprintf("multiple plain sig-network jobs have SKIP_SMOKE=true: %v", skipSmokeVersions))
+	}
+
+	return errs
 }
