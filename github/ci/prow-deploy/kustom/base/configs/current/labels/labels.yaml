@@ -352,6 +352,12 @@ default:
       target: both
       prowPlugin: label
       addedBy: anyone
+    - name: wg/arch-ppc64le
+      color: E3F582
+      description: Denotes an issue or PR that relates to the ppc64le architecture working group.
+      target: both
+      prowPlugin: label
+      addedBy: anyone
     - name: wg/code-quality
       color: E3F582
       description: Denotes an issue or PR that relates to the code-quality working group.
