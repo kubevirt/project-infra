@@ -1,0 +1,15 @@
+---
+# set cpu resources
+- op: replace
+  path: /spec/template/spec/containers/0/resources/limits/cpu
+  value: "700m"
+- op: replace
+  path: /spec/template/spec/containers/0/resources/requests/cpu
+  value: "700m"
+
+# KubeVirt Prow ARM64 workloads cluster does not provide IPv6 connectivity to Pods
+- op: add
+  path: /spec/template/spec/containers/0/env/-
+  value:
+    name: DISABLE_IPV6
+    value: "true"
