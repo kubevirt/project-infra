@@ -496,7 +496,7 @@ presubmits:
           - name: CDI_NAMESPACE
             value: cdi
           - name: CDI_E2E_SKIP
-            value: "Destructive|Cert rotation|cdi-apiserver tests|Importer Test Suite-prometheus|test_id:3996|test_id:8266"
+            value: "Destructive|Cert rotation|cdi-apiserver tests|Importer Test Suite-prometheus|test_id:3996|test_id:8266|Registry node pull|ImageStream-wannabe node pull|node pull import|pullMethod node|pull method = node|pull method Node|test_id:11004|test_id:11005|import Block PVC with Registry image"
           - name: SNAPSHOT_SC
             value: ocs-storagecluster-ceph-rbd
           - name: BLOCK_SC
@@ -519,6 +519,14 @@ presubmits:
 
               cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
               echo "195.212.74.206 api.odf.cdi.ci oauth-openshift.apps.odf.cdi.ci cdi-uploadproxy-cdi.apps.odf.cdi.ci" >> /etc/hosts
+
+              # aborted runs leak cdi-e2e namespaces and cdi.kubevirt.io/testing StorageClasses
+              for ns in $(kubectl get ns -l cdi-e2e -o jsonpath='{.items[*].metadata.name}' 2>/dev/null); do
+                kubectl delete pods --all -n "$ns" --force --grace-period=0 --ignore-not-found=true || true
+              done
+              kubectl delete ns -l cdi-e2e --wait=false --ignore-not-found=true || true
+              kubectl delete sc -l cdi.kubevirt.io/testing --wait=false --ignore-not-found=true || true
+              kubectl annotate sc ocs-storagecluster-ceph-rbd storageclass.kubernetes.io/is-default-class=true --overwrite || true
 
               kubectl delete cdi cdi --ignore-not-found --timeout=120s
               kubectl delete ns cdi --ignore-not-found --timeout=120s
