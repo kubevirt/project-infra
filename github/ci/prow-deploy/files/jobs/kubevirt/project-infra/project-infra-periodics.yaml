@@ -1313,17 +1313,6 @@ periodics:
       - name: CLUSTER_KUBECONFIG_NAME
         value: prow-s390x-workloads
 - <<: *cluster_livez_job
-  name: periodic-project-infra-prow-s390x-e2e-test-livez
-  annotations:
-    <<: *cluster_livez_annotations
-    testgrid-alert-email: kubevirt-ci-maintainers@redhat.com, jschinta@redhat.com, cfillekes@ibm.com, svamsikr@redhat.com
-  spec:
-    containers:
-    - <<: *cluster_livez_container
-      env:
-      - name: CLUSTER_KUBECONFIG_NAME
-        value: prow-s390x-e2e-test
-- <<: *cluster_livez_job
   name: periodic-project-infra-prow-s390x-openshift-livez
   annotations:
     <<: *cluster_livez_annotations
