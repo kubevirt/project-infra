@@ -18,7 +18,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260830-8316684
+      - image: quay.io/kubevirtci/bootstrap:v20260904-f27fe5a
         env:
           - name: BUCKET_DIR
             value: kubevirtci-crio-mirror
@@ -173,7 +173,7 @@ periodics:
   cluster: prow-s390x-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260830-8316684
+    - image: quay.io/kubevirtci/golang:v20260904-f27fe5a
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -295,7 +295,7 @@ periodics:
   cluster: prow-s390x-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260830-8316684
+    - image: quay.io/kubevirtci/golang:v20260904-f27fe5a
       command:
       - "/usr/local/bin/entrypoint.sh"
       - "/bin/bash"
