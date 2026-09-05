@@ -1,0 +1,41 @@
+postsubmits:
+  kubevirt/vdpa-network-binding-plugin:
+    - name: push-release-network-binding-plugin-tag
+      branches:
+        # regex for semver from https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+        - ^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+      cluster: kubevirt-prow-control-plane
+      always_run: true
+      skip_report: false
+      decorate: true
+      decoration_config:
+        timeout: 1h
+        grace_period: 5m
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-gcs-credentials: "true"
+        preset-github-credentials: "true"
+        preset-kubevirtci-quay-credential: "true"
+        preset-pgp-bot-key: "true"
+      annotations:
+        testgrid-create-test-group: "false"
+      spec:
+        containers:
+          - image: quay.io/kubevirtci/golang:v20260715-af3e234
+            env:
+              - name: IMAGE_REGISTRY
+                value: quay.io/kubevirt
+            command: ["/usr/local/bin/runner.sh", "/bin/sh", "-c"]
+            args:
+              - |
+                set -e
+                export IMAGE_TAG="$(git tag --points-at HEAD | head -1)"
+                [[ ! -z ${IMAGE_TAG} ]] || exit 0
+                export PUSH_REGISTRY=${IMAGE_REGISTRY}
+                make images && make push
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "8Gi"
