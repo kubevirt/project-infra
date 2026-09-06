@@ -20,13 +20,13 @@ set -o pipefail
 
 GO_MOD_PATH=${GO_MOD_PATH:-}
 
-if [[ -n ${GO_MOD_PATH} && -f ${GO_MOD_PATH} ]]; then
-  toolchain_version="$(grep -E '^toolchain go' "${GO_MOD_PATH}" | cut -d' ' -f2 | sed 's/^go//')"
-  if [[ -n ${toolchain_version} ]]; then
+if [[ -n "${GO_MOD_PATH}" && -f "${GO_MOD_PATH}" ]]; then
+  toolchain_version="$(awk '/^toolchain go[0-9]+(.[0-9]+){1,2}/ { sub("^go", "", $2); print($2) }' "${GO_MOD_PATH}")"
+  if [[ -n "${toolchain_version}" ]]; then
     export GIMME_GO_VERSION="${toolchain_version}"
   else
     # Fallback to go directive for repos without toolchain line
-    export GIMME_GO_VERSION="$(grep -E '^go ' "${GO_MOD_PATH}" | cut -d' ' -f2)"
+    export GIMME_GO_VERSION="$(awk '/^go [0-9]+(.[0-9]+){1,2}/ { print($2) }' "${GO_MOD_PATH}")"
   fi
 fi
 
