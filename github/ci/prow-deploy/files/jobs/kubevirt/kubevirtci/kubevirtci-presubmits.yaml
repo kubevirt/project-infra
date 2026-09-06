@@ -59,7 +59,7 @@ presubmits:
         env:
         - name: GIMME_GO_VERSION
           value: 1.22.3
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 15Gi
@@ -98,7 +98,7 @@ presubmits:
           value: "2"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 11264M
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 52Gi
@@ -132,7 +132,7 @@ presubmits:
           value: kind-1.35
         - name: KUBEVIRT_DEPLOY_CDI
           value: "true"
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 24Gi
@@ -171,7 +171,7 @@ presubmits:
           value: "2"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 11264M
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 24Gi
@@ -205,7 +205,7 @@ presubmits:
           value: kind-1.36
         - name: KUBEVIRT_DEPLOY_CDI
           value: "true"
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 24Gi
@@ -261,7 +261,7 @@ presubmits:
         - name: SONOBUOY_EXTRA_ARGS
           value: --plugin-env kubevirt-conformance.E2E_FOCUS=MediatedDevices --plugin-env
             kubevirt-conformance.E2E_SKIP=QUARANTINE
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 52Gi
@@ -301,7 +301,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: cluster-provision/gocli/go.mod
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 1Gi
@@ -327,7 +327,7 @@ presubmits:
         - -c
         - dnf install -y genisoimage libvirt && cd cluster-provision/images/vm-image-builder
           && ./create-containerdisk.sh alpine-cloud-init
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 500M
@@ -364,7 +364,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: cluster-provision/gocli/go.mod
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 1Gi
@@ -394,7 +394,7 @@ presubmits:
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
           value: "false"
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 16Gi
@@ -421,7 +421,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: cluster-provision/gocli/go.mod
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 16Gi
@@ -451,7 +451,7 @@ presubmits:
           value: cluster-provision/gocli/go.mod
         - name: PROVISION_CENTOS_VERSION
           value: "10"
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 16Gi
@@ -479,7 +479,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: cluster-provision/gocli/go.mod
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 16Gi
@@ -509,7 +509,7 @@ presubmits:
           value: cluster-provision/gocli/go.mod
         - name: PROVISION_CENTOS_VERSION
           value: "10"
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 16Gi
@@ -540,7 +540,7 @@ presubmits:
           value: linux
         - name: BYPASS_PMAN_CHANGE_CHECK
           value: "true"
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 8Gi
@@ -569,7 +569,7 @@ presubmits:
         env:
         - name: GO_MOD_PATH
           value: cluster-provision/gocli/go.mod
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 16Gi
@@ -599,7 +599,7 @@ presubmits:
           value: cluster-provision/gocli/go.mod
         - name: PROVISION_CENTOS_VERSION
           value: "10"
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 16Gi
@@ -630,7 +630,7 @@ presubmits:
           value: cluster-provision/gocli/go.mod
         - name: PROVISION_CENTOS_VERSION
           value: "10"
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 16Gi
@@ -665,7 +665,7 @@ presubmits:
           value: "true"
         - name: RUN_KUBEVIRT_CONFORMANCE
           value: "false"
-        image: quay.io/kubevirtci/golang:v20260904-f27fe5a
+        image: quay.io/kubevirtci/golang:v20260906-22dec7d
         resources:
           requests:
             memory: 16Gi
