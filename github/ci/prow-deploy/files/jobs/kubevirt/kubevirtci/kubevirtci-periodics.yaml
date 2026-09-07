@@ -11,25 +11,20 @@ periodics:
     - org: kubevirt
       repo: project-infra
       base_ref: main
+      clone_depth: 1
       workdir: true
   labels:
     preset-gcs-credentials: "true"
-    preset-shared-images: "true"
   cluster: prow-workloads
   spec:
     containers:
+      # GCS authentication is done by KubeVirt CI bootstrap image runner script
       - image: quay.io/kubevirtci/bootstrap:v20260906-22dec7d
-        env:
-          - name: BUCKET_DIR
-            value: kubevirtci-crio-mirror
-          - name: CRIO_VERSIONS
-            value: "1.34,1.35,1.36"
-        command: ["/bin/sh", "-ce"]
+        command: [/usr/local/bin/entrypoint.sh]
         args:
-          - |
-            source /google-cloud-sdk/path.bash.inc
-            gcloud auth activate-service-account --key-file ${GOOGLE_APPLICATION_CREDENTIALS}
-            ./hack/mirror-crio.sh
+          - ./hack/mirror-crio.sh
+          - --bucket=kubevirtci-crio-mirror
+          - --crio-versions=1.34,1.35,1.36,1.37
         resources:
           requests:
             memory: "2Gi"
