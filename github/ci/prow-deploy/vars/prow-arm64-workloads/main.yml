@@ -1,0 +1,7 @@
+secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/prow-arm64-workloads/secrets/'
+kubeconfig_path: '{{ secrets_dir }}/kubeconfig'
+
+shell_environment:
+  KUBECONFIG: "{{ kubeconfig_path }}"
+
+remote_cluster_prow_jobs_context: prow-arm64-workloads

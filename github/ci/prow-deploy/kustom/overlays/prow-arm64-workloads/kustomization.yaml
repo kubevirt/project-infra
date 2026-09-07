@@ -1,6 +1,20 @@
-# Requires kustomize v3
+---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+
+resources:
+  - resources/bootstrap.yaml
+  - ../../components/docker-mirror-proxy/base
+
+components:
+  - ../../components/docker-mirror-proxy/hostpath
+
+patches:
+  - target:
+      kind: Deployment
+      group: apps
+      name: docker-mirror-proxy
+    path: patches/JsonRFC6902/docker_mirror_deployment.yaml
 
 generatorOptions:
   disableNameSuffixHash: true

@@ -1,3 +1,15 @@
 ---
+ansible_python_interpreter: /usr/bin/python3
+
 main_actions:
   - deploy
+
+prowUrl: prow.ci.kubevirt.io
+
+project_infra_root: /home/prow/go/src/github.com/kubevirt/project-infra
+components_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/components'
+testinfra_dir: /tmp/test-infra
+
+bootstrap_full_config: false
+rescale_pushgateway_deployment: false
+rescale_deck_deployment: false

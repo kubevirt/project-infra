@@ -18,6 +18,7 @@ KubeVirt CI project-infra git repository under the Prow deployment folder:
 It is currently provided on the following KubeVirt CI Prow build clusters:
 - kubevirt-prow-control-plane
 - prow-workloads
+- prow-arm64-workloads
 
 ## Usage
 
