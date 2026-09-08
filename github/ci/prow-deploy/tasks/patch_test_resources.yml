@@ -14,9 +14,8 @@
     - name: patch ghproxy pvc class
       shell: |
         yq -i '.spec.storageClassName = "local"' {{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/patches/StrategicMerge/ghproxy.yaml
-    - name: patch greenhouse and docker-mirror-proxy pvc size
+    - name: patch docker-mirror-proxy pvc size
       shell: |
-        yq -i '.spec.resources.requests.storage = "10Gi"' {{ project_infra_root }}/github/ci/prow-deploy/kustom/components/greenhouse/pv/resources/pvc.yaml
         yq -i '.spec.resources.requests.storage = "10Gi"' {{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/resources/docker-mirror-proxy_pvc.yaml
     - name: patch ingresses
       shell: |

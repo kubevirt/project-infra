@@ -5,7 +5,6 @@ kind: Kustomization
 resources:
   - ../../base
   - ../../components/docker-mirror-proxy/base
-  - ../../components/greenhouse/base
   - resources/crier-rbac.yaml
   - resources/deck-rbac.yaml
   - resources/docker-mirror-proxy_pvc.yaml
@@ -23,7 +22,6 @@ resources:
 
 components:
   - ../../components/docker-mirror-proxy/pv
-  - ../../components/greenhouse/pv
 
 patches:
   - target: &deployment_target

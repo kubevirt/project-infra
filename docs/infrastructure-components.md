@@ -36,9 +36,6 @@ flowchart LR
                 label-sync
                 OtherSecondary[...]
             end
-            subgraph BazelCacheCP["Bazel Cache"]
-              greenhouse
-            end
             DockerProxyCP["Docker Proxy"]
             CertManager["cert-manager"]
         end
@@ -61,7 +58,6 @@ flowchart LR
         end
 
         ProwCP --> CPJobs
-        CPJobs --> BazelCacheCP
         CPJobs --> DockerProxyCP
         CPJobs --> VMs
         CertManager -.-> Grafana
@@ -75,8 +71,6 @@ flowchart LR
         subgraph WCJobsNS["Namespace: kubevirt-prow-jobs"]
             WCJobs["`CI Jobs
                     (e2e tests)`"]
-            WCBazel["`Bazel Cache
-                    (greenhouse)`"]
             WCDockerProxy["Docker Proxy"]
         end
 
@@ -89,7 +83,6 @@ flowchart LR
             BMs["11 Bare Metal Servers"]
         end
 
-        WCJobs --> WCBazel
         WCJobs --> WCDockerProxy
         WCJobs --> WCWorkers
         WCJobs --> WCPrometheus
@@ -233,7 +226,7 @@ pushgateway, statusreconciler).
 
 * Grafana: Dashboards for cluster and prow job monitoring 
 
-* Bazel cache ([greenhouse]) speeds up the builds that use bazel.
+* Bazel cache: Jobs use GCS-based remote caching (`kubevirt-bazel-cache` bucket) via the `preset-bazel-cache` label.
 
 * [ci-search]: allows us to query CI build logs.
 
@@ -252,6 +245,7 @@ or merge PRs.
 * GCS: we use buckets to store:
   * Prow build results
   * Build artifacts
+  * Bazel remote cache (`kubevirt-bazel-cache` bucket)
   * Thanos blocks
 
 * Quay: we mainly use quay as our container image registry, the images used for
@@ -283,7 +277,7 @@ prow-workloads
 
 * Monitoring stack: prometheus with thanos sidecar and node-exporter
 
-* Bazel cache ([greenhouse]) speeds up the builds that use bazel.
+* Bazel cache: E2E jobs use GCS-based remote caching (same `kubevirt-bazel-cache` bucket as control plane).
 
 * [docker proxy]: acts as a cache for docker images, reducing the need to access
 external registries.
@@ -292,6 +286,7 @@ external registries.
 
 * GCS: we use buckets to store:
   * Build artifacts
+  * Bazel remote cache (`kubevirt-bazel-cache` bucket, shared with control plane)
   * Thanos blocks
 
 * Quay: we mainly use quay as our container image registry, the images used for
@@ -331,6 +326,5 @@ Runs [performance-related jobs](performance-cluster.md).
 [ci-search]: https://github.com/openshift/ci-search
 [docker proxy]: docker-mirror-proxy.md
 [cert-manager]: https://cert-manager.io/docs/
-[greenhouse]: https://github.com/kubernetes/test-infra/tree/1b4b11a/greenhouse
 [automation secrets]: https://github.com/kubevirt/secrets/blob/master/secrets.tar.asc
 [build clusters configuration here]: ./how-to-add-a-prow-cluster.md
