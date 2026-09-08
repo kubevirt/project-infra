@@ -5,11 +5,9 @@ kind: Kustomization
 resources:
   - resources/bootstrap.yaml
   - resources/shared-images-controller.yaml
-  - resources/greenhouse-storage.yaml
   - resources/priority-classes.yaml
   - resources/sriov-passthrough-ds.yaml
   - ../../components/docker-mirror-proxy/base
-  - ../../components/greenhouse/base
 
 components:
   - ../../components/docker-mirror-proxy/hostpath
@@ -21,10 +19,6 @@ patches:
       kind: Deployment
       name: docker-mirror-proxy
     path: patches/JsonRFC6902/docker_mirror_deployment.yaml
-  - target:
-      <<: *deployment_target
-      name: greenhouse
-    path: patches/JsonRFC6902/greenhouse_deployment.yaml
 
 generatorOptions:
   disableNameSuffixHash: true

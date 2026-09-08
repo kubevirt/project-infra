@@ -1,5 +1,0 @@
----
-kind: Component
-
-resources:
-  - resources/pvc.yaml

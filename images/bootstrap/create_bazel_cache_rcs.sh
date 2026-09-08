@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-CACHE_HOST="${CACHE_HOST:-bazel-cache.kubevirt-prow.svc.cluster.local}"
-CACHE_PORT="${CACHE_PORT:-8080}"
+# Set BAZEL_REMOTE_CACHE environment variable to use remote caching.
+# For CI jobs, use the preset-bazel-cache label which configures GCS-based caching.
 
 # get the installed version of a rpm package
 package_to_version () {
@@ -79,13 +79,12 @@ make_bazel_rc () {
     # IE PUT /foo/bar/baz/cas/asdf -> is in cache "/foo/bar/baz"
     local cache_id
     cache_id="$(get_workspace),$(hash_toolchains)"
-    local cache_url
     if [[ -n "${BAZEL_REMOTE_CACHE-}" ]]; then
-        cache_url=${BAZEL_REMOTE_CACHE}/${cache_id}
+        local cache_url="${BAZEL_REMOTE_CACHE}/${cache_id}"
+        echo "build --remote_cache=${cache_url}"
     else
-        cache_url="http://${CACHE_HOST}:${CACHE_PORT}/${cache_id}"
+        echo "# BAZEL_REMOTE_CACHE not set, remote caching disabled"
     fi
-    echo "build --remote_cache=${cache_url}"
 
     if [[ -n "${BAZEL_CACHE_GOOGLE_CREDENTIALS-}" ]]; then
         echo "build --google_credentials=${BAZEL_CACHE_GOOGLE_CREDENTIALS}"

@@ -12,7 +12,6 @@
     - deck
     - docker-mirror-proxy
     - ghproxy
-    - greenhouse
     - hook
     - horologium
     - prow-controller-manager
