@@ -936,7 +936,6 @@ periodics:
     preset-bazel-cache: "true"
     preset-bazel-unnested: "true"
     preset-dind-enabled: "true"
-    preset-docker-mirror: "true"
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   max_concurrency: 1

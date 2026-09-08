@@ -8,7 +8,7 @@ presubmits:
       timeout: 3h
     max_concurrency: 5
     labels:
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
@@ -753,7 +753,7 @@ presubmits:
     max_concurrency: 1
     labels:
       preset-podman-in-container-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads

@@ -60,7 +60,6 @@ presubmits:
       testgrid-create-test-group: "false"
     labels:
       preset-podman-in-container-enabled: "true"
-      preset-docker-mirror: "true"
     decoration_config:
       grace_period: 5m0s
       timeout: 1h0m0s

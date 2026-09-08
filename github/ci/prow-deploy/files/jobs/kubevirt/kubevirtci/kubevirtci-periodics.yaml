@@ -49,7 +49,7 @@ periodics:
     base_ref: main
   labels:
     preset-podman-in-container-enabled: "true"
-    preset-docker-mirror: "true"
+    preset-docker-mirror-proxy: "true"
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
   cluster: kubevirt-prow-control-plane
@@ -85,7 +85,7 @@ periodics:
     base_ref: main
     workdir: true
   labels:
-    preset-docker-mirror: "true"
+    preset-docker-mirror-proxy: "true"
     preset-github-credentials: "true"
   cluster: prow-workloads
   spec:
@@ -350,7 +350,7 @@ periodics:
       base_ref: main
   labels:
     preset-podman-in-container-enabled: "true"
-    preset-docker-mirror: "true"
+    preset-docker-mirror-proxy: "true"
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
     rehearsal.allowed: "true"

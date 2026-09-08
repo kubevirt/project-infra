@@ -1134,7 +1134,7 @@ periodics:
     workdir: true
   interval: 1h
   labels:
-    preset-docker-mirror: "true"
+    preset-docker-mirror-proxy: "true"
     preset-shared-images: "true"
     preset-github-credentials: "true"
     preset-pgp-bot-key: "true"

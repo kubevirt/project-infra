@@ -230,7 +230,7 @@ presubmits:
         grace_period: 10m
       labels:
         preset-podman-in-container-enabled: "true"
-        preset-docker-mirror: "true"
+        preset-docker-mirror-proxy: "true"
       spec:
         containers:
           - image: quay.io/kubevirtci/bootstrap:v20260906-22dec7d
