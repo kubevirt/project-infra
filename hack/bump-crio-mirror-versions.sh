@@ -2,7 +2,7 @@
 
 PROJECT_INFRA_ROOT=$(readlink --canonicalize $(pwd))
 KUBEVIRTCI_PERIODICS="$PROJECT_INFRA_ROOT/github/ci/prow-deploy/files/jobs/kubevirt/kubevirtci/kubevirtci-periodics.yaml"
-CURRENT_VERSIONS=$(grep -A 1 "CRIO_VERSIONS" $KUBEVIRTCI_PERIODICS  | grep value | cut -d \" -f 2)
+CURRENT_VERSIONS=$(awk -F = '/--crio-versions=/ { print($2) }' $KUBEVIRTCI_PERIODICS)
 LATEST_VERSION="1.$(curl -s https://api.github.com/repos/cri-o/cri-o/releases/latest | grep tag_name | cut -d : -f 2,3 | cut -d . -f 2)"
 
 if [[ $(echo "$CURRENT_VERSIONS" | grep $LATEST_VERSION) ]]; then
