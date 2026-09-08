@@ -36,7 +36,6 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
       preset-kubevirtci-quay-credential: "true"
       preset-shared-images: "true"
     max_concurrency: 6

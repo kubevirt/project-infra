@@ -9,7 +9,7 @@ presubmits:
     max_concurrency: 6
     labels:
       preset-dind-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-shared-images: "true"
     cluster: prow-workloads
     spec:

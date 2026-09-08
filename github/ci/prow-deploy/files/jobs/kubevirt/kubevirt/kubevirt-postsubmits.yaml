@@ -214,7 +214,7 @@ postsubmits:
     max_concurrency: 1
     labels:
       preset-podman-in-container-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"
@@ -249,7 +249,7 @@ postsubmits:
     max_concurrency: 1
     labels:
       preset-podman-in-container-enabled: "true"
-      preset-docker-mirror: "true"
+      preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-github-credentials: "true"
       preset-kubevirtci-quay-credential: "true"

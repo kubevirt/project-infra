@@ -735,16 +735,6 @@ presets:
     mountPath: /var/lib/shared-images
     readOnly: true
 - labels:
-    preset-docker-mirror: "true"
-  volumes:
-  - name: docker-config
-    configMap:
-      name: docker-daemon-mirror-config
-  volumeMounts:
-  - name: docker-config
-    mountPath: /etc/default
-    readOnly: true
-- labels:
     preset-docker-mirror-proxy: "true"
   env:
   - name: CA_CERT_FILE

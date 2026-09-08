@@ -14,7 +14,6 @@ configMapGenerator:
   - name: docker-daemon-mirror-config
     namespace: kubevirt-prow-jobs
     files:
-      - configs/docker
       - configs/docker-proxy
 
 secretGenerator:

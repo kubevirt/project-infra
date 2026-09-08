@@ -196,7 +196,6 @@ presubmits:
       cluster: prow-workloads
       labels:
         preset-dind-enabled: "true"
-        preset-docker-mirror: "true"
         preset-shared-images: "true"
       spec:
         nodeSelector:

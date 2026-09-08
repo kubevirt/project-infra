@@ -522,7 +522,7 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-docker-mirror: "true"
+    preset-docker-mirror-proxy: "true"
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
     preset-podman-in-container-enabled: "true"
@@ -568,7 +568,7 @@ periodics:
     repo: kubevirt
   labels:
     preset-bazel-cache: "true"
-    preset-docker-mirror: "true"
+    preset-docker-mirror-proxy: "true"
     preset-gcs-credentials: "true"
     preset-github-credentials: "true"
     preset-podman-in-container-enabled: "true"
