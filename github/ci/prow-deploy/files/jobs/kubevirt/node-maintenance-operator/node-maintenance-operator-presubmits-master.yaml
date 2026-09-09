@@ -18,7 +18,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260906-22dec7d
+        - image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -48,7 +48,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     spec:
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260906-22dec7d
+        - image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"

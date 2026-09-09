@@ -22,7 +22,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20260906-22dec7d
+          - image: quay.io/kubevirtci/golang:v20260908-8ec231b
             env:
             - name: GITHUB_USER
               value: kubevirt-bot
@@ -61,7 +61,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20260906-22dec7d
+          - image: quay.io/kubevirtci/golang:v20260908-8ec231b
             env:
             - name: GITHUB_USER
               value: kubevirt-bot

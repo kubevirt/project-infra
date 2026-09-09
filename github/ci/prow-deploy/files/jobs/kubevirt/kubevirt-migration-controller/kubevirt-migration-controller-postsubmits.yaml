@@ -17,7 +17,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260906-22dec7d
+      - image: quay.io/kubevirtci/golang:v20260908-8ec231b
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
@@ -58,7 +58,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "false"
     spec:
       containers:
-      - image: quay.io/kubevirtci/bootstrap:v20260906-22dec7d
+      - image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
@@ -96,7 +96,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v20260906-22dec7d
+      - image: quay.io/kubevirtci/golang:v20260908-8ec231b
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
@@ -137,7 +137,7 @@ postsubmits:
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260907-14fc67c
+      - image: quay.io/kubevirtci/pr-creator:v20260908-65ee5d4
         command: ["/bin/sh", "-ce"]
         args:
         - |

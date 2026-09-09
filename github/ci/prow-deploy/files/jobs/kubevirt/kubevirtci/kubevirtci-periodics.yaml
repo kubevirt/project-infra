@@ -19,7 +19,7 @@ periodics:
   spec:
     containers:
       # GCS authentication is done by KubeVirt CI bootstrap image runner script
-      - image: quay.io/kubevirtci/bootstrap:v20260906-22dec7d
+      - image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
         command: [/usr/local/bin/entrypoint.sh]
         args:
           - ./hack/mirror-crio.sh
@@ -50,7 +50,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260907-14fc67c
+    - image: quay.io/kubevirtci/pr-creator:v20260908-65ee5d4
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -85,7 +85,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260907-14fc67c
+    - image: quay.io/kubevirtci/pr-creator:v20260908-65ee5d4
       command:
       - /bin/sh
       - -ceu
@@ -123,7 +123,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260907-14fc67c
+    - image: quay.io/kubevirtci/pr-creator:v20260908-65ee5d4
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -168,7 +168,7 @@ periodics:
   cluster: prow-s390x-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260906-22dec7d
+    - image: quay.io/kubevirtci/golang:v20260908-8ec231b
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -245,7 +245,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260907-14fc67c
+    - image: quay.io/kubevirtci/pr-creator:v20260908-65ee5d4
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -290,7 +290,7 @@ periodics:
   cluster: prow-s390x-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20260906-22dec7d
+    - image: quay.io/kubevirtci/golang:v20260908-8ec231b
       command:
       - "/usr/local/bin/entrypoint.sh"
       - "/bin/bash"
@@ -352,7 +352,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260907-14fc67c
+      - image: quay.io/kubevirtci/pr-creator:v20260908-65ee5d4
         command: ["/bin/sh", "-ce"]
         args:
           - |

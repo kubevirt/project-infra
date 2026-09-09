@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/golang:v20260906-22dec7d as builder
+FROM quay.io/kubevirtci/golang:v20260908-8ec231b as builder
 
 ENV GIMME_GO_VERSION=1.25.1
 
@@ -18,7 +18,7 @@ COPY ./ ./
 
 RUN /usr/local/bin/runner.sh /bin/sh -c "go build ."
 
-FROM quay.io/kubevirtci/bootstrap:v20260906-22dec7d
+FROM quay.io/kubevirtci/bootstrap:v20260908-8ec231b
 
 WORKDIR /
 
