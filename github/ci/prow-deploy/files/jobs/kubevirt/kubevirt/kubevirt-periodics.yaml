@@ -795,6 +795,8 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
+    testgrid-num-failures-to-alert: "1"
+    testgrid-alert-email: vamsikrishna.siddu@ibm.com, jan.schintag@de.ibm.com, Chandra.Merla@ibm.com
   cluster: prow-s390x-workloads
   cron: 35 0,6,12,18 * * *
   decoration_config:
@@ -1785,6 +1787,8 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
+    testgrid-num-failures-to-alert: "1"
+    testgrid-alert-email: vamsikrishna.siddu@ibm.com, jan.schintag@de.ibm.com, Chandra.Merla@ibm.com
   cluster: kubevirt-prow-control-plane
   cron: 30 4,12,20,00 * * *
   decoration_config:
