@@ -21,7 +21,7 @@ presubmits:
         - /bin/sh
         - -c
         - automation/test.sh
-        image: quay.io/kubevirtci/golang:v20260906-22dec7d
+        image: quay.io/kubevirtci/golang:v20260908-8ec231b
         resources:
           requests:
             memory: 16Gi
@@ -56,7 +56,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/bootstrap:v20260906-22dec7d
+        - image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"

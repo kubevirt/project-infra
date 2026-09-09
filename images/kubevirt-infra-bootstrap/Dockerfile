@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/bootstrap:v20260906-22dec7d
+FROM quay.io/kubevirtci/bootstrap:v20260908-8ec231b
 
 RUN dnf update -y \
     && dnf install -y \
