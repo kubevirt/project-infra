@@ -612,6 +612,7 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    preset-docker-mirror-proxy: "true"
     preset-gomaxprocs-16: "true"
     preset-podman-in-container-enabled: "true"
   max_concurrency: 5
@@ -655,6 +656,7 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    preset-docker-mirror-proxy: "true"
     preset-gomaxprocs-16: "true"
     preset-podman-in-container-enabled: "true"
   max_concurrency: 1

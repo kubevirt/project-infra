@@ -132,6 +132,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 2h0m0s
     labels:
+      preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-aie-unit-test-arm64-1.9-aie-nv
     branches:
@@ -160,6 +161,7 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 4
     name: pull-kubevirt-aie-kind-1.35-sig-compute-arm64-1.9-aie-nv
