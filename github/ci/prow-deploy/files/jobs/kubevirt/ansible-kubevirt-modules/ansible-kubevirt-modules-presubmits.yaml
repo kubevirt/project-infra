@@ -20,7 +20,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v202609061213-313e33a
+        - image: quay.io/kubevirtci/kubevirt-infra-bootstrap:v202609090122-001217c
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
