@@ -703,7 +703,7 @@ presubmits:
       securityContext:
         runAsUser: 0
       containers:
-        - image: quay.io/kubevirtci/prow-deploy:v202609061213-313e33a
+        - image: quay.io/kubevirtci/prow-deploy:v202609090124-001217c
           env:
           - name: DEPLOY_ENVIRONMENT
             value: "kubevirtci-testing"
