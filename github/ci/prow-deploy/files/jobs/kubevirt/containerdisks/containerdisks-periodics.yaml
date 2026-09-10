@@ -1,7 +1,8 @@
 periodics:
 - annotations:
     testgrid-dashboards: kubevirt-containerdisks-periodics
-    testgrid-alert-email: nestor.acuna@ibm.com, ashok.pariya@ibm.com
+    testgrid-num-failures-to-alert: "1"
+    testgrid-alert-email: vamsikrishna.siddu@ibm.com, jan.schintag@de.ibm.com, Chandra.Merla@ibm.com
   cluster: prow-s390x-workloads
   cron: 0 1 * * *
   decoration_config:
