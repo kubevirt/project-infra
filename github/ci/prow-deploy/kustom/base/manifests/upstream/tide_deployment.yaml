@@ -21,7 +21,7 @@ spec:
       serviceAccountName: tide
       containers:
         - name: tide
-          image: us-docker.pkg.dev/k8s-infra-prow/images/tide:v20260902-ffc57790b
+          image: us-docker.pkg.dev/k8s-infra-prow/images/tide:v20260910-e30e351eb
           args:
             - --dry-run=false
             - --config-path=/etc/config/config.yaml
