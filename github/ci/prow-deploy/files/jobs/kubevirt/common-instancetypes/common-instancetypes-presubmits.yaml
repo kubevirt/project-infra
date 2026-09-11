@@ -857,3 +857,44 @@ presubmits:
             privileged: true
       nodeSelector:
         type: bare-metal-external
+  - name: pull-common-instancetypes-functest-oraclelinux-10
+    branches:
+      - main
+    always_run: false
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/oraclelinux/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-bazel-unnested: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+      preset-kubevirtci-quay-credential: "true"
+    max_concurrency: 1
+    spec:
+      containers:
+        - command:
+            - /usr/local/bin/entrypoint.sh
+            - "/bin/sh"
+            - "-c"
+            - |
+              cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+              make kubevirt-up && make kubevirt-sync && make kubevirt-sync-containerdisks && make kubevirt-functest
+          env:
+            - name: GO_MOD_PATH
+              value: "go.mod"
+            - name: KUBEVIRT_MEMORY_SIZE
+              value: 16G
+            - name: FUNCTEST_EXTRA_ARGS
+              value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Oracle Linux 10"'
+          image: quay.io/kubevirtci/golang:v20260908-8ec231b
+          resources:
+            requests:
+              memory: 20Gi
+          securityContext:
+            privileged: true
+      nodeSelector:
+        type: bare-metal-external 
