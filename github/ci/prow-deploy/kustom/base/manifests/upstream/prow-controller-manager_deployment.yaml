@@ -33,7 +33,7 @@ spec:
                 secretKeyRef:
                   name: github-token
                   key: appid
-          image: us-docker.pkg.dev/k8s-infra-prow/images/prow-controller-manager:v20260902-ffc57790b
+          image: us-docker.pkg.dev/k8s-infra-prow/images/prow-controller-manager:v20260910-e30e351eb
           volumeMounts:
             - name: github-token
               mountPath: /etc/github
