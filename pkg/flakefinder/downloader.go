@@ -97,7 +97,7 @@ func findUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 	if err != nil {
 		return nil, fmt.Errorf("error listing gcs objects: %v", err)
 	}
-	builds := sortBuilds(prJobs)
+	builds := SortBuilds(prJobs)
 	profilePath := ""
 	buildNumber := 0
 	reports := []*JobResult{}
@@ -120,14 +120,14 @@ func findUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 			continue
 		}
 
-		_, err = readGcsObject(ctx, client, bucket, dirOfFinishedJSON)
+		_, err = ReadGcsObject(ctx, client, bucket, dirOfFinishedJSON)
 		if err == storage.ErrObjectNotExist {
 			// build still running?
 			continue
 		} else if err != nil {
 			return nil, fmt.Errorf("Cannot read finished.json (%s) in bucket '%s'", dirOfFinishedJSON, bucket)
 		} else {
-			startedJSON, err := readGcsObject(ctx, client, bucket, dirOfStartedJSON)
+			startedJSON, err := ReadGcsObject(ctx, client, bucket, dirOfStartedJSON)
 			if err != nil {
 				return nil, fmt.Errorf("Cannot read started.json (%s) in bucket '%s'", dirOfStartedJSON, bucket)
 			}
@@ -138,7 +138,7 @@ func findUnitTestFileForJob(ctx context.Context, client *storage.Client, bucket 
 			buildNumber = build
 			artifactsDirPath := path.Join(buildDirPath, "artifacts")
 			profilePath = path.Join(artifactsDirPath, "junit.functest.xml")
-			data, err := readGcsObject(ctx, client, bucket, profilePath)
+			data, err := ReadGcsObject(ctx, client, bucket, profilePath)
 			if err == storage.ErrObjectNotExist {
 				logrus.Infof("Didn't find object '%s' in bucket '%s'\n", profilePath, bucket)
 				continue
@@ -171,7 +171,7 @@ func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client
 	if err != nil {
 		return nil, fmt.Errorf("error listing gcs objects: %v", err)
 	}
-	builds := sortBuilds(jobDirs)
+	builds := SortBuilds(jobDirs)
 
 	profilePath := ""
 	buildNumber := 0
@@ -199,7 +199,7 @@ func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client
 			continue
 		}
 
-		_, err = readGcsObject(ctx, client, bucket, dirOfFinishedJSON)
+		_, err = ReadGcsObject(ctx, client, bucket, dirOfFinishedJSON)
 
 		if err != nil {
 			return nil, err
@@ -213,7 +213,7 @@ func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client
 			buildNumber = build
 			artifactsDirPath := path.Join(buildDirPath, "artifacts")
 			profilePath = path.Join(artifactsDirPath, "junit.functest.xml")
-			data, err := readGcsObject(ctx, client, bucket, profilePath)
+			data, err := ReadGcsObject(ctx, client, bucket, profilePath)
 			lastJobDirectoryPathElement := jobDirectorySegments[len(jobDirectorySegments)-1]
 			if err == storage.ErrObjectNotExist {
 
@@ -229,7 +229,7 @@ func FindUnitTestFilesForPeriodicJob(ctx context.Context, client *storage.Client
 				submatches := testJobNameRegex.FindStringSubmatch(lastJobDirectoryPathElement)
 				testJobName := submatches[1] // take the first submatch here, see regex for details
 				openShiftCIPath := path.Join(artifactsDirPath, fmt.Sprintf("%s/test/artifacts", testJobName), "junit.functest.xml")
-				data, err = readGcsObject(ctx, client, bucket, openShiftCIPath)
+				data, err = ReadGcsObject(ctx, client, bucket, openShiftCIPath)
 				if err == storage.ErrObjectNotExist {
 					logrus.Infof("Didn't find object '%s' in bucket '%s'\n", profilePath, bucket)
 					logrus.Infof("Didn't find object '%s' in bucket '%s'\n", openShiftCIPath, bucket)
@@ -290,7 +290,7 @@ func FindUnitTestFilesForBatchJobs(ctx context.Context, client *storage.Client, 
 			return nil, fmt.Errorf("error listing gcs objects: %v", err)
 		}
 
-		builds := sortBuilds(buildDirs)
+		builds := SortBuilds(buildDirs)
 
 		profilePath := ""
 		buildNumber := 0
@@ -317,7 +317,7 @@ func FindUnitTestFilesForBatchJobs(ctx context.Context, client *storage.Client, 
 				continue
 			}
 
-			_, err = readGcsObject(ctx, client, bucket, dirOfFinishedJSON)
+			_, err = ReadGcsObject(ctx, client, bucket, dirOfFinishedJSON)
 			if err == storage.ErrObjectNotExist {
 				// build still running?
 				continue
@@ -328,7 +328,7 @@ func FindUnitTestFilesForBatchJobs(ctx context.Context, client *storage.Client, 
 
 				// we look for any PR number appearing inside the batch job definition
 				prowJobFile := path.Join(buildDirPath, prowv1.ProwJobFile)
-				prowJobData, err := readGcsObject(ctx, client, bucket, prowJobFile)
+				prowJobData, err := ReadGcsObject(ctx, client, bucket, prowJobFile)
 				if err == storage.ErrObjectNotExist {
 					continue
 				}
@@ -351,7 +351,7 @@ func FindUnitTestFilesForBatchJobs(ctx context.Context, client *storage.Client, 
 
 				artifactsDirPath := path.Join(buildDirPath, "artifacts")
 				profilePath = path.Join(artifactsDirPath, "junit.functest.xml")
-				data, err := readGcsObject(ctx, client, bucket, profilePath)
+				data, err := ReadGcsObject(ctx, client, bucket, profilePath)
 				if err == storage.ErrObjectNotExist {
 					continue
 				} else if err != nil {
@@ -380,7 +380,7 @@ func FindUnitTestFilesForBatchJobs(ctx context.Context, client *storage.Client, 
 	return reports, nil
 }
 
-func readGcsObject(ctx context.Context, client *storage.Client, bucket, object string) ([]byte, error) {
+func ReadGcsObject(ctx context.Context, client *storage.Client, bucket, object string) ([]byte, error) {
 	logrus.Infof("Trying to read gcs object '%s' in bucket '%s'\n", object, bucket)
 	o := client.Bucket(bucket).Object(object)
 	reader, err := o.NewReader(ctx)
@@ -392,9 +392,9 @@ func readGcsObject(ctx context.Context, client *storage.Client, bucket, object s
 	return io.ReadAll(reader)
 }
 
-// sortBuilds converts all build from str to int and sorts all builds in descending order and
+// SortBuilds converts all build from str to int and sorts all builds in descending order and
 // returns the sorted slice
-func sortBuilds(strBuilds []string) []int {
+func SortBuilds(strBuilds []string) []int {
 	var res []int
 	for _, buildStr := range strBuilds {
 		num, err := strconv.Atoi(buildStr)
@@ -420,7 +420,7 @@ func IsLatestCommit(jsonText []byte, change api.Change) bool {
 // readCommitIDFromCloneRecords attempts to fetch and parse clone-records.json to get the CommitID (SHA).
 func readCommitIDFromCloneRecords(ctx context.Context, client *storage.Client, bucket string, buildDirPath string) (string, error) {
 	cloneRecordsPath := path.Join(buildDirPath, cloneRecordsJSON)
-	data, err := readGcsObject(ctx, client, bucket, cloneRecordsPath)
+	data, err := ReadGcsObject(ctx, client, bucket, cloneRecordsPath)
 	if err == storage.ErrObjectNotExist {
 		logrus.Debugf("Didn't find object '%s' in bucket '%s'", cloneRecordsPath, bucket)
 		return "", nil

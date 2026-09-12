@@ -1,0 +1,3 @@
+jobNamePattern: ^pull-kubevirt-e2e-.*$
+periodicJobNamePattern: ^periodic-kubevirt-e2e-.*$
+testNamePattern: .*
