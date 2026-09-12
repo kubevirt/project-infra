@@ -1,0 +1,41 @@
+periodics:
+- name: periodic-ci-health-cost-report
+  cron: "0 6 * * *"
+  max_concurrency: 1
+  decorate: true
+  decoration_config:
+    timeout: 30m
+    grace_period: 5m
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-gcs-credentials: "true"
+  cluster: prow-workloads
+  extra_refs:
+  - org: kubevirt
+    repo: ci-health
+    base_ref: main
+    workdir: true
+  spec:
+    containers:
+      - image: quay.io/kubevirtci/golang:v20260707-cacb217
+        command:
+        - /usr/local/bin/runner.sh
+        - /bin/bash
+        - -ce
+        args:
+          - |
+            go run ./cmd/cost/ \
+              --thanos-url https://thanos-querier.openshift-monitoring.svc:9091 \
+              --bearer-token-path /var/run/secrets/kubernetes.io/serviceaccount/token \
+              --insecure-skip-tls-verify \
+              --namespace kubevirt-prow-jobs \
+              --node-selector "kubevirt-worker-.*" \
+              --data-days 7 \
+              --path /tmp/output
+
+            gsutil cp /tmp/output/kubevirt/kubevirt/cost-report.html gs://kubevirt-prow/reports/cost-per-pr/cost-per-pr.html
+            gsutil cp /tmp/output/kubevirt/kubevirt/cost-results.json gs://kubevirt-prow/reports/cost-per-pr/cost-results.json
+        resources:
+          requests:
+            memory: "500Mi"
