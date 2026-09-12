@@ -217,6 +217,7 @@ tide:
     kubevirt/vdpa-network-binding-plugin: merge
     kubevirt/vhostuser-network-binding-plugin: merge
     kubevirt/plugins: merge
+    kubevirt/kubevirt-no-bazel: merge
   queries:
   - repos:
     - kubevirt/dra-pci-driver
@@ -299,6 +300,7 @@ tide:
     - kubevirt/kubevirt-aie-webhook
     - kubevirt/kubevirt-observability-controller
     - kubevirt/plugins
+    - kubevirt/kubevirt-no-bazel
     labels:
     - lgtm
     - approved
@@ -483,6 +485,10 @@ branch-protection:
             release-0.55: *archived_branch
             release-0.56: *archived_branch
             release-0.57: *archived_branch
+        kubevirt-no-bazel:
+          branches:
+            main:
+              protect: true
         kubevirt-aie:
           branches:
             release-1.8-aie-nv:
