@@ -130,6 +130,35 @@ cat_gcs_file() {
     fi
 }
 
+# Function to read GCS file content with retry mechanism
+# Usage: cat_gcs_file_with_retry <bucket_name> <gcs_file_path> <auth> [max_retries] [retry_interval]
+cat_gcs_file_with_retry() {
+    local bucket_name="$1"
+    local gcs_file_path="$2"
+    local auth="$3"
+    local max_retries="${4:-5}"
+    local retry_interval="${5:-5}"
+    local retry_count=0
+    local content
+
+    while [ "$retry_count" -lt "$max_retries" ]; do
+        content=$(cat_gcs_file "$bucket_name" "$gcs_file_path" "$auth")
+        if [ $? -eq 0 ] && [ -n "$content" ]; then
+            echo "$content"
+            return 0
+        else
+            retry_count=$((retry_count + 1))
+            if [ "$retry_count" -lt "$max_retries" ]; then
+                echo "Retry $retry_count/$max_retries in ${retry_interval}s..." >&2
+                sleep "$retry_interval"
+            else
+                echo "Failed after $max_retries attempts" >&2
+                return 1
+            fi
+        fi
+    done
+}
+
 # Function to delete a file from GCS
 rm_gcs_file() {
     local bucket_name="$1"
@@ -137,16 +166,26 @@ rm_gcs_file() {
 
     auth_header=$(get_auth_header) || exit 1
 
-    delete_response=$(curl -s -X DELETE \
+    local temp_file=$(mktemp)
+    http_code=$(curl -s -w "%{http_code}" -o "$temp_file" -X DELETE \
       -H "$auth_header" \
       "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path")
+    
+    delete_response=$(cat "$temp_file")
+    rm -f "$temp_file"
 
-    if [ -z "$delete_response" ]; then
-        echo "File $gcs_file_path deleted successfully."
+    if [ "$http_code" = "204" ]; then
+        echo "File $gcs_file_path deleted successfully (HTTP $http_code)."
+        return 0
+    elif [ "$http_code" = "404" ]; then
+        echo "File $gcs_file_path not found (already deleted, HTTP $http_code)."
         return 0
     else
-        echo "Failed to delete file. Response:"
-        echo "$delete_response" | jq '.'
+        echo "ERROR: Failed to delete $gcs_file_path. HTTP Status: $http_code" >&2
+        if [ -n "$delete_response" ]; then
+            echo "Response:" >&2
+            echo "$delete_response" | jq '.' 2>/dev/null || echo "$delete_response" >&2
+        fi
         return 1
     fi
 }
