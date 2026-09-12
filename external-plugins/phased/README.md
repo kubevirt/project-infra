@@ -48,23 +48,17 @@ Deployment manifests:
 Build the binary:
 
 ```bash
-make build
+make -f external-plugins/Makefile build PROW_PLUGIN="phased"
 ```
 
 Run tests:
 
 ```bash
-make test
+make -f external-plugins/Makefile test PROW_PLUGIN="phased"
 ```
 
-Format, test, and push the image:
+Push the image:
 
 ```bash
-make all
-```
-
-Push the image only:
-
-```bash
-make push
+make -f external-plugins/Makefile push PROW_PLUGIN="phased"
 ```
