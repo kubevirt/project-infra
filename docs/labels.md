@@ -96,6 +96,7 @@ larger set of contributors to apply/remove them.
 | <a id="triage/unresolved" href="#triage/unresolved">`triage/unresolved`</a> | Indicates an issue that can not or will not be resolved.| anyone | |
 | <a id="wg/aie" href="#wg/aie">`wg/aie`</a> | Denotes an issue or PR that relates to the AIE working group.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="wg/arch-arm" href="#wg/arch-arm">`wg/arch-arm`</a> | Denotes an issue or PR that relates to the ARM architecture working group.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
+| <a id="wg/arch-ppc64le" href="#wg/arch-ppc64le">`wg/arch-ppc64le`</a> | Denotes an issue or PR that relates to the ppc64le architecture working group.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="wg/arch-s390x" href="#wg/arch-s390x">`wg/arch-s390x`</a> | Denotes an issue or PR that relates to the s390x architecture working group.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 | <a id="wg/code-quality" href="#wg/code-quality">`wg/code-quality`</a> | Denotes an issue or PR that relates to the code-quality working group.| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 

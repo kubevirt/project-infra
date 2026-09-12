@@ -45,6 +45,7 @@ var ginkgoLabelAliases = map[string]string{
 	"sig-performance": "sig scale",
 	"wg-s390x":        "wg arch-s390x",
 	"wg-arm64":        "wg arch-arm",
+	"wg-ppc64le":      "wg arch-ppc64le",
 }
 
 func loadValidGroupsFromLabelsFile(path string) (sigs, wgs map[string]bool, err error) {

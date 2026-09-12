@@ -136,9 +136,10 @@ to contain
 				"scale":         true,
 			}
 			validWGs = map[string]bool{
-				"arch-s390x": true,
-				"arch-arm":   true,
-				"aie":        true,
+				"arch-s390x":   true,
+				"arch-arm":     true,
+				"arch-ppc64le": true,
+				"aie":          true,
 			}
 		})
 
