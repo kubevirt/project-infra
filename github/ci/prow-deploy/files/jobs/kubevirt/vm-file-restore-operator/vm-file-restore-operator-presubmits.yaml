@@ -25,7 +25,7 @@ presubmits:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
             - "-c"
-            - "make test-e2e"
+            - "./hack/test-e2e.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
