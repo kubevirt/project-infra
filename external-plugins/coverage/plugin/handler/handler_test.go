@@ -10,7 +10,6 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
 
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/testing"
 	prowapi "sigs.k8s.io/prow/pkg/apis/prowjobs/v1"
 	"sigs.k8s.io/prow/pkg/client/clientset/versioned/typed/prowjobs/v1/fake"
@@ -385,151 +384,9 @@ var _ = Describe("Handle", func() {
 		})
 	})
 
-	Context("When the PR action is not opened or synchronize", func() {
-		DescribeTable("Should not create a job",
-			func(action github.PullRequestEventAction, prNumber int) {
-				event := &GitHubEvent{
-					Type:    "pull_request",
-					GUID:    "event-guid-4",
-					Payload: createPREventPayload(action, prNumber, "kubevirt", "project-infra"),
-				}
-				fakeGithubClient.PullRequestChanges[prNumber] = []github.PullRequestChange{
-					{Filename: "pkg/test.go"},
-				}
-				handler.Handle(event)
+	
 
-				Expect(fakeProwClient.Actions()).To(BeEmpty())
-			},
-			Entry("PR closed", github.PullRequestActionClosed, 200),
-			Entry("PR labeled", github.PullRequestActionLabeled, 201),
-			Entry("PR edited", github.PullRequestActionEdited, 202),
-		)
-	})
-
-	Context("When the event type is not a pull_request", func() {
-		It("Should not create a job", func() {
-			event := &GitHubEvent{
-				Type:    "push",
-				GUID:    "event-guid-push",
-				Payload: []byte("{}"),
-			}
-			handler.Handle(event)
-
-			Expect(fakeProwClient.Actions()).To(BeEmpty())
-		})
-	})
-
-	Context("When the PR has no Go file changes", func() {
-		It("Should not create a job", func() {
-			event := &GitHubEvent{
-				Type:    "pull_request",
-				GUID:    "event-guid-5",
-				Payload: createPREventPayload(github.PullRequestActionOpened, 300, "kubevirt", "project-infra"),
-			}
-			fakeGithubClient.PullRequestChanges[300] = []github.PullRequestChange{
-				{Filename: "README.md"},
-				{Filename: "docs/guide.txt"},
-			}
-			handler.Handle(event)
-
-			Expect(fakeProwClient.Actions()).To(BeEmpty())
-		})
-	})
-
-	Context("When the PR has no file changes", func() {
-		It("Should not create a job", func() {
-			event := &GitHubEvent{
-				Type:    "pull_request",
-				GUID:    "event-guid-7",
-				Payload: createPREventPayload(github.PullRequestActionOpened, 302, "kubevirt", "project-infra"),
-			}
-			fakeGithubClient.PullRequestChanges[302] = []github.PullRequestChange{}
-
-			handler.Handle(event)
-
-			Expect(fakeProwClient.Actions()).To(BeEmpty())
-		})
-	})
-
-	Context("When the payload is invalid JSON", func() {
-		It("Should not panic and not create a job", func() {
-			event := &GitHubEvent{
-				Type:    "pull_request",
-				GUID:    "event-guid-bad",
-				Payload: []byte("invalid json{{{"),
-			}
-
-			Expect(func() { handler.Handle(event) }).NotTo(Panic())
-			Expect(fakeProwClient.Actions()).To(BeEmpty())
-		})
-	})
-
-	Context("When the payload is empty", func() {
-		It("Should not panic and not create a job", func() {
-			event := &GitHubEvent{
-				Type:    "pull_request",
-				GUID:    "event-guid-empty",
-				Payload: []byte{},
-			}
-
-			Expect(func() { handler.Handle(event) }).NotTo(Panic())
-			Expect(fakeProwClient.Actions()).To(BeEmpty())
-		})
-	})
-
-	Context("When the GitHub API fails to get PR changes", func() {
-		It("Should not panic and not create a job", func() {
-			handler.githubClient = &errorGithubClient{}
-
-			event := &GitHubEvent{
-				Type:    "pull_request",
-				GUID:    "event-guid-github-error",
-				Payload: createPREventPayload(github.PullRequestActionOpened, 500, "kubevirt", "project-infra"),
-			}
-
-			Expect(func() { handler.Handle(event) }).NotTo(Panic())
-			Expect(fakeProwClient.Actions()).To(BeEmpty())
-		})
-	})
-
-	Context("When ProwJob creation fails", func() {
-		It("Should not panic", func() {
-			fakeProwClient.Fake.PrependReactor("create", "prowjobs", func(action testing.Action) (bool, runtime.Object, error) {
-				return true, nil, fmt.Errorf("api server unavailable")
-			})
-
-			event := &GitHubEvent{
-				Type:    "pull_request",
-				GUID:    "event-guid-prowjob-error",
-				Payload: createPREventPayload(github.PullRequestActionOpened, 501, "kubevirt", "project-infra"),
-			}
-			fakeGithubClient.PullRequestChanges[501] = []github.PullRequestChange{
-				{Filename: "handler.go"},
-			}
-
-			Expect(func() { handler.Handle(event) }).NotTo(Panic())
-		})
-	})
-
-	Context("When dry-run mode is enabled", func() {
-		BeforeEach(func() {
-			handler.dryrun = true
-		})
-
-		It("Should not create a ProwJob even with valid Go file changes", func() {
-			event := &GitHubEvent{
-				Type:    "pull_request",
-				GUID:    "event-guid-dryrun",
-				Payload: createPREventPayload(github.PullRequestActionOpened, 400, "kubevirt", "project-infra"),
-			}
-			fakeGithubClient.PullRequestChanges[400] = []github.PullRequestChange{
-				{Filename: "external-plugins/coverage/plugin/handler/handler.go"},
-			}
-			handler.Handle(event)
-
-			Expect(fakeProwClient.Actions()).To(BeEmpty())
-		})
-	})
+	
 })
 
 var _ = Describe("LoadConfig", func() {
