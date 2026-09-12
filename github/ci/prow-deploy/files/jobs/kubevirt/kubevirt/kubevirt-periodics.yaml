@@ -1073,47 +1073,6 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: amd-workloads
-  cron: 20 5,13,21 * * *
-  decoration_config:
-    grace_period: 5m0s
-    timeout: 4h0m0s
-  extra_refs:
-  - base_ref: main
-    org: kubevirt
-    repo: kubevirt
-  labels:
-    preset-podman-in-container-enabled: "true"
-  name: periodic-kubevirt-e2e-kind-1.36-sev
-  spec:
-    containers:
-    - command:
-      - /usr/local/bin/runner.sh
-      - /bin/sh
-      - -ce
-      - |
-        sysctl -w fs.inotify.max_user_instances=512
-        sysctl -w fs.inotify.max_user_watches=1048576
-
-        automation/test.sh
-      env:
-      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
-        value: "true"
-      - name: KUBEVIRT_QUARANTINE
-        value: "true"
-      - name: TARGET
-        value: kind-1.36-sev
-      - name: KUBEVIRT_PROVIDER
-        value: kind-1.36
-      image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
-      resources:
-        requests:
-          memory: 18Gi
-      securityContext:
-        privileged: true
-- annotations:
-    testgrid-dashboards: kubevirt-periodics
-    testgrid-days-of-results: "60"
   cluster: prow-workloads
   cron: 0 12 * * *
   decoration_config:
@@ -2266,3 +2225,60 @@ periodics:
         privileged: true
     nodeSelector:
       type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: amd-workloads
+  cron: 20 5,13,21 * * *
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    clone_depth: 1
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-podman-in-container-enabled: "true"
+  name: periodic-kubevirt-e2e-kind-1.37-sev
+  spec:
+    containers:
+    - args:
+      - /bin/sh
+      - -ce
+      - |
+        sysctl -w fs.inotify.max_user_instances=512
+        sysctl -w fs.inotify.max_user_watches=1048576
+
+        automation/test.sh
+      command:
+      - /usr/local/bin/runner.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: kind-1.37-sev
+      - name: KUBEVIRT_PROVIDER
+        value: kind-1.37
+      image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
+      resources:
+        requests:
+          memory: 18Gi
+      securityContext:
+        privileged: true
+      volumeMounts:
+      - mountPath: /sys/fs/cgroup
+        name: cgroup
+      - mountPath: /dev/vfio/
+        name: vfio
+    volumes:
+    - hostPath:
+        path: /sys/fs/cgroup
+        type: Directory
+      name: cgroup
+    - hostPath:
+        path: /dev/vfio/
+        type: Directory
+      name: vfio
