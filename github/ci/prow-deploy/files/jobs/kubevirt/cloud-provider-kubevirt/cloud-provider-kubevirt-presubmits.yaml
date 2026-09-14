@@ -24,13 +24,13 @@ presubmits:
       containers:
         - image: quay.io/kubevirtci/golang:v20260908-8ec231b
           command:
-            - "/usr/local/bin/runner.sh"
+            - "/usr/local/bin/entrypoint.sh"
             - "/bin/sh"
             - "-c"
             - "make test"
           env:
-            - name: GIMME_GO_VERSION
-              value: "1.24.11"
+            - name: GO_MOD_PATH
+              value: "go.mod"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -61,13 +61,13 @@ presubmits:
       containers:
         - image: quay.io/kubevirtci/golang:v20260908-8ec231b
           command:
-            - "/usr/local/bin/runner.sh"
+            - "/usr/local/bin/entrypoint.sh"
             - "/bin/sh"
             - "-c"
             - "make lint"
           env:
-            - name: GIMME_GO_VERSION
-              value: "1.24.11"
+            - name: GO_MOD_PATH
+              value: "go.mod"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -90,7 +90,7 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - make functest
@@ -101,7 +101,7 @@ presubmits:
         securityContext:
           privileged: true
         env:
-          - name: GIMME_GO_VERSION
-            value: "1.24.11"
+          - name: GO_MOD_PATH
+            value: "go.mod"
       nodeSelector:
         type: bare-metal-external
