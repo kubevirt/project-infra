@@ -1028,51 +1028,6 @@ periodics:
 - annotations:
     testgrid-dashboards: kubevirt-periodics
     testgrid-days-of-results: "60"
-  cluster: prow-workloads
-  cron: 30 2,8,14,20 * * *
-  decoration_config:
-    grace_period: 5m0s
-    timeout: 4h0m0s
-  extra_refs:
-  - base_ref: main
-    org: kubevirt
-    repo: kubevirt
-  labels:
-    preset-bazel-cache: "true"
-    preset-docker-mirror-proxy: "true"
-    preset-podman-in-container-enabled: "true"
-    preset-podman-shared-images: "true"
-    preset-shared-images: "true"
-  name: periodic-kubevirt-e2e-k8s-1.36-sig-compute-migrations
-  spec:
-    containers:
-    - command:
-      - /usr/local/bin/runner.sh
-      - /bin/sh
-      - -c
-      - automation/test.sh
-      env:
-      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
-        value: "true"
-      - name: KUBEVIRT_QUARANTINE
-        value: "true"
-      - name: TARGET
-        value: k8s-1.36-sig-compute-migrations
-      - name: KUBEVIRT_WITH_ETC_IN_MEMORY
-        value: "true"
-      - name: KUBEVIRT_WITH_ETC_CAPACITY
-        value: 1G
-      image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
-      resources:
-        requests:
-          memory: 52Gi
-      securityContext:
-        privileged: true
-    nodeSelector:
-      type: bare-metal-external
-- annotations:
-    testgrid-dashboards: kubevirt-periodics
-    testgrid-days-of-results: "60"
   cluster: amd-workloads
   cron: 20 5,13,21 * * *
   decoration_config:
@@ -2114,6 +2069,53 @@ periodics:
         value: --usb 30M --usb 40M
       - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
         value: 4h45m
+      - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+        value: "true"
+      - name: KUBEVIRT_WITH_ETC_CAPACITY
+        value: 1G
+      image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
+      resources:
+        requests:
+          memory: 52Gi
+      securityContext:
+        privileged: true
+    nodeSelector:
+      type: bare-metal-external
+- annotations:
+    testgrid-dashboards: kubevirt-periodics
+    testgrid-days-of-results: "60"
+  cluster: prow-workloads
+  cron: 30 2,8,14,20 * * *
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 4h0m0s
+  extra_refs:
+  - base_ref: main
+    clone_depth: 1
+    org: kubevirt
+    repo: kubevirt
+  labels:
+    preset-bazel-cache: "true"
+    preset-docker-mirror-proxy: "true"
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-shared-images: "true"
+  name: periodic-kubevirt-e2e-k8s-1.37-sig-compute-migrations
+  spec:
+    containers:
+    - args:
+      - /bin/sh
+      - -c
+      - automation/test.sh
+      command:
+      - /usr/local/bin/runner.sh
+      env:
+      - name: KUBEVIRT_E2E_RUN_ALL_SUITES
+        value: "true"
+      - name: KUBEVIRT_QUARANTINE
+        value: "true"
+      - name: TARGET
+        value: k8s-1.37-sig-compute-migrations
       - name: KUBEVIRT_WITH_ETC_IN_MEMORY
         value: "true"
       - name: KUBEVIRT_WITH_ETC_CAPACITY
