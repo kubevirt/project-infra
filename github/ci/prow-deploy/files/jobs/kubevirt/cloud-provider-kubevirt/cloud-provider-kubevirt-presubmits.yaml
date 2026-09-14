@@ -30,7 +30,7 @@ presubmits:
             - "make test"
           env:
             - name: GIMME_GO_VERSION
-              value: "1.24.11"
+              value: "1.26.8"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -67,7 +67,7 @@ presubmits:
             - "make lint"
           env:
             - name: GIMME_GO_VERSION
-              value: "1.24.11"
+              value: "1.26.8"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
@@ -102,6 +102,6 @@ presubmits:
           privileged: true
         env:
           - name: GIMME_GO_VERSION
-            value: "1.24.11"
+            value: "1.26.8"
       nodeSelector:
         type: bare-metal-external
