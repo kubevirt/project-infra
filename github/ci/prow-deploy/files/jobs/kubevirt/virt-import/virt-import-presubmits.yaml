@@ -1,0 +1,141 @@
+presubmits:
+  kubevirt/virt-import:
+  - name: pull-virt-import
+    branches:
+    - main
+    always_run: true
+    optional: false
+    cluster: prow-workloads
+    annotations:
+      testgrid-create-test-group: "false"
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/entrypoint.sh
+        - /bin/sh
+        - -c
+        - make all
+        env:
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        image: quay.io/kubevirtci/golang:v20260908-8ec231b
+        resources:
+          requests:
+            memory: 4Gi
+  - name: pull-virt-import-container-build
+    branches:
+    - main
+    always_run: false
+    run_if_changed: 'api/.*|cmd/.*|hack/.*|internal/.*|staging/.*|vendor/.*|Dockerfile|Makefile|^go\.(mod|sum|work)'
+    cluster: prow-workloads
+    annotations:
+      testgrid-create-test-group: "false"
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/entrypoint.sh
+        - /bin/sh
+        - -c
+        - make container-build
+        env:
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        image: quay.io/kubevirtci/golang:v20260908-8ec231b
+        resources:
+          requests:
+            memory: "8Gi"
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - name: pull-virt-import-test
+    branches:
+    - main
+    always_run: false
+    run_if_changed: 'api/.*|config/crd/.*|hack/.*|internal/.*|staging/.*|vendor/.*|Makefile|^go\.(mod|sum|work)'
+    cluster: prow-workloads
+    annotations:
+      testgrid-create-test-group: "false"
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/entrypoint.sh
+        - /bin/sh
+        - -c
+        - make test
+        env:
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        image: quay.io/kubevirtci/golang:v20260908-8ec231b
+        resources:
+          requests:
+            memory: 4Gi
+  - name: pull-virt-import-cluster-functest
+    branches:
+    - main
+    always_run: false
+    run_if_changed: 'api/.*|cmd/.*|config/.*|hack/.*|internal/.*|staging/.*|tests/.*|vendor/.*|Dockerfile|Makefile|^go\.(mod|sum|work)'
+    annotations:
+      testgrid-create-test-group: "false"
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-docker-mirror-proxy: "true"
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/entrypoint.sh
+        - /bin/sh
+        - -c
+        - "make cluster-up && make cluster-sync && make cluster-functest"
+        env:
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        image: quay.io/kubevirtci/golang:v20260908-8ec231b
+        resources:
+          requests:
+            memory: 20Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - name: pull-virt-import-build-installer
+    branches:
+    - main
+    always_run: false
+    run_if_changed: "api/.*|config/.*|hack/.*|internal/.*|Makefile"
+    cluster: prow-workloads
+    annotations:
+      testgrid-create-test-group: "false"
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/entrypoint.sh
+        - /bin/sh
+        - -c
+        - make build-installer
+        env:
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        image: quay.io/kubevirtci/golang:v20260908-8ec231b
+        resources:
+          requests:
+            memory: 4Gi
