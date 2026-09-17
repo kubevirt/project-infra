@@ -489,6 +489,15 @@ plugins:
     - owners-label
     - trigger
 
+  kubevirt/virt-import:
+    plugins:
+    - approve
+    - lgtm
+    - owners-label
+    - release-note
+    - trigger
+    - help
+
   kubevirt/virt-template:
     plugins:
     - approve
@@ -733,6 +742,7 @@ approve:
   - kubevirt/enhancements
   - kubevirt/irsa-mutation-webhook
   - kubevirt/virt-template
+  - kubevirt/virt-import
   - kubevirt/controller-lifecycle-operator-sdk
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
@@ -892,6 +902,7 @@ lgtm:
   - kubevirt/enhancements
   - kubevirt/irsa-mutation-webhook
   - kubevirt/virt-template
+  - kubevirt/virt-import
   - kubevirt/controller-lifecycle-operator-sdk
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
@@ -965,6 +976,7 @@ triggers:
   - kubevirt/enhancements
   - kubevirt/irsa-mutation-webhook
   - kubevirt/virt-template
+  - kubevirt/virt-import
   - kubevirt/controller-lifecycle-operator-sdk
   - kubevirt/kubevirt-migration-controller
   - kubevirt/kubevirt-migration-operator
