@@ -81,3 +81,54 @@ periodics:
         resources:
           requests:
             memory: "200Mi"
+  - name: periodic-kubevirt-tekton-tasks-e2e-test-secure-execution-s390x
+    cron: 30 16 * * *
+    annotations:
+      testgrid-dashboards: kubevirt-tekton-tasks-periodics
+      testgrid-days-of-results: "60"
+    cluster: kubevirt-prow-control-plane
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h30m0s
+    extra_refs:
+    - base_ref: main
+      org: kubevirt
+      repo: kubevirt-tekton-tasks
+    - base_ref: main
+      org: kubevirt
+      repo: project-infra
+    labels:
+      preset-github-credentials: "true"
+      preset-pgp-bot-key: "true"
+    max_concurrency: 1
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - |
+          # get kubectl
+          curl -L -o /usr/local/bin/kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x /usr/local/bin/kubectl
+
+          # get virtctl
+          export KUBEVIRT_VERSION="$(curl -s https://api.github.com/repos/kubevirt/kubevirt/releases/latest | jq -r .tag_name)"
+          curl -L -o /usr/local/bin/virtctl "https://github.com/kubevirt/kubevirt/releases/download/${KUBEVIRT_VERSION}/virtctl-${KUBEVIRT_VERSION}-linux-amd64"
+          chmod +x /usr/local/bin/virtctl
+
+          # get kubeconfig
+          source ../project-infra/hack/manage-secrets.sh
+          decrypt_secrets
+          install -m400 "${secrets_repo_dir}"/secrets/kubeconfigs/prow-s390x-secure-execution /kubeconfig
+          cleanup_secrets
+
+          # run the test
+          automation/e2e-pipelines/se-pipeline-test.sh
+        env:
+        - name: KUBECONFIG
+          value: /kubeconfig
+        image: quay.io/kubevirtci/bootstrap:v20260906-22dec7d
+        resources:
+          requests:
+            memory: 4Gi
