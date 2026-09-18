@@ -1,0 +1,33 @@
+periodics:
+- name: periodic-virt-import-publish-staging-main-nightly
+  cron: 2 1 * * *
+  cluster: kubevirt-prow-control-plane
+  max_concurrency: 1
+  annotations:
+    testgrid-create-test-group: "false"
+  labels:
+    preset-github-credentials: "true"
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 1h0m0s
+  extra_refs:
+  - base_ref: main
+    org: kubevirt
+    repo: virt-import
+    clone_depth: 1
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/entrypoint.sh
+      - /bin/sh
+      - -c
+      - |
+        export GIT_ASKPASS="/usr/local/bin/git-askpass.sh"
+        hack/publish-staging.sh
+      env:
+      - name: GO_MOD_PATH
+        value: "go.mod"
+      image: quay.io/kubevirtci/pr-creator:v20260917-78a68c7
+      resources:
+        requests:
+          memory: 200Mi

@@ -205,6 +205,7 @@ tide:
     kubevirt/enhancements: squash
     kubevirt/irsa-mutation-webhook: squash
     kubevirt/virt-template: merge
+    kubevirt/virt-import: merge
     kubevirt/kubevirt-migration-controller: squash
     kubevirt/kubevirt-migration-operator: squash
     kubevirt/vm-file-restore-operator: merge
@@ -291,6 +292,7 @@ tide:
     - kubevirt/kubevirt.core
     - kubevirt/irsa-mutation-webhook
     - kubevirt/virt-template
+    - kubevirt/virt-import
     - kubevirt/controller-lifecycle-operator-sdk
     - kubevirt/kubevirt-migration-controller
     - kubevirt/kubevirt-migration-operator
@@ -666,6 +668,12 @@ branch-protection:
           branches:
             main:
               protect: true
+        virt-import:
+          protect: true
+        virt-import-api:
+          protect: true
+        virt-import-client-go:
+          protect: true
         virt-template:
           protect: true
         virt-template-api:
