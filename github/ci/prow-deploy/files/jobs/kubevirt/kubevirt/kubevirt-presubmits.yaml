@@ -1319,7 +1319,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1333,7 +1333,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
     name: pull-kubevirt-e2e-k8s-1.36-sig-monitoring
-    run_if_changed: ^pkg/monitoring/.*|^tests/monitoring/.*|^tests/libmonitoring/.*|^vendor/github.com/machadovilaca/operator-observability/.*|^kubevirtci/cluster-up/.*
     skip_branches:
     - release-\d+\.\d+
     spec:
