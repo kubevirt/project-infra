@@ -1326,42 +1326,6 @@ presubmits:
     cluster: prow-workloads
     decoration_config:
       grace_period: 5m0s
-      timeout: 2h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-    name: pull-kubevirt-e2e-k8s-1.36-sig-monitoring
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - automation/test.sh
-        env:
-        - name: TARGET
-          value: k8s-1.36-sig-monitoring
-        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
-          value: "true"
-        - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
-        resources:
-          requests:
-            memory: 52Gi
-        securityContext:
-          privileged: true
-  - always_run: false
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decoration_config:
-      grace_period: 5m0s
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
@@ -2277,6 +2241,45 @@ presubmits:
         env:
         - name: TARGET
           value: k8s-1.37-sig-compute-migrations
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: 1G
+        image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: true
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 2h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+    name: pull-kubevirt-e2e-k8s-1.37-sig-monitoring
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - args:
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        command:
+        - /usr/local/bin/runner.sh
+        env:
+        - name: TARGET
+          value: k8s-1.37-sig-monitoring
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
