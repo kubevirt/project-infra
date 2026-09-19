@@ -22,7 +22,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v202609090403-37397a7
+      image: quay.io/kubevirtci/flakefinder:v202609180315-c903165
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -47,7 +47,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v202609090403-37397a7
+      image: quay.io/kubevirtci/flakefinder:v202609180315-c903165
       resources:
         requests:
           cpu: 500m
@@ -75,7 +75,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v202609090403-37397a7
+      image: quay.io/kubevirtci/flakefinder:v202609180315-c903165
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -547,7 +547,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ceu
-      image: quay.io/kubevirtci/pr-creator:v20260917-78a68c7
+      image: quay.io/kubevirtci/pr-creator:v20260918-c903165
       resources:
         requests:
           memory: 8Gi
@@ -593,7 +593,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ceu
-      image: quay.io/kubevirtci/pr-creator:v20260917-78a68c7
+      image: quay.io/kubevirtci/pr-creator:v20260918-c903165
       resources:
         requests:
           memory: 8Gi
@@ -1297,7 +1297,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ce
-      image: quay.io/kubevirtci/pr-creator:v20260917-78a68c7
+      image: quay.io/kubevirtci/pr-creator:v20260918-c903165
       resources:
         requests:
           memory: 200Mi
@@ -1329,7 +1329,7 @@ periodics:
       - --output-gcs-url=gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/index.html
       command:
       - /usr/bin/test-label-analyzer
-      image: quay.io/kubevirtci/test-label-analyzer:v202609090403-37397a7
+      image: quay.io/kubevirtci/test-label-analyzer:v202609180315-c903165
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -1844,7 +1844,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/pr-creator:v20260917-78a68c7
+      image: quay.io/kubevirtci/pr-creator:v20260918-c903165
       resources: {}
     nodeSelector:
       type: bare-metal-external
