@@ -14,8 +14,10 @@ import (
 
 	. "kubevirt.io/project-infra/pkg/flakefinder"
 
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"k8s.io/apimachinery/pkg/util/errors"
 )
 
@@ -135,11 +137,21 @@ func runResults(r resultOpts) error {
 	// todo: make the credentials file a flag
 	var storageClient *storage.Client
 	var err error
-	if r.credentialsFile == "" {
-		storageClient, err = storage.NewClient(ctx)
-	} else {
-		storageClient, err = storage.NewClient(ctx, option.WithCredentialsFile(r.credentialsFile))
+
+	creds, err := credentials.DetectDefault(&credentials.DetectOptions{
+		CredentialsFile: r.credentialsFile,
+		Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
+	})
+	if err != nil {
+		return fmt.Errorf("Failed to load default credentials: %v", err)
 	}
+
+	options := []option.ClientOption{
+		option.WithAuthCredentials(creds),
+		internaloption.EnableNewAuthLibrary(),
+	}
+
+	storageClient, err = storage.NewClient(ctx, options...)
 	if err != nil {
 		return fmt.Errorf("Failed to create new storage client: %v.\n", err)
 	}
