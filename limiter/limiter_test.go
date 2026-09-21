@@ -6,9 +6,11 @@ import (
 	"strings"
 	"testing"
 
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 )
 
 const (
@@ -17,14 +19,26 @@ const (
 )
 
 func Test(t *testing.T) {
-
-	ctx := context.Background()
-
 	if _, err := os.Stat(credentialsPath); os.IsNotExist(err) {
 		t.Skipf("credentials file %s not found", credentialsPath)
 	}
 
-	client, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsPath))
+	creds, err := credentials.DetectDefault(&credentials.DetectOptions{
+		CredentialsFile: credentialsPath,
+		Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
+	})
+	if err != nil {
+		t.Fatalf("failed to load default credentials: %v", err)
+	}
+
+	ctx := context.Background()
+
+	options := []option.ClientOption{
+		option.WithAuthCredentials(creds),
+		internaloption.EnableNewAuthLibrary(),
+	}
+
+	client, err := storage.NewClient(ctx, options...)
 	if err != nil {
 		t.Fatalf("failed to obtain a gce client: %v", err)
 	}
