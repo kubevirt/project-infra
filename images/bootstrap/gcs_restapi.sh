@@ -98,13 +98,13 @@ stat_gcs_file() {
     auth_header=$(get_auth_header "$auth") || exit 1
 
     local stat_response
-    stat_response=$(curl --silent --show-error --fail-with-body -X GET \
+    stat_response=$(curl --silent --show-error --fail-with-body --retry 2 -X GET \
       ${auth_header:+-H "$auth_header"} \
       "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path")
     local curl_exit=$?
 
     if [ "$curl_exit" -ne 0 ]; then
-        return 1
+        return "${curl_exit}"
     fi
 
     if ! echo "$stat_response" | jq -e '.name' > /dev/null 2>&1; then
@@ -127,7 +127,7 @@ cat_gcs_file() {
     tmpfile=$(mktemp) || { echo "Error: mktemp failed" >&2; return 1; }
 
     local http_code
-    http_code=$(curl --silent --show-error --fail-with-body --output "$tmpfile" --write-out '%{http_code}' -X GET \
+    http_code=$(curl --silent --show-error --fail-with-body --retry 2 --output "$tmpfile" --write-out '%{http_code}' -X GET \
       ${auth_header:+-H "$auth_header"} \
       -H "Cache-Control: no-cache" \
       "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path?alt=media&ignoreCache=1")
@@ -139,19 +139,12 @@ cat_gcs_file() {
             echo "Response body: $(cat "$tmpfile")" >&2
         fi
         rm -f "$tmpfile"
-        return 1
+        return "${curl_exit}"
     fi
 
-    if [ ! -s "$tmpfile" ]; then
-        echo "Error: HTTP 200 but empty body for $2" >&2
-        rm -f "$tmpfile"
-        return 1
-    fi
-
-    local cat_exit=0
-    cat "$tmpfile" || cat_exit=$?
+    cat "$tmpfile"
     rm -f "$tmpfile"
-    return "$cat_exit"
+    return 0
 }
 
 # Function to delete a file from GCS
