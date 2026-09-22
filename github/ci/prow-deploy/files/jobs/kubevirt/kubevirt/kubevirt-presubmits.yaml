@@ -11,68 +11,6 @@ presubmits:
     labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-      preset-shared-images: "true"
-    max_concurrency: 4
-    name: pull-kubevirt-e2e-k8s-1.36-sig-performance
-    run_if_changed: ^cmd/.*|^rpm/.*|^tests/performance/.*|^hack/perftests.sh|^tools/perfscale-audit/.*|^bazel/.*|^third_party/.*|^staging/src/.*|^api/.*|^pkg/virt-.*|^pkg/controller/.*|^pkg/monitoring/.*
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -ce
-        - |
-          # Build the perfscale-audit binary
-          make bazel-build
-
-          # Create k8s cluster
-          make cluster-up
-
-          # Push and deploy kubevirt
-          make cluster-sync
-
-          FUNC_TEST_ARGS="--no-color --seed=42" make perftest
-        env:
-        - name: KUBEVIRT_PROVIDER
-          value: k8s-1.36
-        - name: KUBEVIRT_STORAGE
-          value: hpp
-        - name: KUBEVIRT_MEMORY_SIZE
-          value: 16G
-        - name: KUBEVIRT_NUM_NODES
-          value: "4"
-        - name: KUBEVIRT_DEPLOY_PROMETHEUS
-          value: "true"
-        - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
-          value: --prometheus-port 30007
-        - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: 1G
-        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
-          value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
-        resources:
-          requests:
-            cpu: "12"
-            memory: 73Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 2h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
@@ -1421,62 +1359,6 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
-      ci.kubevirt.io/prometheus: ""
-      preset-bazel-cache: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-    name: pull-kubevirt-e2e-k8s-1.36-sig-performance-kwok
-    optional: true
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -c
-        - |
-          # Build the perfscale-audit binary
-          make bazel-build
-          # Create k8s cluster
-          make cluster-up
-          # Push and deploy kubevirt
-          make cluster-sync
-          FUNC_TEST_ARGS="--no-color --seed=42" make kwok-perftest
-        env:
-        - name: KUBEVIRT_PROVIDER
-          value: k8s-1.36
-        - name: KUBEVIRT_MEMORY_SIZE
-          value: 35G
-        - name: KUBEVIRT_DEPLOY_KWOK
-          value: "true"
-        - name: KUBEVIRT_DEPLOY_PROMETHEUS
-          value: "true"
-        - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
-          value: --prometheus-port 30007
-        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
-          value: "true"
-        - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: 8G
-        image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
-        resources:
-          requests:
-            cpu: "12"
-            memory: 73Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 4h0m0s
-    labels:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1838,89 +1720,6 @@ presubmits:
         resources:
           requests:
             memory: 52Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
-  - always_run: false
-    annotations:
-      fork-per-release: "true"
-      testgrid-dashboards: kubevirt-presubmits
-    cluster: prow-workloads
-    decoration_config:
-      grace_period: 5m0s
-      timeout: 4h0m0s
-    labels:
-      preset-bazel-cache: "true"
-      preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
-      preset-podman-in-container-enabled: "true"
-      preset-podman-shared-images: "true"
-      preset-shared-images: "true"
-    max_concurrency: 4
-    name: pull-kubevirt-e2e-k8s-1.36-sig-performance-kube-burner
-    optional: true
-    reporter_config:
-      slack: {}
-    skip_branches:
-    - release-\d+\.\d+
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/runner.sh
-        - /bin/sh
-        - -ce
-        - |
-          # Build the perfscale-audit binary
-          make bazel-build
-
-          # Create k8s cluster
-          make cluster-up
-          echo $(./kubevirtci/cluster-up/kubeconfig.sh)
-
-          # run test
-          PERFSCALE_KUBE_BURNER=true ./automation/perfscale-test.sh
-        env:
-        - name: KUBEVIRT_PROVIDER
-          value: k8s-1.36
-        - name: KUBEVIRT_MEMORY_SIZE
-          value: 35G
-        - name: KUBEVIRT_DEPLOY_PROMETHEUS
-          value: "true"
-        - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
-          value: --prometheus-port 30007
-        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
-          value: "true"
-        - name: KUBEVIRT_WITH_ETC_CAPACITY
-          value: 1G
-        - name: PROMETHEUS_ENDPOINT
-          value: http://127.0.0.1
-        - name: PROMETHEUS_PORT
-          value: "30007"
-        - name: PROMETHEUS_TOKEN
-        - name: PERFAUDIT
-          value: "true"
-        - name: KUBECONFIG
-          value: kubevirtci/_ci-configs/k8s-1.36/.kubeconfig
-        - name: IMAGE_PULL_POLICY
-          value: Always
-        - name: KUBE_BURNER_VERSION
-          value: latest
-        - name: QPS
-          value: "10"
-        - name: BURST
-          value: "10"
-        - name: JOB_ITERATIONS
-          value: "1"
-        - name: KB_LOG_LEVEL
-          value: debug
-        - name: PERFSCALE_WORKLOAD
-          value: tests/performance/manifests/kube-burner/kubevirt-density/kubevirt-density.yml
-        image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
-        resources:
-          requests:
-            cpu: "12"
-            memory: 73Gi
         securityContext:
           privileged: true
       nodeSelector:
@@ -2358,6 +2157,210 @@ presubmits:
         resources:
           requests:
             memory: 52Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 2h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 4
+    name: pull-kubevirt-e2e-k8s-1.37-sig-performance
+    run_if_changed: ^cmd/.*|^rpm/.*|^tests/performance/.*|^hack/perftests.sh|^tools/perfscale-audit/.*|^bazel/.*|^third_party/.*|^staging/src/.*|^api/.*|^pkg/virt-.*|^pkg/controller/.*|^pkg/monitoring/.*
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - args:
+        - /bin/sh
+        - -ce
+        - |
+          # Build the perfscale-audit binary
+          make bazel-build
+
+          # Create k8s cluster
+          make cluster-up
+
+          # Push and deploy kubevirt
+          make cluster-sync
+
+          FUNC_TEST_ARGS="--no-color --seed=42" make perftest
+        command:
+        - /usr/local/bin/runner.sh
+        env:
+        - name: KUBEVIRT_PROVIDER
+          value: k8s-1.37
+        - name: KUBEVIRT_STORAGE
+          value: hpp
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 16G
+        - name: KUBEVIRT_NUM_NODES
+          value: "4"
+        - name: KUBEVIRT_DEPLOY_PROMETHEUS
+          value: "true"
+        - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+          value: --prometheus-port 30007
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: 1G
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
+        resources:
+          requests:
+            cpu: "12"
+            memory: 73Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-kubevirtci-quay-credential: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 4
+    name: pull-kubevirt-e2e-k8s-1.37-sig-performance-kube-burner
+    optional: true
+    reporter_config:
+      slack: {}
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - args:
+        - /bin/sh
+        - -ce
+        - |
+          # Build the perfscale-audit binary
+          make bazel-build
+
+          # Create k8s cluster
+          make cluster-up
+          export KUBECONFIG=$(./kubevirtci/cluster-up/kubeconfig.sh)
+
+          # run test
+          PERFSCALE_KUBE_BURNER=true ./automation/perfscale-test.sh
+        command:
+        - /usr/local/bin/runner.sh
+        env:
+        - name: KUBEVIRT_PROVIDER
+          value: k8s-1.37
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 35G
+        - name: KUBEVIRT_DEPLOY_PROMETHEUS
+          value: "true"
+        - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+          value: --prometheus-port 30007
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: 1G
+        - name: PROMETHEUS_ENDPOINT
+          value: http://127.0.0.1
+        - name: PROMETHEUS_PORT
+          value: "30007"
+        - name: PROMETHEUS_TOKEN
+        - name: PERFAUDIT
+          value: "true"
+        - name: KUBECONFIG
+          value: kubevirtci/_ci-configs/k8s-1.36/.kubeconfig
+        - name: IMAGE_PULL_POLICY
+          value: Always
+        - name: KUBE_BURNER_VERSION
+          value: latest
+        - name: QPS
+          value: "10"
+        - name: BURST
+          value: "10"
+        - name: JOB_ITERATIONS
+          value: "1"
+        - name: KB_LOG_LEVEL
+          value: debug
+        - name: PERFSCALE_WORKLOAD
+          value: tests/performance/manifests/kube-burner/kubevirt-density/kubevirt-density.yml
+        image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
+        resources:
+          requests:
+            cpu: "12"
+            memory: 73Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    labels:
+      ci.kubevirt.io/prometheus: ""
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+    name: pull-kubevirt-e2e-k8s-1.37-sig-performance-kwok
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - args:
+        - /bin/sh
+        - -c
+        - |
+          # Build the perfscale-audit binary
+          make bazel-build
+          # Create k8s cluster
+          make cluster-up
+          # Push and deploy kubevirt
+          make cluster-sync
+          FUNC_TEST_ARGS="--no-color --seed=42" make kwok-perftest
+        command:
+        - /usr/local/bin/runner.sh
+        env:
+        - name: KUBEVIRT_PROVIDER
+          value: k8s-1.37
+        - name: KUBEVIRT_MEMORY_SIZE
+          value: 35G
+        - name: KUBEVIRT_DEPLOY_KWOK
+          value: "true"
+        - name: KUBEVIRT_DEPLOY_PROMETHEUS
+          value: "true"
+        - name: KUBEVIRT_PROVIDER_EXTRA_ARGS
+          value: --prometheus-port 30007
+        - name: KUBEVIRT_WITH_ETC_IN_MEMORY
+          value: "true"
+        - name: KUBEVIRT_WITH_ETC_CAPACITY
+          value: 8G
+        image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
+        resources:
+          requests:
+            cpu: "12"
+            memory: 73Gi
         securityContext:
           privileged: true
       nodeSelector:
