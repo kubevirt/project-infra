@@ -1759,7 +1759,7 @@ periodics:
       - name: IMAGE_PULL_POLICY
         value: Always
       - name: BUILD_ARCH
-        value: amd64,crossbuild-s390x
+        value: crossbuild-s390x
       image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
       resources:
         requests:
