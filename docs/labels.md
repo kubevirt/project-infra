@@ -9,6 +9,7 @@
 - [Labels that apply to all repos, only for issues](#labels-that-apply-to-all-repos-only-for-issues)
 - [Labels that apply to all repos, only for PRs](#labels-that-apply-to-all-repos-only-for-prs)
 - [Labels that apply to kubevirt/containerized-data-importer, only for PRs](#labels-that-apply-to-kubevirtcontainerized-data-importer-only-for-prs)
+- [Labels that apply to kubevirt/enhancements, for both issues and PRs](#labels-that-apply-to-kubevirtenhancements-for-both-issues-and-prs)
 - [Labels that apply to kubevirt/hyperconverged-cluster-operator, only for PRs](#labels-that-apply-to-kubevirthyperconverged-cluster-operator-only-for-prs)
 - [Labels that apply to kubevirt/kubevirt, for both issues and PRs](#labels-that-apply-to-kubevirtkubevirt-for-both-issues-and-prs)
 - [Labels that apply to kubevirt/kubevirt, only for issues](#labels-that-apply-to-kubevirtkubevirt-only-for-issues)
@@ -137,6 +138,12 @@ larger set of contributors to apply/remove them.
 | Name | Description | Added By | Prow Plugin |
 | ---- | ----------- | -------- | --- |
 | <a id="skip-review" href="#skip-review">`skip-review`</a> | Indicates a PR is trusted, used by tide for auto-merging PRs.| kubevirt-bot | |
+
+## Labels that apply to kubevirt/enhancements, for both issues and PRs
+
+| Name | Description | Added By | Prow Plugin |
+| ---- | ----------- | -------- | --- |
+| <a id="kind/vep" href="#kind/vep">`kind/vep`</a> | Categorizes issue or PR as a Virtualization Enhancement Proposal (VEP).| anyone |  [label](https://prow.ci.kubevirt.io/command-help#label) |
 
 ## Labels that apply to kubevirt/hyperconverged-cluster-operator, only for PRs
 
