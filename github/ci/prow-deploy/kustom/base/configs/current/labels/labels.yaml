@@ -649,6 +649,14 @@ repos:
         description: Indicates a PR is trusted, used by tide for auto-merging PRs.
         name: skip-review
         target: prs
+  kubevirt/enhancements:
+    labels:
+      - name: kind/vep
+        color: bfd4f2
+        target: both
+        addedBy: anyone
+        prowPlugin: label
+        description: Categorizes issue or PR as a Virtualization Enhancement Proposal (VEP).
   nmstate/kubernetes-nmstate:
     labels:
       - name: kind/documentation
