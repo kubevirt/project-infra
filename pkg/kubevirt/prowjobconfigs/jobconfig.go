@@ -44,11 +44,6 @@ func init() {
 }
 
 func CreatePresubmitJobName(latestReleaseSemver *querier.SemVer, sigName string) string {
-	switch sigName {
-	case "sig-network":
-		sigName += "-smoke"
-	}
-
 	return fmt.Sprintf("pull-kubevirt-e2e-k8s-%s.%s-%s", latestReleaseSemver.Major, latestReleaseSemver.Minor, sigName)
 }
 
@@ -56,8 +51,6 @@ func CreatePresubmitTargetValue(latestReleaseSemver *querier.SemVer, sigName str
 	switch sigName {
 	case "sig-compute":
 		sigName += "-parallel"
-	case "sig-network":
-		sigName += "-smoke"
 	}
 
 	return fmt.Sprintf("k8s-%s.%s-%s", latestReleaseSemver.Major, latestReleaseSemver.Minor, sigName)
