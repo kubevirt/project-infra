@@ -369,3 +369,121 @@ presubmits:
             memory: 21Gi
         securityContext:
           privileged: true
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+    cluster: kubevirt-prow-control-plane
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-no-bazel-verify-rpms
+    optional: true
+    run_if_changed: ^(WORKSPACE|rpm/|hack/(rpm-deps|verify-rpm-deps|rpmtree-utils|install-bazeldnf)\.sh)
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - make verify-rpm-deps
+        image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+    cluster: kubevirt-prow-control-plane
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-no-bazel-verify-rpms-cs10
+    optional: true
+    run_if_changed: ^(WORKSPACE|rpm/|hack/(rpm-deps|verify-rpm-deps|rpmtree-utils|install-bazeldnf)\.sh)
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - make verify-rpm-deps
+        env:
+        - name: KUBEVIRT_CENTOS_STREAM_VERSION
+          value: "10"
+        image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
+        resources:
+          requests:
+            memory: 12Gi
+        securityContext:
+          privileged: true
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 2h0m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-no-bazel-rpm-deps
+    optional: true
+    run_if_changed: ^(WORKSPACE|rpm/|hack/(rpm-deps|verify-rpm-deps|rpmtree-utils|install-bazeldnf)\.sh)
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -ce
+        - |
+          hack/dockerized "./hack/rpm-deps.sh"
+          git --no-pager diff --stat
+        image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
+        resources:
+          requests:
+            memory: 16Gi
+        securityContext:
+          privileged: true
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 2h0m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-no-bazel-rpm-deps-cs10
+    optional: true
+    run_if_changed: ^(WORKSPACE|rpm/|hack/(rpm-deps|verify-rpm-deps|rpmtree-utils|install-bazeldnf)\.sh)
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -ce
+        - |
+          hack/dockerized "./hack/rpm-deps.sh"
+          git --no-pager diff --stat
+        env:
+        - name: KUBEVIRT_CENTOS_STREAM_VERSION
+          value: "10"
+        image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
+        resources:
+          requests:
+            memory: 16Gi
+        securityContext:
+          privileged: true
