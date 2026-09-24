@@ -1,7 +1,7 @@
 module shared-images-controller
 
 require (
-	github.com/containers/podman/v5 v5.8.2
+	github.com/containers/podman/v5 v5.8.6
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/sirupsen/logrus v1.9.4
 	kubevirt.io/project-infra v0.0.0-00010101000000-000000000000
