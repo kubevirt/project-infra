@@ -27,7 +27,7 @@ periodics:
       env:
       - name: GO_MOD_PATH
         value: "go.mod"
-      image: quay.io/kubevirtci/pr-creator:v20260921-230b1f4
+      image: quay.io/kubevirtci/pr-creator:v20260923-1a6c0a9
       resources:
         requests:
           memory: 200Mi
