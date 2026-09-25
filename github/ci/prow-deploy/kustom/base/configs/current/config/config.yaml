@@ -98,10 +98,10 @@ plank:
           - http://ghproxy
           - https://api.github.com
         utility_images:
-          clonerefs: us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260917-e62c14122
-          entrypoint: us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260917-e62c14122
-          initupload: us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260917-e62c14122
-          sidecar: us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260917-e62c14122
+          clonerefs: us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20260924-f21dfc59d
+          entrypoint: us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20260924-f21dfc59d
+          initupload: us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20260924-f21dfc59d
+          sidecar: us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20260924-f21dfc59d
         grace_period: 15s
         timeout: 2h
   pod_pending_timeout: 60m
