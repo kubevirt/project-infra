@@ -84,7 +84,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-      - image: quay.io/kubevirtci/golang:v20260908-8ec231b
+      - image: quay.io/kubevirtci/golang:v20260925-049aa9d
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
