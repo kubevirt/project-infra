@@ -27,3 +27,31 @@ presubmits:
           resources:
             requests:
               memory: "4Gi"
+  - name: pull-hostpath-provisioner-operator-unit-test-s390x
+    skip_branches:
+      - release-v\d+\.\d+
+    cluster: prow-s390x-workloads
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    skip_report: false
+    optional: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20260830-8316684
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "./hack/run-unit-tests.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
