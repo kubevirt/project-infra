@@ -21,7 +21,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20260908-8ec231b
+          - image: quay.io/kubevirtci/golang:v20260925-049aa9d
             command:
               - "/usr/local/bin/entrypoint.sh"
               - "/bin/sh"
@@ -59,7 +59,7 @@ presubmits:
         nodeSelector:
           type: bare-metal-external
         containers:
-          - image: quay.io/kubevirtci/golang:v20260908-8ec231b
+          - image: quay.io/kubevirtci/golang:v20260925-049aa9d
             command:
               - "/usr/local/bin/entrypoint.sh"
               - "/bin/sh"
@@ -92,7 +92,7 @@ presubmits:
       cluster: prow-s390x-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20260908-8ec231b
+          - image: quay.io/kubevirtci/golang:v20260925-049aa9d
             command:
               - "/usr/local/bin/entrypoint.sh"
               - "/bin/sh"
@@ -123,7 +123,7 @@ presubmits:
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
-          - image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
+          - image: quay.io/kubevirtci/bootstrap:v20260925-049aa9d
             env:
               - name: GO_MOD_PATH
                 value: "go.mod"
@@ -156,7 +156,7 @@ presubmits:
       cluster: prow-s390x-workloads
       spec:
         containers:
-          - image: quay.io/kubevirtci/golang:v20260908-8ec231b
+          - image: quay.io/kubevirtci/golang:v20260925-049aa9d
             env:
               - name: GO_MOD_PATH
                 value: "go.mod"

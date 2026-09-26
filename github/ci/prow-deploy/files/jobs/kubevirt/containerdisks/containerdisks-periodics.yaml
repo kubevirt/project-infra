@@ -31,7 +31,7 @@ periodics:
         value: "true"
       - name: PROMOTE_DRY_RUN
         value: "true"
-      image: quay.io/kubevirtci/golang:v20260908-8ec231b
+      image: quay.io/kubevirtci/golang:v20260925-049aa9d
       resources:
         requests:
           memory: 16Gi
@@ -69,7 +69,7 @@ periodics:
       env:
       - name: GO_MOD_PATH
         value: "go.mod"
-      image: quay.io/kubevirtci/golang:v20260908-8ec231b
+      image: quay.io/kubevirtci/golang:v20260925-049aa9d
       resources:
         requests:
           memory: 16Gi
