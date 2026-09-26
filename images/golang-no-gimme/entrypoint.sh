@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Copyright 2018 The Kubernetes Authors.
+# Copyright 2021 The KubeVirt Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+set -x
+
+if [[ ! -v GIMME_GO_VERSION ]]; then
+  GO_MOD_PATH=${GO_MOD_PATH:-go.mod}
+  if [[ -n "${GO_MOD_PATH}" && -f "${GO_MOD_PATH}" ]]; then
+    toolchain_version="$(awk '/^toolchain[[:space:]]+go[0-9]+(.[0-9]+){1,2}/ { sub("^go", "", $2); print($2) }' "${GO_MOD_PATH}")"
+    if [[ -n "${toolchain_version}" ]]; then
+      export GIMME_GO_VERSION="${toolchain_version}"
+    else
+      # Fallback to go directive for repos without toolchain line
+      go_version="$(awk '/^go[[:space:]]+[0-9]+(.[0-9]+){1,2}/ { print($2) }' "${GO_MOD_PATH}")"
+      if [[ -n "${go_version}" ]]; then
+        export GIMME_GO_VERSION="${go_version}"
+      fi
+    fi
+  fi
+fi
+
+# actually start bootstrap and the job, under the runner (which handles dind etc.)
+/usr/local/bin/runner.sh "$@"
