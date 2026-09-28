@@ -20,10 +20,15 @@ import (
 
 // Helper function to create a payload for a pull request event with default values
 func createPREventPayload(action github.PullRequestEventAction, prNumber int, org, repo string) []byte {
+	return createPREventPayloadWithDraft(action, prNumber, org, repo, false)
+}
+
+func createPREventPayloadWithDraft(action github.PullRequestEventAction, prNumber int, org, repo string, draft bool) []byte {
 	prEvent := github.PullRequestEvent{
 		Action: action,
 		PullRequest: github.PullRequest{
 			Number: prNumber,
+			Draft:  draft,
 			Base: github.PullRequestBranch{
 				Ref: "main",
 				SHA: "sha-1",
@@ -98,6 +103,7 @@ var _ = Describe("shouldActOnPREvent", func() {
 		},
 		Entry("opened", github.PullRequestActionOpened, true),
 		Entry("synchronize", github.PullRequestActionSynchronize, true),
+		Entry("ready_for_review", github.PullRequestActionReadyForReview, true),
 		Entry("closed", github.PullRequestActionClosed, false),
 		Entry("labeled", github.PullRequestActionLabeled, false),
 		Entry("edited", github.PullRequestActionEdited, false),
@@ -347,7 +353,43 @@ var _ = Describe("Handle", func() {
 			prowJob := createAction.GetObject().(*prowapi.ProwJob)
 			Expect(prowJob.Spec.Job).To(Equal("coverage-auto"))
 		})
+	})
 
+	Context("When a draft PR is marked ready for review with Go file changes", func() {
+		It("Should create a coverage ProwJob", func() {
+			event := &GitHubEvent{
+				Type:    "pull_request",
+				GUID:    "event-guid-ready",
+				Payload: createPREventPayloadWithDraft(github.PullRequestActionReadyForReview, 103, "kubevirt", "project-infra", false),
+			}
+			fakeGithubClient.PullRequestChanges[103] = []github.PullRequestChange{
+				{Filename: "pkg/git/blame.go"},
+			}
+			handler.Handle(event)
+
+			Expect(fakeProwClient.Actions()).To(HaveLen(1))
+			Expect(fakeProwClient.Actions()[0].GetVerb()).To(Equal("create"))
+
+			createAction := fakeProwClient.Actions()[0].(testing.CreateAction)
+			prowJob := createAction.GetObject().(*prowapi.ProwJob)
+			Expect(prowJob.Spec.Job).To(Equal("coverage-auto"))
+		})
+	})
+
+	Context("When a PR is opened as a draft with Go file changes", func() {
+		It("Should not create a coverage ProwJob", func() {
+			event := &GitHubEvent{
+				Type:    "pull_request",
+				GUID:    "event-guid-draft",
+				Payload: createPREventPayloadWithDraft(github.PullRequestActionOpened, 104, "kubevirt", "project-infra", true),
+			}
+			fakeGithubClient.PullRequestChanges[104] = []github.PullRequestChange{
+				{Filename: "pkg/git/blame.go"},
+			}
+			handler.Handle(event)
+
+			Expect(fakeProwClient.Actions()).To(BeEmpty())
+		})
 	})
 
 	Context("When a PR has mixed go and non go file changes", func() {

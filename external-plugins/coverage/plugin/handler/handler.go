@@ -270,7 +270,8 @@ func detectGoFileChanges(files []string) bool {
 // shouldActOnPREvent reports whether the given action should trigger the coverage plugin.
 func shouldActOnPREvent(action string) bool {
 	return action == string(github.PullRequestActionOpened) ||
-		action == string(github.PullRequestActionSynchronize)
+		action == string(github.PullRequestActionSynchronize) ||
+		action == string(github.PullRequestActionReadyForReview)
 }
 
 // generateCoverageJob creates a ProwJob for running coverage on the given pull request.
@@ -379,6 +380,11 @@ func (h *GitHubEventsHandler) getPullRequestChanges(pr *github.PullRequest) ([]g
 func (h *GitHubEventsHandler) handlePullRequestEvent(log *logrus.Entry, prEvent *github.PullRequestEvent) {
 	if !shouldActOnPREvent(string(prEvent.Action)) {
 		log.Infof("Skipping PR event with action: %s", prEvent.Action)
+		return
+	}
+
+	if prEvent.PullRequest.Draft {
+		log.Info("Skipping draft PR")
 		return
 	}
 
