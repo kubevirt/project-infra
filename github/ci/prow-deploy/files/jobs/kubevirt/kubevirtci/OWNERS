@@ -16,6 +16,7 @@ approvers:
 - rmohr
 - stu-gott
 - vladikr
+- whitedyl
 - xpivarc
 options: {}
 reviewers:
@@ -25,3 +26,4 @@ reviewers:
 - ormergi
 - oshoval
 - qinqon
+- whitedyl
