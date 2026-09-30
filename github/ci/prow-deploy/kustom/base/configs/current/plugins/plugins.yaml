@@ -49,6 +49,11 @@ plugins:
 
 
   kubevirt:
+    # blunderbuss would request reviews from the per-directory OWNERS
+    # copied from kubevirt/kubevirt; the fork requests its own reviewers
+    # through .github/CODEOWNERS instead.
+    excluded_repos:
+    - kubevirt-no-bazel
     plugins:
     - assign
     - blunderbuss
@@ -286,12 +291,28 @@ plugins:
     - trigger
 
   kubevirt/kubevirt-no-bazel:
+    # Everything the kubevirt org enables, except blunderbuss (see the
+    # excluded_repos entry above), plus the repo's own plugins.
     plugins:
     - approve
+    - assign
+    - cat
+    - dco
+    - dog
+    - hold
+    - invalidcommitmsg
+    - label
     - lgtm
+    - lifecycle
+    - override
     - owners-label
+    - pony
     - release-note
+    - size
+    - skip
     - trigger
+    - verify-owners
+    - wip
 
   kubevirt/kubevirt-ansible:
     plugins:
