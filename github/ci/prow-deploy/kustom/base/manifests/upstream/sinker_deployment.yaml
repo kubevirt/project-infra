@@ -19,7 +19,7 @@ spec:
       serviceAccountName: sinker
       containers:
         - name: sinker
-          image: us-docker.pkg.dev/k8s-infra-prow/images/sinker:v20260924-f21dfc59d
+          image: us-docker.pkg.dev/k8s-infra-prow/images/sinker:v20260930-820f8d138
           args:
             - --config-path=/etc/config/config.yaml
             - --dry-run=false
