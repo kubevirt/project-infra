@@ -17,7 +17,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v202610011310-250c45f
+      - image: quay.io/kubevirtci/golang:v20261002-0fbe744
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt
@@ -58,7 +58,7 @@ postsubmits:
       preset-kubevirtci-quay-credential: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/golang:v202610011310-250c45f
+      - image: quay.io/kubevirtci/golang:v20261002-0fbe744
         env:
         - name: DOCKER_REPO
           value: quay.io/kubevirt

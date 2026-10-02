@@ -161,7 +161,7 @@ presubmits:
         - /bin/sh
         - -c
         - make go-test
-        image: quay.io/kubevirtci/golang:v202610011310-250c45f
+        image: quay.io/kubevirtci/golang:v20261002-0fbe744
         resources:
           requests:
             memory: 8Gi
@@ -363,7 +363,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_BUILDER_IMAGE
           value: icr.io/kubevirt/builder:2608020842-b8b04c190d
-        image: quay.io/kubevirtci/golang:v202610011310-250c45f
+        image: quay.io/kubevirtci/golang:v20261002-0fbe744
         resources:
           requests:
             memory: 21Gi

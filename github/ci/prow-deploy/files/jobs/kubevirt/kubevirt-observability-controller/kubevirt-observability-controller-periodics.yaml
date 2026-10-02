@@ -16,7 +16,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/golang:v202610011310-250c45f
+      - image: quay.io/kubevirtci/golang:v20261002-0fbe744
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
@@ -50,7 +50,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-      - image: quay.io/kubevirtci/golang:v202610011310-250c45f
+      - image: quay.io/kubevirtci/golang:v20261002-0fbe744
         command:
           - "/usr/local/bin/runner.sh"
           - "/bin/sh"
