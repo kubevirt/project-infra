@@ -200,7 +200,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
         - name: GINKGO_TESTS_IMAGE
-          value: quay.io/kubevirtci/ginkgo-tests:v202609260120-acc6b42
+          value: quay.io/kubevirtci/ginkgo-tests:v202610020123-069d352
         - name: INVOKE_FUNCTEST_ONCE
           value: "true"
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
@@ -248,7 +248,7 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
         - name: GINKGO_TESTS_IMAGE
-          value: quay.io/kubevirtci/ginkgo-tests:v202609260120-acc6b42
+          value: quay.io/kubevirtci/ginkgo-tests:v202610020123-069d352
         - name: INVOKE_FUNCTEST_ONCE
           value: "true"
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
@@ -424,7 +424,7 @@ presubmits:
         - /bin/sh
         - -ce
         - make go-test
-        image: quay.io/kubevirtci/golang:v20261001-31784ce
+        image: quay.io/kubevirtci/golang:v20261002-0fbe744
         resources:
           requests:
             memory: 8Gi
@@ -1036,7 +1036,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_BUILDER_IMAGE
           value: icr.io/kubevirt/builder:2608020842-b8b04c190d
-        image: quay.io/kubevirtci/golang:v202610011310-250c45f
+        image: quay.io/kubevirtci/golang:v20261002-0fbe744
         resources:
           requests:
             memory: 21Gi

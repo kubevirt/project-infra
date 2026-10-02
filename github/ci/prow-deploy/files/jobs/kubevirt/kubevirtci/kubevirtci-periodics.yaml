@@ -50,7 +50,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260923-1a6c0a9
+    - image: quay.io/kubevirtci/pr-creator:v20261002-069d352
       command: ["/bin/sh", "-ce"]
       args:
       - |
@@ -85,7 +85,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260923-1a6c0a9
+    - image: quay.io/kubevirtci/pr-creator:v20261002-069d352
       command:
       - /bin/sh
       - -ceu
@@ -123,7 +123,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260923-1a6c0a9
+    - image: quay.io/kubevirtci/pr-creator:v20261002-069d352
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -168,7 +168,7 @@ periodics:
   cluster: prow-s390x-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v202610011310-250c45f
+    - image: quay.io/kubevirtci/golang:v20261002-0fbe744
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -245,7 +245,7 @@ periodics:
   cluster: prow-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/pr-creator:v20260923-1a6c0a9
+    - image: quay.io/kubevirtci/pr-creator:v20261002-069d352
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -290,7 +290,7 @@ periodics:
   cluster: prow-s390x-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v202610011310-250c45f
+    - image: quay.io/kubevirtci/golang:v20261002-0fbe744
       command:
       - "/usr/local/bin/entrypoint.sh"
       - "/bin/bash"
@@ -352,7 +352,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-      - image: quay.io/kubevirtci/pr-creator:v20260923-1a6c0a9
+      - image: quay.io/kubevirtci/pr-creator:v20261002-069d352
         command: ["/bin/sh", "-ce"]
         args:
           - |

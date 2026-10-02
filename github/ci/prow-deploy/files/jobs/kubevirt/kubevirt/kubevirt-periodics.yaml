@@ -22,7 +22,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v202609260120-acc6b42
+      image: quay.io/kubevirtci/flakefinder:v202610020123-069d352
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -47,7 +47,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v202609260120-acc6b42
+      image: quay.io/kubevirtci/flakefinder:v202610020123-069d352
       resources:
         requests:
           cpu: 500m
@@ -75,7 +75,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v202609260120-acc6b42
+      image: quay.io/kubevirtci/flakefinder:v202610020123-069d352
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -101,7 +101,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v202610011310-250c45f
+      image: quay.io/kubevirtci/golang:v20261002-0fbe744
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -142,7 +142,7 @@ periodics:
           secretKeyRef:
             key: token
             name: github-token
-      image: quay.io/kubevirtci/golang:v202610011310-250c45f
+      image: quay.io/kubevirtci/golang:v20261002-0fbe744
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -173,7 +173,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v202610011310-250c45f
+      image: quay.io/kubevirtci/golang:v20261002-0fbe744
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -202,7 +202,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.23.4
-      image: quay.io/kubevirtci/golang:v202610011310-250c45f
+      image: quay.io/kubevirtci/golang:v20261002-0fbe744
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -231,7 +231,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v202610011310-250c45f
+      image: quay.io/kubevirtci/golang:v20261002-0fbe744
       resources: {}
 - annotations:
     testgrid-alert-email: bodnopoz@redhat.com, kubevirtci-sysprep-test@googlegroups.com
@@ -363,7 +363,7 @@ periodics:
         value: /etc/github/token
       - name: BUILD_ARCH
         value: amd64,crossbuild-s390x,crossbuild-aarch64
-      image: quay.io/kubevirtci/golang:v202610011310-250c45f
+      image: quay.io/kubevirtci/golang:v20261002-0fbe744
       resources:
         requests:
           memory: 8Gi
@@ -484,7 +484,7 @@ periodics:
         value: "true"
       - name: TARGET
         value: kind-1.37-vgpu
-      image: quay.io/kubevirtci/golang:v202610011310-250c45f
+      image: quay.io/kubevirtci/golang:v20261002-0fbe744
       resources:
         requests:
           memory: 18Gi
@@ -547,7 +547,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ceu
-      image: quay.io/kubevirtci/pr-creator:v20260923-1a6c0a9
+      image: quay.io/kubevirtci/pr-creator:v20261002-069d352
       resources:
         requests:
           memory: 8Gi
@@ -593,7 +593,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ceu
-      image: quay.io/kubevirtci/pr-creator:v20260923-1a6c0a9
+      image: quay.io/kubevirtci/pr-creator:v20261002-069d352
       resources:
         requests:
           memory: 8Gi
@@ -758,7 +758,7 @@ periodics:
       - /bin/sh
       - -ce
       - make go-test-cache-save
-      image: quay.io/kubevirtci/golang:v202610011310-250c45f
+      image: quay.io/kubevirtci/golang:v20261002-0fbe744
       resources:
         requests:
           memory: 12Gi
@@ -836,7 +836,7 @@ periodics:
         value: "true"
       - name: KUBEVIRT_BUILDER_IMAGE
         value: icr.io/kubevirt/builder:2608020842-b8b04c190d
-      image: quay.io/kubevirtci/golang:v202610011310-250c45f
+      image: quay.io/kubevirtci/golang:v20261002-0fbe744
       resources:
         requests:
           memory: 21Gi
@@ -1260,7 +1260,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ce
-      image: quay.io/kubevirtci/pr-creator:v20260923-1a6c0a9
+      image: quay.io/kubevirtci/pr-creator:v20261002-069d352
       resources:
         requests:
           memory: 200Mi
@@ -1292,7 +1292,7 @@ periodics:
       - --output-gcs-url=gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/index.html
       command:
       - /usr/bin/test-label-analyzer
-      image: quay.io/kubevirtci/test-label-analyzer:v202609260120-acc6b42
+      image: quay.io/kubevirtci/test-label-analyzer:v202610020123-069d352
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -1323,7 +1323,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v202610011310-250c45f
+      image: quay.io/kubevirtci/golang:v20261002-0fbe744
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -1362,7 +1362,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/golang:v202610011310-250c45f
+      image: quay.io/kubevirtci/golang:v20261002-0fbe744
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -1424,7 +1424,7 @@ periodics:
         value: kubevirtbot@redhat.com
       - name: GIT_REPO_URL
         value: https://kubevirt-bot@github.com/kubevirt/sig-release.git
-      image: quay.io/kubevirtci/golang:v202610011310-250c45f
+      image: quay.io/kubevirtci/golang:v20261002-0fbe744
       resources:
         requests:
           memory: 200Mi
@@ -1762,7 +1762,7 @@ periodics:
       env:
       - name: GIMME_GO_VERSION
         value: 1.25.1
-      image: quay.io/kubevirtci/pr-creator:v20260923-1a6c0a9
+      image: quay.io/kubevirtci/pr-creator:v20261002-069d352
       resources: {}
     nodeSelector:
       type: bare-metal-external
