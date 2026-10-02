@@ -685,6 +685,14 @@ func (h *GitHubEventsHandler) loadConfigsAtRef(
 				presubmits[index].JobBase.SourcePath = path.Join(git.Directory(), changedJobConfig)
 			}
 		}
+		for _, postsubmits := range pc.PostsubmitsStatic {
+			for index := range postsubmits {
+				postsubmits[index].JobBase.SourcePath = path.Join(git.Directory(), changedJobConfig)
+			}
+		}
+		for index := range pc.Periodics {
+			pc.Periodics[index].JobBase.SourcePath = path.Join(git.Directory(), changedJobConfig)
+		}
 		configs[changedJobConfig] = pc
 	}
 
