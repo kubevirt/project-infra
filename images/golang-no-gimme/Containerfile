@@ -1,0 +1,20 @@
+ARG TARGETARCH
+FROM bootstrap-$TARGETARCH
+
+ARG TARGETARCH
+ARG TARGETOS
+ARG GO_VERSION
+
+# install the latest golang version, if the GO_VERSION argument is not set
+RUN GO_VERSION=${GO_VERSION:-$(curl -s "https://go.dev/dl/?mode=json" | jq -r '[.[] | select(.stable)] | .[0].version' | awk '/^go[0-9]+(.[0-9]+){1,2}/ { sub("^go", "", $1); print($1) }')} && \
+    TMPDIR=$(mktemp -d) && \
+    curl -sL -o "${TMPDIR}/go.tar.gz" "https://go.dev/dl/go${GO_VERSION}.${TARGETOS}-${TARGETARCH}.tar.gz" && \
+    mkdir -p /usr/local/origgo && \
+    tar -C /usr/local/origgo -xzf "${TMPDIR}/go.tar.gz" && \
+    ln -s /usr/local/origgo/go /usr/local/go && \
+    rm -rf "${TMPDIR}"
+
+ENV PATH=${PATH}:/usr/local/go/bin
+
+COPY entrypoint.sh /usr/local/bin/
+COPY golang.sh /etc/setup.mixin.d/
