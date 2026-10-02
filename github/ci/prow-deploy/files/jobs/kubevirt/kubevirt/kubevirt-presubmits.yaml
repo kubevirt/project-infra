@@ -424,7 +424,7 @@ presubmits:
         - /bin/sh
         - -ce
         - make go-test
-        image: quay.io/kubevirtci/golang:v202610011310-250c45f
+        image: quay.io/kubevirtci/golang:v20261001-31784ce
         resources:
           requests:
             memory: 8Gi
