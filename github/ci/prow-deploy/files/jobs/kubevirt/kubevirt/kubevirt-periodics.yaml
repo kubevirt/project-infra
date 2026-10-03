@@ -22,7 +22,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v202610020123-069d352
+      image: quay.io/kubevirtci/flakefinder:v202610021742-6a34ae5
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -47,7 +47,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v202610020123-069d352
+      image: quay.io/kubevirtci/flakefinder:v202610021742-6a34ae5
       resources:
         requests:
           cpu: 500m
@@ -75,7 +75,7 @@ periodics:
       - --pr_base_branch=main
       command:
       - /usr/bin/flakefinder
-      image: quay.io/kubevirtci/flakefinder:v202610020123-069d352
+      image: quay.io/kubevirtci/flakefinder:v202610021742-6a34ae5
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
@@ -1292,7 +1292,7 @@ periodics:
       - --output-gcs-url=gs://kubevirt-prow/reports/quarantined-tests/kubevirt/kubevirt/index.html
       command:
       - /usr/bin/test-label-analyzer
-      image: quay.io/kubevirtci/test-label-analyzer:v202610020123-069d352
+      image: quay.io/kubevirtci/test-label-analyzer:v202610021743-6a34ae5
       resources: {}
 - annotations:
     testgrid-create-test-group: "false"
