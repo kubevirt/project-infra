@@ -621,6 +621,7 @@ func (h *GitHubEventsHandler) generatePresubmits(
 				targetBranchName = branch
 			}
 
+			job.Spec.ExtraRefs = stripExtraRefsForRepo(job.Spec.ExtraRefs, pr.Base.Repo.Owner.Login, pr.Base.Repo.Name)
 			if repoOrg != pr.Base.Repo.FullName {
 				job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, targetBranchName))
 			}
@@ -700,6 +701,7 @@ func (h *GitHubEventsHandler) generatePostsubmits(
 				continue
 			}
 
+			job.Spec.ExtraRefs = stripExtraRefsForRepo(job.Spec.ExtraRefs, pr.Base.Repo.Owner.Login, pr.Base.Repo.Name)
 			if repoOrg != pr.Base.Repo.FullName {
 				job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, targetBranchName))
 			}
@@ -740,6 +742,7 @@ func (h *GitHubEventsHandler) generatePeriodics(
 			continue
 		}
 
+		job.Spec.ExtraRefs = stripExtraRefsForRepo(job.Spec.ExtraRefs, pr.Base.Repo.Owner.Login, pr.Base.Repo.Name)
 		prRefs := prowapi.Refs{
 			Org:     pr.Base.Repo.Owner.Login,
 			Repo:    pr.Base.Repo.Name,
@@ -910,6 +913,18 @@ func writeTempFile(log *logrus.Logger, basedir string, content []byte) (string, 
 		return "", err
 	}
 	return tmpfile.Name(), nil
+}
+
+func stripExtraRefsForRepo(refs []prowapi.Refs, org, repo string) []prowapi.Refs {
+	var filtered []prowapi.Refs
+	for _, ref := range refs {
+		if ref.Org == org && ref.Repo == repo {
+			log.Infof("Stripping duplicate extra-ref for %s/%s", org, repo)
+			continue
+		}
+		filtered = append(filtered, ref)
+	}
+	return filtered
 }
 
 func makeTargetRepoRefs(refs []prowapi.Refs, org, repo, ref string) prowapi.Refs {

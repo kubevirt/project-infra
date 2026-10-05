@@ -230,6 +230,41 @@ var _ = Describe("Events", func() {
 				false),
 		)
 
+		DescribeTable(
+			"Should strip extra refs matching the PR repo",
+			func(refs []prowapi.Refs, org, repo string, expected []prowapi.Refs) {
+				result := stripExtraRefsForRepo(refs, org, repo)
+				Expect(result).To(Equal(expected))
+			},
+			Entry(
+				"Strips matching ref",
+				[]prowapi.Refs{
+					{Org: "kubevirt", Repo: "project-infra", BaseRef: "main"},
+					{Org: "kubevirt", Repo: "kubevirt", BaseRef: "main"},
+				},
+				"kubevirt", "project-infra",
+				[]prowapi.Refs{
+					{Org: "kubevirt", Repo: "kubevirt", BaseRef: "main"},
+				},
+			),
+			Entry(
+				"No match leaves refs unchanged",
+				[]prowapi.Refs{
+					{Org: "kubevirt", Repo: "kubevirt", BaseRef: "main"},
+				},
+				"kubevirt", "project-infra",
+				[]prowapi.Refs{
+					{Org: "kubevirt", Repo: "kubevirt", BaseRef: "main"},
+				},
+			),
+			Entry(
+				"Nil refs returns nil",
+				nil,
+				"kubevirt", "project-infra",
+				nil,
+			),
+		)
+
 		It("Should discover HEAD branch name from remote", func() {
 			headBranchName, err := discoverHeadBranchName("kubevirt", "kubevirt", "")
 			Expect(err).ToNot(HaveOccurred())
@@ -349,6 +384,24 @@ var _ = Describe("PR filtering", func() {
 			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
 			Expect(presubmits).ToNot(BeEmpty())
 			Expect(presubmits[0].Spec.ExtraRefs[0].BaseRef).To(BeEquivalentTo("release-42"))
+		})
+
+		It("strips duplicate extra-refs matching the PR repo", func() {
+			pr.Base.Repo.Owner = github.User{Login: "kubevirt"}
+			pr.Base.Repo.Name = "project-infra"
+			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].Spec.Containers[0].Image = "v2/test37"
+			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].ExtraRefs = []prowapi.Refs{
+				{Org: "kubevirt", Repo: "project-infra", BaseRef: "main", WorkDir: true},
+			}
+			baseConfig.PresubmitsStatic["kubevirt/kubevirt"][0].ExtraRefs = []prowapi.Refs{
+				{Org: "kubevirt", Repo: "project-infra", BaseRef: "main", WorkDir: true},
+			}
+			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
+			Expect(presubmits).ToNot(BeEmpty())
+			for _, ref := range presubmits[0].Spec.ExtraRefs {
+				Expect(ref.Org + "/" + ref.Repo).ToNot(Equal("kubevirt/project-infra"),
+					"extra-refs should not contain a duplicate of the PR repo")
+			}
 		})
 	})
 
@@ -493,6 +546,26 @@ var _ = Describe("PR filtering", func() {
 			Expect(periodics[0].Spec.ExtraRefs).ToNot(BeEmpty())
 			Expect(periodics[0].Spec.ExtraRefs[len(periodics[0].Spec.ExtraRefs)-1].Org).To(Equal("kubevirt"))
 			Expect(periodics[0].Spec.ExtraRefs[len(periodics[0].Spec.ExtraRefs)-1].Repo).To(Equal("project-infra"))
+		})
+
+		It("replaces duplicate extra-ref for the PR repo instead of duplicating", func() {
+			headConfig.Periodics[0].Spec.Containers[0].Image = "v2/test37"
+			headConfig.Periodics[0].ExtraRefs = []prowapi.Refs{
+				{Org: "kubevirt", Repo: "project-infra", BaseRef: "main", WorkDir: true},
+			}
+			baseConfig.Periodics[0].ExtraRefs = []prowapi.Refs{
+				{Org: "kubevirt", Repo: "project-infra", BaseRef: "main", WorkDir: true},
+			}
+			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42")
+			Expect(periodics).ToNot(BeEmpty())
+			prRefCount := 0
+			for _, ref := range periodics[0].Spec.ExtraRefs {
+				if ref.Org == "kubevirt" && ref.Repo == "project-infra" {
+					prRefCount++
+					Expect(ref.Pulls).ToNot(BeEmpty(), "the PR repo extra-ref should carry the PR's pull refs")
+				}
+			}
+			Expect(prRefCount).To(Equal(1), "project-infra should appear exactly once in extra-refs")
 		})
 
 		It("generates a prowjob for new periodic", func() {
