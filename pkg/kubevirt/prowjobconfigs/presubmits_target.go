@@ -27,8 +27,16 @@ type SigComputeJob struct {
 	Target string
 }
 
+type SigNetworkJob struct {
+	Name         string
+	K8sVersion   string
+	IsSmoke      bool
+	SkipSmokeEnv string
+}
+
 var (
 	sigComputeJobNameRegex = regexp.MustCompile(`^pull-kubevirt-e2e-k8s-(\d+\.\d+)-sig-compute(-(migrations|serial))?$`)
+	sigNetworkJobNameRegex = regexp.MustCompile(`^pull-kubevirt-e2e-k8s-(\d+\.\d+)-sig-network(-smoke)?$`)
 	k8sVersionRegex        = regexp.MustCompile(`k8s-(\d+)\.(\d+)`)
 )
 
@@ -47,6 +55,34 @@ func CollectSigComputeJobs(jobConfig *config.JobConfig) []SigComputeJob {
 		}
 	}
 	return jobs
+}
+
+func CollectSigNetworkJobs(jobConfig *config.JobConfig) []SigNetworkJob {
+	var jobs []SigNetworkJob
+	for _, job := range jobConfig.PresubmitsStatic[OrgAndRepoForJobConfig] {
+		matches := sigNetworkJobNameRegex.FindStringSubmatch(job.Name)
+		if job.Optional || matches == nil {
+			continue
+		}
+		jobs = append(jobs, SigNetworkJob{
+			Name:         job.Name,
+			K8sVersion:   matches[1],
+			IsSmoke:      matches[2] == "-smoke",
+			SkipSmokeEnv: GetEnvValue(job, "SKIP_SMOKE"),
+		})
+	}
+	return jobs
+}
+
+func GetEnvValue(job config.Presubmit, envName string) string {
+	for _, container := range job.Spec.Containers {
+		for _, env := range container.Env {
+			if env.Name == envName {
+				return env.Value
+			}
+		}
+	}
+	return ""
 }
 
 func FindLatestK8sVersionFromJobs(jobs []SigComputeJob) (string, error) {
