@@ -39,6 +39,9 @@ A rehearsal can be triggered for all jobs by commenting either ` + "`/rehearse`"
 
 A rehearsal for a specific job can be triggered by commenting ` + "`/rehearse {job-name}`" + `.
 
+A rehearsal targeting a cross-repo PR can be triggered by commenting ` + "`/rehearse {job-name} org/repo#number`" + `.
+This runs the job using the code from the specified PR as the target repo's source.
+
 Commenting ` + "`/rehearse ?`" + ` triggers a comment with a list of jobs that can be rehearsed.
 
 A pull request can be rehearsed if either the user is authorized to rehearse or the pull
@@ -59,7 +62,17 @@ var log *logrus.Logger
 // or the command followed by a job name which we then extract by the
 // capturing group, i.e.
 // /rehearse job-name
+// /rehearse job-name org/repo#123
 var rehearseCommentRe = regexp.MustCompile(`(?m)^/rehearse\s*?($|\s.*)`)
+
+// crossRepoPRRe matches an org/repo#number reference in a rehearse command argument
+var crossRepoPRRe = regexp.MustCompile(`^([a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+)#(\d+)$`)
+
+type crossRepoTarget struct {
+	org    string
+	repo   string
+	number int
+}
 
 func init() {
 	log = logrus.New()
@@ -408,7 +421,19 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 	}
 	log.Infoln("Base configs:", baseConfigs)
 
-	prowjobs := h.generateProwJobs(headConfigs, baseConfigs, pr, eventGUID)
+	var targetPR *github.PullRequest
+	if target := h.parseCrossRepoTarget(commentBody); target != nil {
+		log.Infof("Cross-repo target detected: %s/%s#%d", target.org, target.repo, target.number)
+		targetPR, err = h.ghClient.GetPullRequest(target.org, target.repo, target.number)
+		if err != nil {
+			log.WithError(err).Errorf("Could not fetch cross-repo PR %s/%s#%d", target.org, target.repo, target.number)
+			commentText := fmt.Sprintf("⚠️ Could not fetch cross-repo PR `%s/%s#%d`: %v", target.org, target.repo, target.number, err)
+			_ = h.ghClient.CreateComment(org, repo, pr.Number, commentText)
+			return
+		}
+	}
+
+	prowjobs := h.generateProwJobs(headConfigs, baseConfigs, pr, eventGUID, targetPR)
 	jobNames := h.extractJobNamesFromComment(commentBody)
 	if len(jobNames) == 1 && jobNames[0] == "?" {
 		var prowJobNames []string
@@ -514,9 +539,41 @@ func (h *GitHubEventsHandler) extractJobNamesFromComment(body string) []string {
 		if trimmedJobName == "" || trimmedJobName == "all" {
 			continue
 		}
-		jobNames = append(jobNames, trimmedJobName)
+		parts := strings.Fields(trimmedJobName)
+		jobNames = append(jobNames, parts[0])
 	}
 	return jobNames
+}
+
+func (h *GitHubEventsHandler) parseCrossRepoTarget(body string) *crossRepoTarget {
+	if body == "" {
+		return nil
+	}
+	allStringSubmatch := rehearseCommentRe.FindAllStringSubmatch(body, -1)
+	for _, subMatches := range allStringSubmatch {
+		if len(subMatches) < 2 {
+			continue
+		}
+		parts := strings.Fields(strings.TrimSpace(subMatches[1]))
+		if len(parts) < 2 {
+			continue
+		}
+		match := crossRepoPRRe.FindStringSubmatch(parts[len(parts)-1])
+		if match == nil {
+			continue
+		}
+		org, repo, err := pi_github.OrgRepo(match[1])
+		if err != nil {
+			log.WithError(err).Errorf("Could not parse cross-repo target: %s", match[1])
+			continue
+		}
+		number, err := strconv.Atoi(match[2])
+		if err != nil {
+			continue
+		}
+		return &crossRepoTarget{org: org, repo: repo, number: number}
+	}
+	return nil
 }
 
 func (h *GitHubEventsHandler) filterProwJobsByJobNames(prowjobs []prowapi.ProwJob, jobNames []string) []prowapi.ProwJob {
@@ -549,7 +606,7 @@ func rehearsalRestricted(job prowapi.ProwJob) bool {
 }
 
 func (h *GitHubEventsHandler) generateProwJobs(
-	headConfigs, baseConfigs map[string]*config.Config, pr *github.PullRequest, eventGUID string) []prowapi.ProwJob {
+	headConfigs, baseConfigs map[string]*config.Config, pr *github.PullRequest, eventGUID string, targetPR *github.PullRequest) []prowapi.ProwJob {
 	var jobs []prowapi.ProwJob
 
 	for path, headConfig := range headConfigs {
@@ -557,16 +614,16 @@ func (h *GitHubEventsHandler) generateProwJobs(
 		if !ok {
 			log.Errorf("Path %s not found in base configs", path)
 		}
-		jobs = append(jobs, h.generatePresubmits(headConfig, baseConfig, pr, eventGUID)...)
-		jobs = append(jobs, h.generatePostsubmits(headConfig, baseConfig, pr, eventGUID)...)
-		jobs = append(jobs, h.generatePeriodics(headConfig, baseConfig, pr, eventGUID)...)
+		jobs = append(jobs, h.generatePresubmits(headConfig, baseConfig, pr, eventGUID, targetPR)...)
+		jobs = append(jobs, h.generatePostsubmits(headConfig, baseConfig, pr, eventGUID, targetPR)...)
+		jobs = append(jobs, h.generatePeriodics(headConfig, baseConfig, pr, eventGUID, targetPR)...)
 	}
 
 	return jobs
 }
 
 func (h *GitHubEventsHandler) generatePresubmits(
-	headConfig, baseConfig *config.Config, pr *github.PullRequest, eventGUID string) []prowapi.ProwJob {
+	headConfig, baseConfig *config.Config, pr *github.PullRequest, eventGUID string, targetPR *github.PullRequest) []prowapi.ProwJob {
 	var jobs []prowapi.ProwJob
 
 	// We need to flatten the jobs because later on we need
@@ -623,7 +680,11 @@ func (h *GitHubEventsHandler) generatePresubmits(
 
 			job.Spec.ExtraRefs = stripExtraRefsForRepo(job.Spec.ExtraRefs, pr.Base.Repo.Owner.Login, pr.Base.Repo.Name)
 			if repoOrg != pr.Base.Repo.FullName {
-				job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, targetBranchName))
+				targetRefs := makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, targetBranchName)
+				if targetPR != nil && targetPR.Base.Repo.FullName == repoOrg {
+					targetRefs = makeTargetRepoRefsWithPR(job.Spec.ExtraRefs, targetPR)
+				}
+				job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, targetRefs)
 			}
 			jobs = append(jobs, job)
 		}
@@ -632,7 +693,7 @@ func (h *GitHubEventsHandler) generatePresubmits(
 }
 
 func (h *GitHubEventsHandler) generatePostsubmits(
-	headConfig, baseConfig *config.Config, pr *github.PullRequest, eventGUID string) []prowapi.ProwJob {
+	headConfig, baseConfig *config.Config, pr *github.PullRequest, eventGUID string, targetPR *github.PullRequest) []prowapi.ProwJob {
 	var jobs []prowapi.ProwJob
 
 	headPostsubmits := hashPostsubmitsConfig(headConfig.PostsubmitsStatic)
@@ -703,7 +764,11 @@ func (h *GitHubEventsHandler) generatePostsubmits(
 
 			job.Spec.ExtraRefs = stripExtraRefsForRepo(job.Spec.ExtraRefs, pr.Base.Repo.Owner.Login, pr.Base.Repo.Name)
 			if repoOrg != pr.Base.Repo.FullName {
-				job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, targetBranchName))
+				targetRefs := makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, targetBranchName)
+				if targetPR != nil && targetPR.Base.Repo.FullName == repoOrg {
+					targetRefs = makeTargetRepoRefsWithPR(job.Spec.ExtraRefs, targetPR)
+				}
+				job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, targetRefs)
 			}
 			jobs = append(jobs, job)
 		}
@@ -712,7 +777,7 @@ func (h *GitHubEventsHandler) generatePostsubmits(
 }
 
 func (h *GitHubEventsHandler) generatePeriodics(
-	headConfig, baseConfig *config.Config, pr *github.PullRequest, eventGUID string) []prowapi.ProwJob {
+	headConfig, baseConfig *config.Config, pr *github.PullRequest, eventGUID string, targetPR *github.PullRequest) []prowapi.ProwJob {
 	var jobs []prowapi.ProwJob
 
 	headPeriodics := hashPeriodicsConfig(headConfig.Periodics)
@@ -758,6 +823,15 @@ func (h *GitHubEventsHandler) generatePeriodics(
 			},
 		}
 		job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, prRefs)
+
+		if targetPR != nil {
+			targetFullName := targetPR.Base.Repo.FullName
+			targetOrg, targetRepo, err := pi_github.OrgRepo(targetFullName)
+			if err == nil {
+				job.Spec.ExtraRefs = stripExtraRefsForRepo(job.Spec.ExtraRefs, targetOrg, targetRepo)
+				job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, makeTargetRepoRefsWithPR(job.Spec.ExtraRefs, targetPR))
+			}
+		}
 
 		jobs = append(jobs, job)
 	}
@@ -933,6 +1007,24 @@ func makeTargetRepoRefs(refs []prowapi.Refs, org, repo, ref string) prowapi.Refs
 		Org:     org,
 		WorkDir: !workdirAlreadyDefined(refs),
 		BaseRef: ref,
+	}
+}
+
+func makeTargetRepoRefsWithPR(refs []prowapi.Refs, targetPR *github.PullRequest) prowapi.Refs {
+	return prowapi.Refs{
+		Org:     targetPR.Base.Repo.Owner.Login,
+		Repo:    targetPR.Base.Repo.Name,
+		WorkDir: !workdirAlreadyDefined(refs),
+		BaseRef: targetPR.Base.Ref,
+		BaseSHA: targetPR.Base.SHA,
+		Pulls: []prowapi.Pull{
+			{
+				Number:  targetPR.Number,
+				Author:  targetPR.User.Login,
+				SHA:     targetPR.Head.SHA,
+				HeadRef: targetPR.Head.Ref,
+			},
+		},
 	}
 }
 

@@ -362,26 +362,26 @@ var _ = Describe("PR filtering", func() {
 		})
 
 		It("doesn't generate a prowjob without changes", func() {
-			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
+			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42", nil)
 			Expect(presubmits).To(BeEmpty())
 		})
 
 		It("generates a prowjob if spec changes", func() {
 			headConfigPresubmit.Spec.Containers[0].Image = "v2/test37"
-			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
+			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42", nil)
 			Expect(presubmits).ToNot(BeEmpty())
 		})
 
 		It("generates a prowjob if context changes", func() {
 			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].Cluster = "new-cluster"
-			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
+			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42", nil)
 			Expect(presubmits).ToNot(BeEmpty())
 		})
 
 		It("generates a prowjob for branch if context changes", func() {
 			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].Cluster = "new-cluster"
 			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].Branches = []string{"release-42"}
-			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
+			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42", nil)
 			Expect(presubmits).ToNot(BeEmpty())
 			Expect(presubmits[0].Spec.ExtraRefs[0].BaseRef).To(BeEquivalentTo("release-42"))
 		})
@@ -396,7 +396,7 @@ var _ = Describe("PR filtering", func() {
 			baseConfig.PresubmitsStatic["kubevirt/kubevirt"][0].ExtraRefs = []prowapi.Refs{
 				{Org: "kubevirt", Repo: "project-infra", BaseRef: "main", WorkDir: true},
 			}
-			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
+			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42", nil)
 			Expect(presubmits).ToNot(BeEmpty())
 			for _, ref := range presubmits[0].Spec.ExtraRefs {
 				Expect(ref.Org + "/" + ref.Repo).ToNot(Equal("kubevirt/project-infra"),
@@ -452,20 +452,20 @@ var _ = Describe("PR filtering", func() {
 		})
 
 		It("doesn't generate a prowjob without changes", func() {
-			postsubmits := handler.generatePostsubmits(headConfig, baseConfig, pr, "42")
+			postsubmits := handler.generatePostsubmits(headConfig, baseConfig, pr, "42", nil)
 			Expect(postsubmits).To(BeEmpty())
 		})
 
 		It("generates a prowjob if spec changes", func() {
 			headConfig.PostsubmitsStatic["kubevirt/kubevirt"][0].Spec.Containers[0].Image = "v2/test37"
-			postsubmits := handler.generatePostsubmits(headConfig, baseConfig, pr, "42")
+			postsubmits := handler.generatePostsubmits(headConfig, baseConfig, pr, "42", nil)
 			Expect(postsubmits).ToNot(BeEmpty())
 			Expect(postsubmits[0].Spec.Type).To(Equal(prowapi.PostsubmitJob))
 		})
 
 		It("generates a prowjob with extra refs for cross-repo job", func() {
 			headConfig.PostsubmitsStatic["kubevirt/kubevirt"][0].Spec.Containers[0].Image = "v2/test37"
-			postsubmits := handler.generatePostsubmits(headConfig, baseConfig, pr, "42")
+			postsubmits := handler.generatePostsubmits(headConfig, baseConfig, pr, "42", nil)
 			Expect(postsubmits).ToNot(BeEmpty())
 			Expect(postsubmits[0].Spec.ExtraRefs).ToNot(BeEmpty())
 			Expect(postsubmits[0].Spec.ExtraRefs[0].Org).To(Equal("kubevirt"))
@@ -475,7 +475,7 @@ var _ = Describe("PR filtering", func() {
 		It("generates a prowjob for branch if spec changes", func() {
 			headConfig.PostsubmitsStatic["kubevirt/kubevirt"][0].Spec.Containers[0].Image = "v2/test37"
 			headConfig.PostsubmitsStatic["kubevirt/kubevirt"][0].Branches = []string{"release-42"}
-			postsubmits := handler.generatePostsubmits(headConfig, baseConfig, pr, "42")
+			postsubmits := handler.generatePostsubmits(headConfig, baseConfig, pr, "42", nil)
 			Expect(postsubmits).ToNot(BeEmpty())
 			Expect(postsubmits[0].Spec.ExtraRefs[0].BaseRef).To(BeEquivalentTo("release-42"))
 		})
@@ -528,20 +528,20 @@ var _ = Describe("PR filtering", func() {
 		})
 
 		It("doesn't generate a prowjob without changes", func() {
-			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42")
+			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42", nil)
 			Expect(periodics).To(BeEmpty())
 		})
 
 		It("generates a prowjob if spec changes", func() {
 			headConfig.Periodics[0].Spec.Containers[0].Image = "v2/test37"
-			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42")
+			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42", nil)
 			Expect(periodics).ToNot(BeEmpty())
 			Expect(periodics[0].Spec.Type).To(Equal(prowapi.PeriodicJob))
 		})
 
 		It("injects PR refs into extra refs", func() {
 			headConfig.Periodics[0].Spec.Containers[0].Image = "v2/test37"
-			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42")
+			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42", nil)
 			Expect(periodics).ToNot(BeEmpty())
 			Expect(periodics[0].Spec.ExtraRefs).ToNot(BeEmpty())
 			Expect(periodics[0].Spec.ExtraRefs[len(periodics[0].Spec.ExtraRefs)-1].Org).To(Equal("kubevirt"))
@@ -556,7 +556,7 @@ var _ = Describe("PR filtering", func() {
 			baseConfig.Periodics[0].ExtraRefs = []prowapi.Refs{
 				{Org: "kubevirt", Repo: "project-infra", BaseRef: "main", WorkDir: true},
 			}
-			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42")
+			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42", nil)
 			Expect(periodics).ToNot(BeEmpty())
 			prRefCount := 0
 			for _, ref := range periodics[0].Spec.ExtraRefs {
@@ -576,7 +576,7 @@ var _ = Describe("PR filtering", func() {
 				},
 				Cron: "0 12 * * *",
 			})
-			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42")
+			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42", nil)
 			Expect(periodics).To(HaveLen(1))
 			Expect(periodics[0].Spec.Job).To(Equal("newPeriodicJob"))
 		})
@@ -636,13 +636,185 @@ Gna meh whatever
 		})
 
 		It("extracts question mark from comment body", func() {
-			commentBody := `Gna meh whatever 
+			commentBody := `Gna meh whatever
 
 /rehearse ?
 
 
 `
 			Expect(handler.extractJobNamesFromComment(commentBody)).To(BeEquivalentTo([]string{"?"}))
+		})
+
+		It("extracts job name only when cross-repo ref is present", func() {
+			commentBody := `/rehearse pull-kubevirt-e2e-k8s-1.35-sig-compute kubevirt/kubevirt#1234
+`
+			Expect(handler.extractJobNamesFromComment(commentBody)).To(BeEquivalentTo([]string{
+				"pull-kubevirt-e2e-k8s-1.35-sig-compute",
+			}))
+		})
+	})
+
+	Context("parsing cross-repo PR targets", func() {
+
+		var handler *GitHubEventsHandler
+
+		BeforeEach(func() {
+			handler = &GitHubEventsHandler{}
+		})
+
+		It("parses a cross-repo target from comment", func() {
+			commentBody := `/rehearse pull-kubevirt-e2e-k8s-1.35-sig-compute kubevirt/kubevirt#1234`
+			target := handler.parseCrossRepoTarget(commentBody)
+			Expect(target).ToNot(BeNil())
+			Expect(target.org).To(Equal("kubevirt"))
+			Expect(target.repo).To(Equal("kubevirt"))
+			Expect(target.number).To(Equal(1234))
+		})
+
+		It("returns nil when no cross-repo target is present", func() {
+			commentBody := `/rehearse pull-kubevirt-e2e-k8s-1.35-sig-compute`
+			target := handler.parseCrossRepoTarget(commentBody)
+			Expect(target).To(BeNil())
+		})
+
+		It("returns nil for bare /rehearse", func() {
+			target := handler.parseCrossRepoTarget("/rehearse")
+			Expect(target).To(BeNil())
+		})
+
+		It("returns nil for empty body", func() {
+			target := handler.parseCrossRepoTarget("")
+			Expect(target).To(BeNil())
+		})
+	})
+
+	Context("cross-repo PR targeting in job generation", func() {
+
+		var handler *GitHubEventsHandler
+		var headConfig *config.Config
+		var baseConfig *config.Config
+		var pr *github.PullRequest
+		var targetPR *github.PullRequest
+
+		BeforeEach(func() {
+			handler = &GitHubEventsHandler{}
+			headConfig = &config.Config{
+				JobConfig: config.JobConfig{
+					PresubmitsStatic: map[string][]config.Presubmit{
+						"kubevirt/kubevirt": {
+							{
+								JobBase: config.JobBase{
+									Name: "pull-kubevirt-e2e-test",
+									Spec: newPodSpec(),
+								},
+							},
+						},
+					},
+				},
+			}
+			baseConfig = &config.Config{
+				JobConfig: config.JobConfig{
+					PresubmitsStatic: map[string][]config.Presubmit{
+						"kubevirt/kubevirt": {
+							{
+								JobBase: config.JobBase{
+									Name: "pull-kubevirt-e2e-test",
+									Spec: newPodSpec(),
+								},
+							},
+						},
+					},
+				},
+			}
+			pr = &github.PullRequest{
+				Base: github.PullRequestBranch{
+					Repo: github.Repo{
+						FullName: "kubevirt/project-infra",
+						Owner:    github.User{Login: "kubevirt"},
+						Name:     "project-infra",
+					},
+				},
+			}
+			targetPR = &github.PullRequest{
+				Number: 5678,
+				User:   github.User{Login: "contributor"},
+				Base: github.PullRequestBranch{
+					Ref: "main",
+					SHA: "targetbaseSHA",
+					Repo: github.Repo{
+						FullName: "kubevirt/kubevirt",
+						Owner:    github.User{Login: "kubevirt"},
+						Name:     "kubevirt",
+					},
+				},
+				Head: github.PullRequestBranch{
+					Ref: "feature-branch",
+					SHA: "targetheadSHA",
+				},
+			}
+		})
+
+		It("injects target PR refs into ExtraRefs for presubmit", func() {
+			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].Spec.Containers[0].Image = "v2/changed"
+			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42", targetPR)
+			Expect(presubmits).ToNot(BeEmpty())
+			var kubevirtRef *prowapi.Refs
+			for i, ref := range presubmits[0].Spec.ExtraRefs {
+				if ref.Org == "kubevirt" && ref.Repo == "kubevirt" {
+					kubevirtRef = &presubmits[0].Spec.ExtraRefs[i]
+					break
+				}
+			}
+			Expect(kubevirtRef).ToNot(BeNil(), "should have kubevirt/kubevirt in extra-refs")
+			Expect(kubevirtRef.Pulls).To(HaveLen(1))
+			Expect(kubevirtRef.Pulls[0].Number).To(Equal(5678))
+			Expect(kubevirtRef.Pulls[0].SHA).To(Equal("targetheadSHA"))
+			Expect(kubevirtRef.Pulls[0].HeadRef).To(Equal("feature-branch"))
+		})
+
+		It("uses normal refs when targetPR is nil", func() {
+			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].Spec.Containers[0].Image = "v2/changed"
+			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42", nil)
+			Expect(presubmits).ToNot(BeEmpty())
+			var kubevirtRef *prowapi.Refs
+			for i, ref := range presubmits[0].Spec.ExtraRefs {
+				if ref.Org == "kubevirt" && ref.Repo == "kubevirt" {
+					kubevirtRef = &presubmits[0].Spec.ExtraRefs[i]
+					break
+				}
+			}
+			Expect(kubevirtRef).ToNot(BeNil())
+			Expect(kubevirtRef.Pulls).To(BeEmpty())
+		})
+
+		It("does not inject target PR when target repo doesn't match the job's repo", func() {
+			mismatchedTargetPR := &github.PullRequest{
+				Number: 9999,
+				Base: github.PullRequestBranch{
+					Ref: "main",
+					Repo: github.Repo{
+						FullName: "kubevirt/other-repo",
+						Owner:    github.User{Login: "kubevirt"},
+						Name:     "other-repo",
+					},
+				},
+				Head: github.PullRequestBranch{
+					Ref: "some-branch",
+					SHA: "someSHA",
+				},
+			}
+			headConfig.PresubmitsStatic["kubevirt/kubevirt"][0].Spec.Containers[0].Image = "v2/changed"
+			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42", mismatchedTargetPR)
+			Expect(presubmits).ToNot(BeEmpty())
+			var kubevirtRef *prowapi.Refs
+			for i, ref := range presubmits[0].Spec.ExtraRefs {
+				if ref.Org == "kubevirt" && ref.Repo == "kubevirt" {
+					kubevirtRef = &presubmits[0].Spec.ExtraRefs[i]
+					break
+				}
+			}
+			Expect(kubevirtRef).ToNot(BeNil())
+			Expect(kubevirtRef.Pulls).To(BeEmpty(), "should not inject target PR for mismatched repo")
 		})
 	})
 
