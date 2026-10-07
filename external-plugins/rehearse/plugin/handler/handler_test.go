@@ -161,6 +161,159 @@ var _ = Describe("Events", func() {
 
 	})
 
+	Context("Unchanged job lookup", func() {
+		var gitrepo *localgit.LocalGit
+		var gitClientFactory gitv2.ClientFactory
+		var eventsServer *GitHubEventsHandler
+		var dummyLog *logrus.Logger
+
+		BeforeEach(func() {
+			var err error
+			gitrepo, gitClientFactory, err = localgit.NewV2()
+			Expect(err).ShouldNot(HaveOccurred())
+			dummyLog = logrus.New()
+			foc := &testutils.FakeOwnersClient{
+				ExistingTopLevelApprovers: sets.New[string]("testuser"),
+			}
+			froc := &testutils.FakeRepoownersClient{Foc: foc}
+			eventsServer = NewGitHubEventsHandler(nil, dummyLog, nil, nil, "prow-config.yaml", "jobs/", true, gitClientFactory, froc)
+		})
+
+		AfterEach(func() {
+			if gitClientFactory != nil {
+				_ = gitClientFactory.Clean()
+			}
+		})
+
+		It("finds an unchanged presubmit by name", func() {
+			prowConfig := config.ProwConfig{}
+			jobsConfig := config.JobConfig{
+				PresubmitsStatic: map[string][]config.Presubmit{
+					"kubevirt/kubevirt": {
+						{
+							JobBase: config.JobBase{
+								Name: "pull-kubevirt-e2e-test",
+								Spec: newPodSpec(),
+							},
+						},
+					},
+				},
+			}
+
+			Expect(gitrepo.MakeFakeRepo("foo", "bar")).Should(Succeed())
+			prowConfigBytes, err := json.Marshal(prowConfig)
+			Expect(err).ShouldNot(HaveOccurred())
+			jobsConfigBytes, err := json.Marshal(jobsConfig)
+			Expect(err).ShouldNot(HaveOccurred())
+			files := map[string][]byte{
+				"prow-config.yaml":  prowConfigBytes,
+				"jobs/kubevirt.yaml": jobsConfigBytes,
+			}
+			Expect(gitrepo.AddCommit("foo", "bar", files)).Should(Succeed())
+			gitClient, err := gitClientFactory.ClientFor("foo", "bar")
+			Expect(err).ShouldNot(HaveOccurred())
+
+			pr := &github.PullRequest{
+				Base: github.PullRequestBranch{
+					Repo: github.Repo{
+						FullName: "kubevirt/project-infra",
+						Owner:    github.User{Login: "kubevirt"},
+						Name:     "project-infra",
+					},
+				},
+			}
+			logEntry := logrus.NewEntry(dummyLog)
+			jobs := eventsServer.lookupUnchangedJobs(logEntry, []string{"pull-kubevirt-e2e-test"}, gitClient, pr, "42", nil)
+			Expect(jobs).To(HaveLen(1))
+			Expect(jobs[0].Spec.Job).To(Equal("pull-kubevirt-e2e-test"))
+		})
+
+		It("finds an unchanged periodic by name", func() {
+			prowConfig := config.ProwConfig{}
+			jobsConfig := config.JobConfig{
+				Periodics: []config.Periodic{
+					{
+						JobBase: config.JobBase{
+							Name: "periodic-kubevirt-flakefinder",
+							Spec: newPodSpec(),
+						},
+						Cron: "0 0 * * *",
+					},
+				},
+			}
+
+			Expect(gitrepo.MakeFakeRepo("foo", "bar")).Should(Succeed())
+			prowConfigBytes, err := json.Marshal(prowConfig)
+			Expect(err).ShouldNot(HaveOccurred())
+			jobsConfigBytes, err := json.Marshal(jobsConfig)
+			Expect(err).ShouldNot(HaveOccurred())
+			files := map[string][]byte{
+				"prow-config.yaml":    prowConfigBytes,
+				"jobs/periodics.yaml": jobsConfigBytes,
+			}
+			Expect(gitrepo.AddCommit("foo", "bar", files)).Should(Succeed())
+			gitClient, err := gitClientFactory.ClientFor("foo", "bar")
+			Expect(err).ShouldNot(HaveOccurred())
+
+			pr := &github.PullRequest{
+				Base: github.PullRequestBranch{
+					Repo: github.Repo{
+						FullName: "kubevirt/project-infra",
+						Owner:    github.User{Login: "kubevirt"},
+						Name:     "project-infra",
+					},
+				},
+			}
+			logEntry := logrus.NewEntry(dummyLog)
+			jobs := eventsServer.lookupUnchangedJobs(logEntry, []string{"periodic-kubevirt-flakefinder"}, gitClient, pr, "42", nil)
+			Expect(jobs).To(HaveLen(1))
+			Expect(jobs[0].Spec.Job).To(Equal("periodic-kubevirt-flakefinder"))
+			Expect(jobs[0].Spec.Type).To(Equal(prowapi.PeriodicJob))
+		})
+
+		It("returns empty when job name is not found", func() {
+			prowConfig := config.ProwConfig{}
+			jobsConfig := config.JobConfig{
+				PresubmitsStatic: map[string][]config.Presubmit{
+					"kubevirt/kubevirt": {
+						{
+							JobBase: config.JobBase{
+								Name: "some-other-job",
+								Spec: newPodSpec(),
+							},
+						},
+					},
+				},
+			}
+
+			Expect(gitrepo.MakeFakeRepo("foo", "bar")).Should(Succeed())
+			prowConfigBytes, err := json.Marshal(prowConfig)
+			Expect(err).ShouldNot(HaveOccurred())
+			jobsConfigBytes, err := json.Marshal(jobsConfig)
+			Expect(err).ShouldNot(HaveOccurred())
+			files := map[string][]byte{
+				"prow-config.yaml":  prowConfigBytes,
+				"jobs/kubevirt.yaml": jobsConfigBytes,
+			}
+			Expect(gitrepo.AddCommit("foo", "bar", files)).Should(Succeed())
+			gitClient, err := gitClientFactory.ClientFor("foo", "bar")
+			Expect(err).ShouldNot(HaveOccurred())
+
+			pr := &github.PullRequest{
+				Base: github.PullRequestBranch{
+					Repo: github.Repo{
+						FullName: "kubevirt/project-infra",
+						Owner:    github.User{Login: "kubevirt"},
+						Name:     "project-infra",
+					},
+				},
+			}
+			logEntry := logrus.NewEntry(dummyLog)
+			jobs := eventsServer.lookupUnchangedJobs(logEntry, []string{"nonexistent-job"}, gitClient, pr, "42", nil)
+			Expect(jobs).To(BeEmpty())
+		})
+	})
+
 	Context("Utility functions", func() {
 
 		It("Should return correct repo from job key", func() {
@@ -446,6 +599,8 @@ var _ = Describe("PR filtering", func() {
 				Base: github.PullRequestBranch{
 					Repo: github.Repo{
 						FullName: "kubevirt/project-infra",
+						Owner:    github.User{Login: "kubevirt"},
+						Name:     "project-infra",
 					},
 				},
 			}
@@ -652,6 +807,12 @@ Gna meh whatever
 				"pull-kubevirt-e2e-k8s-1.35-sig-compute",
 			}))
 		})
+
+		It("treats 'all' with cross-repo ref as run-all, not a job name filter", func() {
+			commentBody := `/rehearse all kubevirt/kubevirt#1234
+`
+			Expect(handler.extractJobNamesFromComment(commentBody)).To(BeEmpty())
+		})
 	})
 
 	Context("parsing cross-repo PR targets", func() {
@@ -662,30 +823,53 @@ Gna meh whatever
 			handler = &GitHubEventsHandler{}
 		})
 
-		It("parses a cross-repo target from comment", func() {
-			commentBody := `/rehearse pull-kubevirt-e2e-k8s-1.35-sig-compute kubevirt/kubevirt#1234`
-			target := handler.parseCrossRepoTarget(commentBody)
-			Expect(target).ToNot(BeNil())
-			Expect(target.org).To(Equal("kubevirt"))
-			Expect(target.repo).To(Equal("kubevirt"))
-			Expect(target.number).To(Equal(1234))
-		})
+		type crossRepoParseTestData struct {
+			body           string
+			expectNil      bool
+			expectedOrg    string
+			expectedRepo   string
+			expectedNumber int
+		}
 
-		It("returns nil when no cross-repo target is present", func() {
-			commentBody := `/rehearse pull-kubevirt-e2e-k8s-1.35-sig-compute`
-			target := handler.parseCrossRepoTarget(commentBody)
-			Expect(target).To(BeNil())
-		})
-
-		It("returns nil for bare /rehearse", func() {
-			target := handler.parseCrossRepoTarget("/rehearse")
-			Expect(target).To(BeNil())
-		})
-
-		It("returns nil for empty body", func() {
-			target := handler.parseCrossRepoTarget("")
-			Expect(target).To(BeNil())
-		})
+		DescribeTable("should parse cross-repo targets",
+			func(td crossRepoParseTestData) {
+				target := handler.parseCrossRepoTarget(td.body)
+				if td.expectNil {
+					Expect(target).To(BeNil())
+				} else {
+					Expect(target).ToNot(BeNil())
+					Expect(target.org).To(Equal(td.expectedOrg))
+					Expect(target.repo).To(Equal(td.expectedRepo))
+					Expect(target.number).To(Equal(td.expectedNumber))
+				}
+			},
+			Entry("parses org/repo#number from comment",
+				crossRepoParseTestData{
+					body:           `/rehearse pull-kubevirt-e2e-k8s-1.35-sig-compute kubevirt/kubevirt#1234`,
+					expectedOrg:    "kubevirt",
+					expectedRepo:   "kubevirt",
+					expectedNumber: 1234,
+				},
+			),
+			Entry("returns nil when no cross-repo target is present",
+				crossRepoParseTestData{
+					body:      `/rehearse pull-kubevirt-e2e-k8s-1.35-sig-compute`,
+					expectNil: true,
+				},
+			),
+			Entry("returns nil for bare /rehearse",
+				crossRepoParseTestData{
+					body:      "/rehearse",
+					expectNil: true,
+				},
+			),
+			Entry("returns nil for empty body",
+				crossRepoParseTestData{
+					body:      "",
+					expectNil: true,
+				},
+			),
+		)
 	})
 
 	Context("cross-repo PR targeting in job generation", func() {

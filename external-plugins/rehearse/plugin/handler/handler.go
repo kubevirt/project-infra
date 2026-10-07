@@ -456,6 +456,24 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 
 	prowjobs = h.filterProwJobsByJobNames(prowjobs, jobNames)
 
+	if len(jobNames) > 0 {
+		foundNames := map[string]struct{}{}
+		for _, pj := range prowjobs {
+			foundNames[pj.Spec.Job] = struct{}{}
+		}
+		var missingNames []string
+		for _, name := range jobNames {
+			if _, found := foundNames[name]; !found {
+				missingNames = append(missingNames, name)
+			}
+		}
+		if len(missingNames) > 0 {
+			log.Infof("Looking up %d unchanged job(s) by name: %v", len(missingNames), missingNames)
+			extraJobs := h.lookupUnchangedJobs(log, missingNames, repoClient, pr, eventGUID, targetPR)
+			prowjobs = append(prowjobs, extraJobs...)
+		}
+	}
+
 	log.Infof("Will create %d jobs", len(prowjobs))
 	var rehearsalsGenerated []string
 	var rehearsalsFailed []string
@@ -536,10 +554,13 @@ func (h *GitHubEventsHandler) extractJobNamesFromComment(body string) []string {
 			continue
 		}
 		trimmedJobName := strings.TrimSpace(subMatches[1])
-		if trimmedJobName == "" || trimmedJobName == "all" {
+		if trimmedJobName == "" {
 			continue
 		}
 		parts := strings.Fields(trimmedJobName)
+		if parts[0] == "all" {
+			continue
+		}
 		jobNames = append(jobNames, parts[0])
 	}
 	return jobNames
@@ -643,7 +664,7 @@ func (h *GitHubEventsHandler) generatePresubmits(
 		if err != nil {
 			log.Errorf("could not diff presubmits: %v", err)
 		}
-		log.Infof("differences detected:/n%v", changelog)
+		log.Infof("differences detected:\n%v", changelog)
 
 		// respect the Branches configuration for the job, i.e. avoid always running against HEAD
 		branches := headPresubmit.Branches
@@ -656,7 +677,7 @@ func (h *GitHubEventsHandler) generatePresubmits(
 			job := pjutil.NewPresubmit(*pr, pr.Base.SHA, headPresubmit, eventGUID, map[string]string{})
 
 			if rehearsalRestricted(job) {
-				h.logger.Infof("Skipping rehersal job for: %s because it is restricted", job.Name)
+				h.logger.Infof("Skipping rehearsal job for: %s because it is restricted", job.Name)
 				continue
 			}
 
@@ -678,14 +699,7 @@ func (h *GitHubEventsHandler) generatePresubmits(
 				targetBranchName = branch
 			}
 
-			job.Spec.ExtraRefs = stripExtraRefsForRepo(job.Spec.ExtraRefs, pr.Base.Repo.Owner.Login, pr.Base.Repo.Name)
-			if repoOrg != pr.Base.Repo.FullName {
-				targetRefs := makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, targetBranchName)
-				if targetPR != nil && targetPR.Base.Repo.FullName == repoOrg {
-					targetRefs = makeTargetRepoRefsWithPR(job.Spec.ExtraRefs, targetPR)
-				}
-				job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, targetRefs)
-			}
+			applyTargetRefsForJob(&job, pr, repoOrg, org, repo, targetBranchName, targetPR)
 			jobs = append(jobs, job)
 		}
 	}
@@ -710,7 +724,7 @@ func (h *GitHubEventsHandler) generatePostsubmits(
 		if err != nil {
 			log.Errorf("could not diff postsubmits: %v", err)
 		}
-		log.Infof("differences detected:/n%v", changelog)
+		log.Infof("differences detected:\n%v", changelog)
 
 		branches := headPostsubmit.Branches
 		if len(branches) == 0 {
@@ -736,40 +750,18 @@ func (h *GitHubEventsHandler) generatePostsubmits(
 				targetBranchName = branch
 			}
 
-			refs := prowapi.Refs{
-				Org:     pr.Base.Repo.Owner.Login,
-				Repo:    pr.Base.Repo.Name,
-				BaseRef: pr.Base.Ref,
-				BaseSHA: pr.Base.SHA,
-				Pulls: []prowapi.Pull{
-					{
-						Number:  pr.Number,
-						Author:  pr.User.Login,
-						SHA:     pr.Head.SHA,
-						HeadRef: pr.Head.Ref,
-					},
-				},
-			}
-
-			spec := pjutil.PostsubmitSpec(headPostsubmit, refs)
+			spec := pjutil.PostsubmitSpec(headPostsubmit, makePRRefs(pr, nil))
 			labels := map[string]string{
 				github.EventGUID: eventGUID,
 			}
 			job := pjutil.NewProwJob(spec, labels, nil)
 
 			if rehearsalRestricted(job) {
-				h.logger.Infof("Skipping rehersal job for: %s because it is restricted", job.Name)
+				h.logger.Infof("Skipping rehearsal job for: %s because it is restricted", job.Name)
 				continue
 			}
 
-			job.Spec.ExtraRefs = stripExtraRefsForRepo(job.Spec.ExtraRefs, pr.Base.Repo.Owner.Login, pr.Base.Repo.Name)
-			if repoOrg != pr.Base.Repo.FullName {
-				targetRefs := makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, targetBranchName)
-				if targetPR != nil && targetPR.Base.Repo.FullName == repoOrg {
-					targetRefs = makeTargetRepoRefsWithPR(job.Spec.ExtraRefs, targetPR)
-				}
-				job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, targetRefs)
-			}
+			applyTargetRefsForJob(&job, pr, repoOrg, org, repo, targetBranchName, targetPR)
 			jobs = append(jobs, job)
 		}
 	}
@@ -794,7 +786,7 @@ func (h *GitHubEventsHandler) generatePeriodics(
 		if err != nil {
 			log.Errorf("could not diff periodics: %v", err)
 		}
-		log.Infof("differences detected:/n%v", changelog)
+		log.Infof("differences detected:\n%v", changelog)
 
 		spec := pjutil.PeriodicSpec(headPeriodic)
 		labels := map[string]string{
@@ -803,37 +795,129 @@ func (h *GitHubEventsHandler) generatePeriodics(
 		job := pjutil.NewProwJob(spec, labels, nil)
 
 		if rehearsalRestricted(job) {
-			h.logger.Infof("Skipping rehersal job for: %s because it is restricted", job.Name)
+			h.logger.Infof("Skipping rehearsal job for: %s because it is restricted", job.Name)
 			continue
 		}
 
-		job.Spec.ExtraRefs = stripExtraRefsForRepo(job.Spec.ExtraRefs, pr.Base.Repo.Owner.Login, pr.Base.Repo.Name)
-		prRefs := prowapi.Refs{
-			Org:     pr.Base.Repo.Owner.Login,
-			Repo:    pr.Base.Repo.Name,
-			BaseRef: pr.Base.Ref,
-			BaseSHA: pr.Base.SHA,
-			Pulls: []prowapi.Pull{
-				{
-					Number:  pr.Number,
-					Author:  pr.User.Login,
-					SHA:     pr.Head.SHA,
-					HeadRef: pr.Head.Ref,
-				},
-			},
-		}
-		job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, prRefs)
+		applyPeriodicRefsForJob(&job, pr, targetPR)
+		jobs = append(jobs, job)
+	}
+	return jobs
+}
 
-		if targetPR != nil {
-			targetFullName := targetPR.Base.Repo.FullName
-			targetOrg, targetRepo, err := pi_github.OrgRepo(targetFullName)
-			if err == nil {
-				job.Spec.ExtraRefs = stripExtraRefsForRepo(job.Spec.ExtraRefs, targetOrg, targetRepo)
-				job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, makeTargetRepoRefsWithPR(job.Spec.ExtraRefs, targetPR))
+func (h *GitHubEventsHandler) listAllJobConfigs(gitDir, ref string) ([]string, error) {
+	cmd := exec.Command("git", "-C", gitDir, "ls-tree", "-r", "--name-only", ref, h.jobsConfigBase)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("could not list job configs: %w", err)
+	}
+	var configs []string
+	for _, line := range strings.Split(strings.TrimSpace(string(out)), "\n") {
+		if line == "" {
+			continue
+		}
+		if strings.HasSuffix(line, ".yaml") || strings.HasSuffix(line, ".yml") {
+			configs = append(configs, line)
+		}
+	}
+	return configs, nil
+}
+
+func (h *GitHubEventsHandler) lookupUnchangedJobs(
+	log *logrus.Entry, missingNames []string, repoClient gitv2.RepoClient,
+	pr *github.PullRequest, eventGUID string, targetPR *github.PullRequest) []prowapi.ProwJob {
+
+	missingSet := map[string]struct{}{}
+	for _, name := range missingNames {
+		missingSet[name] = struct{}{}
+	}
+
+	allConfigs, err := h.listAllJobConfigs(repoClient.Directory(), "HEAD")
+	if err != nil {
+		log.WithError(err).Error("Could not list all job configs for unchanged job lookup")
+		return nil
+	}
+
+	headConfigs, err := h.loadConfigsAtRef(allConfigs, repoClient, "HEAD")
+	if err != nil {
+		log.WithError(err).Error("Could not load all job configs for unchanged job lookup")
+		return nil
+	}
+
+	var jobs []prowapi.ProwJob
+	for _, cfg := range headConfigs {
+		for repoOrg, presubmits := range cfg.PresubmitsStatic {
+			for _, presubmit := range presubmits {
+				if _, wanted := missingSet[presubmit.Name]; !wanted {
+					continue
+				}
+				log.Infof("Found unchanged presubmit by name: %s", presubmit.Name)
+				job := pjutil.NewPresubmit(*pr, pr.Base.SHA, presubmit, eventGUID, map[string]string{})
+				if rehearsalRestricted(job) {
+					continue
+				}
+				org, repo, err := pi_github.OrgRepo(repoOrg)
+				if err != nil {
+					log.WithError(err).Errorf("Could not parse org/repo: %s", repoOrg)
+					continue
+				}
+				targetBranchName, err := discoverHeadBranchName(org, repo, presubmit.CloneURI)
+				if err != nil {
+					targetBranchName = pr.Base.Ref
+				}
+				applyTargetRefsForJob(&job, pr, repoOrg, org, repo, targetBranchName, targetPR)
+				jobs = append(jobs, job)
+				delete(missingSet, presubmit.Name)
 			}
 		}
+		for repoOrg, postsubmits := range cfg.PostsubmitsStatic {
+			for _, postsubmit := range postsubmits {
+				if _, wanted := missingSet[postsubmit.Name]; !wanted {
+					continue
+				}
+				log.Infof("Found unchanged postsubmit by name: %s", postsubmit.Name)
+				org, repo, err := pi_github.OrgRepo(repoOrg)
+				if err != nil {
+					log.WithError(err).Errorf("Could not parse org/repo: %s", repoOrg)
+					continue
+				}
+				targetBranchName, err := discoverHeadBranchName(org, repo, postsubmit.CloneURI)
+				if err != nil {
+					targetBranchName = pr.Base.Ref
+				}
+				spec := pjutil.PostsubmitSpec(postsubmit, makePRRefs(pr, nil))
+				labels := map[string]string{github.EventGUID: eventGUID}
+				job := pjutil.NewProwJob(spec, labels, nil)
+				if rehearsalRestricted(job) {
+					continue
+				}
+				applyTargetRefsForJob(&job, pr, repoOrg, org, repo, targetBranchName, targetPR)
+				jobs = append(jobs, job)
+				delete(missingSet, postsubmit.Name)
+			}
+		}
+		for _, periodic := range cfg.Periodics {
+			if _, wanted := missingSet[periodic.Name]; !wanted {
+				continue
+			}
+			log.Infof("Found unchanged periodic by name: %s", periodic.Name)
+			spec := pjutil.PeriodicSpec(periodic)
+			labels := map[string]string{github.EventGUID: eventGUID}
+			job := pjutil.NewProwJob(spec, labels, nil)
+			if rehearsalRestricted(job) {
+				continue
+			}
+			applyPeriodicRefsForJob(&job, pr, targetPR)
+			jobs = append(jobs, job)
+			delete(missingSet, periodic.Name)
+		}
+		if len(missingSet) == 0 {
+			break
+		}
+	}
 
-		jobs = append(jobs, job)
+	for name := range missingSet {
+		log.Warnf("Could not find job by name: %s", name)
 	}
 	return jobs
 }
@@ -1001,6 +1085,24 @@ func stripExtraRefsForRepo(refs []prowapi.Refs, org, repo string) []prowapi.Refs
 	return filtered
 }
 
+func makePRRefs(pr *github.PullRequest, existingRefs []prowapi.Refs) prowapi.Refs {
+	return prowapi.Refs{
+		Org:     pr.Base.Repo.Owner.Login,
+		Repo:    pr.Base.Repo.Name,
+		WorkDir: !workdirAlreadyDefined(existingRefs),
+		BaseRef: pr.Base.Ref,
+		BaseSHA: pr.Base.SHA,
+		Pulls: []prowapi.Pull{
+			{
+				Number:  pr.Number,
+				Author:  pr.User.Login,
+				SHA:     pr.Head.SHA,
+				HeadRef: pr.Head.Ref,
+			},
+		},
+	}
+}
+
 func makeTargetRepoRefs(refs []prowapi.Refs, org, repo, ref string) prowapi.Refs {
 	return prowapi.Refs{
 		Repo:    repo,
@@ -1011,20 +1113,29 @@ func makeTargetRepoRefs(refs []prowapi.Refs, org, repo, ref string) prowapi.Refs
 }
 
 func makeTargetRepoRefsWithPR(refs []prowapi.Refs, targetPR *github.PullRequest) prowapi.Refs {
-	return prowapi.Refs{
-		Org:     targetPR.Base.Repo.Owner.Login,
-		Repo:    targetPR.Base.Repo.Name,
-		WorkDir: !workdirAlreadyDefined(refs),
-		BaseRef: targetPR.Base.Ref,
-		BaseSHA: targetPR.Base.SHA,
-		Pulls: []prowapi.Pull{
-			{
-				Number:  targetPR.Number,
-				Author:  targetPR.User.Login,
-				SHA:     targetPR.Head.SHA,
-				HeadRef: targetPR.Head.Ref,
-			},
-		},
+	return makePRRefs(targetPR, refs)
+}
+
+func applyTargetRefsForJob(job *prowapi.ProwJob, pr *github.PullRequest, repoOrg, org, repo, targetBranchName string, targetPR *github.PullRequest) {
+	job.Spec.ExtraRefs = stripExtraRefsForRepo(job.Spec.ExtraRefs, pr.Base.Repo.Owner.Login, pr.Base.Repo.Name)
+	if repoOrg != pr.Base.Repo.FullName {
+		targetRefs := makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, targetBranchName)
+		if targetPR != nil && targetPR.Base.Repo.FullName == repoOrg {
+			targetRefs = makeTargetRepoRefsWithPR(job.Spec.ExtraRefs, targetPR)
+		}
+		job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, targetRefs)
+	}
+}
+
+func applyPeriodicRefsForJob(job *prowapi.ProwJob, pr *github.PullRequest, targetPR *github.PullRequest) {
+	job.Spec.ExtraRefs = stripExtraRefsForRepo(job.Spec.ExtraRefs, pr.Base.Repo.Owner.Login, pr.Base.Repo.Name)
+	job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, makePRRefs(pr, job.Spec.ExtraRefs))
+	if targetPR != nil {
+		targetOrg, targetRepo, err := pi_github.OrgRepo(targetPR.Base.Repo.FullName)
+		if err == nil {
+			job.Spec.ExtraRefs = stripExtraRefsForRepo(job.Spec.ExtraRefs, targetOrg, targetRepo)
+			job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, makeTargetRepoRefsWithPR(job.Spec.ExtraRefs, targetPR))
+		}
 	}
 }
 
