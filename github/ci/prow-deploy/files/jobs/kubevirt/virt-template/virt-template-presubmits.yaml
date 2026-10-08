@@ -29,7 +29,7 @@ presubmits:
     branches:
     - main
     always_run: false
-    run_if_changed: "api/.*|cmd/.*|hack/.*|internal/.*|staging/.*|vendor/.*|apiserver.Dockerfile|Dockerfile|Makefile|go.*"
+    run_if_changed: "api/.*|cmd/.*|hack/.*|internal/.*|staging/.*|vendor/.*|apiserver.Dockerfile|Dockerfile|Makefile|^(tools/)?go\\.(mod|sum)$|^go\\.work(\\.sum)?$"
     cluster: prow-workloads
     annotations:
       testgrid-create-test-group: "false"
@@ -61,7 +61,7 @@ presubmits:
     branches:
     - main
     always_run: false
-    run_if_changed: "api/.*|config/crd/.*|hack/.*|internal/.*|staging/.*|vendor/.*|Makefile|go.*"
+    run_if_changed: "api/.*|config/crd/.*|hack/.*|internal/.*|staging/.*|vendor/.*|Makefile|^(tools/)?go\\.(mod|sum)$|^go\\.work(\\.sum)?$"
     cluster: prow-workloads
     annotations:
       testgrid-create-test-group: "false"
@@ -86,7 +86,7 @@ presubmits:
     branches:
     - main
     always_run: false
-    run_if_changed: "api/.*|cmd/.*|config/.*|hack/.*|internal/.*|staging/.*|tests/.*|vendor/.*|apiserver.Dockerfile|Dockerfile|Makefile|go.*"
+    run_if_changed: "api/.*|cmd/.*|config/.*|hack/.*|internal/.*|staging/.*|tests/.*|vendor/.*|apiserver.Dockerfile|Dockerfile|Makefile|^(tools/)?go\\.(mod|sum)$|^go\\.work(\\.sum)?$"
     annotations:
       testgrid-create-test-group: "false"
     labels:
@@ -118,7 +118,7 @@ presubmits:
     branches:
     - main
     always_run: false
-    run_if_changed: "api/.*|config/.*|hack/.*|internal/.*|Makefile"
+    run_if_changed: "api/.*|config/.*|hack/.*|internal/.*|Makefile|^(tools/)?go\\.(mod|sum)$|^go\\.work(\\.sum)?$"
     cluster: prow-workloads
     annotations:
       testgrid-create-test-group: "false"
@@ -131,7 +131,7 @@ presubmits:
         - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
-        - make build-installer build-installer-openshift
+        - make build-installer build-installer-openshift build-installer-virt-operator
         env:
         - name: GO_MOD_PATH
           value: "go.mod"

@@ -51,7 +51,7 @@ periodics:
     - image: quay.io/kubevirtci/pr-creator:v20261005-23eb8b5
       env:
       - name: VIRT_TEMPLATE_BRANCH
-        value: release-0.2
+        value: release-0.3
       - name: KUBEVIRT_BRANCH
         value: main
       command:
