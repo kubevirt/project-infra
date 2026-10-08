@@ -92,6 +92,68 @@ var _ = Describe("Events", func() {
 			Expect(outJobs[0].Name).To(Equal(jobsConfig.PresubmitsStatic["foo/bar"][0].Name))
 		})
 
+		It("Should reset SourcePath for postsubmits and periodics", func() {
+			prowConfig := config.ProwConfig{}
+			jobsConfig := config.JobConfig{
+				PostsubmitsStatic: map[string][]config.Postsubmit{
+					"foo/bar": {
+						{
+							JobBase: config.JobBase{
+								Name: "a-postsubmit",
+								Spec: &v1.PodSpec{
+									Containers: []v1.Container{
+										{
+											Image:   "foo/var",
+											Command: []string{"/bin/foo"},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Periodics: []config.Periodic{
+					{
+						JobBase: config.JobBase{
+							Name: "a-periodic",
+							Spec: &v1.PodSpec{
+								Containers: []v1.Container{
+									{
+										Image:   "foo/var",
+										Command: []string{"/bin/foo"},
+									},
+								},
+							},
+						},
+						Cron: "0 0 * * *",
+					},
+				},
+			}
+
+			Expect(gitrepo.MakeFakeRepo("foo", "bar")).Should(Succeed())
+			prowConfigBytes, err := json.Marshal(prowConfig)
+			Expect(err).ShouldNot(HaveOccurred())
+			jobsConfigBytes, err := json.Marshal(jobsConfig)
+			Expect(err).ShouldNot(HaveOccurred())
+			files := map[string][]byte{
+				"prow-config.yaml": prowConfigBytes,
+				"jobs-config.yaml": jobsConfigBytes,
+			}
+			Expect(gitrepo.AddCommit("foo", "bar", files)).Should(Succeed())
+			headref, err := gitrepo.RevParse("foo", "bar", "HEAD")
+			Expect(err).ShouldNot(HaveOccurred())
+			gitClient, err := gitClientFactory.ClientFor("foo", "bar")
+			Expect(err).ShouldNot(HaveOccurred())
+			out, err := eventsServer.loadConfigsAtRef([]string{"jobs-config.yaml"}, gitClient, headref)
+			Expect(err).ShouldNot(HaveOccurred())
+			outConfig, exists := out["jobs-config.yaml"]
+			Expect(exists).To(BeTrue())
+			outPostsubmits, exists := outConfig.PostsubmitsStatic["foo/bar"]
+			Expect(exists).To(BeTrue())
+			Expect(outPostsubmits[0].JobBase.SourcePath).To(HaveSuffix("jobs-config.yaml"))
+			Expect(outConfig.Periodics[0].JobBase.SourcePath).To(HaveSuffix("jobs-config.yaml"))
+		})
+
 	})
 
 	Context("Utility functions", func() {
