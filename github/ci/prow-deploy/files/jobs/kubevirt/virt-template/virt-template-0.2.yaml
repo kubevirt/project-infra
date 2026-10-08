@@ -130,7 +130,7 @@ presubmits:
         - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
-        - make build-installer build-installer-openshift
+        - make build-installer build-installer-openshift build-installer-virt-operator
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
