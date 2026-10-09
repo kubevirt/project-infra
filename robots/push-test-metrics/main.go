@@ -26,7 +26,9 @@ import (
 	"fmt"
 	"io"
 	"path"
+	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"cloud.google.com/go/storage"
@@ -34,32 +36,83 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/api/iterator"
+	"sigs.k8s.io/prow/pkg/config"
 
 	"github.com/prometheus/client_golang/prometheus/push"
 )
 
 type jobNames []string
 
-func (j jobNames) String() string {
-	return strings.Join(j, ",")
+func (j *jobNames) String() string {
+	return strings.Join(*j, ",")
 }
-func (j jobNames) Set(string) error {
+func (j *jobNames) Set(value string) error {
+	*j = append(*j, value)
 	return nil
+}
+
+var mainSigJobNameRegexp = regexp.MustCompile(
+	`^periodic-kubevirt-e2e-k8s-(\d+)\.(\d+)-sig-(compute|storage|network|operator)$`,
+)
+
+func readJobNamesFromConfig(jobConfigPath string) (jobNames, error) {
+	jobConfig, err := config.ReadJobConfig(jobConfigPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read job config %s: %v", jobConfigPath, err)
+	}
+
+	type versionedJob struct {
+		major, minor int
+		name         string
+	}
+	latestBySig := map[string]versionedJob{}
+
+	for _, periodic := range jobConfig.Periodics {
+		matches := mainSigJobNameRegexp.FindStringSubmatch(periodic.Name)
+		if matches == nil {
+			continue
+		}
+		major, _ := strconv.Atoi(matches[1])
+		minor, _ := strconv.Atoi(matches[2])
+		sig := matches[3]
+
+		if current, exists := latestBySig[sig]; !exists ||
+			major > current.major ||
+			(major == current.major && minor > current.minor) {
+			latestBySig[sig] = versionedJob{major: major, minor: minor, name: periodic.Name}
+		}
+	}
+
+	if len(latestBySig) == 0 {
+		return nil, fmt.Errorf("no matching periodic e2e sig jobs found in %s", jobConfigPath)
+	}
+
+	var names jobNames
+	for _, vj := range latestBySig {
+		names = append(names, vj.name)
+	}
+	sort.Strings(names)
+	return names, nil
 }
 
 func main() {
 	var pushgatewayURL string
+	var jobConfigPath string
 	var jobNamesToScan jobNames
 	flag.StringVar(&pushgatewayURL, "pushgateway-url", "http://localhost:8080/", "pushgateway url to push values to")
-	flag.Var(jobNamesToScan, "job-name", "periodic job names to scan for values")
+	flag.StringVar(&jobConfigPath, "job-config-path", "", "path to the prow periodics job config yaml to derive job names from")
+	flag.Var(&jobNamesToScan, "job-name", "periodic job names to scan for values (can be specified multiple times)")
 	flag.Parse()
 	if len(jobNamesToScan) == 0 {
-		jobNamesToScan = jobNames{
-			"periodic-kubevirt-e2e-k8s-1.29-sig-compute",
-			"periodic-kubevirt-e2e-k8s-1.29-sig-storage",
-			"periodic-kubevirt-e2e-k8s-1.29-sig-network",
-			"periodic-kubevirt-e2e-k8s-1.29-sig-operator",
+		if jobConfigPath == "" {
+			log.Fatalf("either --job-name or --job-config-path must be specified")
 		}
+		var err error
+		jobNamesToScan, err = readJobNamesFromConfig(jobConfigPath)
+		if err != nil {
+			log.Fatalf("error reading job names from config: %v", err)
+		}
+		log.Infof("derived job names from config: %s", jobNamesToScan.String())
 	}
 
 	ctx := context.Background()
