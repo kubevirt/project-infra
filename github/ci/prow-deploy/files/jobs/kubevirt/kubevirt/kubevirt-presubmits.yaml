@@ -1934,7 +1934,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -1996,7 +1996,7 @@ presubmits:
           }' /etc/containers/containers.conf
 
           # Configure KubeVirt to use latest Libvirt version and the custom QEMU version
-          make CUSTOM_REPO=custom-repo.yaml LIBVIRT_VERSION="0:11.10.0-12.el9" QEMU_VERSION="$QEMU_VERSION" SINGLE_ARCH="x86_64" rpm-deps
+          make CUSTOM_REPO=custom-repo.yaml QEMU_VERSION="$QEMU_VERSION" SINGLE_ARCH="x86_64" rpm-deps
 
           export KUBEVIRT_LABEL_FILTER="(sig-compute && !(Serial,GPU,VGPU,sig-compute-migrations,sig-storage,storage-req) && !(SEV, SEVES, secure-execution))&&(!PERIODIC)&&(!Windows)&&(!Sysprep)&&(!requires-s390x)&&(!requires-arm64)&&(!RequiresVolumeExpansion)"
 
