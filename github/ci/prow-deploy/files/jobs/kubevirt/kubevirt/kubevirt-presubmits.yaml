@@ -1179,6 +1179,49 @@ presubmits:
     cluster: prow-workloads
     decoration_config:
       grace_period: 5m0s
+      timeout: 2h0m0s
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 11
+    name: pull-kubevirt-e2e-k8s-1.37-vsock-local
+    optional: true
+    run_if_changed: ^cmd/.*|^rpm/.*|^bazel/.*|^third_party/.*|^staging/src/.*|^api/.*|^pkg/virt-.*|^pkg/vsock/.*|^pkg/virtctl/portforward/.*|^pkg/virtctl/ssh/.*|^tests/vmi_vsock_test.go|^tests/virtctl/ssh_scp.go|^automation/test.sh|^hack/config-default.sh|^kubevirtci/.*
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - args:
+        - /bin/sh
+        - -c
+        - automation/test.sh
+        command:
+        - /usr/local/bin/runner.sh
+        env:
+        - name: TARGET
+          value: k8s-1.37-sig-compute
+        - name: KUBEVIRT_VSOCK_CHILD_NS_MODE
+          value: local
+        - name: KUBEVIRT_LABEL_FILTER
+          value: (vsock)
+        image: quay.io/kubevirtci/bootstrap:v20261001-31784ce
+        resources:
+          requests:
+            memory: 52Gi
+        securityContext:
+          privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - always_run: false
+    annotations:
+      fork-per-release: "true"
+      testgrid-dashboards: kubevirt-presubmits
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
       timeout: 7h0m0s
     labels:
       preset-bazel-cache: "true"
