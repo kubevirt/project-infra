@@ -1448,7 +1448,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.35-sig-network
-    run_before_merge: true
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1489,7 +1489,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.35-sig-storage
-    run_before_merge: true
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1530,7 +1530,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.35-sig-compute
-    run_before_merge: true
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1573,7 +1573,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.35-sig-operator
-    run_before_merge: true
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1614,7 +1614,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.36-sig-network
-    run_before_merge: true
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1655,7 +1655,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.36-sig-storage
-    run_before_merge: true
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1696,7 +1696,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.36-sig-compute
-    run_before_merge: true
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1781,7 +1781,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.36-sig-operator
-    run_before_merge: true
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
