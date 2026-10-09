@@ -558,6 +558,8 @@ func (h *GitHubEventsHandler) generateProwJobs(
 			log.Errorf("Path %s not found in base configs", path)
 		}
 		jobs = append(jobs, h.generatePresubmits(headConfig, baseConfig, pr, eventGUID)...)
+		jobs = append(jobs, h.generatePostsubmits(headConfig, baseConfig, pr, eventGUID)...)
+		jobs = append(jobs, h.generatePeriodics(headConfig, baseConfig, pr, eventGUID)...)
 	}
 
 	return jobs
@@ -628,6 +630,137 @@ func (h *GitHubEventsHandler) generatePresubmits(
 	return jobs
 }
 
+func (h *GitHubEventsHandler) generatePostsubmits(
+	headConfig, baseConfig *config.Config, pr *github.PullRequest, eventGUID string) []prowapi.ProwJob {
+	var jobs []prowapi.ProwJob
+
+	headPostsubmits := hashPostsubmitsConfig(headConfig.PostsubmitsStatic)
+	basePostsubmits := hashPostsubmitsConfig(baseConfig.PostsubmitsStatic)
+
+	for postsubmitKey, headPostsubmit := range headPostsubmits {
+		basePostsubmit, exists := basePostsubmits[postsubmitKey]
+
+		if exists && reflect.DeepEqual(basePostsubmit, headPostsubmit) {
+			continue
+		}
+		log.Infof("Detected modified or new postsubmit: %s.", headPostsubmit.Name)
+		changelog, err := diff.Diff(basePostsubmit, headPostsubmit)
+		if err != nil {
+			log.Errorf("could not diff postsubmits: %v", err)
+		}
+		log.Infof("differences detected:\n%v", changelog)
+
+		// respect the Branches configuration for the job, i.e. avoid always running against HEAD
+		branches := headPostsubmit.Branches
+		if len(branches) == 0 {
+			branches = []string{"HEAD"}
+		}
+
+		for _, branch := range branches {
+			refs := prowapi.Refs{
+				Org:     pr.Base.Repo.Owner.Login,
+				Repo:    pr.Base.Repo.Name,
+				BaseRef: pr.Base.Ref,
+				BaseSHA: pr.Base.SHA,
+				Pulls: []prowapi.Pull{
+					{
+						Number:  pr.Number,
+						Author:  pr.User.Login,
+						SHA:     pr.Head.SHA,
+						HeadRef: pr.Head.Ref,
+					},
+				},
+			}
+			spec := pjutil.PostsubmitSpec(headPostsubmit, refs)
+			labels := map[string]string{
+				github.EventGUID: eventGUID,
+			}
+			job := pjutil.NewProwJob(spec, labels, nil)
+
+			if rehearsalRestricted(job) {
+				h.logger.Infof("Skipping rehearsal job for: %s because it is restricted", job.Name)
+				continue
+			}
+
+			repoOrg := repoFromJobKey(postsubmitKey)
+			org, repo, err := pi_github.OrgRepo(repoOrg)
+			if err != nil {
+				log.Errorf(
+					"Could not extract repo and org from job key: %s. Job name: %s",
+					postsubmitKey, headPostsubmit.Name)
+			}
+
+			var targetBranchName string
+			if branch == "HEAD" {
+				targetBranchName, err = discoverHeadBranchName(org, repo, headPostsubmit.CloneURI)
+				if err != nil {
+					targetBranchName = pr.Base.Ref
+				}
+			} else {
+				targetBranchName = branch
+			}
+
+			if repoOrg != pr.Base.Repo.FullName {
+				job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, targetBranchName))
+			}
+			jobs = append(jobs, job)
+		}
+	}
+	return jobs
+}
+
+func (h *GitHubEventsHandler) generatePeriodics(
+	headConfig, baseConfig *config.Config, pr *github.PullRequest, eventGUID string) []prowapi.ProwJob {
+	var jobs []prowapi.ProwJob
+
+	headPeriodics := hashPeriodicsConfig(headConfig.Periodics)
+	basePeriodics := hashPeriodicsConfig(baseConfig.Periodics)
+
+	for periodicKey, headPeriodic := range headPeriodics {
+		basePeriodic, exists := basePeriodics[periodicKey]
+
+		if exists && reflect.DeepEqual(basePeriodic, headPeriodic) {
+			continue
+		}
+		log.Infof("Detected modified or new periodic: %s.", headPeriodic.Name)
+		changelog, err := diff.Diff(basePeriodic, headPeriodic)
+		if err != nil {
+			log.Errorf("could not diff periodics: %v", err)
+		}
+		log.Infof("differences detected:\n%v", changelog)
+
+		spec := pjutil.PeriodicSpec(headPeriodic)
+		labels := map[string]string{
+			github.EventGUID: eventGUID,
+		}
+		job := pjutil.NewProwJob(spec, labels, nil)
+
+		if rehearsalRestricted(job) {
+			h.logger.Infof("Skipping rehearsal job for: %s because it is restricted", job.Name)
+			continue
+		}
+
+		prRefs := prowapi.Refs{
+			Org:     pr.Base.Repo.Owner.Login,
+			Repo:    pr.Base.Repo.Name,
+			WorkDir: !workdirAlreadyDefined(job.Spec.ExtraRefs),
+			BaseRef: pr.Base.Ref,
+			BaseSHA: pr.Base.SHA,
+			Pulls: []prowapi.Pull{
+				{
+					Number:  pr.Number,
+					Author:  pr.User.Login,
+					SHA:     pr.Head.SHA,
+					HeadRef: pr.Head.Ref,
+				},
+			},
+		}
+		job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, prRefs)
+		jobs = append(jobs, job)
+	}
+	return jobs
+}
+
 func (h *GitHubEventsHandler) loadConfigsAtRef(
 	changedJobConfigs []string, git gitv2.RepoClient, ref string) (map[string]*config.Config, error) {
 	configs := map[string]*config.Config{}
@@ -685,6 +818,14 @@ func (h *GitHubEventsHandler) loadConfigsAtRef(
 				presubmits[index].JobBase.SourcePath = path.Join(git.Directory(), changedJobConfig)
 			}
 		}
+		for _, postsubmits := range pc.PostsubmitsStatic {
+			for index := range postsubmits {
+				postsubmits[index].JobBase.SourcePath = path.Join(git.Directory(), changedJobConfig)
+			}
+		}
+		for index := range pc.Periodics {
+			pc.Periodics[index].JobBase.SourcePath = path.Join(git.Directory(), changedJobConfig)
+		}
 		configs[changedJobConfig] = pc
 	}
 
@@ -724,6 +865,24 @@ func hashPresubmitsConfig(presubmits map[string][]config.Presubmit) map[string]c
 		}
 	}
 	return presubmitsFlat
+}
+
+func hashPostsubmitsConfig(postsubmits map[string][]config.Postsubmit) map[string]config.Postsubmit {
+	postsubmitsFlat := map[string]config.Postsubmit{}
+	for repo, postsubmitsForRepo := range postsubmits {
+		for _, postsubmit := range postsubmitsForRepo {
+			postsubmitsFlat[jobKeyFunc(repo, postsubmit.JobBase)] = postsubmit
+		}
+	}
+	return postsubmitsFlat
+}
+
+func hashPeriodicsConfig(periodics []config.Periodic) map[string]config.Periodic {
+	periodicsFlat := map[string]config.Periodic{}
+	for _, periodic := range periodics {
+		periodicsFlat[periodic.Name] = periodic
+	}
+	return periodicsFlat
 }
 
 // catFile executes a git cat-file command in the specified git dir and returns bytes representation of the file
