@@ -2457,3 +2457,69 @@ presubmits:
           path: /dev/vfio/
           type: Directory
         name: vfio
+  - always_run: false
+    annotations:
+      testgrid-dashboards: kubevirt-presubmits
+      testgrid-alert-email: harshitha.ms@ibm.com
+    cluster: kubevirt-prow-control-plane
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 4h0m0s
+    extra_refs:
+    - base_ref: main
+      clone_depth: 1
+      org: kubevirt
+      repo: project-infra
+    labels:
+      preset-bazel-cache: "true"
+      preset-docker-mirror-proxy: "true"
+      preset-github-credentials: "true"
+      preset-kubevirtci-quay-credential: "true"
+      preset-pgp-bot-key: "true"
+      preset-podman-in-container-enabled: "true"
+    max_concurrency: 1
+    name: pull-kubevirt-e2e-test-cex-dra-driver-s390x
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - |
+          set -e
+          source ../project-infra/hack/manage-secrets.sh
+          decrypt_secrets
+          install -m400 "${secrets_repo_dir}"/secrets/kubeconfigs/prow-s390x-secure-execution /kubeconfig
+          cleanup_secrets
+
+          git clone --depth 1 --branch deploy/fromLocalWorkstation \
+            https://github.com/nestoracunablanco/k8s-cex-dra-driver.git \
+            /tmp/k8s-cex-dra-driver
+          ( cd /tmp/k8s-cex-dra-driver && make deploy )
+
+          cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+          automation/test.sh
+        env:
+        - name: TARGET
+          value: external-sig-compute-dra-cex
+        - name: KUBEVIRT_PROVIDER
+          value: external
+        - name: DOCKER_PREFIX
+          value: quay.io/kubevirtci
+        - name: DOCKER_TAG
+          value: s390x_cex_dra_test
+        - name: KUBECONFIG
+          value: /kubeconfig
+        - name: IMAGE_PULL_POLICY
+          value: Always
+        - name: BUILD_ARCH
+          value: crossbuild-s390x
+        image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
+        resources:
+          requests:
+            memory: 8Gi
+        securityContext:
+          privileged: true
