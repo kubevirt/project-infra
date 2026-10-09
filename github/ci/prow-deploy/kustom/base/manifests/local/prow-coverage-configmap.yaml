@@ -16,10 +16,10 @@ data:
       timeoutMinutes: 120
       gracePeriodSeconds: 15
       utilityImages:
-        cloneRefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20261001-6844e439e"
-        initUpload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20261001-6844e439e"
-        entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20261001-6844e439e"
-        sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20261001-6844e439e"
+        cloneRefs: "us-docker.pkg.dev/k8s-infra-prow/images/clonerefs:v20261008-e012f2883"
+        initUpload: "us-docker.pkg.dev/k8s-infra-prow/images/initupload:v20261008-e012f2883"
+        entrypoint: "us-docker.pkg.dev/k8s-infra-prow/images/entrypoint:v20261008-e012f2883"
+        sidecar: "us-docker.pkg.dev/k8s-infra-prow/images/sidecar:v20261008-e012f2883"
       gcs:
         bucket: kubevirt-prow
         pathStrategy: explicit
