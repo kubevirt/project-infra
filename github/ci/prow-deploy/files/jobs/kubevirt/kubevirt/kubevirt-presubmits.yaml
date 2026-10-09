@@ -713,6 +713,34 @@ presubmits:
   - always_run: true
     annotations:
       fork-per-release: "false"
+      testgrid-create-test-group: "false"
+    cluster: prow-workloads
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 30m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+    name: pull-kubevirt-test-integration
+    optional: true
+    skip_branches:
+    - release-\d+\.\d+
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/runner.sh
+        - /bin/sh
+        - -c
+        - make test-integration
+        image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+        resources:
+          requests:
+            memory: 8Gi
+        securityContext:
+          privileged: true
+  - always_run: true
+    annotations:
+      fork-per-release: "false"
     cluster: kubevirt-prow-control-plane
     decoration_config:
       grace_period: 10m0s
