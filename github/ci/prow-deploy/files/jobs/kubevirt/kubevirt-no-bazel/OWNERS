@@ -7,26 +7,25 @@
 filters:
   .*:
     approvers:
+    - brianmcarey
     - davidvossel
+    - dhiller
+    - dollierp
     - enp0s3
     - fabiand
     - iholder101
     - jean-edouard
+    - jschintag
     - mhenriks
     - rmohr
     - stu-gott
     - vasiliy-ul
     - vladikr
+    - whitedyl
     - xpivarc
     reviewers:
-    - 0xfelix
-    - eddev
-    - enp0s3
-    - fossedihelm
-    - jean-edouard
-    - lyarwood
-    - mhenriks
-    - vladikr
+    - jschintag
+    - whitedyl
   BUILD\.bazel|.*\.bzl|WORKSPACE|Makefile|\.bazelrc|ci\.bazelrc|\.bazelversion|nogo_config\.json:
     approvers:
     - brianmcarey
@@ -35,7 +34,5 @@ filters:
     - sig/buildsystem
     reviewers:
     - brianmcarey
-    - dollierp
-    - enp0s3
-    - xpivarc
+    - dhiller
 options: {}
