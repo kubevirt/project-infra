@@ -5,8 +5,9 @@ presubmits:
       - release-v\d+\.\d+
     annotations:
       fork-per-release: "true"
-    always_run: false
-    optional: true
+    always_run: true
+    skip_report: false
+    optional: false
     decoration_config:
       timeout: 3h
       grace_period: 5m
