@@ -198,7 +198,7 @@ presubmits:
     annotations:
       fork-per-release: "true"
     always_run: true
-    optional: true
+    optional: false
     decoration_config:
       timeout: 1h
       grace_period: 5m
