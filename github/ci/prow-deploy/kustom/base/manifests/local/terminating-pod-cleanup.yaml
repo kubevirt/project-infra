@@ -16,7 +16,7 @@ spec:
         spec:
           containers:
             - name: cleanup
-              image: quay.io/kubevirtci/bootstrap:v20261001-31784ce
+              image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
               command:
                 - /usr/local/bin/runner.sh
                 - /bin/sh
