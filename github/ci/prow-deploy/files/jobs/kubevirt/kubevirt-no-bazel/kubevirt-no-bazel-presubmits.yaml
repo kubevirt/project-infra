@@ -390,7 +390,7 @@ presubmits:
         - /bin/sh
         - -c
         - make verify-rpm-deps
-        image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
+        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
         resources:
           requests:
             memory: 12Gi
@@ -419,7 +419,7 @@ presubmits:
         - |
           hack/dockerized "./hack/rpm-deps.sh"
           git --no-pager diff --stat
-        image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
+        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
         resources:
           requests:
             memory: 16Gi
@@ -451,7 +451,7 @@ presubmits:
         env:
         - name: KUBEVIRT_CENTOS_STREAM_VERSION
           value: "10"
-        image: quay.io/kubevirtci/bootstrap:v20260908-8ec231b
+        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
         resources:
           requests:
             memory: 16Gi
