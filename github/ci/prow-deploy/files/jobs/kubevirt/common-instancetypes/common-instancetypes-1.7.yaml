@@ -99,7 +99,6 @@ presubmits:
     branches:
       - release-1.7
     always_run: false
-    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/fedora/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-s390x-workloads
     decoration_config:
       grace_period: 5m0s
@@ -218,7 +217,6 @@ presubmits:
     branches:
       - release-1.7
     always_run: false
-    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-s390x-workloads
     decoration_config:
       grace_period: 5m0s
@@ -292,7 +290,6 @@ presubmits:
     branches:
       - release-1.7
     always_run: false
-    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-s390x-workloads
     decoration_config:
       grace_period: 5m0s
@@ -366,7 +363,6 @@ presubmits:
     branches:
       - release-1.7
     always_run: false
-    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/ubuntu/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-s390x-workloads
     decoration_config:
       grace_period: 5m0s
@@ -440,7 +436,6 @@ presubmits:
     branches:
       - release-1.7
     always_run: false
-    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/opensuse/tumbleweed/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-s390x-workloads
     decoration_config:
       grace_period: 5m0s
