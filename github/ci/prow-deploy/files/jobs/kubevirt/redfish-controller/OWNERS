@@ -8,6 +8,8 @@ filters:
   .*:
     approvers:
     - marsik
+    - yanirq
     reviewers:
     - marsik
+    - yanirq
 options: {}
