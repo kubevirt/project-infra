@@ -50,7 +50,7 @@ periodics:
             requests:
               memory: "200Mi"
   - name: periodic-update-common-instancetypes-bundles-1.7
-    cron: 0 2 * * *
+    cron: 17 2 * * *
     annotations:
       testgrid-create-test-group: "false"
     decoration_config:
