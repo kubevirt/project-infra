@@ -18,7 +18,7 @@ periodics:
         - image: quay.io/kubevirtci/pr-creator:v20261013-f5b71d3
           env:
             - name: COMMON_INSTANCETYPES_BRANCH
-              value: "release-1.7"
+              value: "release-1.8"
             - name: KUBEVIRT_BRANCH
               value: "main"
           command: ["/bin/bash", "-ce"]
@@ -44,6 +44,56 @@ periodics:
                 --description-command "cat /tmp/pr-description" \
                 --repo kubevirt \
                 --branch update-common-instancetypes-main \
+                --target "${KUBEVIRT_BRANCH}" \
+                --missing-labels lgtm,approved,do-not-merge/hold
+          resources:
+            requests:
+              memory: "200Mi"
+  - name: periodic-update-common-instancetypes-bundles-1.7
+    cron: 0 2 * * *
+    annotations:
+      testgrid-create-test-group: "false"
+    decoration_config:
+      timeout: 1h
+    max_concurrency: 1
+    cluster: kubevirt-prow-control-plane
+    extra_refs:
+      - org: kubevirt
+        repo: kubevirt
+        base_ref: release-1.9
+    labels:
+      preset-github-credentials: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/pr-creator:v20261013-f5b71d3
+          env:
+            - name: COMMON_INSTANCETYPES_BRANCH
+              value: "release-1.7"
+            - name: KUBEVIRT_BRANCH
+              value: "release-1.9"
+          command: ["/bin/bash", "-ce"]
+          args:
+            - |
+              export GIT_ASKPASS=/usr/local/bin/git-askpass.sh
+              release=$(curl --fail -s https://api.github.com/repos/kubevirt/common-instancetypes/releases | jq -c --arg branch "${COMMON_INSTANCETYPES_BRANCH}" 'map(select(.target_commitish == $branch)) | first')
+              latest_version=$(echo "${release}" | jq -r '.tag_name')
+              release_notes=$(echo "${release}" | jq -r '.body // ""' | tr -d '\r' | sed 's/@//g')
+
+              cat >/tmp/pr-description <<EOF
+              Automated update of common-instancetypes bundles to ${latest_version}
+
+              ${release_notes}
+
+              \`\`\`release-note
+              Updated common-instancetypes bundles to ${latest_version}
+              \`\`\`
+              EOF
+
+              git-pr.sh \
+                --command "cd ../kubevirt && hack/common-instancetypes/bump.sh ${COMMON_INSTANCETYPES_BRANCH}" \
+                --description-command "sed '1s/^/[${KUBEVIRT_BRANCH}] /' /tmp/pr-description" \
+                --repo kubevirt \
+                --branch "update-common-instancetypes-${KUBEVIRT_BRANCH}" \
                 --target "${KUBEVIRT_BRANCH}" \
                 --missing-labels lgtm,approved,do-not-merge/hold
           resources:
