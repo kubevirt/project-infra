@@ -331,7 +331,7 @@ presubmits:
           path: /sys/fs/cgroup
           type: Directory
         name: cgroup
-  - always_run: false
+  - always_run: true
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -341,7 +341,6 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-podman-in-container-enabled: "true"
-      preset-kubevirt-s390x-icr-credential: "true"
     max_concurrency: 3
     name: pull-kubevirt-no-bazel-e2e-k8s-1.34-s390x
     optional: true
@@ -354,15 +353,12 @@ presubmits:
         - /bin/sh
         - -ce
         - |
-          cat $ICR_PASSWORD | podman login icr.io --username $(cat $ICR_USER) --password-stdin=true
           automation/test.sh
         env:
         - name: TARGET
           value: k8s-1.34-wg-s390x
         - name: KUBEVIRT_SLIM
           value: "true"
-        - name: KUBEVIRT_BUILDER_IMAGE
-          value: icr.io/kubevirt/builder:2608020842-b8b04c190d
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
         resources:
           requests:
