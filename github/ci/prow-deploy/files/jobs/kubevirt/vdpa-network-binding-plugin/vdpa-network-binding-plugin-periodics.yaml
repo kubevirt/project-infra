@@ -1,0 +1,95 @@
+periodics:
+  - name: vdpa-network-binding-plugin-weekly-e2e-k8s-1.35
+    cron: 0 4 * * 1
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    extra_refs:
+      - org: kubevirt
+        repo: vdpa-network-binding-plugin
+        base_ref: main
+    annotations:
+      testgrid-create-test-group: "false"
+    labels:
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 1
+    spec:
+      containers:
+        - command:
+            - /usr/local/bin/runner.sh
+            - /bin/sh
+            - -ce
+            - |
+              which go &> /dev/null || dnf install -y golang
+              ./test/automation/setup_and_test.sh
+          env:
+            - name: KUBEVIRT_PROVIDER
+              value: k8s-1.35
+            - name: KUBEVIRT_MEMORY_SIZE
+              value: 16G
+            - name: KUBEVIRT_NUM_NODES
+              value: "3"
+            - name: KUBEVIRT_SYNC_VERSION
+              value: "nightly"
+          image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+          name: ""
+          resources:
+            requests:
+              cpu: "12"
+              memory: 50G
+          securityContext:
+            privileged: true
+      nodeSelector:
+        type: bare-metal-external
+  - name: vdpa-network-binding-plugin-weekly-e2e-k8s-1.36
+    cron: 0 4 * * 1
+    cluster: prow-workloads
+    decorate: true
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 1h0m0s
+    annotations:
+      testgrid-create-test-group: "false"
+    extra_refs:
+      - org: kubevirt
+        repo: vdpa-network-binding-plugin
+        base_ref: main
+    labels:
+      preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-shared-images: "true"
+    max_concurrency: 1
+    spec:
+      containers:
+        - command:
+            - /usr/local/bin/runner.sh
+            - /bin/sh
+            - -ce
+            - |
+              which go &> /dev/null || dnf install -y golang
+              ./test/automation/setup_and_test.sh
+          env:
+            - name: KUBEVIRT_PROVIDER
+              value: k8s-1.36
+            - name: KUBEVIRT_MEMORY_SIZE
+              value: 16G
+            - name: KUBEVIRT_NUM_NODES
+              value: "3"
+            - name: KUBEVIRT_SYNC_VERSION
+              value: "nightly"
+          image: quay.io/kubevirtci/bootstrap:v20260715-af3e234
+          name: ""
+          resources:
+            requests:
+              cpu: "12"
+              memory: 50G
+          securityContext:
+            privileged: true
+      nodeSelector:
+        type: bare-metal-external
