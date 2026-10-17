@@ -92,6 +92,68 @@ var _ = Describe("Events", func() {
 			Expect(outJobs[0].Name).To(Equal(jobsConfig.PresubmitsStatic["foo/bar"][0].Name))
 		})
 
+		It("Should reset SourcePath for postsubmits and periodics", func() {
+			prowConfig := config.ProwConfig{}
+			jobsConfig := config.JobConfig{
+				PostsubmitsStatic: map[string][]config.Postsubmit{
+					"foo/bar": {
+						{
+							JobBase: config.JobBase{
+								Name: "a-postsubmit",
+								Spec: &v1.PodSpec{
+									Containers: []v1.Container{
+										{
+											Image:   "foo/var",
+											Command: []string{"/bin/foo"},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Periodics: []config.Periodic{
+					{
+						JobBase: config.JobBase{
+							Name: "a-periodic",
+							Spec: &v1.PodSpec{
+								Containers: []v1.Container{
+									{
+										Image:   "foo/var",
+										Command: []string{"/bin/foo"},
+									},
+								},
+							},
+						},
+						Cron: "0 0 * * *",
+					},
+				},
+			}
+
+			Expect(gitrepo.MakeFakeRepo("foo", "bar")).Should(Succeed())
+			prowConfigBytes, err := json.Marshal(prowConfig)
+			Expect(err).ShouldNot(HaveOccurred())
+			jobsConfigBytes, err := json.Marshal(jobsConfig)
+			Expect(err).ShouldNot(HaveOccurred())
+			files := map[string][]byte{
+				"prow-config.yaml": prowConfigBytes,
+				"jobs-config.yaml": jobsConfigBytes,
+			}
+			Expect(gitrepo.AddCommit("foo", "bar", files)).Should(Succeed())
+			headref, err := gitrepo.RevParse("foo", "bar", "HEAD")
+			Expect(err).ShouldNot(HaveOccurred())
+			gitClient, err := gitClientFactory.ClientFor("foo", "bar")
+			Expect(err).ShouldNot(HaveOccurred())
+			out, err := eventsServer.loadConfigsAtRef([]string{"jobs-config.yaml"}, gitClient, headref)
+			Expect(err).ShouldNot(HaveOccurred())
+			outConfig, exists := out["jobs-config.yaml"]
+			Expect(exists).To(BeTrue())
+			outPostsubmits, exists := outConfig.PostsubmitsStatic["foo/bar"]
+			Expect(exists).To(BeTrue())
+			Expect(outPostsubmits[0].JobBase.SourcePath).To(HaveSuffix("jobs-config.yaml"))
+			Expect(outConfig.Periodics[0].JobBase.SourcePath).To(HaveSuffix("jobs-config.yaml"))
+		})
+
 	})
 
 	Context("Utility functions", func() {
@@ -282,6 +344,170 @@ var _ = Describe("PR filtering", func() {
 			presubmits := handler.generatePresubmits(headConfig, baseConfig, pr, "42")
 			Expect(presubmits).ToNot(BeEmpty())
 			Expect(presubmits[0].Spec.ExtraRefs[0].BaseRef).To(BeEquivalentTo("release-42"))
+		})
+	})
+
+	Context("Handler filtering postsubmit jobs", func() {
+
+		var handler *GitHubEventsHandler
+		var headConfig *config.Config
+		var baseConfig *config.Config
+		var pr *github.PullRequest
+
+		BeforeEach(func() {
+			handler = &GitHubEventsHandler{}
+			headConfig = &config.Config{
+				JobConfig: config.JobConfig{
+					PostsubmitsStatic: map[string][]config.Postsubmit{
+						"kubevirt/kubevirt": {
+							{
+								JobBase: config.JobBase{
+									Name: "testPostsubmitJob",
+									Spec: newPodSpec(),
+								},
+							},
+						},
+					},
+				},
+			}
+			baseConfig = &config.Config{
+				JobConfig: config.JobConfig{
+					PostsubmitsStatic: map[string][]config.Postsubmit{
+						"kubevirt/kubevirt": {
+							{
+								JobBase: config.JobBase{
+									Name: "testPostsubmitJob",
+									Spec: newPodSpec(),
+								},
+							},
+						},
+					},
+				},
+			}
+			pr = &github.PullRequest{
+				Base: github.PullRequestBranch{
+					Repo: github.Repo{
+						FullName: "kubevirt/project-infra",
+						Owner: github.User{
+							Login: "kubevirt",
+						},
+						Name: "project-infra",
+					},
+				},
+			}
+		})
+
+		It("doesn't generate a prowjob without changes", func() {
+			postsubmits := handler.generatePostsubmits(headConfig, baseConfig, pr, "42")
+			Expect(postsubmits).To(BeEmpty())
+		})
+
+		It("generates a prowjob if spec changes", func() {
+			headConfig.PostsubmitsStatic["kubevirt/kubevirt"][0].Spec.Containers[0].Image = "v2/test37"
+			postsubmits := handler.generatePostsubmits(headConfig, baseConfig, pr, "42")
+			Expect(postsubmits).ToNot(BeEmpty())
+			Expect(postsubmits[0].Spec.Type).To(Equal(prowapi.PostsubmitJob))
+		})
+
+		It("generates a prowjob with extra refs for cross-repo job", func() {
+			headConfig.PostsubmitsStatic["kubevirt/kubevirt"][0].Spec.Containers[0].Image = "v2/test37"
+			postsubmits := handler.generatePostsubmits(headConfig, baseConfig, pr, "42")
+			Expect(postsubmits).ToNot(BeEmpty())
+			Expect(postsubmits[0].Spec.ExtraRefs).ToNot(BeEmpty())
+			Expect(postsubmits[0].Spec.ExtraRefs[0].Org).To(Equal("kubevirt"))
+			Expect(postsubmits[0].Spec.ExtraRefs[0].Repo).To(Equal("kubevirt"))
+		})
+
+		It("generates a prowjob for branch if spec changes", func() {
+			headConfig.PostsubmitsStatic["kubevirt/kubevirt"][0].Spec.Containers[0].Image = "v2/test37"
+			headConfig.PostsubmitsStatic["kubevirt/kubevirt"][0].Branches = []string{"release-42"}
+			postsubmits := handler.generatePostsubmits(headConfig, baseConfig, pr, "42")
+			Expect(postsubmits).ToNot(BeEmpty())
+			Expect(postsubmits[0].Spec.ExtraRefs).ToNot(BeEmpty())
+			Expect(postsubmits[0].Spec.ExtraRefs[0].BaseRef).To(Equal("release-42"))
+		})
+	})
+
+	Context("Handler filtering periodic jobs", func() {
+
+		var handler *GitHubEventsHandler
+		var headConfig *config.Config
+		var baseConfig *config.Config
+		var pr *github.PullRequest
+
+		BeforeEach(func() {
+			handler = &GitHubEventsHandler{}
+			headConfig = &config.Config{
+				JobConfig: config.JobConfig{
+					Periodics: []config.Periodic{
+						{
+							JobBase: config.JobBase{
+								Name: "testPeriodicJob",
+								Spec: newPodSpec(),
+							},
+							Cron: "0 0 * * *",
+						},
+					},
+				},
+			}
+			baseConfig = &config.Config{
+				JobConfig: config.JobConfig{
+					Periodics: []config.Periodic{
+						{
+							JobBase: config.JobBase{
+								Name: "testPeriodicJob",
+								Spec: newPodSpec(),
+							},
+							Cron: "0 0 * * *",
+						},
+					},
+				},
+			}
+			pr = &github.PullRequest{
+				Base: github.PullRequestBranch{
+					Repo: github.Repo{
+						FullName: "kubevirt/project-infra",
+						Owner: github.User{
+							Login: "kubevirt",
+						},
+						Name: "project-infra",
+					},
+				},
+			}
+		})
+
+		It("doesn't generate a prowjob without changes", func() {
+			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42")
+			Expect(periodics).To(BeEmpty())
+		})
+
+		It("generates a prowjob if spec changes", func() {
+			headConfig.Periodics[0].Spec.Containers[0].Image = "v2/test37"
+			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42")
+			Expect(periodics).ToNot(BeEmpty())
+			Expect(periodics[0].Spec.Type).To(Equal(prowapi.PeriodicJob))
+		})
+
+		It("injects PR refs into extra refs", func() {
+			headConfig.Periodics[0].Spec.Containers[0].Image = "v2/test37"
+			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42")
+			Expect(periodics).ToNot(BeEmpty())
+			lastRef := periodics[0].Spec.ExtraRefs[len(periodics[0].Spec.ExtraRefs)-1]
+			Expect(lastRef.Org).To(Equal("kubevirt"))
+			Expect(lastRef.Repo).To(Equal("project-infra"))
+		})
+
+		It("generates a prowjob for new periodic", func() {
+			headConfig.Periodics = append(headConfig.Periodics, config.Periodic{
+				JobBase: config.JobBase{
+					Name: "newPeriodicJob",
+					Spec: newPodSpec(),
+				},
+				Cron: "0 0 * * *",
+			})
+			periodics := handler.generatePeriodics(headConfig, baseConfig, pr, "42")
+			Expect(periodics).To(HaveLen(1))
+			Expect(periodics[0].Spec.Job).To(Equal("newPeriodicJob"))
 		})
 	})
 
