@@ -354,8 +354,8 @@ tide:
   - repos:
     - kubevirt/kubevirt
     # Handling CODE FREEZE
-    # excludedBranches:
-    # - "main"
+    excludedBranches:
+     - "main"
     labels:
     - lgtm
     - approved
