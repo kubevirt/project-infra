@@ -1,43 +1,5 @@
 presubmits:
   kubevirt/hyperconverged-cluster-operator:
-    - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.35
-      skip_branches:
-        - release-\d+\.\d+
-      annotations:
-        fork-per-release: "true"
-        testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
-      always_run: true
-      optional: false
-      decoration_config:
-        timeout: 7h
-        grace_period: 5m
-      max_concurrency: 6
-      labels:
-        preset-podman-in-container-enabled: "true"
-        preset-docker-mirror-proxy: "true"
-        preset-podman-shared-images: "true"
-      cluster: prow-workloads
-      spec:
-        nodeSelector:
-          type: bare-metal-external
-        containers:
-          - image: quay.io/kubevirtci/golang:v20261012-6b466e3
-            command:
-              - "/usr/local/bin/entrypoint.sh"
-              - "/bin/sh"
-              - "-c"
-              - "export TARGET=k8s-1.35 && automation/test.sh"
-            env:
-              - name: GO_MOD_PATH
-                value: "go.mod"
-              - name: GINKGO_LABELS
-                value: '!OpenShift && !SINGLE_NODE_ONLY'
-            # docker-in-docker needs privileged mode
-            securityContext:
-              privileged: true
-            resources:
-              requests:
-                memory: "50Gi"
     - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.36
       skip_branches:
         - release-\d+\.\d+
@@ -76,7 +38,45 @@ presubmits:
             resources:
               requests:
                 memory: "50Gi"
-    - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.36-s390x
+    - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.37
+      skip_branches:
+        - release-\d+\.\d+
+      annotations:
+        fork-per-release: "true"
+        testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
+      always_run: true
+      optional: false
+      decoration_config:
+        timeout: 7h
+        grace_period: 5m
+      max_concurrency: 6
+      labels:
+        preset-podman-in-container-enabled: "true"
+        preset-docker-mirror-proxy: "true"
+        preset-podman-shared-images: "true"
+      cluster: prow-workloads
+      spec:
+        nodeSelector:
+          type: bare-metal-external
+        containers:
+          - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+            command:
+              - "/usr/local/bin/entrypoint.sh"
+              - "/bin/sh"
+              - "-c"
+              - "export TARGET=k8s-1.37 && automation/test.sh"
+            env:
+              - name: GO_MOD_PATH
+                value: "go.mod"
+              - name: GINKGO_LABELS
+                value: '!OpenShift && !SINGLE_NODE_ONLY'
+            # docker-in-docker needs privileged mode
+            securityContext:
+              privileged: true
+            resources:
+              requests:
+                memory: "50Gi"
+    - name: pull-hyperconverged-cluster-operator-e2e-k8s-1.37-s390x
       skip_branches:
         - release-\d+\.\d+
       annotations:
@@ -97,7 +97,7 @@ presubmits:
               - "/usr/local/bin/entrypoint.sh"
               - "/bin/sh"
               - "-c"
-              - "export TARGET=k8s-1.36 && export SLIM=true && automation/test.sh"
+              - "export TARGET=k8s-1.37 && export SLIM=true && automation/test.sh"
             env:
               - name: GO_MOD_PATH
                 value: "go.mod"
