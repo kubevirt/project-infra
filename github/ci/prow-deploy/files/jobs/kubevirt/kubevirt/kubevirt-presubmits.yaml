@@ -2479,7 +2479,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
@@ -2491,6 +2491,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 5
     name: pull-kubevirt-e2e-kind-1.37-sev
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
