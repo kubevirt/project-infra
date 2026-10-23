@@ -12,6 +12,7 @@ func TestDeletePresubmitJobForRelease(t *testing.T) {
 	type args struct {
 		jobConfig           *config.JobConfig
 		targetReleaseSemver *querier.SemVer
+		extraArchs          []string
 	}
 	tests := []struct {
 		name             string
@@ -111,10 +112,84 @@ func TestDeletePresubmitJobForRelease(t *testing.T) {
 			},
 			wantUpdated: true,
 		},
+		{
+			name: "only amd64 deleted when no extra archs",
+			args: args{
+				jobConfig: &config.JobConfig{
+					PresubmitsStatic: map[string][]config.Presubmit{
+						OrgAndRepoForJobConfig: {
+							{
+								JobBase: config.JobBase{
+									Name: createKubevirtciPresubmitJobName(newMinorSemver("1", "37")),
+								},
+							},
+							{
+								JobBase: config.JobBase{
+									Name: createKubevirtciPresubmitJobNameArch(newMinorSemver("1", "37"), "s390x"),
+								},
+							},
+						},
+					},
+				},
+				targetReleaseSemver: newMinorSemver("1", "37"),
+			},
+			wantNewJobConfig: &config.JobConfig{
+				PresubmitsStatic: map[string][]config.Presubmit{
+					OrgAndRepoForJobConfig: {
+						{
+							JobBase: config.JobBase{
+								Name: createKubevirtciPresubmitJobNameArch(newMinorSemver("1", "37"), "s390x"),
+							},
+						},
+					},
+				},
+			},
+			wantUpdated: true,
+		},
+		{
+			name: "both amd64 and arch jobs deleted with extra archs",
+			args: args{
+				jobConfig: &config.JobConfig{
+					PresubmitsStatic: map[string][]config.Presubmit{
+						OrgAndRepoForJobConfig: {
+							{
+								JobBase: config.JobBase{
+									Name: createKubevirtciPresubmitJobName(newMinorSemver("1", "37")),
+								},
+							},
+							{
+								JobBase: config.JobBase{
+									Name: createKubevirtciPresubmitJobNameArch(newMinorSemver("1", "37"), "s390x"),
+								},
+							},
+							{
+								JobBase: config.JobBase{
+									Name: createKubevirtciPresubmitJobName(newMinorSemver("1", "42")),
+								},
+							},
+						},
+					},
+				},
+				targetReleaseSemver: newMinorSemver("1", "37"),
+				extraArchs:          []string{"s390x"},
+			},
+			wantNewJobConfig: &config.JobConfig{
+				PresubmitsStatic: map[string][]config.Presubmit{
+					OrgAndRepoForJobConfig: {
+						{
+							JobBase: config.JobBase{
+								Name: createKubevirtciPresubmitJobName(newMinorSemver("1", "42")),
+							},
+						},
+					},
+				},
+			},
+			wantUpdated: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotUpdated := deletePresubmitJobForRelease(tt.args.jobConfig, tt.args.targetReleaseSemver)
+			gotUpdated := deletePresubmitJobForRelease(tt.args.jobConfig, tt.args.targetReleaseSemver, tt.args.extraArchs)
 			if gotUpdated != tt.wantUpdated {
 				t.Errorf("deletePresubmitJobForRelease() gotUpdated = %v, want %v", gotUpdated, tt.wantUpdated)
 			}
