@@ -313,6 +313,7 @@ dashboards:
 - name: kubevirt-velero-plugin-periodics
 - name: kubevirt-csi-driver-presubmits
 - name: kubevirt-containerdisks-periodics
+- name: kubevirt-migration-controller-periodics
 - name: kubevirt-project-infra-periodics
 - name: kubevirt-project-infra-postsubmits
 
@@ -333,6 +334,7 @@ dashboard_groups:
   - kubevirt-velero-plugin-periodics
   - kubevirt-csi-driver-presubmits
   - kubevirt-containerdisks-periodics
+  - kubevirt-migration-controller-periodics
   - kubevirt-project-infra-periodics
   - kubevirt-project-infra-postsubmits
 
