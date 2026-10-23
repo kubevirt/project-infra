@@ -9,7 +9,7 @@ presubmits:
       preset-gcs-credentials: "true"
     spec:
       containers:
-      - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20261016-c7093f489
+      - image: us-docker.pkg.dev/k8s-infra-prow/images/checkconfig:v20261022-6c4d88e3b
         command:
         - /ko-app/checkconfig
         args:
@@ -829,7 +829,7 @@ presubmits:
     spec:
       containers:
       - name: peribolos
-        image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20261016-c7093f489
+        image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20261022-6c4d88e3b
         command:
         - /ko-app/peribolos
         # when changing the peribolos settings below, please align the peribolos settings from the periodic job!
@@ -869,7 +869,7 @@ presubmits:
       containers:
       - &label_sync_container
         name: label-sync
-        image: gcr.io/k8s-staging-test-infra/label_sync:v20260729-f66136c16c
+        image: gcr.io/k8s-staging-test-infra/label_sync:v20261016-5ec6cc834c
         command: [ "/ko-app/label_sync" ]
         args:
         - --config=github/ci/prow-deploy/kustom/base/configs/current/labels/labels.yaml
