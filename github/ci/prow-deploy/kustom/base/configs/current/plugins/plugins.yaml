@@ -950,11 +950,8 @@ triggers:
   - kubevirt/kubevirt-template-validator
   - kubevirt/kubevirt-ssp-operator
   - kubevirt/sig-release
-  - kubevirt/ssp-operator
-  - kubevirt/kubevirt-tekton-tasks
   - kubevirt/must-gather
   - kubevirt/demo
-  - kubevirt/cluster-network-addons-operator
   - kubevirt/kubesecondarydns
   - kubevirt/ipam-extensions
   - kubevirt/node-maintenance-operator
@@ -969,13 +966,11 @@ triggers:
   - kubevirt/cloud-provider-kubevirt
   - kubevirt/secrets
   - kubevirt/test-benchmarks
-  - kubevirt/vm-console-proxy
   - kubevirt/kubevirt.core
   - kubevirt/managed-tenant-quota
   - kubevirt/application-aware-quota
   - kubevirt/enhancements
   - kubevirt/irsa-mutation-webhook
-  - kubevirt/virt-template
   - kubevirt/virt-import
   - kubevirt/controller-lifecycle-operator-sdk
   - kubevirt/kubevirt-migration-controller
@@ -987,6 +982,15 @@ triggers:
   - kubevirt/vdpa-network-binding-plugin
   - kubevirt/vhostuser-network-binding-plugin
   - kubevirt/plugins
+  ignore_ok_to_test: true
+- repos:
+  - kubevirt/cluster-network-addons-operator
+  - kubevirt/kubevirt-tekton-tasks
+  - kubevirt/ssp-operator
+  - kubevirt/virt-template
+  - kubevirt/vm-console-proxy
+  trusted_apps:
+  - kubevirt-renovate
   ignore_ok_to_test: true
 - repos:
   - kubevirt/kubevirt-no-bazel
