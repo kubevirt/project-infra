@@ -53,7 +53,9 @@ Data:
 3. Drop remaining impacts that are rehearsal / `check-tests-for-flakes` / `check-dequarantine-test` URLs, lanes that were not in the flake-stats failure set, or “clustered” runs (every listed build’s `junit.functest.xml` has no suite with fewer than 5 failures).
 4. Group by `[sig-…]` in the test name (`NONE` if absent). Required vs optional lanes come from the job config (`ContextRequired()`: `optional: false` and not `skip_report`). Optional and release-branch lanes stay in the HTML; the page hides them until **Show optional lanes** / **Show release branch lanes** is checked.
 
-`HasRecentFailures` is display-only on this command (does not drop rows).
+Candidates must have at least one failure within `--max-failure-age` to appear in the report. `HasRecentFailures` remains display-only: it highlights candidates meeting the stricter `--min-recent-failures` and `--min-failure-interval` requirements.
+
+Eligible candidates retain their older individual impacts. A candidate with only one recent failure can therefore remain visible with a `stale` badge under the default highlighting requirements.
 
 ```bash
 go run ./robots/quarantine report [flags]
@@ -67,7 +69,7 @@ go run ./robots/quarantine report [flags]
 | `--filter-periodic-job-run-results` | `true` | When true, **exclude** flake-stats jobs whose names start with `periodic`. Search.ci scrape always uses `excludeName=periodic-.*` regardless. |
 | `--filter-lane-regex` | `rehearsal` | Exclude flake-stats job names that match. |
 | `--include-rolling-window` | `true` | Also fetch today’s rolling-window flakefinder JSON (warn and skip if missing). |
-| `--max-failure-age` | `72h` | Recent-failure highlighting on search.ci builds. |
+| `--max-failure-age` | `72h` | Candidates need at least one search.ci build failure within this age; also used for recent-failure highlighting. |
 | `--min-recent-failures` | `2` | Minimum recent builds per impact for that highlight. |
 | `--min-failure-interval` | `24h` | Span between oldest and newest recent failure must be ≥ this. |
 | `--job-config-path` | `github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml` | Must contain required jobs. |

@@ -75,9 +75,11 @@ var _ = Describe("most-flaky-tests", func() {
 
 	When("aggregating most flaky tests by SIG", func() {
 		var originalGetQuarantineCandidate func(*flakestats.TopXTest, searchci.TimeRange) (*TestToQuarantine, error)
+		var originalOpts quarantineOptions
 
 		BeforeEach(func() {
 			originalGetQuarantineCandidate = getQuarantineCandidate
+			originalOpts = quarantineOpts
 			quarantineOpts.maxFailureAge = 72 * time.Hour
 			quarantineOpts.minRecentFailures = 2
 			quarantineOpts.minFailureInterval = 24 * time.Hour
@@ -85,6 +87,7 @@ var _ = Describe("most-flaky-tests", func() {
 
 		AfterEach(func() {
 			getQuarantineCandidate = originalGetQuarantineCandidate
+			quarantineOpts = originalOpts
 		})
 
 		It("marks candidate with recent spread-out failures as HasRecentFailures", func() {
@@ -115,33 +118,54 @@ var _ = Describe("most-flaky-tests", func() {
 			Expect(tests[0].HasRecentFailures).To(BeTrue())
 		})
 
-		It("marks candidate with only stale failures as not HasRecentFailures", func() {
-			getQuarantineCandidate = func(topXTest *flakestats.TopXTest, _ searchci.TimeRange) (*TestToQuarantine, error) {
-				return &TestToQuarantine{
-					Test: topXTest,
-					RelevantImpacts: []searchci.Impact{
-						{
-							URL:     "https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.35-sig-compute",
-							Percent: 10,
-							BuildURLs: []searchci.JobBuildURL{
-								{Interval: 264 * time.Hour},
-								{Interval: 288 * time.Hour},
+		DescribeTable("filters candidates by failure age",
+			func(ages []time.Duration, maxAge time.Duration, expectedIncluded bool) {
+				quarantineOpts.maxFailureAge = maxAge
+				var builds []searchci.JobBuildURL
+				for _, age := range ages {
+					builds = append(builds, searchci.JobBuildURL{Interval: age})
+				}
+				getQuarantineCandidate = func(topXTest *flakestats.TopXTest, _ searchci.TimeRange) (*TestToQuarantine, error) {
+					return &TestToQuarantine{
+						Test: topXTest,
+						RelevantImpacts: []searchci.Impact{
+							{
+								URL:       "https://prow.ci.kubevirt.io/job-history/kubevirt-prow/pr-logs/directory/pull-kubevirt-e2e-k8s-1.35-sig-compute",
+								Percent:   10,
+								BuildURLs: builds,
 							},
 						},
-					},
-				}, nil
-			}
+					}, nil
+				}
 
-			_, _, result, err := aggregateMostFlakyTestsBySIG(flakestats.TopXTests{
-				flakestats.NewTopXTest("[sig-compute] my stale flaky test"),
-			})
+				testName := "[sig-compute] my flaky test"
+				sigs, testNames, result, err := aggregateMostFlakyTestsBySIG(flakestats.TopXTests{
+					flakestats.NewTopXTest(testName),
+				})
 
-			Expect(err).ToNot(HaveOccurred())
-			Expect(result).To(HaveKey("sig-compute"))
-			tests := result["sig-compute"]["[sig-compute] my stale flaky test"]
-			Expect(tests).ToNot(BeEmpty())
-			Expect(tests[0].HasRecentFailures).To(BeFalse())
-		})
+				Expect(err).ToNot(HaveOccurred())
+				if expectedIncluded {
+					Expect(sigs).To(ConsistOf("sig-compute"))
+					Expect(testNames).To(ConsistOf(testName))
+					tests := result["sig-compute"][testName]
+					Expect(tests).To(HaveLen(len(mostFlakyTestsTimeRanges)))
+					Expect(tests[0].HasRecentFailures).To(BeFalse())
+				} else {
+					Expect(sigs).To(BeEmpty())
+					Expect(testNames).To(BeEmpty())
+					Expect(result).To(BeEmpty())
+				}
+			},
+			Entry("excludes week-old failures", []time.Duration{168 * time.Hour, 192 * time.Hour}, 72*time.Hour, false),
+			Entry("includes week-old failures with a wider age limit", []time.Duration{168 * time.Hour}, 336*time.Hour, true),
+			Entry("excludes candidates without builds", []time.Duration{}, 72*time.Hour, false),
+			Entry("keeps a single recent failure", []time.Duration{4 * time.Hour}, 72*time.Hour, true),
+			Entry("keeps a recent burst", []time.Duration{2 * time.Hour, 3 * time.Hour}, 72*time.Hour, true),
+			Entry("keeps mixed recent and stale failures", []time.Duration{168 * time.Hour, 4 * time.Hour}, 72*time.Hour, true),
+			Entry("keeps a failure at the age limit", []time.Duration{72 * time.Hour}, 72*time.Hour, true),
+			Entry("excludes a failure beyond the age limit", []time.Duration{72*time.Hour + time.Second}, 72*time.Hour, false),
+			Entry("honors a custom age limit", []time.Duration{48 * time.Hour}, 24*time.Hour, false),
+		)
 	})
 
 	When("classifying optional lanes from required job names", func() {
