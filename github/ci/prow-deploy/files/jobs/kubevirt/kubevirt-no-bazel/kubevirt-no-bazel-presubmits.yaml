@@ -380,7 +380,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-no-bazel-verify-rpms
     optional: true
-    run_if_changed: ^(WORKSPACE|rpm/|hack/(rpm-deps|verify-rpm-deps|rpmtree-utils)\.sh|hack/builder/Dockerfile)
+    run_if_changed: ^(WORKSPACE|MODULE\.bazel|rpms\.json|rpm/|hack/(rpm-deps|verify-rpm-deps|rpmtree-utils)\.sh|hack/builder/Dockerfile)
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -407,7 +407,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-no-bazel-rpm-deps
     optional: true
-    run_if_changed: ^(WORKSPACE|rpm/|hack/(rpm-deps|verify-rpm-deps|rpmtree-utils)\.sh|hack/builder/Dockerfile)
+    run_if_changed: ^(WORKSPACE|MODULE\.bazel|rpms\.json|rpm/|hack/(rpm-deps|verify-rpm-deps|rpmtree-utils)\.sh|hack/builder/Dockerfile)
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -436,7 +436,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-no-bazel-rpm-deps-cs10
     optional: true
-    run_if_changed: ^(WORKSPACE|rpm/|hack/(rpm-deps|verify-rpm-deps|rpmtree-utils)\.sh|hack/builder/Dockerfile)
+    run_if_changed: ^(WORKSPACE|MODULE\.bazel|rpms\.json|rpm/|hack/(rpm-deps|verify-rpm-deps|rpmtree-utils)\.sh|hack/builder/Dockerfile)
     skip_branches:
     - release-\d+\.\d+
     spec:
