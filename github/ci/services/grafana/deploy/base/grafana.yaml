@@ -1705,7 +1705,7 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 1,
-      "id": 4,
+      "id": 13,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -1716,7 +1716,7 @@ data:
           "dashes": false,
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "99254836-eba2-4667-aa63-763bfacabaf1"
           },
           "description": "",
           "fill": 1,
@@ -1731,13 +1731,15 @@ data:
           "id": 13,
           "interval": "1h",
           "legend": {
-            "avg": false,
+            "alignAsTable": false,
+            "avg": true,
             "current": false,
-            "max": false,
-            "min": false,
+            "max": true,
+            "min": true,
+            "rightSide": false,
             "show": true,
             "total": false,
-            "values": false
+            "values": true
           },
           "lines": true,
           "linewidth": 1,
@@ -1760,11 +1762,13 @@ data:
                 "type": "prometheus",
                 "uid": "prometheus"
               },
+              "editorMode": "code",
               "exemplar": true,
               "expr": "sum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"${job_name}\"}[1h]))\n/\nsum (max_over_time(prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"${job_name}\"}[1h]))\n* 100",
               "interval": "1h",
-              "legendFormat": "",
+              "legendFormat": "% overall",
               "queryType": "randomWalk",
+              "range": true,
               "refId": "A"
             }
           ],
