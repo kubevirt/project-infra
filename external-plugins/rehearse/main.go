@@ -180,7 +180,7 @@ func main() {
 
 func helpProvider(_ []prowconfig.OrgRepo) (*pluginhelp.PluginHelp, error) {
 	pluginHelp := &pluginhelp.PluginHelp{
-		Description: "Test modifications to Prow job configurations before merging by rehearsing changed or new presubmit jobs directly from a PR.",
+		Description: "Test modifications to Prow job configurations before merging by rehearsing changed or new presubmit, postsubmit, and periodic jobs directly from a PR.",
 	}
 	pluginHelp.AddCommand(pluginhelp.Command{
 		Usage:       "/rehearse [all|job-name|?]",
