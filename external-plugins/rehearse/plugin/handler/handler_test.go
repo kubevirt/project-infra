@@ -742,6 +742,78 @@ Gna meh whatever
 
 	})
 
+	Context("filtering jobs by allowed types", func() {
+
+		var prowJobs []prowapi.ProwJob
+
+		BeforeEach(func() {
+			prowJobs = []prowapi.ProwJob{
+				{
+					Spec: prowapi.ProwJobSpec{
+						Job:  "presubmit-job",
+						Type: prowapi.PresubmitJob,
+					},
+				},
+				{
+					Spec: prowapi.ProwJobSpec{
+						Job:  "postsubmit-job",
+						Type: prowapi.PostsubmitJob,
+					},
+				},
+				{
+					Spec: prowapi.ProwJobSpec{
+						Job:  "periodic-job",
+						Type: prowapi.PeriodicJob,
+					},
+				},
+			}
+		})
+
+		DescribeTable("partitionProwJobsByAllowedTypes",
+			func(allowedTypes []prowapi.ProwJobType, expectedAllowed []string, expectedSkipped []string) {
+				allowed, skipped := partitionProwJobsByAllowedTypes(prowJobs, allowedTypes)
+				var allowedNames []string
+				for _, pj := range allowed {
+					allowedNames = append(allowedNames, pj.Spec.Job)
+				}
+				var skippedNames []string
+				for _, pj := range skipped {
+					skippedNames = append(skippedNames, pj.Spec.Job)
+				}
+				if expectedAllowed == nil {
+					Expect(allowedNames).To(BeNil())
+				} else {
+					Expect(allowedNames).To(Equal(expectedAllowed))
+				}
+				if expectedSkipped == nil {
+					Expect(skippedNames).To(BeNil())
+				} else {
+					Expect(skippedNames).To(Equal(expectedSkipped))
+				}
+			},
+			Entry("all types allowed",
+				[]prowapi.ProwJobType{prowapi.PresubmitJob, prowapi.PostsubmitJob, prowapi.PeriodicJob},
+				[]string{"presubmit-job", "postsubmit-job", "periodic-job"},
+				nil,
+			),
+			Entry("only presubmit allowed",
+				[]prowapi.ProwJobType{prowapi.PresubmitJob},
+				[]string{"presubmit-job"},
+				[]string{"postsubmit-job", "periodic-job"},
+			),
+			Entry("no types allowed",
+				[]prowapi.ProwJobType{},
+				nil,
+				[]string{"presubmit-job", "postsubmit-job", "periodic-job"},
+			),
+			Entry("nil allowed types",
+				nil,
+				nil,
+				[]string{"presubmit-job", "postsubmit-job", "periodic-job"},
+			),
+		)
+	})
+
 	Context("rehearsal helpers", func() {
 		DescribeTable("tryResolveBranchPattern",
 			func(branch, expected string, ok bool) {
@@ -776,6 +848,24 @@ Gna meh whatever
 			Expect(*job.Spec.ReporterConfig.Slack.Report).To(BeFalse())
 		})
 
+		It("lists unauthorized jobs when /rehearse all is used by a leaf approver", func() {
+			skipped := []prowapi.ProwJob{
+				{Spec: prowapi.ProwJobSpec{Job: "periodic-job"}},
+			}
+			comment := formatCreatedJobsComment([]string{"rehearsal-presubmit-job"}, skipped)
+			Expect(comment).To(ContainSubstring("rehearsal-presubmit-job"))
+			Expect(comment).To(ContainSubstring("periodic-job"))
+			Expect(comment).To(ContainSubstring("top-level approver"))
+		})
+
+		It("explains that periodics require a top-level approver when none can be created", func() {
+			skipped := []prowapi.ProwJob{
+				{Spec: prowapi.ProwJobSpec{Job: "periodic-job"}},
+			}
+			comment := formatNoJobsComment(skipped)
+			Expect(comment).To(ContainSubstring("periodic-job"))
+			Expect(comment).To(ContainSubstring("top-level approver"))
+		})
 	})
 
 	Context("canUserRehearse", func() {
@@ -813,9 +903,13 @@ Gna meh whatever
 				fakeOwnersClient.ExistingTopLevelApprovers = testData.TopLevelApprovers
 				fakeOwnersClient.CurrentLeafApprovers = testData.LeafApprovers
 
-				canUserRehearse, message := testable.canUserRehearse("testorg", "testrepo", pr, testData.GetUserNameOrDefault(), testData.ChangedFiles)
+				allowedTypes, message := testable.canUserRehearse("testorg", "testrepo", pr, testData.GetUserNameOrDefault(), testData.ChangedFiles)
 
-				Expect(canUserRehearse).To(BeEquivalentTo(testData.ExpectedCanUserRehearse))
+				if testData.ExpectedAllowedTypes == nil {
+					Expect(allowedTypes).To(BeNil())
+				} else {
+					Expect(allowedTypes).To(ConsistOf(testData.ExpectedAllowedTypes))
+				}
 				for _, part := range testData.ExpectedMessageParts {
 					Expect(message).To(ContainSubstring(part))
 				}
@@ -827,10 +921,10 @@ Gna meh whatever
 							"testauthor",
 						},
 					},
-					ChangedFiles:            []string{},
-					TopLevelApprovers:       sets.Set[string]{},
-					LeafApprovers:           map[string]sets.Set[string]{},
-					ExpectedCanUserRehearse: false,
+					ChangedFiles:         []string{},
+					TopLevelApprovers:    sets.Set[string]{},
+					LeafApprovers:        map[string]sets.Set[string]{},
+					ExpectedAllowedTypes: nil,
 				},
 			),
 			Entry("user and author in org - user is not an approver",
@@ -850,7 +944,7 @@ Gna meh whatever
 							"leafApprover": struct{}{},
 						},
 					},
-					ExpectedCanUserRehearse: false,
+					ExpectedAllowedTypes: nil,
 					ExpectedMessageParts: []string{
 						"@testuser",
 						"you need to be an approver",
@@ -876,8 +970,8 @@ Gna meh whatever
 							"leafApprover": struct{}{},
 						},
 					},
-					ExpectedCanUserRehearse: true,
-					IssueLabelsExisting:     []string{fmt.Sprintf("testorg/testrepo#0:%s", OKToRehearse)},
+					ExpectedAllowedTypes: []prowapi.ProwJobType{prowapi.PresubmitJob},
+					IssueLabelsExisting:  []string{fmt.Sprintf("testorg/testrepo#0:%s", OKToRehearse)},
 				},
 			),
 			Entry("user and author in org - user is a top level approver",
@@ -888,10 +982,10 @@ Gna meh whatever
 							userName,
 						},
 					},
-					ChangedFiles:            []string{"changedFile"},
-					TopLevelApprovers:       sets.Set[string]{userName: struct{}{}},
-					LeafApprovers:           map[string]sets.Set[string]{},
-					ExpectedCanUserRehearse: true,
+					ChangedFiles:         []string{"changedFile"},
+					TopLevelApprovers:    sets.Set[string]{userName: struct{}{}},
+					LeafApprovers:        map[string]sets.Set[string]{},
+					ExpectedAllowedTypes: []prowapi.ProwJobType{prowapi.PresubmitJob, prowapi.PostsubmitJob, prowapi.PeriodicJob},
 				},
 			),
 			Entry("user and author in org - user is a top level approver (case in OWNERS and GitHub don't match)",
@@ -902,11 +996,11 @@ Gna meh whatever
 							userName,
 						},
 					},
-					ChangedFiles:            []string{"changedFile"},
-					TopLevelApprovers:       sets.Set[string]{userName: struct{}{}},
-					LeafApprovers:           map[string]sets.Set[string]{},
-					UserName:                userNameUpperCase,
-					ExpectedCanUserRehearse: true,
+					ChangedFiles:         []string{"changedFile"},
+					TopLevelApprovers:    sets.Set[string]{userName: struct{}{}},
+					LeafApprovers:        map[string]sets.Set[string]{},
+					UserName:             userNameUpperCase,
+					ExpectedAllowedTypes: []prowapi.ProwJobType{prowapi.PresubmitJob, prowapi.PostsubmitJob, prowapi.PeriodicJob},
 				},
 			),
 			Entry("user and author in org - user is a leaf approver",
@@ -922,7 +1016,7 @@ Gna meh whatever
 					LeafApprovers: map[string]sets.Set[string]{
 						"changedFile": {userName: struct{}{}},
 					},
-					ExpectedCanUserRehearse: true,
+					ExpectedAllowedTypes: []prowapi.ProwJobType{prowapi.PresubmitJob},
 				},
 			),
 			Entry("user and author in org - user is a leaf approver - case in OWNERS and GitHub is different for user - OWNERS lowercase",
@@ -938,8 +1032,8 @@ Gna meh whatever
 					LeafApprovers: map[string]sets.Set[string]{
 						"changedFile": {userName: struct{}{}},
 					},
-					UserName:                userNameUpperCase,
-					ExpectedCanUserRehearse: true,
+					UserName:             userNameUpperCase,
+					ExpectedAllowedTypes: []prowapi.ProwJobType{prowapi.PresubmitJob},
 				},
 			),
 			Entry("user and author in org - user is a leaf approver - case in OWNERS and GitHub is different for user - OWNERS uppercase",
@@ -955,7 +1049,7 @@ Gna meh whatever
 					LeafApprovers: map[string]sets.Set[string]{
 						"changedFile": {userNameUpperCase: struct{}{}},
 					},
-					ExpectedCanUserRehearse: true,
+					ExpectedAllowedTypes: []prowapi.ProwJobType{prowapi.PresubmitJob},
 				},
 			),
 			Entry("user and author in org - user is not a leaf approver for all files",
@@ -974,7 +1068,7 @@ Gna meh whatever
 					LeafApprovers: map[string]sets.Set[string]{
 						"changedFile": {userName: struct{}{}},
 					},
-					ExpectedCanUserRehearse: false,
+					ExpectedAllowedTypes: nil,
 				},
 			),
 			Entry("only user in org - user is top level approver",
@@ -984,10 +1078,10 @@ Gna meh whatever
 							userName,
 						},
 					},
-					ChangedFiles:            []string{"changedFile"},
-					TopLevelApprovers:       sets.Set[string]{userName: struct{}{}},
-					LeafApprovers:           map[string]sets.Set[string]{},
-					ExpectedCanUserRehearse: true,
+					ChangedFiles:         []string{"changedFile"},
+					TopLevelApprovers:    sets.Set[string]{userName: struct{}{}},
+					LeafApprovers:        map[string]sets.Set[string]{},
+					ExpectedAllowedTypes: []prowapi.ProwJobType{prowapi.PresubmitJob, prowapi.PostsubmitJob, prowapi.PeriodicJob},
 				},
 			),
 			Entry("only user in org - user is top level approver - case in OWNERS and GitHub don't match - topLeverApprovers lowercase",
@@ -997,11 +1091,11 @@ Gna meh whatever
 							userName,
 						},
 					},
-					ChangedFiles:            []string{"changedFile"},
-					TopLevelApprovers:       sets.Set[string]{userName: struct{}{}},
-					LeafApprovers:           map[string]sets.Set[string]{},
-					UserName:                userNameUpperCase,
-					ExpectedCanUserRehearse: true,
+					ChangedFiles:         []string{"changedFile"},
+					TopLevelApprovers:    sets.Set[string]{userName: struct{}{}},
+					LeafApprovers:        map[string]sets.Set[string]{},
+					UserName:             userNameUpperCase,
+					ExpectedAllowedTypes: []prowapi.ProwJobType{prowapi.PresubmitJob, prowapi.PostsubmitJob, prowapi.PeriodicJob},
 				},
 			),
 			Entry("only user in org - user is top level approver - case in OWNERS and GitHub don't match - topLeverApprovers uppercase",
@@ -1011,11 +1105,11 @@ Gna meh whatever
 							userName,
 						},
 					},
-					ChangedFiles:            []string{"changedFile"},
-					TopLevelApprovers:       sets.Set[string]{userNameUpperCase: struct{}{}},
-					LeafApprovers:           map[string]sets.Set[string]{},
-					UserName:                userName,
-					ExpectedCanUserRehearse: true,
+					ChangedFiles:         []string{"changedFile"},
+					TopLevelApprovers:    sets.Set[string]{userNameUpperCase: struct{}{}},
+					LeafApprovers:        map[string]sets.Set[string]{},
+					UserName:             userName,
+					ExpectedAllowedTypes: []prowapi.ProwJobType{prowapi.PresubmitJob, prowapi.PostsubmitJob, prowapi.PeriodicJob},
 				},
 			),
 		)
@@ -1024,14 +1118,14 @@ Gna meh whatever
 })
 
 type CanUserRehearseOrgAndUserTestData struct {
-	OrgMembers              map[string][]string
-	ChangedFiles            []string
-	TopLevelApprovers       sets.Set[string]
-	LeafApprovers           map[string]sets.Set[string]
-	ExpectedCanUserRehearse bool
-	ExpectedMessageParts    []string
-	UserName                string
-	IssueLabelsExisting     []string
+	OrgMembers           map[string][]string
+	ChangedFiles         []string
+	TopLevelApprovers    sets.Set[string]
+	LeafApprovers        map[string]sets.Set[string]
+	ExpectedAllowedTypes []prowapi.ProwJobType
+	ExpectedMessageParts []string
+	UserName             string
+	IssueLabelsExisting  []string
 }
 
 func (td CanUserRehearseOrgAndUserTestData) GetUserNameOrDefault() string {

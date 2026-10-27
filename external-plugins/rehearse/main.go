@@ -184,9 +184,9 @@ func helpProvider(_ []prowconfig.OrgRepo) (*pluginhelp.PluginHelp, error) {
 	}
 	pluginHelp.AddCommand(pluginhelp.Command{
 		Usage:       "/rehearse [all|job-name|?]",
-		Description: "Rehearse modified or new Prow jobs detected in a PR. /rehearse or /rehearse all runs all changed jobs. /rehearse <job-name> runs a specific job. /rehearse ? lists jobs available for rehearsal. Multiple /rehearse <job-name> lines can be included in a single comment. Rehearsal jobs are prefixed with rehearsal- and appear as separate GitHub status contexts.",
+		Description: "Rehearse modified or new Prow jobs detected in a PR. /rehearse or /rehearse all runs every changed job the commenter is allowed to rehearse. /rehearse <job-name> runs a specific job if the commenter is allowed to rehearse that job type. /rehearse ? lists jobs available for rehearsal. Multiple /rehearse <job-name> lines can be included in a single comment. Rehearsal jobs are prefixed with rehearsal- and appear as separate GitHub status contexts.",
 		Featured:    true,
-		WhoCanUse:   "Top-level approvers in project-infra, or KubeVirt org members if the PR has the ok-to-rehearse label.",
+		WhoCanUse:   "Presubmits: top-level approvers, leaf approvers, or ok-to-rehearse label. Periodics and postsubmits: top-level approvers only.",
 		Examples:    []string{"/rehearse", "/rehearse all", "/rehearse job-name", "/rehearse ?"},
 	})
 	return pluginHelp, nil

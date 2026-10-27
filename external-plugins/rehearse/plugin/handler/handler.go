@@ -9,6 +9,7 @@ import (
 	"path"
 	"reflect"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -36,20 +37,16 @@ const basicHelpCommentText = `
 <details>
 <summary>Further information on rehearsals</summary>
 
-A rehearsal can be triggered for all jobs by commenting either ` + "`/rehearse`" + ` or ` + "`/rehearse all`" + ` on this PR.
+A rehearsal can be triggered for all modified jobs the commenter is allowed to rehearse by commenting either ` + "`/rehearse`" + ` or ` + "`/rehearse all`" + ` on this PR.
 
-A rehearsal for a specific job can be triggered by commenting ` + "`/rehearse {job-name}`" + `.
+A rehearsal for a specific job can be triggered by commenting ` + "`/rehearse {job-name}`" + `. Jobs the commenter is not allowed to rehearse are skipped.
 
 Commenting ` + "`/rehearse ?`" + ` triggers a comment with a list of jobs that can be rehearsed.
 
-A pull request can be rehearsed if either the user is authorized to rehearse or the pull
-request has the ` + "`ok-to-rehearse`" + ` label.
+**Presubmit** rehearsals require the user to be an approver for all changed files, a top-level approver, or the PR to have the ` + "`ok-to-rehearse`" + ` label.
 
-Authorized users are the group of users that are members of the KubeVirt GitHub 
-organization AND either are approvers[1] for all files in the pull request or are
-top-level approvers[1] in the ` + "`project-infra`" + ` project.
+**Periodic and postsubmit** rehearsals are restricted to top-level approvers only.
 
-[1]: see [OWNERS](https://www.kubernetes.dev/docs/guide/owners/#owners) file definition for reference.
 </details>
 `
 
@@ -175,8 +172,8 @@ func (h *GitHubEventsHandler) handleIssueComment(log *logrus.Entry, event *githu
 		log.WithError(err).Error("Could not calculate diff for PR.")
 		return
 	}
-	rehearse, message := h.canUserRehearse(org, repo, pr, event.Comment.User.Login, changedFiles)
-	if !rehearse {
+	allowedTypes, message := h.canUserRehearse(org, repo, pr, event.Comment.User.Login, changedFiles)
+	if len(allowedTypes) == 0 {
 		if message != "" {
 			err = h.ghClient.CreateComment(org, repo, pr.Number, message)
 			if err != nil {
@@ -187,7 +184,7 @@ func (h *GitHubEventsHandler) handleIssueComment(log *logrus.Entry, event *githu
 		log.Infoln("Skipping event - user validation failed")
 		return
 	}
-	h.handleRehearsalForPR(log, pr, event.GUID, event.Comment.Body)
+	h.handleRehearsalForPR(log, pr, event.GUID, event.Comment.Body, allowedTypes)
 }
 
 func (h *GitHubEventsHandler) shouldActOnPREvent(event *github.PullRequestEvent) bool {
@@ -207,84 +204,98 @@ func (h *GitHubEventsHandler) shouldActOnIssueComment(event *github.IssueComment
 	return false
 }
 
-func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *github.PullRequest, userName string, changedFiles []string) (canUserRehearse bool, message string) {
+func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *github.PullRequest, userName string, changedFiles []string) (allowedTypes []prowapi.ProwJobType, message string) {
 
 	userNameLowerCase := strings.ToLower(userName)
 
 	owners, err := h.ownersClient.LoadRepoOwners(org, repo, pr.Base.Ref)
 	if err != nil {
 		log.WithError(err).Errorln(fmt.Sprintf("Could not load owners on org %s and repo %s", org, repo))
-		return false, ""
+		return nil, ""
 	}
 
-	// if user is top level approver, then
-	// rehearsal is allowed
-	// even if the author is not an org member
-	// top level approvers is only a very limited circle of people
+	allTypes := []prowapi.ProwJobType{prowapi.PresubmitJob, prowapi.PostsubmitJob, prowapi.PeriodicJob}
+
+	// top level approvers can rehearse all job types
 	topLevelApprovers := owners.TopLevelApprovers()
 	for topLevelApprover := range topLevelApprovers {
 		if userNameLowerCase == strings.ToLower(topLevelApprover) {
-			return true, ""
+			return allTypes, ""
 		}
 	}
 
-	// if author is not a member of the org, then
-	// rehearsal is not allowed
-	// in order to avoid compromising the org with harmful PRs
 	isAuthorMember, err := h.ghClient.IsMember(org, pr.User.Login)
 	if err != nil {
 		log.WithError(err).Errorln("Could not validate PR author with the repo org")
-		return false, ""
+		return nil, ""
 	}
 	if !isAuthorMember {
 		log.Warnln("Pr author is not a member of the repo org")
-		return false, ""
+		return nil, ""
 	}
 
-	// if the user that issues rehearsal is not a member of the org, then
-	// rehearsal is not allowed
-	// in order to avoid denial of service type attacks
 	isUserMember, err := h.ghClient.IsMember(org, userNameLowerCase)
 	if err != nil {
 		log.WithError(err).Errorln("Could not validate user with the repo org")
-		return false, ""
+		return nil, ""
 	}
 	if !isUserMember {
 		log.Warnln("User is not a member of the repo org")
-		return false, ""
+		return nil, ""
 	}
 
-	// check if ok-to-rehearse label is present
+	allowedSet := map[prowapi.ProwJobType]bool{}
+
 	issueLabels, err := h.ghClient.GetIssueLabels(org, repo, pr.Number)
 	if err != nil {
 		log.WithError(err).WithField("pull_request_url", fmt.Sprintf("github.com/%s/%s/pull/%d", org, repo, pr.Number)).Errorln("Could not get labels for pull request")
-		return false, ""
+		return nil, ""
 	}
 	for _, label := range issueLabels {
 		if label.Name == OKToRehearse {
-			return true, ""
+			allowedSet[prowapi.PresubmitJob] = true
 		}
 	}
 
-	// if user is not a leaf approver for all the files then
-	// rehearsal is not allowed
-	// to ensure that scope of rehearsal is not extended beyond responsibilities
+	isLeafApproverForAll := true
+	var suggestedApprover string
 	for _, changedFile := range changedFiles {
 		isLeafApprover := false
-		var leafApprover string
-		for leafApprover = range owners.LeafApprovers(changedFile) {
-			if strings.ToLower(leafApprover) == userNameLowerCase {
+		var fileApprover string
+		for approver := range owners.LeafApprovers(changedFile) {
+			if strings.ToLower(approver) == userNameLowerCase {
 				isLeafApprover = true
 				break
 			}
+			fileApprover = approver
 		}
-
 		if !isLeafApprover {
-			tlas := make([]string, 0, len(topLevelApprovers))
-			for tla := range topLevelApprovers {
-				tlas = append(tlas, tla)
-			}
-			return false, fmt.Sprintf(`⚠️ @%s you need to be an approver for all the files to run rehearsal.
+			isLeafApproverForAll = false
+			suggestedApprover = fileApprover
+			break
+		}
+	}
+
+	if isLeafApproverForAll && len(changedFiles) > 0 {
+		allowedSet[prowapi.PresubmitJob] = true
+	}
+
+	if len(allowedSet) > 0 {
+		allowed := make([]prowapi.ProwJobType, 0, len(allowedSet))
+		for t := range allowedSet {
+			allowed = append(allowed, t)
+		}
+		return allowed, ""
+	}
+
+	tlas := make([]string, 0, len(topLevelApprovers))
+	for tla := range topLevelApprovers {
+		tlas = append(tlas, tla)
+	}
+	if suggestedApprover == "" && len(tlas) > 0 {
+		suggestedApprover = tlas[0]
+	}
+	return nil, fmt.Sprintf(`⚠️ @%s you need to be an approver for all the files to run rehearsal.
 
 @%s can help run the rehearsal.
 
@@ -293,10 +304,7 @@ func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *githu
 If that doesn't work, ping someone from this list:
 * %s
 </details>
-`, userName, leafApprover, strings.Join(tlas, "\n* "))
-		}
-	}
-	return true, ""
+`, userName, suggestedApprover, strings.Join(tlas, "\n* "))
 }
 
 func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, event *github.PullRequestEvent) {
@@ -322,7 +330,6 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 		log.WithError(err).Errorf("Could not get org/repo from the event")
 	}
 
-	// When a pull request is closed and has the OKToRehearse label, remove it
 	if event.Action == github.PullRequestActionClosed {
 		labels, err := h.ghClient.GetIssueLabels(org, repo, event.PullRequest.Number)
 		if err != nil {
@@ -356,8 +363,8 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 		log.WithError(err).Error("Could not calculate diff for PR.")
 		return
 	}
-	rehearse, message := h.canUserRehearse(org, repo, pr, event.Sender.Login, changedFiles)
-	if !rehearse {
+	allowedTypes, message := h.canUserRehearse(org, repo, pr, event.Sender.Login, changedFiles)
+	if len(allowedTypes) == 0 {
 		if message != "" {
 			err = h.ghClient.CreateComment(org, repo, pr.Number, message)
 			if err != nil {
@@ -369,10 +376,10 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 		return
 	}
 
-	h.handleRehearsalForPR(log, &event.PullRequest, event.GUID, "")
+	h.handleRehearsalForPR(log, &event.PullRequest, event.GUID, "", allowedTypes)
 }
 
-func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github.PullRequest, eventGUID string, commentBody string) {
+func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github.PullRequest, eventGUID string, commentBody string, allowedTypes []prowapi.ProwJobType) {
 	org, repo, err := pi_github.OrgRepo(pr.Base.Repo.FullName)
 	if err != nil {
 		log.WithError(err).Errorf("Could not parse repo name: %s", pr.Base.Repo.FullName)
@@ -410,19 +417,11 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 	log.Infoln("Base configs:", baseConfigs)
 
 	prowjobs := h.generateProwJobs(headConfigs, baseConfigs, pr, eventGUID)
+	authorizedJobs, skippedUnauthorized := partitionProwJobsByAllowedTypes(prowjobs, allowedTypes)
 	jobNames := h.extractJobNamesFromComment(commentBody)
+
 	if len(jobNames) == 1 && jobNames[0] == "?" {
-		var prowJobNames []string
-		for _, prowJob := range prowjobs {
-			prowJobNames = append(prowJobNames, prowJob.Spec.Job)
-		}
-		commentText := fmt.Sprintf(`Rehearsal is available for the following jobs in this PR:
-
-`+"```"+`
-%s
-`+"```"+`
-
-`+basicHelpCommentText, strings.Join(prowJobNames, "\n"))
+		commentText := formatAvailableJobsComment(authorizedJobs, skippedUnauthorized)
 		err := h.ghClient.CreateComment(org, repo, pr.Number, commentText)
 		if err != nil {
 			log.WithError(err).Errorf("Failed to create comment on %s/%s PR: %d", org, repo, pr.Number)
@@ -430,7 +429,20 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		return
 	}
 
-	prowjobs = h.filterProwJobsByJobNames(prowjobs, jobNames)
+	prowjobs = h.filterProwJobsByJobNames(authorizedJobs, jobNames)
+	skippedForComment := skippedUnauthorized
+	if len(jobNames) > 0 {
+		skippedForComment = h.filterProwJobsByJobNames(skippedUnauthorized, jobNames)
+	}
+
+	if len(prowjobs) == 0 {
+		commentText := formatNoJobsComment(skippedForComment)
+		err = h.ghClient.CreateComment(org, repo, pr.Number, commentText)
+		if err != nil {
+			log.WithError(err).Errorf("Failed to create comment on %s/%s PR: %d", org, repo, pr.Number)
+		}
+		return
+	}
 
 	prowjobs = convertPeriodicsToPresubmits(prowjobs, pr)
 
@@ -459,13 +471,7 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		rehearsalsGenerated = append(rehearsalsGenerated, rehearsalName)
 		log.Infof("Created a rehearse job: %s", job.Name)
 	}
-	commentText := fmt.Sprintf(`Rehearsal jobs created for this PR:
-
-`+"```"+`
-%s
-`+"```"+`
-
-`+basicHelpCommentText, strings.Join(rehearsalsGenerated, "\n"))
+	commentText := formatCreatedJobsComment(rehearsalsGenerated, skippedForComment)
 	err = h.ghClient.CreateComment(org, repo, pr.Number, commentText)
 	if err != nil {
 		log.WithError(err).Errorf("Failed to create comment on %s/%s PR: %d", org, repo, pr.Number)
@@ -542,6 +548,22 @@ func (h *GitHubEventsHandler) filterProwJobsByJobNames(prowjobs []prowapi.ProwJo
 		filteredProwJobs = append(filteredProwJobs, prowjob)
 	}
 	return filteredProwJobs
+}
+
+func partitionProwJobsByAllowedTypes(prowjobs []prowapi.ProwJob, allowedTypes []prowapi.ProwJobType) (allowed, skipped []prowapi.ProwJob) {
+	allowedSet := map[prowapi.ProwJobType]bool{}
+	for _, t := range allowedTypes {
+		allowedSet[t] = true
+	}
+	for _, pj := range prowjobs {
+		if allowedSet[pj.Spec.Type] {
+			allowed = append(allowed, pj)
+			continue
+		}
+		log.Infof("Skipping job %s: user not authorized for %s jobs", pj.Spec.Job, pj.Spec.Type)
+		skipped = append(skipped, pj)
+	}
+	return allowed, skipped
 }
 
 const rehearsalRestrictedAnnotation = "rehearsal.restricted"
@@ -891,6 +913,59 @@ func copyStringMap(src map[string]string) map[string]string {
 		dst[k] = v
 	}
 	return dst
+}
+
+func jobNamesFromProwJobs(jobs []prowapi.ProwJob) []string {
+	names := make([]string, 0, len(jobs))
+	for _, job := range jobs {
+		names = append(names, job.Spec.Job)
+	}
+	sort.Strings(names)
+	return names
+}
+
+func formatJobNameBlock(jobs []prowapi.ProwJob) string {
+	return "```\n" + strings.Join(jobNamesFromProwJobs(jobs), "\n") + "\n```\n"
+}
+
+func formatAvailableJobsComment(available, skipped []prowapi.ProwJob) string {
+	var b strings.Builder
+	if len(available) == 0 {
+		b.WriteString("No rehearsal jobs available for your permission level in this PR.\n\n")
+	} else {
+		b.WriteString("Rehearsal is available for the following jobs in this PR:\n\n")
+		b.WriteString(formatJobNameBlock(available))
+		b.WriteString("\n")
+	}
+	if len(skipped) > 0 {
+		b.WriteString("The following jobs were modified but require a top-level approver to rehearse:\n\n")
+		b.WriteString(formatJobNameBlock(skipped))
+		b.WriteString("\n")
+	}
+	b.WriteString(basicHelpCommentText)
+	return b.String()
+}
+
+func formatNoJobsComment(skippedUnauthorized []prowapi.ProwJob) string {
+	if len(skippedUnauthorized) > 0 {
+		return "⚠️ No rehearsal jobs created. Modified periodic and/or postsubmit jobs require a top-level approver to rehearse.\n\n" +
+			formatJobNameBlock(skippedUnauthorized) + "\n" + basicHelpCommentText
+	}
+	return "⚠️ No rehearsal jobs available. Either no jobs were modified, the requested job names were not found, or you do not have permission to rehearse the requested job types.\n\n" + basicHelpCommentText
+}
+
+func formatCreatedJobsComment(created []string, skipped []prowapi.ProwJob) string {
+	var b strings.Builder
+	b.WriteString("Rehearsal jobs created for this PR:\n\n```\n")
+	b.WriteString(strings.Join(created, "\n"))
+	b.WriteString("\n```\n\n")
+	if len(skipped) > 0 {
+		b.WriteString("Skipped the following jobs because they require a top-level approver:\n\n")
+		b.WriteString(formatJobNameBlock(skipped))
+		b.WriteString("\n")
+	}
+	b.WriteString(basicHelpCommentText)
+	return b.String()
 }
 
 func disableSlackReporting(job *prowapi.ProwJob) {
