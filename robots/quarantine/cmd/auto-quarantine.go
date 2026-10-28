@@ -187,6 +187,10 @@ func determineTestsForQuarantine(topXTests flakestats.TopXTests, reports []types
 		// Prepare to find the required data to modify the Test
 		matchingSpecReport := ginkgo.GetSpecReportByTestName(reports, topXTest.Name)
 		if matchingSpecReport == nil {
+			if ginkgo.GetQuarantinedSpecReportByTestName(reports, topXTest.Name) != nil {
+				log.Infof("test %q is already quarantined", topXTest.Name)
+				continue
+			}
 			log.Warnf("could not find file for %q by name", topXTest.Name)
 			continue
 		}

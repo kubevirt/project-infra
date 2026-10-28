@@ -64,7 +64,7 @@ func modify(input string, substring string, replacement string) (string, error) 
 }
 
 func quarantine(input string, nodeText string) (string, error) {
-	replacement := fmt.Sprintf(`"[QUARANTINE]%s", decorators.Quarantine`, nodeText)
+	replacement := fmt.Sprintf(`"%s%s", decorators.Quarantine`, quarantineLabel, nodeText)
 	return modify(input, fmt.Sprintf(`%q`, nodeText), replacement)
 }
 
