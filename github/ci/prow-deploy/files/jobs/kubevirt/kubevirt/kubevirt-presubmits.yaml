@@ -1014,7 +1014,7 @@ presubmits:
         - name: KUBEVIRT_SLIM
           value: "true"
         - name: KUBEVIRT_BUILDER_IMAGE
-          value: icr.io/kubevirt/builder-cs10:2610281348-2e2e654124
+          value: icr.io/kubevirt/builder-cs10:2610281559-177548615f
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
         resources:
           requests:
