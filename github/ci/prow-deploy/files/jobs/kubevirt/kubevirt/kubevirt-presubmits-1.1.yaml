@@ -2,7 +2,7 @@ presubmits:
   kubevirt/kubevirt:
   - always_run: false
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.27-sig-performance
     decoration_config:
@@ -58,7 +58,7 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-windows2016
     decoration_config:
@@ -94,7 +94,7 @@ presubmits:
       priorityClassName: windows
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-kind-1.27-vgpu
     decoration_config:
@@ -162,7 +162,7 @@ presubmits:
     annotations:
       k8s.v1.cni.cncf.io/networks: default/sriov-passthrough-cni,default/sriov-passthrough-cni
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-kind-1.27-sriov
     decoration_config:
@@ -236,7 +236,7 @@ presubmits:
         name: vfio
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-check-tests-for-flakes
     decoration_config:
@@ -272,7 +272,7 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-generate
     decoration_config:
@@ -296,7 +296,7 @@ presubmits:
           privileged: true
   - always_run: false
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-verify-rpms
     decoration_config:
@@ -322,7 +322,7 @@ presubmits:
           privileged: true
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-verify-go-mod
     decoration_config:
@@ -348,7 +348,7 @@ presubmits:
     annotations:
       rehearsal.allowed: "true"
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-gosec
     decoration_config:
@@ -374,7 +374,7 @@ presubmits:
           privileged: true
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-arm64-workloads
     context: pull-kubevirt-unit-test-arm64
     decoration_config:
@@ -399,7 +399,7 @@ presubmits:
           privileged: true
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-build
     decoration_config:
@@ -424,7 +424,7 @@ presubmits:
           privileged: true
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-build-arm64
     decoration_config:
@@ -452,7 +452,7 @@ presubmits:
           privileged: true
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-unit-test
     decoration_config:
@@ -477,7 +477,7 @@ presubmits:
           privileged: true
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-apidocs
     decoration_config:
@@ -501,7 +501,7 @@ presubmits:
           privileged: true
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-client-python
     decoration_config:
@@ -525,7 +525,7 @@ presubmits:
           privileged: true
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-manifests
     decoration_config:
@@ -549,7 +549,7 @@ presubmits:
           privileged: true
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-prom-rules-verify
     decoration_config:
@@ -573,7 +573,7 @@ presubmits:
           privileged: true
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-check-unassigned-tests
     decoration_config:
@@ -598,7 +598,7 @@ presubmits:
           privileged: true
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.27-ipv6-sig-network
     decoration_config:
@@ -636,7 +636,7 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.26-ipv6-sig-network
     decoration_config:
@@ -673,7 +673,7 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.26-sig-network-multus-v4
     decoration_config:
@@ -713,7 +713,7 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.28-sig-compute-migrations
     decoration_config:
@@ -753,7 +753,7 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-arm64-workloads
     context: pull-kubevirt-e2e-arm64
     decoration_config:
@@ -802,7 +802,7 @@ presubmits:
         name: audit
   - always_run: false
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: build-kubevirt-builder
     decoration_config:
@@ -830,7 +830,7 @@ presubmits:
           privileged: true
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-code-lint
     decoration_config:
@@ -857,7 +857,7 @@ presubmits:
           privileged: true
   - always_run: false
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.26-swap-enabled
     decoration_config:
@@ -897,7 +897,7 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.26-sig-monitoring
     decoration_config:
@@ -931,7 +931,7 @@ presubmits:
           privileged: true
   - always_run: false
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.26-single-node
     decoration_config:
@@ -976,7 +976,7 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.25-fips-sig-compute
     decoration_config:
@@ -1013,7 +1013,7 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.26-sig-network
     decoration_config:
@@ -1049,7 +1049,7 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.26-sig-storage
     decoration_config:
@@ -1083,7 +1083,7 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.26-sig-storage-root
     decoration_config:
@@ -1120,7 +1120,7 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.26-sig-compute
     decoration_config:
@@ -1158,7 +1158,7 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.26-sig-compute-root
     decoration_config:
@@ -1199,7 +1199,7 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.26-sig-operator
     decoration_config:
@@ -1235,7 +1235,7 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.27-sig-network
     decoration_config:
@@ -1271,7 +1271,7 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.27-sig-storage
     decoration_config:
@@ -1305,7 +1305,7 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.27-sig-compute
     decoration_config:
@@ -1343,7 +1343,7 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.27-sig-compute-realtime
     decoration_config:
@@ -1379,7 +1379,7 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.27-sig-operator
     decoration_config:
@@ -1415,7 +1415,7 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.28-sig-network
     decoration_config:
@@ -1451,7 +1451,7 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.28-sig-storage
     decoration_config:
@@ -1485,7 +1485,7 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.28-sig-compute
     decoration_config:
@@ -1523,7 +1523,7 @@ presubmits:
         type: bare-metal-external
   - always_run: true
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: prow-workloads
     context: pull-kubevirt-e2e-k8s-1.28-sig-operator
     decoration_config:
@@ -1559,7 +1559,7 @@ presubmits:
         type: bare-metal-external
   - always_run: false
     branches:
-    - release-1.1
+    - ^release-1.1$
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-metrics-lint
     decoration_config:
