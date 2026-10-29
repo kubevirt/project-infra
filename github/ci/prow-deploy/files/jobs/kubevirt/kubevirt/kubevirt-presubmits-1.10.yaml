@@ -1741,7 +1741,7 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-kind-1.35-sig-compute-parallel-wg-mshv-amd64-1.10
+    name: pull-kv-e2e-kind-1.35-sig-compute-parallel-wg-mshv-amd64-1.10
     optional: true
     spec:
       containers:
