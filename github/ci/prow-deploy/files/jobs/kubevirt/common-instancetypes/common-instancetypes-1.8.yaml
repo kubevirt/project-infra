@@ -177,6 +177,7 @@ presubmits:
     branches:
       - release-1.8
     always_run: false
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/fedora/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-s390x-workloads
     decoration_config:
       grace_period: 5m0s
@@ -191,15 +192,17 @@ presubmits:
       - command:
         - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
-        - "-c"
-        - "make cluster-up && make cluster-sync && make cluster-functest"
+        - "-ce"
+        - |
+          cat $ICR_PASSWORD | podman login icr.io --username $(cat $ICR_USER) --password-stdin=true
+          make kubevirt-up && make kubevirt-sync && make kubevirt-functest
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: KUBEVIRT_BUILDER_IMAGE
-          value: icr.io/kubevirt/builder:2405141107-77fe60855
+          value: icr.io/kubevirt/builder:2608020842-b8b04c190d
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Fedora"'
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
@@ -296,6 +299,7 @@ presubmits:
     branches:
       - release-1.8
     always_run: false
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-s390x-workloads
     decoration_config:
       grace_period: 5m0s
@@ -310,15 +314,17 @@ presubmits:
       - command:
         - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
-        - "-c"
-        - "make cluster-up && make cluster-sync && make cluster-functest"
+        - "-ce"
+        - |
+          cat $ICR_PASSWORD | podman login icr.io --username $(cat $ICR_USER) --password-stdin=true
+          make kubevirt-up && make kubevirt-sync && make kubevirt-functest
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: KUBEVIRT_BUILDER_IMAGE
-          value: icr.io/kubevirt/builder:2405141107-77fe60855
+          value: icr.io/kubevirt/builder:2608020842-b8b04c190d
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*CentOS Stream 9"'
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
@@ -369,6 +375,7 @@ presubmits:
     branches:
       - release-1.8
     always_run: false
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/centos/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-s390x-workloads
     decoration_config:
       grace_period: 5m0s
@@ -383,15 +390,17 @@ presubmits:
       - command:
         - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
-        - "-c"
-        - "make cluster-up && make cluster-sync && make cluster-functest"
+        - "-ce"
+        - |
+          cat $ICR_PASSWORD | podman login icr.io --username $(cat $ICR_USER) --password-stdin=true
+          make kubevirt-up && make kubevirt-sync && make kubevirt-functest
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: KUBEVIRT_BUILDER_IMAGE
-          value: icr.io/kubevirt/builder:2405141107-77fe60855
+          value: icr.io/kubevirt/builder:2608020842-b8b04c190d
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*CentOS Stream 10"'
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
@@ -442,6 +451,7 @@ presubmits:
     branches:
       - release-1.8
     always_run: false
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/ubuntu/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-s390x-workloads
     decoration_config:
       grace_period: 5m0s
@@ -456,15 +466,17 @@ presubmits:
       - command:
         - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
-        - "-c"
-        - "make cluster-up && make cluster-sync && make cluster-functest"
+        - "-ce"
+        - |
+          cat $ICR_PASSWORD | podman login icr.io --username $(cat $ICR_USER) --password-stdin=true
+          make kubevirt-up && make kubevirt-sync && make kubevirt-functest
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: KUBEVIRT_BUILDER_IMAGE
-          value: icr.io/kubevirt/builder:2405141107-77fe60855
+          value: icr.io/kubevirt/builder:2608020842-b8b04c190d
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*Ubuntu"'
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
@@ -515,6 +527,7 @@ presubmits:
     branches:
       - release-1.8
     always_run: false
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/opensuse/tumbleweed/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-s390x-workloads
     decoration_config:
       grace_period: 5m0s
@@ -529,15 +542,17 @@ presubmits:
       - command:
         - /usr/local/bin/entrypoint.sh
         - "/bin/sh"
-        - "-c"
-        - "make cluster-up && make cluster-sync && make cluster-functest"
+        - "-ce"
+        - |
+          cat $ICR_PASSWORD | podman login icr.io --username $(cat $ICR_USER) --password-stdin=true
+          make kubevirt-up && make kubevirt-sync && make kubevirt-functest
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
         - name: KUBEVIRT_BUILDER_IMAGE
-          value: icr.io/kubevirt/builder:2405141107-77fe60855
+          value: icr.io/kubevirt/builder:2608020842-b8b04c190d
         - name: FUNCTEST_EXTRA_ARGS
           value: '--ginkgo.focus="VirtualMachine using a preference is able to boot a Linux guest with .*OpenSUSE Tumbleweed"'
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
