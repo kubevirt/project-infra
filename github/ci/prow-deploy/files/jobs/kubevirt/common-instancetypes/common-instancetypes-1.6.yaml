@@ -99,6 +99,7 @@ presubmits:
       branches:
         - release-1.6
       always_run: false
+      run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/fedora/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
       cluster: prow-s390x-workloads
       decoration_config:
         grace_period: 5m0s
@@ -116,6 +117,8 @@ presubmits:
               - "-c"
               - "make cluster-up && make cluster-sync && make cluster-functest"
             env:
+              - name: KUBEVIRTCI_TAG
+                value: "2602051029-2d22c9bb"
               - name: GIMME_GO_VERSION
                 value: 1.24.5
               - name: KUBEVIRT_MEMORY_SIZE
