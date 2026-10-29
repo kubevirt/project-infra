@@ -371,9 +371,9 @@ tide:
     - "dco-signoff: no"
   - repos:
     - kubevirt/kubevirt
-    # Handling CODE FREEZE
-    excludedBranches:
-     - "main"
+#    Handling CODE FREEZE
+#    excludedBranches:
+#     - "main"
     labels:
     - lgtm
     - approved
