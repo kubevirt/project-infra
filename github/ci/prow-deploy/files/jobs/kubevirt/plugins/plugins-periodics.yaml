@@ -1,0 +1,175 @@
+periodics:
+- name: periodic-kubevirt-plugins-e2e-nightly
+  cron: "17 4 * * *"
+  annotations:
+    testgrid-dashboards: kubevirt-plugins-periodics
+    testgrid-days-of-results: "60"
+  decoration_config:
+    timeout: 3h
+    grace_period: 5m
+  max_concurrency: 1
+  labels:
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-docker-mirror-proxy: "true"
+  extra_refs:
+    - org: kubevirt
+      repo: plugins
+      base_ref: main
+      workdir: true
+      clone_depth: 1
+  cluster: prow-workloads
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+      - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        command:
+          - "/usr/local/bin/entrypoint.sh"
+          - "/bin/sh"
+          - "-c"
+          - "make cluster-up cluster-sync functest"
+        env:
+          - name: GO_MOD_PATH
+            value: "go.mod"
+          - name: KUBEVIRT_PLUGINS_SKIP_DOCKERIZED
+            value: "true"
+          - name: FUNC_TEST_ARGS
+            value: "--junit-report=junit.functest.xml --output-dir=/logs/artifacts"
+          - name: KUBEVIRT_VERSION
+            value: "nightly"
+          - name: KUBEVIRT_NUM_NODES
+            value: "2"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "52Gi"
+# e2e against the two newest plugins release branches. hack/e2e-stable-release.sh
+# (maintained on plugins main) picks the branch at RELEASE_OFFSET and the
+# KUBEVIRT_VERSION itself, and exits 0 while no branch exists at that offset.
+- name: periodic-kubevirt-plugins-e2e-latest-release
+  cron: "37 5 * * 1"
+  annotations:
+    testgrid-dashboards: kubevirt-plugins-periodics
+    testgrid-days-of-results: "60"
+  decoration_config:
+    timeout: 3h
+    grace_period: 5m
+  max_concurrency: 1
+  labels:
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-docker-mirror-proxy: "true"
+  extra_refs:
+    - org: kubevirt
+      repo: plugins
+      base_ref: main
+      workdir: true
+      clone_depth: 1
+  cluster: prow-workloads
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+      - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        command:
+          - "/usr/local/bin/entrypoint.sh"
+          - "/bin/sh"
+          - "-c"
+          - "hack/e2e-stable-release.sh"
+        env:
+          - name: GO_MOD_PATH
+            value: "go.mod"
+          - name: KUBEVIRT_PLUGINS_SKIP_DOCKERIZED
+            value: "true"
+          - name: FUNC_TEST_ARGS
+            value: "--junit-report=junit.functest.xml --output-dir=/logs/artifacts"
+          - name: RELEASE_OFFSET
+            value: "0"
+          - name: KUBEVIRT_NUM_NODES
+            value: "1"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "16Gi"
+- name: periodic-kubevirt-plugins-e2e-previous-release
+  cron: "37 7 * * 1"
+  annotations:
+    testgrid-dashboards: kubevirt-plugins-periodics
+    testgrid-days-of-results: "60"
+  decoration_config:
+    timeout: 3h
+    grace_period: 5m
+  max_concurrency: 1
+  labels:
+    preset-podman-in-container-enabled: "true"
+    preset-podman-shared-images: "true"
+    preset-docker-mirror-proxy: "true"
+  extra_refs:
+    - org: kubevirt
+      repo: plugins
+      base_ref: main
+      workdir: true
+      clone_depth: 1
+  cluster: prow-workloads
+  spec:
+    nodeSelector:
+      type: bare-metal-external
+    containers:
+      - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        command:
+          - "/usr/local/bin/entrypoint.sh"
+          - "/bin/sh"
+          - "-c"
+          - "hack/e2e-stable-release.sh"
+        env:
+          - name: GO_MOD_PATH
+            value: "go.mod"
+          - name: KUBEVIRT_PLUGINS_SKIP_DOCKERIZED
+            value: "true"
+          - name: FUNC_TEST_ARGS
+            value: "--junit-report=junit.functest.xml --output-dir=/logs/artifacts"
+          - name: RELEASE_OFFSET
+            value: "1"
+          - name: KUBEVIRT_NUM_NODES
+            value: "1"
+        # docker-in-docker needs privileged mode
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            memory: "16Gi"
+- name: periodic-kubevirt-plugins-hook-proto-drift
+  cron: "47 6 * * *"
+  annotations:
+    testgrid-dashboards: kubevirt-plugins-periodics
+    testgrid-days-of-results: "60"
+  decoration_config:
+    timeout: 30m
+    grace_period: 5m
+  max_concurrency: 1
+  extra_refs:
+    - org: kubevirt
+      repo: plugins
+      base_ref: main
+      workdir: true
+      clone_depth: 1
+  cluster: kubevirt-prow-control-plane
+  spec:
+    containers:
+      - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        command:
+          - "/usr/local/bin/runner.sh"
+          - "/bin/sh"
+          - "-c"
+          - "hack/verify-proto.sh"
+        env:
+          - name: KUBEVIRT_PROTO_REF
+            value: "main"
+        resources:
+          requests:
+            memory: "1Gi"
