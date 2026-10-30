@@ -1,0 +1,6 @@
+_http_file = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
+_http_file(
+    name = "alpine_iso",
+    sha256 = "dd11bab2ea0abdfa310362eace871422a003340bf223135626500f8f5a985f6b",
+    url = "https://dl-cdn.alpinelinux.org/alpine/v3.20/releases/x86_64/alpine-virt-3.20.1-x86_64.iso",
+)

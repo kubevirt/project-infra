@@ -12,48 +12,57 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 
 	"cloud.google.com/go/storage"
 	"github.com/bazelbuild/buildtools/build"
 )
 
-type Artifact struct {
+type Artifact interface {
+	URLs() []string
+	SetAuthPatterns(patterns []*build.KeyValueExpr)
+	Name() string
+	SHA256() string
+	AppendURL(url string)
+	RemoveURLs(notFoundUrls []string)
+}
+
+type BazelArtifact struct {
 	rule *build.Rule
 }
 
-func (a *Artifact) URLs() []string {
+func (a *BazelArtifact) URLs() []string {
 	if a.rule.AttrString("url") != "" {
 		return []string{a.rule.AttrString("url")}
 	}
 	return a.rule.AttrStrings("urls")
 }
 
-func (a *Artifact) SetAuthPatterns(patterns []*build.KeyValueExpr) {
+func (a *BazelArtifact) SetAuthPatterns(patterns []*build.KeyValueExpr) {
 	a.rule.SetAttr("auth_patterns", &build.DictExpr{List: patterns})
 }
 
-func (a *Artifact) Name() string {
+func (a *BazelArtifact) Name() string {
 	return a.rule.AttrString("name")
 }
 
-func (a *Artifact) SHA256() string {
+func (a *BazelArtifact) SHA256() string {
 	return a.rule.AttrString("sha256")
 }
 
-func (a *Artifact) AppendURL(url string) {
-	if a.rule.Attr("urls") == nil {
-		a.rule.SetAttr("urls", &build.ListExpr{})
+func (a *BazelArtifact) AppendURL(url string) {
+	var list []build.Expr
+	for _, u := range append(a.URLs(), url) {
+		list = append(list, &build.StringExpr{Value: u})
 	}
-	if a.rule.AttrString("url") != "" {
-		a.rule.Attr("urls").(*build.ListExpr).List = append(a.rule.Attr("urls").(*build.ListExpr).List, &build.StringExpr{Value: a.rule.AttrString("url")})
-		a.rule.DelAttr("url")
-	}
-	a.rule.Attr("urls").(*build.ListExpr).List = append(a.rule.Attr("urls").(*build.ListExpr).List, &build.StringExpr{Value: url})
+	a.rule.DelAttr("url")
+	a.rule.SetAttr("urls", &build.ListExpr{List: list, ForceMultiLine: len(list) > 1})
 }
 
-func (a *Artifact) RemoveURLs(notFoundUrls []string) {
+func (a *BazelArtifact) RemoveURLs(notFoundUrls []string) {
 	var urlsToRemove = map[string]struct{}{}
 	for _, urlToRemove := range notFoundUrls {
 		urlsToRemove[urlToRemove] = struct{}{}
@@ -101,7 +110,7 @@ func LoadWorkspace(path string) (*build.File, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse WORSPACE file: %v", err)
 	}
-	workspace, err := build.ParseWorkspace(path, workspaceData)
+	workspace, err := build.Parse(path, workspaceData)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse WORSPACE file: %v", err)
 	}
@@ -117,15 +126,37 @@ func WriteWorkspace(dryRun bool, workspace *build.File, path string) error {
 }
 
 func GetArtifacts(workspace *build.File) (artifacts []Artifact, err error) {
-	for _, ruleName := range []string{"http_archive", "http_file", "rpm"} {
+	for _, ruleName := range []string{"http_archive", "http_file", "rpm", "_http_archive", "_http_file"} {
 		rules := workspace.Rules(ruleName)
 		for _, rule := range rules {
-			artifacts = append(artifacts, Artifact{
+			artifacts = append(artifacts, &BazelArtifact{
 				rule: rule,
 			})
 		}
 	}
 	return artifacts, err
+}
+
+func GetLockFiles(workspace *build.File, baseDir string) ([]string, error) {
+	var paths []string
+	for _, r := range workspace.Rules("") {
+		if !strings.HasSuffix(r.Kind(), ".config") {
+			continue
+		}
+		lock := r.AttrString("lock_file")
+		if lock == "" {
+			continue
+		}
+		rel := strings.ReplaceAll(strings.TrimPrefix(strings.TrimPrefix(lock, "//"), ":"), ":", "/")
+		if !filepath.IsLocal(rel) {
+			return nil, fmt.Errorf("invalid lock_file label %q", lock)
+		}
+		p := filepath.Join(baseDir, rel)
+		if !slices.Contains(paths, p) {
+			paths = append(paths, p)
+		}
+	}
+	return paths, nil
 }
 
 func FilterArtifactsWithoutMirror(artifacts []Artifact, regexp *regexp.Regexp) (noMirror []Artifact) {
@@ -282,7 +313,7 @@ func VerifyArtifact(ctx context.Context, client *storage.Client, artifact Artifa
 	return nil
 }
 
-func GenerateFilePath(bucket string, dir string, artifact *Artifact) string {
+func GenerateFilePath(bucket string, dir string, artifact Artifact) string {
 	u, _ := url.Parse("https://storage.googleapis.com")
 	u.Path = path.Join(u.Path, bucket, path.Join(dir, artifact.SHA256()))
 	return u.String()

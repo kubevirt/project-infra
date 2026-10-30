@@ -1,0 +1,28 @@
+{
+	"cli-arguments": [
+		"rpmtree"
+	],
+	"name": "kubevirt-rpms",
+	"repositories": {
+		"baseos": []
+	},
+	"rpms": [
+		{
+			"name": "acl-0__2.3.1",
+			"integrity": "sha256-3RG6suoKvfoxA2LqzocUIqADNAvyIxNWJlAPj1qYX2s=",
+			"urls": [
+				"http://mirror.stream.centos.org/acl.rpm",
+				"https://storage.googleapis.com/builddeps/dd11bab2ea0abdfa310362eace871422a003340bf223135626500f8f5a985f6b"
+			],
+			"dependencies": [
+				"glibc"
+			]
+		}
+	],
+	"targets": [
+		"acl"
+	],
+	"ignored": [
+		"filesystem"
+	]
+}

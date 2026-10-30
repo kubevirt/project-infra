@@ -3,7 +3,10 @@ package mirror
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 	"testing"
 
@@ -320,7 +323,7 @@ func TestCheckArtifactsHaveURLS(t *testing.T) {
 }
 
 type artifactAppendURLTestData struct {
-	artifact     *Artifact
+	artifact     Artifact
 	newURL       string
 	expectedURLs []string
 }
@@ -341,7 +344,7 @@ func (t *artifactAppendURLTestData) HasExpectedURLs() bool {
 var artifactAppendURLTestDataSet = []artifactAppendURLTestData{
 	// No url data present
 	{
-		artifact: &Artifact{
+		artifact: &BazelArtifact{
 			rule: build.NewRule(
 				&build.CallExpr{},
 			),
@@ -353,7 +356,7 @@ var artifactAppendURLTestDataSet = []artifactAppendURLTestData{
 	},
 	// "url" attribute present
 	{
-		artifact: &Artifact{
+		artifact: &BazelArtifact{
 			rule: build.NewRule(
 				&build.CallExpr{
 					List: []build.Expr{
@@ -388,7 +391,7 @@ var artifactAppendURLTestDataSet = []artifactAppendURLTestData{
 	},
 	// "urls" attribute present
 	{
-		artifact: &Artifact{
+		artifact: &BazelArtifact{
 			rule: build.NewRule(
 				&build.CallExpr{
 					List: []build.Expr{
@@ -437,5 +440,122 @@ func TestArtifact_AppendURL(t *testing.T) {
 		if !testData.HasExpectedURLs() {
 			t.Fatalf("expected: %v, actual: %v", testData.expectedURLs, testData.artifact.URLs())
 		}
+	}
+}
+
+func TestGetLockFiles(t *testing.T) {
+	t.Parallel()
+
+	const baseDir = "repo/root"
+	tests := []struct {
+		name    string
+		content string
+		want    []string
+		wantErr bool
+	}{
+		{
+			name: "resolves_root_subpackage_relative_and_deduplicates",
+			content: `
+bazeldnf.config(name = "a", lock_file = "//:rpms.json")
+bazeldnf.config(name = "dup", lock_file = ":rpms.json")
+bazeldnf.config(name = "subpkg", lock_file = "//rpm:cs10.json")
+bazeldnf.config(name = "bare_file", lock_file = "bare.json")
+bazeldnf.config(name = "no_lock")
+maven.install(lock_file = "//:maven_install.json")
+`,
+			want: []string{
+				filepath.Join(baseDir, "rpms.json"),
+				filepath.Join(baseDir, "rpm", "cs10.json"),
+				filepath.Join(baseDir, "bare.json"),
+			},
+		},
+		{
+			name:    "rejects_parent_traversal",
+			content: `bazeldnf.config(name = "bad", lock_file = "//..:secret.json")`,
+			wantErr: true,
+		},
+		{
+			name:    "rejects_empty_root_target",
+			content: `bazeldnf.config(name = "bad", lock_file = "//:")`,
+			wantErr: true,
+		},
+		{
+			name:    "rejects_leading_slash_escape",
+			content: `bazeldnf.config(name = "bad", lock_file = "///etc:passwd")`,
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			f, err := build.ParseWorkspace("MODULE.bazel", []byte(tc.content))
+			if err != nil {
+				t.Fatal(err)
+			}
+			got, err := GetLockFiles(f, baseDir)
+			if (err != nil) != tc.wantErr {
+				t.Fatalf("GetLockFiles() error = %v, wantErr %v", err, tc.wantErr)
+			}
+			if !tc.wantErr && !slices.Equal(got, tc.want) {
+				t.Errorf("GetLockFiles() = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestBzlmodWorkspaceFormatting(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name        string
+		unformatted string
+		formatted   string
+	}{
+		{
+			name:        "module_bazel_http_archive_urls",
+			unformatted: "testdata/MODULE.bazel.unformatted",
+			formatted:   "testdata/MODULE.bazel.formatted",
+		},
+		{
+			name:        "module_bazel_http_file_single_url",
+			unformatted: "testdata/MODULE.bazel.http_file.unformatted",
+			formatted:   "testdata/MODULE.bazel.http_file.formatted",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			mod, err := LoadWorkspace(tc.unformatted)
+			if err != nil {
+				t.Fatalf("LoadWorkspace(%q) unexpected error: %v", tc.unformatted, err)
+			}
+			artifacts, err := GetArtifacts(mod)
+			if err != nil {
+				t.Fatalf("GetArtifacts() unexpected error: %v", err)
+			}
+			for _, a := range artifacts {
+				a.AppendURL(GenerateFilePath(testBucket, "", a))
+			}
+
+			outPath := filepath.Join(t.TempDir(), "MODULE.bazel")
+			if err := WriteWorkspace(false, mod, outPath); err != nil {
+				t.Fatalf("WriteWorkspace() unexpected error: %v", err)
+			}
+			got, err := os.ReadFile(outPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			want, err := os.ReadFile(tc.formatted)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if string(got) != string(want) {
+				t.Errorf("WriteWorkspace() =\n%s\nwant:\n%s", string(got), string(want))
+			}
+		})
 	}
 }

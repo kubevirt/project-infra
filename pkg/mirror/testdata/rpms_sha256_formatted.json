@@ -1,0 +1,13 @@
+{
+	"name": "kubevirt-rpms",
+	"rpms": [
+		{
+			"name": "acl-0__2.3.1",
+			"sha256": "dd11bab2ea0abdfa310362eace871422a003340bf223135626500f8f5a985f6b",
+			"urls": [
+				"http://mirror.stream.centos.org/acl.rpm",
+				"https://storage.googleapis.com/builddeps/dd11bab2ea0abdfa310362eace871422a003340bf223135626500f8f5a985f6b"
+			]
+		}
+	]
+}

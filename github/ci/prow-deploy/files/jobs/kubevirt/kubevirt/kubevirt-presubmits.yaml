@@ -299,7 +299,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-verify-rpms
     optional: true
-    run_if_changed: WORKSPACE
+    run_if_changed: ^(WORKSPACE|MODULE\.bazel|rpms\.json|rpm/.*|hack/verify-rpm-deps\.sh)$
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -327,7 +327,7 @@ presubmits:
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-verify-rpms-cs10
     optional: true
-    run_if_changed: WORKSPACE
+    run_if_changed: ^(WORKSPACE|MODULE\.bazel|rpms\.json|rpm/.*|hack/verify-rpm-deps\.sh)$
     skip_branches:
     - release-\d+\.\d+
     spec:

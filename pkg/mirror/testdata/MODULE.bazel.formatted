@@ -1,0 +1,11 @@
+bazeldnf = use_extension("@bazeldnf//bazeldnf:extensions.bzl", "bazeldnf")
+bazeldnf.config(name = "rpms", lock_file = "//:rpms.json")
+_http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+_http_archive(
+    name = "alpine",
+    sha256 = "dd11bab2ea0abdfa310362eace871422a003340bf223135626500f8f5a985f6b",
+    urls = [
+        "https://dl-cdn.alpinelinux.org/alpine/v3.20/releases/x86_64/alpine-virt-3.20.1-x86_64.iso",
+        "https://storage.googleapis.com/builddeps/dd11bab2ea0abdfa310362eace871422a003340bf223135626500f8f5a985f6b",
+    ],
+)

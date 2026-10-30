@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 
 	"kubevirt.io/project-infra/pkg/mirror"
@@ -22,6 +24,7 @@ type options struct {
 	dryRun          bool
 	bucket          string
 	workspacePath   string
+	modulePath      string
 	continueOnError bool
 	verify          bool
 	dir             string
@@ -29,10 +32,27 @@ type options struct {
 }
 
 func (o *options) Validate() error {
-	if o.workspacePath == "" {
-		return fmt.Errorf("Path to the workspace file is required")
+	if o.workspacePath == "" && o.modulePath == "" {
+		return fmt.Errorf("Path to the workspace or module file is required")
+	}
+	if o.workspacePath != "" && o.modulePath != "" {
+		return fmt.Errorf("-workspace and -module are mutually exclusive")
 	}
 	return nil
+}
+
+func resolveBazelFile(o options) string {
+	if o.modulePath != "" {
+		return o.modulePath
+	}
+	if _, err := os.Stat(o.workspacePath); errors.Is(err, os.ErrNotExist) {
+		modPath := filepath.Join(filepath.Dir(o.workspacePath), "MODULE.bazel")
+		if _, modErr := os.Stat(modPath); modErr == nil {
+			log.Printf("WORKSPACE %s not found, falling back to %s", o.workspacePath, modPath)
+			return modPath
+		}
+	}
+	return o.workspacePath
 }
 
 func gatherOptions() options {
@@ -45,6 +65,7 @@ func gatherOptions() options {
 	fs.StringVar(&o.dir, "dir", "", "directory inside the bucket")
 	fs.BoolVar(&o.requiresAuth, "requires-auth", false, "set to true if the bucket requires authentication for downloading artifacts")
 	fs.StringVar(&o.workspacePath, "workspace", "", "path to the workspace file")
+	fs.StringVar(&o.modulePath, "module", "", "path to the MODULE.bazel file")
 	_ = fs.Parse(os.Args[1:])
 	return o
 }
@@ -54,12 +75,9 @@ func main() {
 	if err := options.Validate(); err != nil {
 		log.Fatalf("invalid arguments: %v", err)
 	}
+	options.workspacePath = resolveBazelFile(options)
 	fmt.Println(options.dryRun)
-	rawFile, err := os.ReadFile(options.workspacePath)
-	if err != nil {
-		log.Fatalf("could not read workspace file: %v", err)
-	}
-	workspace, err := build.ParseWorkspace("workspace", rawFile)
+	workspace, err := mirror.LoadWorkspace(options.workspacePath)
 	if err != nil {
 		log.Fatalf("could not load workspace file: %v", err)
 	}
@@ -67,11 +85,24 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not read artifacts: %v", err)
 	}
+	lockPaths, err := mirror.GetLockFiles(workspace, filepath.Dir(options.workspacePath))
+	if err != nil {
+		log.Fatalf("could not resolve lockfiles: %v", err)
+	}
+	var lockFiles []*mirror.LockFile
+	for _, lockPath := range lockPaths {
+		lf, lockArtifacts, err := mirror.LoadLockFile(lockPath)
+		if err != nil {
+			log.Fatalf("could not load lockfile %s: %v", lockPath, err)
+		}
+		lockFiles = append(lockFiles, lf)
+		artifacts = append(artifacts, lockArtifacts...)
+	}
 
 	if options.verify {
 		verify(options, artifacts)
 	} else {
-		upload(options, workspace, artifacts)
+		upload(options, workspace, lockFiles, artifacts)
 	}
 }
 
@@ -87,7 +118,7 @@ func verify(options options, artifacts []mirror.Artifact) {
 	}
 	failed := false
 	for _, artifact := range artifacts {
-		newFileUrl := mirror.GenerateFilePath(options.bucket, options.dir, &artifact)
+		newFileUrl := mirror.GenerateFilePath(options.bucket, options.dir, artifact)
 		err := mirror.VerifyArtifact(ctx, client, artifact, options.dir, options.bucket)
 		if err != nil {
 			log.Printf("failed to upload %s to %s: %s", artifact.Name(), newFileUrl, err)
@@ -100,7 +131,7 @@ func verify(options options, artifacts []mirror.Artifact) {
 	}
 }
 
-func upload(options options, workspace *build.File, artifacts []mirror.Artifact) {
+func upload(options options, workspace *build.File, lockFiles []*mirror.LockFile, artifacts []mirror.Artifact) {
 	ctx := context.Background()
 	var opts []option.ClientOption
 	if options.dryRun {
@@ -121,7 +152,7 @@ func upload(options options, workspace *build.File, artifacts []mirror.Artifact)
 		})
 	}
 	for _, artifact := range invalid {
-		newFileUrl := mirror.GenerateFilePath(options.bucket, options.dir, &artifact)
+		newFileUrl := mirror.GenerateFilePath(options.bucket, options.dir, artifact)
 		err := mirror.WriteToBucket(options.dryRun, ctx, client, artifact, options.bucket, options.dir, http.DefaultClient)
 		if err != nil {
 			log.Printf("failed to upload %s to %s: %s", artifact.Name(), newFileUrl, err)
@@ -146,6 +177,11 @@ func upload(options options, workspace *build.File, artifacts []mirror.Artifact)
 	err = mirror.WriteWorkspace(options.dryRun, workspace, options.workspacePath)
 	if err != nil {
 		log.Fatalf("could not write workspace file: %v", err)
+	}
+	for _, lf := range lockFiles {
+		if err := lf.Write(options.dryRun); err != nil {
+			log.Fatalf("could not write lockfile: %v", err)
+		}
 	}
 
 	if failed {
