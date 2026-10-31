@@ -32,6 +32,39 @@ presubmits:
           resources:
             requests:
               memory: "52Gi"
+  - name: pull-hostpath-provisioner-e2e-k8s-s390x
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    optional: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    max_concurrency: 1
+    labels:
+      preset-podman-in-container-enabled: "true"
+    cluster: prow-s390x-workloads
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+          env:
+            - name: GOARCH
+              value: s390x
+            - name: HPP_CR_TYPE
+              value: legacy
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "./hack/test.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "52Gi"
   - name: pull-hostpath-provisioner-e2e-k8s-ceph
     skip_branches:
       - release-\d+\.\d+
@@ -90,6 +123,39 @@ presubmits:
             - "/bin/sh"
             - "-c"
             - "export HPP_CR_TYPE=overlay-csi && ./hack/test.sh"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "52Gi"
+  - name: pull-hostpath-provisioner-e2e-k8s-overlay-csi-s390x
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: false
+    optional: true
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    max_concurrency: 1
+    labels:
+      preset-podman-in-container-enabled: "true"
+    cluster: prow-s390x-workloads
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+          env:
+            - name: GOARCH
+              value: s390x
+            - name: HPP_CR_TYPE
+              value: overlay-csi
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "./hack/test.sh"
           # docker-in-docker needs privileged mode
           securityContext:
             privileged: true
