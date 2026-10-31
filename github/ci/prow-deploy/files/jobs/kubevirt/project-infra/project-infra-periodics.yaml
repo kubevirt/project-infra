@@ -579,7 +579,7 @@ periodics:
               --branch crio-version-bump \
               --target main
             git-pr.sh \
-              --command "true" \
+              --command "./hack/bump-kubevirtci-crio-version.sh ../kubevirtci/cluster-provision/k8s" \
               --repo-path ../kubevirtci \
               --repo kubevirtci \
               --branch crio-version-bump \
