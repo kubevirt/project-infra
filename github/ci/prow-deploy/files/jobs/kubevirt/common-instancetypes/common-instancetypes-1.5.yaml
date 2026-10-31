@@ -99,6 +99,7 @@ presubmits:
     branches:
       - release-1.5
     always_run: false
+    run_if_changed: "preferences/base/.*|preferences/components/.*|preferences/linux/.*|preferences/linux-efi/.*|preferences/fedora/.*|tests/functests/.*|tests/vendor/.*|tests/go.*"
     cluster: prow-s390x-workloads
     decoration_config:
       grace_period: 5m0s
@@ -114,10 +115,12 @@ presubmits:
         - /usr/local/bin/runner.sh
         - "/bin/sh"
         - "-c"
-        - |
-          cat $ICR_PASSWORD | podman login icr.io --username $(cat $ICR_USER) --password-stdin=true
-          make kubevirt-up && make kubevirt-sync && make kubevirt-functest
+        - "make cluster-up && make cluster-sync && make cluster-functest"
         env:
+        - name: KUBEVIRTCI_TAG
+          value: "2610280829-c42ad60c"
+        - name: KUBEVIRT_PROVIDER
+          value: "k8s-1.34"
         - name: GIMME_GO_VERSION
           value: 1.24.5
         - name: KUBEVIRT_MEMORY_SIZE
