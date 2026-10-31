@@ -6,6 +6,8 @@ Pushes the test runtimes as metrics to a push-gateway, so that we can visualize 
 
 Fetches the latest run from the given periodic job, downloads the `junit.xml` from the job run, and parses the file.
 
+The periodic jobs can be given with `--job-name`. By default, for each SIG (compute, network, operator and storage) the lane of the latest Kubernetes version is taken from the kubevirt periodic job config (see `--job-config-path`).
+
 Then Histogram `ci_test_runtime_seconds_total` (so we have buckets of test runtimes) and Summary `ci_test_runtime_seconds` per test are created. From these we can create panels to show test runtimes and heatmaps.
 
 ![test_time.png](test_time.png)
