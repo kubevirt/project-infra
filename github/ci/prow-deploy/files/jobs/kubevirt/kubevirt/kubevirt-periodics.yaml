@@ -817,7 +817,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-kubevirt-s390x-icr-credential: "true"
   max_concurrency: 1
-  name: periodic-kubevirt-e2e-k8s-1.34-s390x
+  name: periodic-kubevirt-e2e-k8s-1.37-s390x
   spec:
     containers:
     - command:
@@ -831,11 +831,11 @@ periodics:
       - name: KUBEVIRT_QUARANTINE
         value: "true"
       - name: TARGET
-        value: k8s-1.34-wg-s390x
+        value: k8s-1.37-wg-s390x
       - name: KUBEVIRT_SLIM
         value: "true"
       - name: KUBEVIRT_BUILDER_IMAGE
-        value: icr.io/kubevirt/builder:2608020842-b8b04c190d
+        value: icr.io/kubevirt/builder-cs10:2610281348-2e2e654124
       image: quay.io/kubevirtci/golang:v20261012-6b466e3
       resources:
         requests:
