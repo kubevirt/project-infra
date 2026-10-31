@@ -9,6 +9,7 @@ import (
 	"path"
 	"reflect"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -28,6 +29,7 @@ import (
 	"sigs.k8s.io/prow/pkg/config"
 	gitv2 "sigs.k8s.io/prow/pkg/git/v2"
 	"sigs.k8s.io/prow/pkg/github"
+	"sigs.k8s.io/prow/pkg/kube"
 	"sigs.k8s.io/prow/pkg/pjutil"
 )
 
@@ -35,20 +37,16 @@ const basicHelpCommentText = `
 <details>
 <summary>Further information on rehearsals</summary>
 
-A rehearsal can be triggered for all jobs by commenting either ` + "`/rehearse`" + ` or ` + "`/rehearse all`" + ` on this PR.
+A rehearsal can be triggered for all modified jobs the commenter is allowed to rehearse by commenting either ` + "`/rehearse`" + ` or ` + "`/rehearse all`" + ` on this PR.
 
-A rehearsal for a specific job can be triggered by commenting ` + "`/rehearse {job-name}`" + `.
+A rehearsal for a specific job can be triggered by commenting ` + "`/rehearse {job-name}`" + `. Jobs the commenter is not allowed to rehearse are skipped.
 
 Commenting ` + "`/rehearse ?`" + ` triggers a comment with a list of jobs that can be rehearsed.
 
-A pull request can be rehearsed if either the user is authorized to rehearse or the pull
-request has the ` + "`ok-to-rehearse`" + ` label.
+**Presubmit** rehearsals require the user to be an approver for all changed files, a top-level approver, or the PR to have the ` + "`ok-to-rehearse`" + ` label.
 
-Authorized users are the group of users that are members of the KubeVirt GitHub 
-organization AND either are approvers[1] for all files in the pull request or are
-top-level approvers[1] in the ` + "`project-infra`" + ` project.
+**Periodic and postsubmit** rehearsals are restricted to top-level approvers only.
 
-[1]: see [OWNERS](https://www.kubernetes.dev/docs/guide/owners/#owners) file definition for reference.
 </details>
 `
 
@@ -174,8 +172,8 @@ func (h *GitHubEventsHandler) handleIssueComment(log *logrus.Entry, event *githu
 		log.WithError(err).Error("Could not calculate diff for PR.")
 		return
 	}
-	rehearse, message := h.canUserRehearse(org, repo, pr, event.Comment.User.Login, changedFiles)
-	if !rehearse {
+	allowedTypes, message := h.canUserRehearse(org, repo, pr, event.Comment.User.Login, changedFiles)
+	if len(allowedTypes) == 0 {
 		if message != "" {
 			err = h.ghClient.CreateComment(org, repo, pr.Number, message)
 			if err != nil {
@@ -186,7 +184,7 @@ func (h *GitHubEventsHandler) handleIssueComment(log *logrus.Entry, event *githu
 		log.Infoln("Skipping event - user validation failed")
 		return
 	}
-	h.handleRehearsalForPR(log, pr, event.GUID, event.Comment.Body)
+	h.handleRehearsalForPR(log, pr, event.GUID, event.Comment.Body, allowedTypes)
 }
 
 func (h *GitHubEventsHandler) shouldActOnPREvent(event *github.PullRequestEvent) bool {
@@ -206,84 +204,98 @@ func (h *GitHubEventsHandler) shouldActOnIssueComment(event *github.IssueComment
 	return false
 }
 
-func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *github.PullRequest, userName string, changedFiles []string) (canUserRehearse bool, message string) {
+func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *github.PullRequest, userName string, changedFiles []string) (allowedTypes []prowapi.ProwJobType, message string) {
 
 	userNameLowerCase := strings.ToLower(userName)
 
 	owners, err := h.ownersClient.LoadRepoOwners(org, repo, pr.Base.Ref)
 	if err != nil {
 		log.WithError(err).Errorln(fmt.Sprintf("Could not load owners on org %s and repo %s", org, repo))
-		return false, ""
+		return nil, ""
 	}
 
-	// if user is top level approver, then
-	// rehearsal is allowed
-	// even if the author is not an org member
-	// top level approvers is only a very limited circle of people
+	allTypes := []prowapi.ProwJobType{prowapi.PresubmitJob, prowapi.PostsubmitJob, prowapi.PeriodicJob}
+
+	// top level approvers can rehearse all job types
 	topLevelApprovers := owners.TopLevelApprovers()
 	for topLevelApprover := range topLevelApprovers {
 		if userNameLowerCase == strings.ToLower(topLevelApprover) {
-			return true, ""
+			return allTypes, ""
 		}
 	}
 
-	// if author is not a member of the org, then
-	// rehearsal is not allowed
-	// in order to avoid compromising the org with harmful PRs
 	isAuthorMember, err := h.ghClient.IsMember(org, pr.User.Login)
 	if err != nil {
 		log.WithError(err).Errorln("Could not validate PR author with the repo org")
-		return false, ""
+		return nil, ""
 	}
 	if !isAuthorMember {
 		log.Warnln("Pr author is not a member of the repo org")
-		return false, ""
+		return nil, ""
 	}
 
-	// if the user that issues rehearsal is not a member of the org, then
-	// rehearsal is not allowed
-	// in order to avoid denial of service type attacks
 	isUserMember, err := h.ghClient.IsMember(org, userNameLowerCase)
 	if err != nil {
 		log.WithError(err).Errorln("Could not validate user with the repo org")
-		return false, ""
+		return nil, ""
 	}
 	if !isUserMember {
 		log.Warnln("User is not a member of the repo org")
-		return false, ""
+		return nil, ""
 	}
 
-	// check if ok-to-rehearse label is present
+	allowedSet := map[prowapi.ProwJobType]bool{}
+
 	issueLabels, err := h.ghClient.GetIssueLabels(org, repo, pr.Number)
 	if err != nil {
 		log.WithError(err).WithField("pull_request_url", fmt.Sprintf("github.com/%s/%s/pull/%d", org, repo, pr.Number)).Errorln("Could not get labels for pull request")
-		return false, ""
+		return nil, ""
 	}
 	for _, label := range issueLabels {
 		if label.Name == OKToRehearse {
-			return true, ""
+			allowedSet[prowapi.PresubmitJob] = true
 		}
 	}
 
-	// if user is not a leaf approver for all the files then
-	// rehearsal is not allowed
-	// to ensure that scope of rehearsal is not extended beyond responsibilities
+	isLeafApproverForAll := true
+	var suggestedApprover string
 	for _, changedFile := range changedFiles {
 		isLeafApprover := false
-		var leafApprover string
-		for leafApprover = range owners.LeafApprovers(changedFile) {
-			if strings.ToLower(leafApprover) == userNameLowerCase {
+		var fileApprover string
+		for approver := range owners.LeafApprovers(changedFile) {
+			if strings.ToLower(approver) == userNameLowerCase {
 				isLeafApprover = true
 				break
 			}
+			fileApprover = approver
 		}
-
 		if !isLeafApprover {
-			tlas := make([]string, 0, len(topLevelApprovers))
-			for tla := range topLevelApprovers {
-				tlas = append(tlas, tla)
-			}
-			return false, fmt.Sprintf(`⚠️ @%s you need to be an approver for all the files to run rehearsal.
+			isLeafApproverForAll = false
+			suggestedApprover = fileApprover
+			break
+		}
+	}
+
+	if isLeafApproverForAll && len(changedFiles) > 0 {
+		allowedSet[prowapi.PresubmitJob] = true
+	}
+
+	if len(allowedSet) > 0 {
+		allowed := make([]prowapi.ProwJobType, 0, len(allowedSet))
+		for t := range allowedSet {
+			allowed = append(allowed, t)
+		}
+		return allowed, ""
+	}
+
+	tlas := make([]string, 0, len(topLevelApprovers))
+	for tla := range topLevelApprovers {
+		tlas = append(tlas, tla)
+	}
+	if suggestedApprover == "" && len(tlas) > 0 {
+		suggestedApprover = tlas[0]
+	}
+	return nil, fmt.Sprintf(`⚠️ @%s you need to be an approver for all the files to run rehearsal.
 
 @%s can help run the rehearsal.
 
@@ -292,10 +304,7 @@ func (h *GitHubEventsHandler) canUserRehearse(org string, repo string, pr *githu
 If that doesn't work, ping someone from this list:
 * %s
 </details>
-`, userName, leafApprover, strings.Join(tlas, "\n* "))
-		}
-	}
-	return true, ""
+`, userName, suggestedApprover, strings.Join(tlas, "\n* "))
 }
 
 func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, event *github.PullRequestEvent) {
@@ -321,7 +330,6 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 		log.WithError(err).Errorf("Could not get org/repo from the event")
 	}
 
-	// When a pull request is closed and has the OKToRehearse label, remove it
 	if event.Action == github.PullRequestActionClosed {
 		labels, err := h.ghClient.GetIssueLabels(org, repo, event.PullRequest.Number)
 		if err != nil {
@@ -355,8 +363,8 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 		log.WithError(err).Error("Could not calculate diff for PR.")
 		return
 	}
-	rehearse, message := h.canUserRehearse(org, repo, pr, event.Sender.Login, changedFiles)
-	if !rehearse {
+	allowedTypes, message := h.canUserRehearse(org, repo, pr, event.Sender.Login, changedFiles)
+	if len(allowedTypes) == 0 {
 		if message != "" {
 			err = h.ghClient.CreateComment(org, repo, pr.Number, message)
 			if err != nil {
@@ -368,10 +376,10 @@ func (h *GitHubEventsHandler) handlePullRequestUpdateEvent(log *logrus.Entry, ev
 		return
 	}
 
-	h.handleRehearsalForPR(log, &event.PullRequest, event.GUID, "")
+	h.handleRehearsalForPR(log, &event.PullRequest, event.GUID, "", allowedTypes)
 }
 
-func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github.PullRequest, eventGUID string, commentBody string) {
+func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github.PullRequest, eventGUID string, commentBody string, allowedTypes []prowapi.ProwJobType) {
 	org, repo, err := pi_github.OrgRepo(pr.Base.Repo.FullName)
 	if err != nil {
 		log.WithError(err).Errorf("Could not parse repo name: %s", pr.Base.Repo.FullName)
@@ -409,19 +417,11 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 	log.Infoln("Base configs:", baseConfigs)
 
 	prowjobs := h.generateProwJobs(headConfigs, baseConfigs, pr, eventGUID)
+	authorizedJobs, skippedUnauthorized := partitionProwJobsByAllowedTypes(prowjobs, allowedTypes)
 	jobNames := h.extractJobNamesFromComment(commentBody)
+
 	if len(jobNames) == 1 && jobNames[0] == "?" {
-		var prowJobNames []string
-		for _, prowJob := range prowjobs {
-			prowJobNames = append(prowJobNames, prowJob.Spec.Job)
-		}
-		commentText := fmt.Sprintf(`Rehearsal is available for the following jobs in this PR:
-
-`+"```"+`
-%s
-`+"```"+`
-
-`+basicHelpCommentText, strings.Join(prowJobNames, "\n"))
+		commentText := formatAvailableJobsComment(authorizedJobs, skippedUnauthorized)
 		err := h.ghClient.CreateComment(org, repo, pr.Number, commentText)
 		if err != nil {
 			log.WithError(err).Errorf("Failed to create comment on %s/%s PR: %d", org, repo, pr.Number)
@@ -429,7 +429,22 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		return
 	}
 
-	prowjobs = h.filterProwJobsByJobNames(prowjobs, jobNames)
+	prowjobs = h.filterProwJobsByJobNames(authorizedJobs, jobNames)
+	skippedForComment := skippedUnauthorized
+	if len(jobNames) > 0 {
+		skippedForComment = h.filterProwJobsByJobNames(skippedUnauthorized, jobNames)
+	}
+
+	if len(prowjobs) == 0 {
+		commentText := formatNoJobsComment(skippedForComment)
+		err = h.ghClient.CreateComment(org, repo, pr.Number, commentText)
+		if err != nil {
+			log.WithError(err).Errorf("Failed to create comment on %s/%s PR: %d", org, repo, pr.Number)
+		}
+		return
+	}
+
+	prowjobs = convertPeriodicsToPresubmits(prowjobs, pr)
 
 	log.Infof("Will create %d jobs", len(prowjobs))
 	var rehearsalsGenerated []string
@@ -440,6 +455,10 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		}
 		job.Labels["rehearsal"] = "true"
 		job.Labels["rehearsal-for-pull-request"] = strconv.Itoa(pr.Number)
+		job.Spec.Report = true
+		disableSlackReporting(&job)
+		// RerunCommand uses the original job name since that's what users type to retrigger
+		job.Spec.RerunCommand = fmt.Sprintf("/rehearse %s", job.Spec.Job)
 		rehearsalName := strings.Join([]string{"rehearsal", job.Spec.Job}, "-")
 		job.Spec.Job = rehearsalName
 		job.Spec.Context = rehearsalName
@@ -452,13 +471,7 @@ func (h *GitHubEventsHandler) handleRehearsalForPR(log *logrus.Entry, pr *github
 		rehearsalsGenerated = append(rehearsalsGenerated, rehearsalName)
 		log.Infof("Created a rehearse job: %s", job.Name)
 	}
-	commentText := fmt.Sprintf(`Rehearsal jobs created for this PR:
-
-`+"```"+`
-%s
-`+"```"+`
-
-`+basicHelpCommentText, strings.Join(rehearsalsGenerated, "\n"))
+	commentText := formatCreatedJobsComment(rehearsalsGenerated, skippedForComment)
 	err = h.ghClient.CreateComment(org, repo, pr.Number, commentText)
 	if err != nil {
 		log.WithError(err).Errorf("Failed to create comment on %s/%s PR: %d", org, repo, pr.Number)
@@ -537,6 +550,22 @@ func (h *GitHubEventsHandler) filterProwJobsByJobNames(prowjobs []prowapi.ProwJo
 	return filteredProwJobs
 }
 
+func partitionProwJobsByAllowedTypes(prowjobs []prowapi.ProwJob, allowedTypes []prowapi.ProwJobType) (allowed, skipped []prowapi.ProwJob) {
+	allowedSet := map[prowapi.ProwJobType]bool{}
+	for _, t := range allowedTypes {
+		allowedSet[t] = true
+	}
+	for _, pj := range prowjobs {
+		if allowedSet[pj.Spec.Type] {
+			allowed = append(allowed, pj)
+			continue
+		}
+		log.Infof("Skipping job %s: user not authorized for %s jobs", pj.Spec.Job, pj.Spec.Type)
+		skipped = append(skipped, pj)
+	}
+	return allowed, skipped
+}
+
 const rehearsalRestrictedAnnotation = "rehearsal.restricted"
 
 func rehearsalRestricted(job prowapi.ProwJob) bool {
@@ -558,6 +587,8 @@ func (h *GitHubEventsHandler) generateProwJobs(
 			log.Errorf("Path %s not found in base configs", path)
 		}
 		jobs = append(jobs, h.generatePresubmits(headConfig, baseConfig, pr, eventGUID)...)
+		jobs = append(jobs, h.generatePostsubmits(headConfig, baseConfig, pr, eventGUID)...)
+		jobs = append(jobs, h.generatePeriodics(headConfig, baseConfig, pr, eventGUID)...)
 	}
 
 	return jobs
@@ -586,44 +617,141 @@ func (h *GitHubEventsHandler) generatePresubmits(
 		}
 		log.Infof("differences detected:/n%v", changelog)
 
-		// respect the Branches configuration for the job, i.e. avoid always running against HEAD
-		branches := headPresubmit.Branches
-		if len(branches) == 0 {
-			branches = []string{"HEAD"}
+		repoOrg := repoFromJobKey(presubmitKey)
+		org, repo, err := pi_github.OrgRepo(repoOrg)
+		if err != nil {
+			log.Errorf(
+				"Could not extract repo and org from job key: %s. Job name: %s",
+				presubmitKey, headPresubmit.Name)
 		}
+
+		// respect the Branches configuration for the job, i.e. avoid always running against HEAD
+		branches := rehearsalBranches(headPresubmit.Branches, repoOrg, pr.Base.Repo.FullName)
 
 		// since we can have multiple branches we need to create one job per branch
 		for _, branch := range branches {
 			job := pjutil.NewPresubmit(*pr, pr.Base.SHA, headPresubmit, eventGUID, map[string]string{})
 
 			if rehearsalRestricted(job) {
-				h.logger.Infof("Skipping rehersal job for: %s because it is restricted", job.Name)
+				log.Infof("Skipping rehearsal job for: %s because it is restricted", job.Spec.Job)
 				continue
 			}
 
-			repoOrg := repoFromJobKey(presubmitKey)
-			org, repo, err := pi_github.OrgRepo(repoOrg)
-			if err != nil {
-				log.Errorf(
-					"Could not extract repo and org from job key: %s. Job name: %s",
-					presubmitKey, headPresubmit.Name)
-			}
-
-			var targetBranchName string
-			if branch == "HEAD" {
-				targetBranchName, err = discoverHeadBranchName(org, repo, headPresubmit.CloneURI)
-				if err != nil {
-					targetBranchName = pr.Base.Ref
-				}
-			} else {
-				targetBranchName = branch
-			}
+			job.Spec.ExtraRefs = stripExtraRefsForRepo(job.Spec.ExtraRefs, pr.Base.Repo.Owner.Login, pr.Base.Repo.Name)
+			targetBranchName := targetBranchForRehearsal(branch, org, repo, headPresubmit.CloneURI, pr.Base.Ref)
 
 			if repoOrg != pr.Base.Repo.FullName {
 				job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, targetBranchName))
 			}
 			jobs = append(jobs, job)
 		}
+	}
+	return jobs
+}
+
+func (h *GitHubEventsHandler) generatePostsubmits(
+	headConfig, baseConfig *config.Config, pr *github.PullRequest, eventGUID string) []prowapi.ProwJob {
+	var jobs []prowapi.ProwJob
+
+	headPostsubmits := hashPostsubmitsConfig(headConfig.PostsubmitsStatic)
+	basePostsubmits := hashPostsubmitsConfig(baseConfig.PostsubmitsStatic)
+
+	for postsubmitKey, headPostsubmit := range headPostsubmits {
+		basePostsubmit, exists := basePostsubmits[postsubmitKey]
+
+		if exists && reflect.DeepEqual(basePostsubmit, headPostsubmit) {
+			continue
+		}
+		log.Infof("Detected modified or new postsubmit: %s.", headPostsubmit.Name)
+		changelog, err := diff.Diff(basePostsubmit, headPostsubmit)
+		if err != nil {
+			log.Errorf("could not diff postsubmits: %v", err)
+		}
+		log.Infof("differences detected:\n%v", changelog)
+
+		repoOrg := repoFromJobKey(postsubmitKey)
+		org, repo, err := pi_github.OrgRepo(repoOrg)
+		if err != nil {
+			log.Errorf(
+				"Could not extract repo and org from job key: %s. Job name: %s",
+				postsubmitKey, headPostsubmit.Name)
+		}
+
+		// respect the Branches configuration for the job, i.e. avoid always running against HEAD
+		branches := rehearsalBranches(headPostsubmit.Branches, repoOrg, pr.Base.Repo.FullName)
+
+		// since we can have multiple branches we need to create one job per branch
+		for _, branch := range branches {
+			refs := prowapi.Refs{
+				Org:     pr.Base.Repo.Owner.Login,
+				Repo:    pr.Base.Repo.Name,
+				BaseRef: pr.Base.Ref,
+				BaseSHA: pr.Base.SHA,
+				Pulls: []prowapi.Pull{
+					{
+						Number:  pr.Number,
+						Author:  pr.User.Login,
+						SHA:     pr.Head.SHA,
+						HeadRef: pr.Head.Ref,
+					},
+				},
+			}
+			spec := pjutil.PostsubmitSpec(headPostsubmit, refs)
+			annotations := copyStringMap(headPostsubmit.Annotations)
+			labels := copyStringMap(headPostsubmit.Labels)
+			labels[github.EventGUID] = eventGUID
+			job := pjutil.NewProwJob(spec, labels, annotations)
+
+			if rehearsalRestricted(job) {
+				log.Infof("Skipping rehearsal job for: %s because it is restricted", job.Spec.Job)
+				continue
+			}
+
+			job.Spec.ExtraRefs = stripExtraRefsForRepo(job.Spec.ExtraRefs, pr.Base.Repo.Owner.Login, pr.Base.Repo.Name)
+			targetBranchName := targetBranchForRehearsal(branch, org, repo, headPostsubmit.CloneURI, pr.Base.Ref)
+
+			if repoOrg != pr.Base.Repo.FullName {
+				job.Spec.ExtraRefs = append(job.Spec.ExtraRefs, makeTargetRepoRefs(job.Spec.ExtraRefs, org, repo, targetBranchName))
+			}
+			jobs = append(jobs, job)
+		}
+	}
+	return jobs
+}
+
+func (h *GitHubEventsHandler) generatePeriodics(
+	headConfig, baseConfig *config.Config, pr *github.PullRequest, eventGUID string) []prowapi.ProwJob {
+	var jobs []prowapi.ProwJob
+
+	headPeriodics := hashPeriodicsConfig(headConfig.Periodics)
+	basePeriodics := hashPeriodicsConfig(baseConfig.Periodics)
+
+	for periodicKey, headPeriodic := range headPeriodics {
+		basePeriodic, exists := basePeriodics[periodicKey]
+
+		if exists && reflect.DeepEqual(basePeriodic, headPeriodic) {
+			continue
+		}
+		log.Infof("Detected modified or new periodic: %s.", headPeriodic.Name)
+		changelog, err := diff.Diff(basePeriodic, headPeriodic)
+		if err != nil {
+			log.Errorf("could not diff periodics: %v", err)
+		}
+		log.Infof("differences detected:\n%v", changelog)
+
+		spec := pjutil.PeriodicSpec(headPeriodic)
+		annotations := copyStringMap(headPeriodic.Annotations)
+		labels := copyStringMap(headPeriodic.Labels)
+		labels[github.EventGUID] = eventGUID
+		job := pjutil.NewProwJob(spec, labels, annotations)
+
+		if rehearsalRestricted(job) {
+			log.Infof("Skipping rehearsal job for: %s because it is restricted", job.Spec.Job)
+			continue
+		}
+
+		job.Spec.ExtraRefs = stripExtraRefsForRepo(job.Spec.ExtraRefs, pr.Base.Repo.Owner.Login, pr.Base.Repo.Name)
+		jobs = append(jobs, job)
 	}
 	return jobs
 }
@@ -685,6 +813,14 @@ func (h *GitHubEventsHandler) loadConfigsAtRef(
 				presubmits[index].JobBase.SourcePath = path.Join(git.Directory(), changedJobConfig)
 			}
 		}
+		for _, postsubmits := range pc.PostsubmitsStatic {
+			for index := range postsubmits {
+				postsubmits[index].JobBase.SourcePath = path.Join(git.Directory(), changedJobConfig)
+			}
+		}
+		for index := range pc.Periodics {
+			pc.Periodics[index].JobBase.SourcePath = path.Join(git.Directory(), changedJobConfig)
+		}
 		configs[changedJobConfig] = pc
 	}
 
@@ -726,6 +862,24 @@ func hashPresubmitsConfig(presubmits map[string][]config.Presubmit) map[string]c
 	return presubmitsFlat
 }
 
+func hashPostsubmitsConfig(postsubmits map[string][]config.Postsubmit) map[string]config.Postsubmit {
+	postsubmitsFlat := map[string]config.Postsubmit{}
+	for repo, postsubmitsForRepo := range postsubmits {
+		for _, postsubmit := range postsubmitsForRepo {
+			postsubmitsFlat[jobKeyFunc(repo, postsubmit.JobBase)] = postsubmit
+		}
+	}
+	return postsubmitsFlat
+}
+
+func hashPeriodicsConfig(periodics []config.Periodic) map[string]config.Periodic {
+	periodicsFlat := map[string]config.Periodic{}
+	for _, periodic := range periodics {
+		periodicsFlat[periodic.Name] = periodic
+	}
+	return periodicsFlat
+}
+
 // catFile executes a git cat-file command in the specified git dir and returns bytes representation of the file
 func catFile(log *logrus.Logger, gitDir, file, refspec string) ([]byte, int) {
 	cmd := exec.Command("git", "-C", gitDir, "cat-file", "-p", fmt.Sprintf("%s:%s", refspec, file))
@@ -751,6 +905,177 @@ func writeTempFile(log *logrus.Logger, basedir string, content []byte) (string, 
 		return "", err
 	}
 	return tmpfile.Name(), nil
+}
+
+func copyStringMap(src map[string]string) map[string]string {
+	dst := make(map[string]string, len(src)+1)
+	for k, v := range src {
+		dst[k] = v
+	}
+	return dst
+}
+
+func jobNamesFromProwJobs(jobs []prowapi.ProwJob) []string {
+	names := make([]string, 0, len(jobs))
+	for _, job := range jobs {
+		names = append(names, job.Spec.Job)
+	}
+	sort.Strings(names)
+	return names
+}
+
+func formatJobNameBlock(jobs []prowapi.ProwJob) string {
+	return "```\n" + strings.Join(jobNamesFromProwJobs(jobs), "\n") + "\n```\n"
+}
+
+func formatAvailableJobsComment(available, skipped []prowapi.ProwJob) string {
+	var b strings.Builder
+	if len(available) == 0 {
+		b.WriteString("No rehearsal jobs available for your permission level in this PR.\n\n")
+	} else {
+		b.WriteString("Rehearsal is available for the following jobs in this PR:\n\n")
+		b.WriteString(formatJobNameBlock(available))
+		b.WriteString("\n")
+	}
+	if len(skipped) > 0 {
+		b.WriteString("The following jobs were modified but require a top-level approver to rehearse:\n\n")
+		b.WriteString(formatJobNameBlock(skipped))
+		b.WriteString("\n")
+	}
+	b.WriteString(basicHelpCommentText)
+	return b.String()
+}
+
+func formatNoJobsComment(skippedUnauthorized []prowapi.ProwJob) string {
+	if len(skippedUnauthorized) > 0 {
+		return "⚠️ No rehearsal jobs created. Modified periodic and/or postsubmit jobs require a top-level approver to rehearse.\n\n" +
+			formatJobNameBlock(skippedUnauthorized) + "\n" + basicHelpCommentText
+	}
+	return "⚠️ No rehearsal jobs available. Either no jobs were modified, the requested job names were not found, or you do not have permission to rehearse the requested job types.\n\n" + basicHelpCommentText
+}
+
+func formatCreatedJobsComment(created []string, skipped []prowapi.ProwJob) string {
+	var b strings.Builder
+	b.WriteString("Rehearsal jobs created for this PR:\n\n```\n")
+	b.WriteString(strings.Join(created, "\n"))
+	b.WriteString("\n```\n\n")
+	if len(skipped) > 0 {
+		b.WriteString("Skipped the following jobs because they require a top-level approver:\n\n")
+		b.WriteString(formatJobNameBlock(skipped))
+		b.WriteString("\n")
+	}
+	b.WriteString(basicHelpCommentText)
+	return b.String()
+}
+
+func disableSlackReporting(job *prowapi.ProwJob) {
+	report := false
+	if job.Spec.ReporterConfig == nil {
+		job.Spec.ReporterConfig = &prowapi.ReporterConfig{}
+	}
+	job.Spec.ReporterConfig.Slack = &prowapi.SlackReporterConfig{Report: &report}
+}
+
+func convertPeriodicsToPresubmits(prowjobs []prowapi.ProwJob, pr *github.PullRequest) []prowapi.ProwJob {
+	for i := range prowjobs {
+		if prowjobs[i].Spec.Type != prowapi.PeriodicJob {
+			continue
+		}
+		refs := prowapi.Refs{
+			Org:     pr.Base.Repo.Owner.Login,
+			Repo:    pr.Base.Repo.Name,
+			BaseRef: pr.Base.Ref,
+			BaseSHA: pr.Base.SHA,
+			Pulls: []prowapi.Pull{
+				{
+					Number:  pr.Number,
+					Author:  pr.User.Login,
+					SHA:     pr.Head.SHA,
+					HeadRef: pr.Head.Ref,
+				},
+			},
+		}
+		prowjobs[i].Spec.Type = prowapi.PresubmitJob
+		prowjobs[i].Spec.Report = true
+		prowjobs[i].Spec.Refs = &refs
+		if prowjobs[i].Labels == nil {
+			prowjobs[i].Labels = map[string]string{}
+		}
+		prowjobs[i].Labels[kube.ProwJobTypeLabel] = string(prowapi.PresubmitJob)
+		prowjobs[i].Labels[kube.OrgLabel] = refs.Org
+		prowjobs[i].Labels[kube.RepoLabel] = refs.Repo
+		prowjobs[i].Labels[kube.BaseRefLabel] = refs.BaseRef
+		prowjobs[i].Labels[kube.PullLabel] = strconv.Itoa(pr.Number)
+	}
+	return prowjobs
+}
+
+func stripExtraRefsForRepo(refs []prowapi.Refs, org, repo string) []prowapi.Refs {
+	if org == "" && repo == "" {
+		return refs
+	}
+	var filtered []prowapi.Refs
+	for _, ref := range refs {
+		if ref.Org == org && ref.Repo == repo {
+			log.Infof("Stripping duplicate extra-ref for %s/%s", org, repo)
+			continue
+		}
+		filtered = append(filtered, ref)
+	}
+	return filtered
+}
+
+func rehearsalBranches(jobBranches []string, jobRepoOrg, prRepoFullName string) []string {
+	if jobRepoOrg == prRepoFullName {
+		return []string{"HEAD"}
+	}
+	if len(jobBranches) == 0 {
+		return []string{"HEAD"}
+	}
+	var resolved []string
+	seen := map[string]struct{}{}
+	for _, branch := range jobBranches {
+		name := branch
+		if branch != "HEAD" {
+			ok := false
+			name, ok = tryResolveBranchPattern(branch)
+			if !ok {
+				log.Infof("Skipping unresolved branch pattern %q", branch)
+				continue
+			}
+		}
+		if _, exists := seen[name]; exists {
+			continue
+		}
+		seen[name] = struct{}{}
+		resolved = append(resolved, name)
+	}
+	if len(resolved) == 0 {
+		return []string{"HEAD"}
+	}
+	return resolved
+}
+
+func targetBranchForRehearsal(branch, org, repo, cloneURI, fallback string) string {
+	if branch != "HEAD" {
+		return branch
+	}
+	name, err := discoverHeadBranchName(org, repo, cloneURI)
+	if err != nil {
+		return fallback
+	}
+	return name
+}
+
+var simpleBranchNameRe = regexp.MustCompile(`^[A-Za-z0-9._/-]+$`)
+
+func tryResolveBranchPattern(branch string) (string, bool) {
+	cleaned := strings.TrimPrefix(branch, "^")
+	cleaned = strings.TrimSuffix(cleaned, "$")
+	if !simpleBranchNameRe.MatchString(cleaned) {
+		return "", false
+	}
+	return cleaned, true
 }
 
 func makeTargetRepoRefs(refs []prowapi.Refs, org, repo, ref string) prowapi.Refs {

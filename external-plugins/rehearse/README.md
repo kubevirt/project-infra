@@ -10,27 +10,27 @@ to merge first.
 
 ## Overview
 
-Rehearse is a Prow external plugin for presubmit jobs that:
+Rehearse is a Prow external plugin that:
 - Listens for GitHub issue comment events (`created` on open PRs) to handle `/rehearse` commands
 - When `--always-run` is enabled (disabled by default), also listens for pull request `opened` and `synchronize` events to automatically trigger rehearsals
 - Detects changes to Prow job configuration files in a PR by rebasing and diffing the PR head against the base
-- Compares job configs at the PR head vs base to identify modified or new presubmit jobs
-- Creates rehearsal ProwJobs prefixed with `rehearsal-` for each modified or new job
+- Compares job configs at the PR head vs base to identify modified or new presubmit, postsubmit, and periodic jobs
+- Creates rehearsal ProwJobs prefixed with `rehearsal-` for each modified or new job the commenter is allowed to rehearse
 
 ## Usage
 
 Comment on a PR to trigger rehearsals:
 
 ```
-# Rehearse all modified jobs
+# Rehearse all modified jobs the commenter is allowed to rehearse
 /rehearse
 # or
 /rehearse all
 
-# Rehearse a specific job
+# Rehearse a specific job (skipped if the commenter is not allowed to rehearse that job type)
 /rehearse <job-name>
 
-# List all jobs available for rehearsal
+# List jobs available for rehearsal at the commenter's permission level
 /rehearse ?
 ```
 
@@ -38,10 +38,19 @@ Multiple `/rehearse <job-name>` lines can be included in a single comment to reh
 
 ## Authorization
 
-A rehearsal can be triggered if the user is:
+Rehearsal permissions are tiered by job type:
+
+### Presubmit jobs
+A presubmit rehearsal can be triggered if the user is:
 - A **top-level approver** in `project-infra`
-- A **KubeVirt org member** who is a leaf approver for all files changed in the PR (both the PR author and the commenting user must be org members)
-- A **KubeVirt org member** if the PR has the `ok-to-rehearse` label (both the PR author and the commenting user must be org members)
+- A **KubeVirt org member** who is a leaf approver for all files changed in the PR
+- A **KubeVirt org member** if the PR has the `ok-to-rehearse` label
+
+### Periodic and postsubmit jobs
+Periodic and postsubmit rehearsals can only be triggered by **top-level approvers** in `project-infra`. No label override is available.
+
+### Restricted jobs
+Individual jobs can be excluded from rehearsal by annotating them with `rehearsal.restricted: "true"` in the job YAML. These jobs are silently skipped regardless of user permissions.
 
 ## Configuration
 
@@ -58,11 +67,12 @@ The `--jobs-namespace` flag is set via a kustomize overlay patch in:
 
 ## Limitations
 
-- Only supports **presubmit** jobs — postsubmit and periodic jobs are not supported
-- Only **modified or new** presubmit jobs are eligible for rehearsal — unmodified jobs cannot be rehearsed even with `/rehearse <job-name>`
-- Jobs that reference `project-infra` in `extra_refs` will fail due to a clone path conflict with the PR's own checkout of `project-infra`
+- Only **modified or new** jobs are eligible for rehearsal — unmodified jobs cannot be rehearsed even with `/rehearse <job-name>`
+- `/rehearse` and `/rehearse all` run every changed job the commenter is allowed to rehearse. Periodics and postsubmits are included for top-level approvers and skipped (with a comment) for everyone else
+- Periodic rehearsals are converted to presubmit ProwJobs so results are reported as GitHub statuses on the PR
+- Rehearsals execute the original job spec, including image publishes and jobs that use secrets. Annotate a job with `rehearsal.restricted: "true"` to exclude it
+- Extra-refs that match the PR repo are stripped to avoid a clone path conflict with the PR checkout
 - Job configs outside the `--jobs-config-base` path are not detected and will not be rehearsed
-- Jobs annotated with `rehearsal.restricted: "true"` are silently skipped
 
 ## Development
 
