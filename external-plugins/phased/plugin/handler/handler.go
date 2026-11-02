@@ -357,10 +357,6 @@ func triggerPhaseJobs(log *logrus.Entry, ghClient githubClient, pr github.PullRe
 	org := pr.Base.Repo.Owner.Login
 	repo := pr.Base.Repo.Name
 
-	if !(org == "kubevirt" && repo == "kubevirt") {
-		return
-	}
-
 	var result string
 	for _, job := range jobs {
 		ctx := jobContext(job)

@@ -3,8 +3,10 @@ package handler
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/sirupsen/logrus"
 	"sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/prow/pkg/github"
+	"sigs.k8s.io/prow/pkg/github/fakegithub"
 )
 
 func presubmit(name string, phase string) config.Presubmit {
@@ -22,6 +24,50 @@ func presubmitWithContext(name, ctx, phase string) config.Presubmit {
 	ps.Context = ctx
 	return ps
 }
+
+type phaseCommentClient struct {
+	githubClient
+	comments *fakegithub.FakeClient
+}
+
+func (c phaseCommentClient) CreateComment(org, repo string, number int, comment string) error {
+	return c.comments.CreateComment(org, repo, number, comment)
+}
+
+var _ = Describe("triggerPhaseJobs", func() {
+	It("posts only untriggered jobs to the pull request repository", func() {
+		gh := fakegithub.NewFakeClient()
+		pr := github.PullRequest{
+			Number: 42,
+			Base: github.PullRequestBranch{Repo: github.Repo{
+				Owner: github.User{Login: "test-org"},
+				Name:  "test-repo",
+			}},
+		}
+		jobs := []config.Presubmit{
+			presubmit("pending-job", "1"),
+			presubmitWithContext("new-job", "custom-context", "1"),
+		}
+
+		triggerPhaseJobs(logrus.NewEntry(logrus.New()), phaseCommentClient{comments: gh}, pr, jobs, 0, 1, map[string]string{
+			"pending-job": github.StatusPending,
+		})
+
+		Expect(gh.IssueCommentsAdded).To(Equal([]string{
+			"test-org/test-repo#42:Phase 0 jobs completed, triggering phase 1 presubmits:\n/test new-job\n",
+		}))
+	})
+
+	It("does not comment when all jobs already have statuses", func() {
+		gh := fakegithub.NewFakeClient()
+
+		triggerPhaseJobs(logrus.NewEntry(logrus.New()), phaseCommentClient{comments: gh}, github.PullRequest{},
+			[]config.Presubmit{presubmitWithContext("job", "custom-context", "1")}, 0, 1,
+			map[string]string{"custom-context": github.StatusSuccess})
+
+		Expect(gh.IssueCommentsAdded).To(BeEmpty())
+	})
+})
 
 var _ = Describe("jobContext", func() {
 	It("returns Name when Context is empty", func() {
