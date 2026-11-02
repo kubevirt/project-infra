@@ -271,45 +271,38 @@ func fetchPresubmitResults(ctx context.Context, storageClient *storage.Client, c
 				log.Warnf("failed to list builds for PR %d job %s: %v", prNum, jobName, err)
 				continue
 			}
-			builds := flakefinder.SortBuilds(buildDirs)
-			if len(builds) == 0 {
-				continue
-			}
+			for _, build := range flakefinder.SortBuilds(buildDirs) {
+				buildDir := path.Join(jobDir, strconv.Itoa(build))
+				finishedPath := path.Join(buildDir, "finished.json")
 
-			latestBuild := builds[0]
-			buildDir := path.Join(jobDir, strconv.Itoa(latestBuild))
-			finishedPath := path.Join(buildDir, "finished.json")
+				attrs, err := flakefinder.ReadGcsObjectAttrs(ctx, storageClient, opts.bucket, finishedPath)
+				if err == storage.ErrObjectNotExist {
+					continue
+				} else if err != nil {
+					log.Warnf("failed to read finished.json attrs for PR %d job %s build %d: %v", prNum, jobName, build, err)
+					continue
+				}
+				if attrs.Created.Before(startOfReport) || attrs.Created.After(endOfReport) {
+					continue
+				}
 
-			attrs, err := flakefinder.ReadGcsObjectAttrs(ctx, storageClient, opts.bucket, finishedPath)
-			if err == storage.ErrObjectNotExist {
-				continue
-			} else if err != nil {
-				log.Warnf("failed to read finished.json attrs for PR %d job %s build %d: %v", prNum, jobName, latestBuild, err)
-				continue
-			}
-			if attrs.Created.Before(startOfReport) {
-				continue
-			}
-			if attrs.Created.After(endOfReport) {
-				continue
-			}
+				profilePath := path.Join(buildDir, "artifacts", "junit.functest.xml")
+				data, err := flakefinder.ReadGcsObject(ctx, storageClient, opts.bucket, profilePath)
+				if err == storage.ErrObjectNotExist {
+					log.Infof("no junit.functest.xml for PR %d job %s build %d", prNum, jobName, build)
+					continue
+				} else if err != nil {
+					log.Warnf("failed to read JUnit for PR %d job %s: %v", prNum, jobName, err)
+					continue
+				}
 
-			profilePath := path.Join(buildDir, "artifacts", "junit.functest.xml")
-			data, err := flakefinder.ReadGcsObject(ctx, storageClient, opts.bucket, profilePath)
-			if err == storage.ErrObjectNotExist {
-				log.Infof("no junit.functest.xml for PR %d job %s build %d", prNum, jobName, latestBuild)
-				continue
-			} else if err != nil {
-				log.Warnf("failed to read JUnit for PR %d job %s: %v", prNum, jobName, err)
-				continue
+				report, err := junit.Ingest(data)
+				if err != nil {
+					log.Warnf("failed to parse JUnit for PR %d job %s: %v", prNum, jobName, err)
+					continue
+				}
+				allResults = append(allResults, &flakefinder.JobResult{Job: jobName, JUnit: report, BuildNumber: build, PR: prNum})
 			}
-
-			report, err := junit.Ingest(data)
-			if err != nil {
-				log.Warnf("failed to parse JUnit for PR %d job %s: %v", prNum, jobName, err)
-				continue
-			}
-			allResults = append(allResults, &flakefinder.JobResult{Job: jobName, JUnit: report, BuildNumber: latestBuild, PR: prNum})
 		}
 	}
 

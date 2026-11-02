@@ -181,6 +181,71 @@ var _ = Describe("fetchPresubmitResults", func() {
 		_, err := fetchPresubmitResults(context.Background(), client, cfg, start, end)
 		Expect(err).To(MatchError(ContainSubstring("listing presubmit PR directories")))
 	})
+
+	DescribeTable("keeps earlier usable results when the newest build is unusable",
+		func(newestState string) {
+			olderDir := repoPrefix + "100/" + jobName + "/1/"
+			objects[olderDir+"finished.json"] = "{}"
+			created[olderDir+"finished.json"] = start.Add(time.Hour)
+			objects[olderDir+"artifacts/junit.functest.xml"] = junitXML
+			newerDir := repoPrefix + "100/" + jobName + "/2/"
+			objects[newerDir+"started.json"] = "{}"
+			if newestState != "running" {
+				objects[newerDir+"finished.json"] = "{}"
+				created[newerDir+"finished.json"] = start.Add(2 * time.Hour)
+			}
+			if newestState == "malformed" {
+				objects[newerDir+"artifacts/junit.functest.xml"] = "<testsuite"
+			}
+
+			results, err := fetchPresubmitResults(context.Background(), client, cfg, start, end)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(results).To(HaveLen(1))
+			Expect(results[0].BuildNumber).To(Equal(1))
+			Expect(results[0].PR).To(Equal(100))
+		},
+		Entry("still running", "running"),
+		Entry("finished without JUnit", "missing-junit"),
+		Entry("malformed JUnit", "malformed"),
+	)
+
+	It("aggregates execution evidence from every usable build in the window", func() {
+		for build := 1; build <= 2; build++ {
+			buildDir := fmt.Sprintf("%s100/%s/%d/", repoPrefix, jobName, build)
+			objects[buildDir+"finished.json"] = "{}"
+			created[buildDir+"finished.json"] = start.Add(time.Duration(build) * time.Hour)
+			if build == 1 {
+				objects[buildDir+"artifacts/junit.functest.xml"] = junitXML
+			} else {
+				objects[buildDir+"artifacts/junit.functest.xml"] = `<testsuite name="suite"><testcase name="test-1"><skipped/></testcase><testcase name="test-2"><failure/></testcase></testsuite>`
+			}
+		}
+
+		results, err := fetchPresubmitResults(context.Background(), client, cfg, start, end)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(results).To(HaveLen(2))
+		Expect(results[0].BuildNumber).To(Equal(2))
+		Expect(results[1].BuildNumber).To(Equal(1))
+		matrix := buildMatrix(results, regexp.MustCompile(`.*`))
+		Expect(matrix["test-1"][jobName]).To(Equal(ExecRan))
+		Expect(matrix["test-2"][jobName]).To(Equal(ExecRan))
+	})
+
+	It("filters by completion time without assuming it follows build order", func() {
+		completionTimes := []time.Time{start, end, end.Add(time.Second), start.Add(-time.Second)}
+		for i, completed := range completionTimes {
+			buildDir := fmt.Sprintf("%s100/%s/%d/", repoPrefix, jobName, i+1)
+			objects[buildDir+"finished.json"] = "{}"
+			created[buildDir+"finished.json"] = completed
+			objects[buildDir+"artifacts/junit.functest.xml"] = junitXML
+		}
+
+		results, err := fetchPresubmitResults(context.Background(), client, cfg, start, end)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(results).To(HaveLen(2))
+		Expect(results[0].BuildNumber).To(Equal(2))
+		Expect(results[1].BuildNumber).To(Equal(1))
+	})
 })
 
 var _ = Describe("buildMatrix", func() {
