@@ -20,11 +20,22 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"regexp"
+	"sort"
+	"strconv"
+	"strings"
 	"testing"
+	"time"
 
+	"cloud.google.com/go/storage"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"google.golang.org/api/option"
 
 	"github.com/joshdk/go-junit"
 
@@ -35,6 +46,142 @@ func TestTestExecutionReport(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "test-execution-report Main Suite")
 }
+
+var _ = Describe("fetchPresubmitResults", func() {
+	const repoPrefix = "pr-logs/pull/kubevirt_kubevirt/"
+	const jobName = "pull-kubevirt-e2e-test"
+	const junitXML = `<testsuite name="suite"><testcase name="test-1"/></testsuite>`
+	var (
+		client       *storage.Client
+		cfg          *Config
+		objects      map[string]string
+		created      map[string]time.Time
+		listingError bool
+		start, end   time.Time
+	)
+
+	BeforeEach(func() {
+		savedOpts := opts
+		DeferCleanup(func() { opts = savedOpts })
+		opts.org, opts.repo, opts.bucket = "kubevirt", "kubevirt", "test-bucket"
+		cfg = &Config{jobPattern: regexp.MustCompile(`^pull-kubevirt-e2e-.*$`)}
+		start = time.Date(2026, time.November, 1, 0, 0, 0, 0, time.UTC)
+		end = start.Add(24 * time.Hour)
+		objects = map[string]string{}
+		created = map[string]time.Time{}
+		listingError = false
+
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			defer GinkgoRecover()
+			Expect(r.Method).To(Equal(http.MethodGet))
+			apiPath := "/storage/v1/b/test-bucket/o"
+			if r.URL.Path == apiPath {
+				if listingError {
+					http.Error(w, "listing denied", http.StatusForbidden)
+					return
+				}
+				Expect(r.URL.Query().Get("delimiter")).To(Equal("/"))
+				prefix := r.URL.Query().Get("prefix")
+				Expect(prefix).To(HavePrefix(repoPrefix))
+				dirs := map[string]struct{}{}
+				for object := range objects {
+					if !strings.HasPrefix(object, prefix) {
+						continue
+					}
+					if i := strings.Index(strings.TrimPrefix(object, prefix), "/"); i >= 0 {
+						dirs[object[:len(prefix)+i+1]] = struct{}{}
+					}
+				}
+				prefixes := sortedKeys(dirs)
+				pageStart := 0
+				if token := r.URL.Query().Get("pageToken"); token != "" {
+					var err error
+					pageStart, err = strconv.Atoi(token)
+					Expect(err).NotTo(HaveOccurred())
+				}
+				pageEnd := min(pageStart+2, len(prefixes))
+				response := map[string]interface{}{"prefixes": prefixes[pageStart:pageEnd]}
+				if pageEnd < len(prefixes) {
+					response["nextPageToken"] = strconv.Itoa(pageEnd)
+				}
+				w.Header().Set("Content-Type", "application/json")
+				Expect(json.NewEncoder(w).Encode(response)).To(Succeed())
+				return
+			}
+			Expect(r.URL.Path).To(HavePrefix(apiPath + "/"))
+			object := strings.TrimPrefix(r.URL.Path, apiPath+"/")
+			body, ok := objects[object]
+			if !ok {
+				http.NotFound(w, r)
+				return
+			}
+			if r.URL.Query().Get("alt") == "media" {
+				fmt.Fprint(w, body)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			Expect(json.NewEncoder(w).Encode(map[string]string{
+				"name": object, "timeCreated": created[object].Format(time.RFC3339Nano),
+			})).To(Succeed())
+		}))
+		DeferCleanup(server.Close)
+		var err error
+		client, err = storage.NewClient(context.Background(), option.WithEndpoint(server.URL+"/storage/v1/"),
+			option.WithoutAuthentication(), storage.WithJSONReads())
+		Expect(err).NotTo(HaveOccurred())
+		DeferCleanup(client.Close)
+	})
+
+	It("discovers every stored PR across pages without latest-build aliases or a gap cutoff", func() {
+		for _, pr := range []string{"50", "100", "300"} {
+			buildDir := repoPrefix + pr + "/" + jobName + "/1/"
+			objects[buildDir+"finished.json"] = "{}"
+			created[buildDir+"finished.json"] = start.Add(time.Hour)
+			objects[buildDir+"artifacts/junit.functest.xml"] = junitXML
+		}
+		for pr := 101; pr <= 160; pr++ {
+			objects[fmt.Sprintf("%s%d/other-job/1/finished.json", repoPrefix, pr)] = "{}"
+		}
+		for _, pr := range []string{"0", "-1", "not-a-pr"} {
+			objects[repoPrefix+pr+"/"+jobName+"/1/finished.json"] = "{}"
+		}
+
+		results, err := fetchPresubmitResults(context.Background(), client, cfg, start, end)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(results).To(HaveLen(3))
+		prs := []int{}
+		for _, result := range results {
+			prs = append(prs, result.PR)
+			Expect(result.Job).To(Equal(jobName))
+		}
+		sort.Ints(prs)
+		Expect(prs).To(Equal([]int{50, 100, 300}))
+	})
+
+	It("ignores unrelated jobs and release-branch lanes", func() {
+		for _, job := range []string{"other-job", jobName + "-1.9"} {
+			buildDir := repoPrefix + "100/" + job + "/1/"
+			objects[buildDir+"finished.json"] = "{}"
+			created[buildDir+"finished.json"] = start.Add(time.Hour)
+			objects[buildDir+"artifacts/junit.functest.xml"] = junitXML
+		}
+		results, err := fetchPresubmitResults(context.Background(), client, cfg, start, end)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(results).To(BeEmpty())
+	})
+
+	It("returns no results for an empty repository", func() {
+		results, err := fetchPresubmitResults(context.Background(), client, cfg, start, end)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(results).To(BeEmpty())
+	})
+
+	It("reports a failure to discover PR directories", func() {
+		listingError = true
+		_, err := fetchPresubmitResults(context.Background(), client, cfg, start, end)
+		Expect(err).To(MatchError(ContainSubstring("listing presubmit PR directories")))
+	})
+})
 
 var _ = Describe("buildMatrix", func() {
 
