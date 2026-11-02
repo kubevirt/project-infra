@@ -388,7 +388,8 @@ func buildMatrix(results []*flakefinder.JobResult, testPattern *regexp.Regexp) m
 
 				status := execStatus(test)
 				cur := matrix[test.Name][r.Job]
-				if status > cur {
+				// An observed execution must not be erased by a quarantined skip.
+				if status == ExecRan || (cur != ExecRan && status > cur) {
 					matrix[test.Name][r.Job] = status
 				}
 			}

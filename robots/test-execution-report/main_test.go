@@ -320,12 +320,18 @@ var _ = Describe("buildMatrix", func() {
 				newResult("job-a", skippedTest("[QUARANTINE] test-q")),
 			},
 			"[QUARANTINE] test-q", "job-a", ExecQuarantined),
-		Entry("ExecQuarantined beats ExecRan because it has a higher iota value",
+		Entry("preserves execution when a later result is quarantined",
 			[]*flakefinder.JobResult{
 				newResult("job-a", passedTest("[QUARANTINE] test-q")),
 				newResult("job-a", skippedTest("[QUARANTINE] test-q")),
 			},
-			"[QUARANTINE] test-q", "job-a", ExecQuarantined),
+			"[QUARANTINE] test-q", "job-a", ExecRan),
+		Entry("promotes quarantine to execution when a later result ran",
+			[]*flakefinder.JobResult{
+				newResult("job-a", skippedTest("[QUARANTINE] test-q")),
+				newResult("job-a", passedTest("[QUARANTINE] test-q")),
+			},
+			"[QUARANTINE] test-q", "job-a", ExecRan),
 		Entry("returns ExecNoData for jobs a test was not seen on",
 			[]*flakefinder.JobResult{
 				newResult("job-a", passedTest("test-1")),
@@ -380,6 +386,26 @@ var _ = Describe("buildMatrix", func() {
 		Expect(matrix).To(HaveKey("include-this"))
 		Expect(matrix).NotTo(HaveKey("exclude-that"))
 	})
+
+	DescribeTable("retains quarantine annotations without classifying executed tests as not run",
+		func(statuses []junit.Status) {
+			const testName = "[QUARANTINE] test-q"
+			results := []*flakefinder.JobResult{}
+			for _, status := range statuses {
+				results = append(results, newResult("job-a", junit.Test{Name: testName, Status: status}))
+			}
+			matrix := buildMatrix(results, matchAll)
+			_, skipped, quarantined := classifyTests(matrix)
+			Expect(matrix[testName]["job-a"]).To(Equal(ExecRan))
+			Expect(skipped).NotTo(HaveKey(testName))
+			Expect(quarantined).To(HaveKeyWithValue(testName, true))
+		},
+		Entry("passed then skipped", []junit.Status{junit.StatusPassed, junit.StatusSkipped}),
+		Entry("skipped then passed", []junit.Status{junit.StatusSkipped, junit.StatusPassed}),
+		Entry("failed then skipped", []junit.Status{junit.StatusFailed, junit.StatusSkipped}),
+		Entry("skipped then failed", []junit.Status{junit.StatusSkipped, junit.StatusFailed}),
+		Entry("repeated skipped observations around an execution", []junit.Status{junit.StatusSkipped, junit.StatusPassed, junit.StatusSkipped}),
+	)
 })
 
 var _ = Describe("classifyTests", func() {
