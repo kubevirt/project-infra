@@ -1,7 +1,7 @@
 module shared-images-controller
 
 require (
-	github.com/containers/podman/v5 v5.8.6
+	github.com/containers/podman/v5 v5.8.8
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/sirupsen/logrus v1.9.4
 	kubevirt.io/project-infra v0.0.0-00010101000000-000000000000
@@ -23,7 +23,7 @@ require (
 	github.com/containerd/log v0.1.0 // indirect
 	github.com/containerd/platforms v1.0.0-rc.1 // indirect
 	github.com/containerd/stargz-snapshotter/estargz v0.18.2 // indirect
-	github.com/containers/buildah v1.43.2 // indirect
+	github.com/containers/buildah v1.43.4 // indirect
 	github.com/containers/libtrust v0.0.0-20230121012942-c1716e8a8d01 // indirect
 	github.com/containers/ocicrypt v1.2.1 // indirect
 	github.com/containers/psgo v1.9.1-0.20250826150930-4ae76f200c86 // indirect
@@ -95,18 +95,18 @@ require (
 	github.com/sylabs/sif/v2 v2.22.0 // indirect
 	github.com/tchap/go-patricia/v2 v2.3.3 // indirect
 	github.com/ulikunitz/xz v0.5.15 // indirect
-	github.com/vbatts/tar-split v0.12.2 // indirect
+	github.com/vbatts/tar-split v0.12.3 // indirect
 	github.com/vbauerster/mpb/v8 v8.10.2 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.67.0 // indirect
 	go.opentelemetry.io/otel v1.44.0 // indirect
 	go.opentelemetry.io/otel/metric v1.44.0 // indirect
 	go.opentelemetry.io/otel/trace v1.44.0 // indirect
-	go.podman.io/common v0.67.1 // indirect
-	go.podman.io/image/v5 v5.39.2 // indirect
-	go.podman.io/storage v1.62.0 // indirect
+	go.podman.io/common v0.67.2 // indirect
+	go.podman.io/image/v5 v5.39.3 // indirect
+	go.podman.io/storage v1.62.1 // indirect
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
-	golang.org/x/crypto v0.55.0 // indirect
+	golang.org/x/crypto v0.56.0 // indirect
 	golang.org/x/net v0.58.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
@@ -124,4 +124,4 @@ require (
 
 replace kubevirt.io/project-infra => github.com/kubevirt/project-infra v0.0.0-20260114110801-16ce7a10fbd6
 
-go 1.25.7
+go 1.26.0
