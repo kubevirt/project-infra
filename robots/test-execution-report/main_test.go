@@ -26,7 +26,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"regexp"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -57,8 +56,20 @@ var _ = Describe("fetchPresubmitResults", func() {
 		objects      map[string]string
 		created      map[string]time.Time
 		listingError bool
+		requests     chan string
 		start, end   time.Time
 	)
+	drainRequests := func() []string {
+		var recorded []string
+		for {
+			select {
+			case request := <-requests:
+				recorded = append(recorded, request)
+			default:
+				return recorded
+			}
+		}
+	}
 
 	BeforeEach(func() {
 		savedOpts := opts
@@ -67,9 +78,13 @@ var _ = Describe("fetchPresubmitResults", func() {
 		cfg = &Config{jobPattern: regexp.MustCompile(`^pull-kubevirt-e2e-.*$`)}
 		start = time.Date(2026, time.November, 1, 0, 0, 0, 0, time.UTC)
 		end = start.Add(24 * time.Hour)
-		objects = map[string]string{}
+		objects = map[string]string{
+			"pr-logs/directory/" + jobName + "/latest-build.txt": "999",
+			"pr-logs/directory/" + jobName + "/999.txt":          "gs://test-bucket/" + repoPrefix + "100/" + jobName + "/999",
+		}
 		created = map[string]time.Time{}
 		listingError = false
+		requests = make(chan string, 10000)
 
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			defer GinkgoRecover()
@@ -82,7 +97,8 @@ var _ = Describe("fetchPresubmitResults", func() {
 				}
 				Expect(r.URL.Query().Get("delimiter")).To(Equal("/"))
 				prefix := r.URL.Query().Get("prefix")
-				Expect(prefix).To(HavePrefix(repoPrefix))
+				Expect(prefix).To(Or(HavePrefix(repoPrefix), Equal("pr-logs/directory/")))
+				requests <- "list:" + prefix
 				dirs := map[string]struct{}{}
 				for object := range objects {
 					if !strings.HasPrefix(object, prefix) {
@@ -110,6 +126,7 @@ var _ = Describe("fetchPresubmitResults", func() {
 			}
 			Expect(r.URL.Path).To(HavePrefix(apiPath + "/"))
 			object := strings.TrimPrefix(r.URL.Path, apiPath+"/")
+			requests <- "read:" + object
 			body, ok := objects[object]
 			if !ok {
 				http.NotFound(w, r)
@@ -132,30 +149,41 @@ var _ = Describe("fetchPresubmitResults", func() {
 		DeferCleanup(client.Close)
 	})
 
-	It("discovers every stored PR across pages without latest-build aliases or a gap cutoff", func() {
-		for _, pr := range []string{"50", "100", "300"} {
+	It("stops after 50 consecutive PRs without recent matching builds", func() {
+		buildDir := repoPrefix + "50/" + jobName + "/1/"
+		objects[buildDir+"finished.json"] = "{}"
+		created[buildDir+"finished.json"] = start.Add(time.Hour)
+		objects[buildDir+"artifacts/junit.functest.xml"] = junitXML
+		objects[repoPrefix+"90/other-job/1/finished.json"] = "{}"
+
+		results, err := fetchPresubmitResults(context.Background(), client, cfg, start, end)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(results).To(BeEmpty())
+		expected := []string{
+			"list:pr-logs/directory/",
+			"read:pr-logs/directory/" + jobName + "/latest-build.txt",
+			"read:pr-logs/directory/" + jobName + "/999.txt",
+		}
+		for pr := 100; pr >= 51; pr-- {
+			expected = append(expected, fmt.Sprintf("list:%s%d/", repoPrefix, pr))
+		}
+		Expect(drainRequests()).To(Equal(expected))
+	})
+
+	It("resets the cutoff for a recent finished build even when its JUnit is missing", func() {
+		for _, pr := range []string{"75", "26"} {
 			buildDir := repoPrefix + pr + "/" + jobName + "/1/"
 			objects[buildDir+"finished.json"] = "{}"
 			created[buildDir+"finished.json"] = start.Add(time.Hour)
-			objects[buildDir+"artifacts/junit.functest.xml"] = junitXML
-		}
-		for pr := 101; pr <= 160; pr++ {
-			objects[fmt.Sprintf("%s%d/other-job/1/finished.json", repoPrefix, pr)] = "{}"
-		}
-		for _, pr := range []string{"0", "-1", "not-a-pr"} {
-			objects[repoPrefix+pr+"/"+jobName+"/1/finished.json"] = "{}"
+			if pr == "26" {
+				objects[buildDir+"artifacts/junit.functest.xml"] = junitXML
+			}
 		}
 
 		results, err := fetchPresubmitResults(context.Background(), client, cfg, start, end)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(results).To(HaveLen(3))
-		prs := []int{}
-		for _, result := range results {
-			prs = append(prs, result.PR)
-			Expect(result.Job).To(Equal(jobName))
-		}
-		sort.Ints(prs)
-		Expect(prs).To(Equal([]int{50, 100, 300}))
+		Expect(results).To(HaveLen(1))
+		Expect(results[0].PR).To(Equal(26))
 	})
 
 	It("ignores unrelated jobs and release-branch lanes", func() {
@@ -170,19 +198,19 @@ var _ = Describe("fetchPresubmitResults", func() {
 		Expect(results).To(BeEmpty())
 	})
 
-	It("returns no results for an empty repository", func() {
+	It("returns no results when the reference alias has no matching PR results", func() {
 		results, err := fetchPresubmitResults(context.Background(), client, cfg, start, end)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(results).To(BeEmpty())
 	})
 
-	It("reports a failure to discover PR directories", func() {
+	It("reports a failure to discover reference jobs", func() {
 		listingError = true
 		_, err := fetchPresubmitResults(context.Background(), client, cfg, start, end)
-		Expect(err).To(MatchError(ContainSubstring("listing presubmit PR directories")))
+		Expect(err).To(MatchError(ContainSubstring("resolving latest PR number")))
 	})
 
-	DescribeTable("keeps earlier usable results when the newest build is unusable",
+	DescribeTable("does not fall back to older results when the newest build is unusable",
 		func(newestState string) {
 			olderDir := repoPrefix + "100/" + jobName + "/1/"
 			objects[olderDir+"finished.json"] = "{}"
@@ -197,19 +225,27 @@ var _ = Describe("fetchPresubmitResults", func() {
 			if newestState == "malformed" {
 				objects[newerDir+"artifacts/junit.functest.xml"] = "<testsuite"
 			}
+			if newestState == "before-window" || newestState == "after-window" {
+				objects[newerDir+"artifacts/junit.functest.xml"] = junitXML
+				created[newerDir+"finished.json"] = start.Add(-time.Second)
+				if newestState == "after-window" {
+					created[newerDir+"finished.json"] = end.Add(time.Second)
+				}
+			}
 
 			results, err := fetchPresubmitResults(context.Background(), client, cfg, start, end)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(results).To(HaveLen(1))
-			Expect(results[0].BuildNumber).To(Equal(1))
-			Expect(results[0].PR).To(Equal(100))
+			Expect(results).To(BeEmpty())
+			Expect(drainRequests()).NotTo(ContainElement("read:" + olderDir + "finished.json"))
 		},
 		Entry("still running", "running"),
 		Entry("finished without JUnit", "missing-junit"),
 		Entry("malformed JUnit", "malformed"),
+		Entry("finished before the window", "before-window"),
+		Entry("finished after the window", "after-window"),
 	)
 
-	It("aggregates execution evidence from every usable build in the window", func() {
+	It("loads only the highest numeric build for each PR and lane", func() {
 		for build := 1; build <= 2; build++ {
 			buildDir := fmt.Sprintf("%s100/%s/%d/", repoPrefix, jobName, build)
 			objects[buildDir+"finished.json"] = "{}"
@@ -223,29 +259,81 @@ var _ = Describe("fetchPresubmitResults", func() {
 
 		results, err := fetchPresubmitResults(context.Background(), client, cfg, start, end)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(results).To(HaveLen(2))
+		Expect(results).To(HaveLen(1))
 		Expect(results[0].BuildNumber).To(Equal(2))
-		Expect(results[1].BuildNumber).To(Equal(1))
 		matrix := buildMatrix(results, regexp.MustCompile(`.*`))
-		Expect(matrix["test-1"][jobName]).To(Equal(ExecRan))
+		Expect(matrix["test-1"][jobName]).To(Equal(ExecSkipped))
 		Expect(matrix["test-2"][jobName]).To(Equal(ExecRan))
+		Expect(drainRequests()).NotTo(ContainElement("read:" + repoPrefix + "100/" + jobName + "/1/finished.json"))
 	})
 
-	It("filters by completion time without assuming it follows build order", func() {
-		completionTimes := []time.Time{start, end, end.Add(time.Second), start.Add(-time.Second)}
-		for i, completed := range completionTimes {
-			buildDir := fmt.Sprintf("%s100/%s/%d/", repoPrefix, jobName, i+1)
+	DescribeTable("filters the latest build by its completion time",
+		func(offset time.Duration, included bool) {
+			buildDir := repoPrefix + "100/" + jobName + "/1/"
 			objects[buildDir+"finished.json"] = "{}"
-			created[buildDir+"finished.json"] = completed
+			created[buildDir+"finished.json"] = start.Add(offset)
 			objects[buildDir+"artifacts/junit.functest.xml"] = junitXML
-		}
 
-		results, err := fetchPresubmitResults(context.Background(), client, cfg, start, end)
+			results, err := fetchPresubmitResults(context.Background(), client, cfg, start, end)
+			Expect(err).NotTo(HaveOccurred())
+			if included {
+				Expect(results).To(HaveLen(1))
+				Expect(results[0].BuildNumber).To(Equal(1))
+			} else {
+				Expect(results).To(BeEmpty())
+			}
+		},
+		Entry("at the start", time.Duration(0), true),
+		Entry("at the end", 24*time.Hour, true),
+		Entry("before the start", -time.Nanosecond, false),
+		Entry("after the end", 24*time.Hour+time.Nanosecond, false),
+	)
+
+	It("resolves the PR from the newest matching non-release reference job across pages", func() {
+		objects["pr-logs/directory/"+jobName+"-new/latest-build.txt"] = "1000"
+		objects["pr-logs/directory/"+jobName+"-new/1000.txt"] = "gs://test-bucket/" + repoPrefix + "150/" + jobName + "-new/1000"
+		objects["pr-logs/directory/"+jobName+"-invalid/latest-build.txt"] = "not-a-build"
+		objects["pr-logs/directory/"+jobName+"-missing/1001.txt"] = "unused"
+		objects["pr-logs/directory/"+jobName+"-1.9/latest-build.txt"] = "1002"
+		objects["pr-logs/directory/other-job/latest-build.txt"] = "1003"
+
+		pr, err := resolveLatestPR(context.Background(), client, cfg)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(results).To(HaveLen(2))
-		Expect(results[0].BuildNumber).To(Equal(2))
-		Expect(results[1].BuildNumber).To(Equal(1))
+		Expect(pr).To(Equal(150))
 	})
+
+	It("fails to resolve a PR without active matching reference jobs", func() {
+		objects = map[string]string{}
+		_, err := resolveLatestPR(context.Background(), client, cfg)
+		Expect(err).To(MatchError(ContainSubstring("no active job matching pattern")))
+	})
+
+	It("reports a missing reference-build alias", func() {
+		delete(objects, "pr-logs/directory/"+jobName+"/999.txt")
+		_, err := resolveLatestPR(context.Background(), client, cfg)
+		Expect(err).To(MatchError(ContainSubstring("reading alias file")))
+	})
+})
+
+var _ = Describe("parsePRFromAliasPath", func() {
+	DescribeTable("parses the reference PR",
+		func(alias string) {
+			pr, err := parsePRFromAliasPath(alias, "kubevirt_kubevirt")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(pr).To(Equal(100))
+		},
+		Entry("GCS URL", "gs://bucket/pr-logs/pull/kubevirt_kubevirt/100/job/1"),
+		Entry("relative path with whitespace", " pr-logs/pull/kubevirt_kubevirt/100/job/1\n"),
+	)
+	DescribeTable("rejects malformed aliases",
+		func(alias string) {
+			_, err := parsePRFromAliasPath(alias, "kubevirt_kubevirt")
+			Expect(err).To(HaveOccurred())
+		},
+		Entry("wrong repository", "pr-logs/pull/other_repo/100/job/1"),
+		Entry("nonnumeric PR", "pr-logs/pull/kubevirt_kubevirt/not-a-pr/job/1"),
+		Entry("missing PR", "pr-logs/pull/kubevirt_kubevirt"),
+	)
 })
 
 var _ = Describe("buildMatrix", func() {
