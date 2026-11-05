@@ -71,7 +71,7 @@ func init() {
 	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&quarantineOpts.filterPeriodicJobRunResults, "filter-periodic-job-run-results", true, "whether to filter the results for periodics")
 	mostFlakyTestsReportCmd.PersistentFlags().StringVar(&quarantineOpts.filterLaneRegex, "filter-lane-regex", filterLaneRegexDefault, "the regular expression to use to filter test lanes with")
 	mostFlakyTestsReportCmd.PersistentFlags().BoolVar(&quarantineOpts.includeRollingWindow, "include-rolling-window", true, "whether to include today's rolling window flakefinder data")
-	mostFlakyTestsReportCmd.PersistentFlags().DurationVar(&quarantineOpts.maxFailureAge, "max-failure-age", 72*time.Hour, "maximum age of failures to consider as recent")
+	mostFlakyTestsReportCmd.PersistentFlags().DurationVar(&quarantineOpts.maxFailureAge, "max-failure-age", 72*time.Hour, "maximum failure age for report inclusion and recent-failure highlighting")
 	mostFlakyTestsReportCmd.PersistentFlags().IntVar(&quarantineOpts.minRecentFailures, "min-recent-failures", 2, "minimum number of recent failures required per lane")
 	mostFlakyTestsReportCmd.PersistentFlags().DurationVar(&quarantineOpts.minFailureInterval, "min-failure-interval", 24*time.Hour, "minimum time span between recent failures to confirm a consistent pattern")
 	mostFlakyTestsReportCmd.PersistentFlags().StringVar(&quarantineOpts.jobConfigPath, "job-config-path", "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml", "path to the Prow presubmit job config YAML used to determine required vs optional lanes")
@@ -132,6 +132,7 @@ func MostFlakyTestsReport(_ *cobra.Command, _ []string) error {
 const noSIGKey = "NONE"
 
 func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string, testNames []string, mostFlakyTestsBySIG map[string]TestsPerSIG, err error) {
+	failureAgeFilter := searchci.HasMinRecentFailures(quarantineOpts.maxFailureAge, 1, 0)
 	recentFailureFilter := searchci.HasMinRecentFailures(quarantineOpts.maxFailureAge, quarantineOpts.minRecentFailures, quarantineOpts.minFailureInterval)
 	mostFlakyTests := make(map[string][]*TestToQuarantine)
 	for _, topXTest := range topXTests {
@@ -141,6 +142,9 @@ func aggregateMostFlakyTestsBySIG(topXTests flakestats.TopXTests) (sigs []string
 				return nil, nil, nil, fmt.Errorf("could not scrape results for Test %q: %w", topXTest.Name, err)
 			}
 			if candidate == nil {
+				continue
+			}
+			if len(searchci.FilterImpactsBy(candidate.RelevantImpacts, failureAgeFilter)) == 0 {
 				continue
 			}
 			if len(searchci.FilterImpactsBy(candidate.RelevantImpacts, recentFailureFilter)) > 0 {
