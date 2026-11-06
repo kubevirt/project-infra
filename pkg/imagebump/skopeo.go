@@ -25,7 +25,6 @@ import (
 	"fmt"
 	"os/exec"
 	"regexp"
-	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -88,33 +87,60 @@ var inspectCmd = func(fullImageRef string) (time.Time, error) {
 	return parsed, nil
 }
 
-// LatestSkopeoTag returns the last tag in skopeo list-tags order that matches kubevirtCITagPattern
-// after sorting by the date part first - if that doesn't work, i.e. if the date part is the same for
-// two tags, then it resorts to calling skopeo inspect, and comparing the Created entry
+// kubevirtCITagTime parses both current date/hash tags and legacy gocli timestamps.
+func kubevirtCITagTime(tag string) (time.Time, bool) {
+	if !kubevirtCITagPattern.MatchString(tag) {
+		return time.Time{}, false
+	}
+	stamp, _, _ := strings.Cut(strings.TrimPrefix(tag, "v"), "-")
+	var layout string
+	switch len(stamp) {
+	case 8:
+		layout = "20060102"
+	case 10:
+		layout = "0601021504"
+	case 12:
+		layout = "200601021504"
+	default:
+		return time.Time{}, false
+	}
+	parsed, err := time.Parse(layout, stamp)
+	return parsed, err == nil
+}
+
+// LatestSkopeoTag selects the newest parsed tag timestamp, independently of the
+// registry's ordering and optional v prefixes. Equal timestamps are resolved by
+// inspecting the images' creation times.
 func LatestSkopeoTag(imageRef string) (string, error) {
 	tags, err := listTagsCmd(imageRef)
 	if err != nil {
 		return "", fmt.Errorf("listTagsCmd for %s: %w", imageRef, err)
 	}
 	var allMatching []string
+	tagTimes := map[string]time.Time{}
 	for _, t := range tags {
-		if kubevirtCITagPattern.MatchString(t) {
+		if stamp, ok := kubevirtCITagTime(t); ok {
 			allMatching = append(allMatching, t)
+			tagTimes[t] = stamp
 		}
 	}
 	if len(allMatching) == 0 {
 		return "", fmt.Errorf("%w for %s (pattern %s)", ErrNoMatchingTag, imageRef, kubevirtCITagPattern.String())
 	}
 
-	// First pass, reverse sort, so newest elements should be at the start
-	slices.Reverse(allMatching)
+	// Sort by the parsed timestamp rather than the raw tag or registry order.
+	sort.Slice(allMatching, func(i, j int) bool {
+		iTime, jTime := tagTimes[allMatching[i]], tagTimes[allMatching[j]]
+		if iTime.Equal(jTime) {
+			return allMatching[i] > allMatching[j]
+		}
+		return iTime.After(jTime)
+	})
 
-	// Now reduce to the subset of the latest candidates, i.e. remove all that don't have the date component of the last
-	// entry
-	dateComponent := strings.Split(allMatching[0], "-")[0]
+	latestTime := tagTimes[allMatching[0]]
 	var candidates []string
 	for _, c := range allMatching {
-		if !strings.HasPrefix(c, dateComponent) {
+		if !tagTimes[c].Equal(latestTime) {
 			continue
 		}
 		candidates = append(candidates, c)

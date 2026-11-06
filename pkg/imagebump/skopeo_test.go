@@ -80,8 +80,57 @@ var _ = Describe("skopeo", func() {
 					"quay.io/kubevirtci/ginkgo-tests:v20260716-a2b9efe": time.Date(2026, 07, 16, 10, 0, 0, 0, time.UTC),
 					"quay.io/kubevirtci/ginkgo-tests:v20260716-ff8cd14": time.Date(2026, 07, 16, 1, 0, 0, 0, time.UTC)},
 			),
+			Entry("new unprefixed plugin tags alongside old v-prefixed tags",
+				"quay.io/kubevirtci/phased",
+				[]string{"202611050920-2a81b11", "v202607231917-ca75c4e"},
+				"202611050920-2a81b11", false, map[string]time.Time{},
+			),
+			Entry("a newer v-prefixed tag in unordered registry output",
+				"quay.io/kubevirtci/phased",
+				[]string{"v202611050920-2a81b11", "202607231917-ca75c4e", "v20260801-1234567"},
+				"v202611050920-2a81b11", false, map[string]time.Time{},
+			),
+			Entry("unordered minute timestamps",
+				"quay.io/kubevirtci/phased",
+				[]string{"202611050920-2a81b11", "202611050800-ca75c4e", "202611040552-be2ec11"},
+				"202611050920-2a81b11", false, map[string]time.Time{},
+			),
+			Entry("a day tag and a minute tag on the same day",
+				"quay.io/kubevirtci/phased",
+				[]string{"v202611050920-2a81b11", "v20261105-ca75c4e"},
+				"v202611050920-2a81b11", false, map[string]time.Time{},
+			),
+			Entry("legacy two-digit years alongside modern timestamps",
+				"quay.io/kubevirtci/gocli",
+				[]string{"2611052237-e2b9d71c", "20250204-istiobump"},
+				"2611052237-e2b9d71c", false, map[string]time.Time{},
+			),
+			Entry("ignores malformed dates and non-release tags",
+				"quay.io/kubevirtci/phased",
+				[]string{"latest", "v20261305-ca75c4e", "v20261105-2a81b11-amd64", "202611050920-2a81b11"},
+				"202611050920-2a81b11", false, map[string]time.Time{},
+			),
+			Entry("no parseable timestamps",
+				"quay.io/kubevirtci/phased",
+				[]string{"latest", "v20261305-ca75c4e"},
+				"", true, map[string]time.Time{},
+			),
 		)
 	})
+
+	DescribeTable("parses tag timestamps",
+		func(tag string, expected time.Time, valid bool) {
+			stamp, ok := kubevirtCITagTime(tag)
+			Expect(ok).To(Equal(valid))
+			Expect(stamp).To(Equal(expected))
+		},
+		Entry("prefixed day", "v20261105-2a81b11", time.Date(2026, 11, 5, 0, 0, 0, 0, time.UTC), true),
+		Entry("unprefixed minute", "202611050920-2a81b11", time.Date(2026, 11, 5, 9, 20, 0, 0, time.UTC), true),
+		Entry("legacy gocli", "2611052237-e2b9d71c", time.Date(2026, 11, 5, 22, 37, 0, 0, time.UTC), true),
+		Entry("invalid date", "v20260230-2a81b11", time.Time{}, false),
+		Entry("unsupported length", "v202611050-2a81b11", time.Time{}, false),
+		Entry("non-release tag", "latest", time.Time{}, false),
+	)
 })
 
 func newListTagsCommand(output []string) listTagsCommand {
