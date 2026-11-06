@@ -59,3 +59,13 @@ depending on billing alerts. See [README](limiter/README.md)
 ## Contributing
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute.
+
+## Documentation
+
+Use the directory overview above to find component-specific documentation.
+For common contributor tasks, start with:
+
+* [Development prerequisites and commands](CONTRIBUTING.md)
+* [CI image development and publishing](images/README.md)
+* [Label configuration and synchronization](docs/labels-management.md)
+* [Generated label listing and update procedure](docs/labels.md)
