@@ -15,6 +15,11 @@
 
 BASE_URL="https://storage.googleapis.com"
 
+# One attempt plus two retries for curl's transient HTTP/timeout errors and
+# refused connections. Bound each attempt and the retry window; keep curl's
+# exponential backoff and Retry-After handling. Do not retry permanent HTTP errors.
+GCS_CURL_RETRY_ARGS=(--retry 2 --retry-connrefused --retry-max-time 60 --connect-timeout 10 --max-time 30)
+
 # Function to validate GOOGLE_APPLICATION_CREDENTIALS and set access_token global variable
 get_access_token() {
     if [ -z "${GOOGLE_APPLICATION_CREDENTIALS}" ]; then
@@ -97,21 +102,29 @@ stat_gcs_file() {
 
     auth_header=$(get_auth_header "$auth") || exit 1
 
-    local stat_response
-    stat_response=$(curl --silent --show-error --fail-with-body --retry 2 -X GET \
+    local tmpfile
+    tmpfile=$(mktemp) || { echo "Error: mktemp failed" >&2; return 1; }
+
+    local curl_exit=0
+    # A file lets curl discard earlier response bodies before retrying. Capturing
+    # stdout would concatenate an error body with the eventual metadata response.
+    curl --silent --show-error --fail-with-body "${GCS_CURL_RETRY_ARGS[@]}" --output "$tmpfile" -X GET \
       ${auth_header:+-H "$auth_header"} \
-      "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path")
-    local curl_exit=$?
+      "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path" || curl_exit=$?
 
     if [ "$curl_exit" -ne 0 ]; then
+        rm -f "$tmpfile"
         return "${curl_exit}"
     fi
 
-    if ! echo "$stat_response" | jq -e '.name' > /dev/null 2>&1; then
-        echo "Warning: stat succeeded but response has no .name for $2: $stat_response" >&2
+    if ! jq -e '.name' "$tmpfile" > /dev/null 2>&1; then
+        echo "Warning: stat succeeded but response has no .name for $2:" >&2
+        cat "$tmpfile" >&2
+        rm -f "$tmpfile"
         return 1
     fi
 
+    rm -f "$tmpfile"
     return 0
 }
 
@@ -127,11 +140,11 @@ cat_gcs_file() {
     tmpfile=$(mktemp) || { echo "Error: mktemp failed" >&2; return 1; }
 
     local http_code
-    http_code=$(curl --silent --show-error --fail-with-body --retry 2 --output "$tmpfile" --write-out '%{http_code}' -X GET \
+    local curl_exit=0
+    http_code=$(curl --silent --show-error --fail-with-body "${GCS_CURL_RETRY_ARGS[@]}" --output "$tmpfile" --write-out '%{http_code}' -X GET \
       ${auth_header:+-H "$auth_header"} \
       -H "Cache-Control: no-cache" \
-      "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path?alt=media&ignoreCache=1")
-    local curl_exit=$?
+      "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path?alt=media&ignoreCache=1") || curl_exit=$?
 
     if [ "$curl_exit" -ne 0 ]; then
         echo "Error: HTTP ${http_code:-?} for $2 (curl exit $curl_exit)" >&2
@@ -150,20 +163,85 @@ cat_gcs_file() {
 # Function to delete a file from GCS
 rm_gcs_file() {
     local bucket_name="$1"
-    local gcs_file_path=$(urlencode_path "$2")
+    local gcs_file_path
+    gcs_file_path=$(urlencode_path "$2")
 
-    auth_header=$(get_auth_header) || exit 1
+    local auth_header
+    auth_header=$(get_auth_header) || return 1
 
-    delete_response=$(curl -s -X DELETE \
-      -H "$auth_header" \
-      "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path")
+    local tmpfile
+    tmpfile=$(mktemp) || { echo "Error: mktemp failed while deleting $2" >&2; return 1; }
 
-    if [ -z "$delete_response" ]; then
-        echo "File $gcs_file_path deleted successfully."
+    local http_code
+    local curl_exit=0
+    # Pin the generation once. A retry must never delete a replacement uploaded
+    # under the same name after this lookup, even if the first DELETE succeeded
+    # but its response was lost.
+    http_code=$(curl --silent --show-error "${GCS_CURL_RETRY_ARGS[@]}" --output "$tmpfile" --write-out '%{http_code}' -X GET \
+      -H "$auth_header" -H "Cache-Control: no-cache" \
+      "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path?fields=generation") || curl_exit=$?
+
+    if [ "$curl_exit" -eq 0 ] && [ "$http_code" = "404" ]; then
+        rm -f "$tmpfile"
+        echo "File gs://$bucket_name/$2 is already absent (HTTP 404)."
         return 0
-    else
-        echo "Failed to delete file. Response:"
-        echo "$delete_response" | jq '.'
+    fi
+    if [ "$curl_exit" -ne 0 ] || [ "$http_code" != "200" ]; then
+        echo "Error: failed to get generation for gs://$bucket_name/$2 (HTTP ${http_code:-?}, curl exit $curl_exit)" >&2
+        if [ -s "$tmpfile" ]; then
+            echo "Response body:" >&2
+            cat "$tmpfile" >&2
+        fi
+        rm -f "$tmpfile"
+        if [ "$curl_exit" -ne 0 ]; then
+            return "$curl_exit"
+        fi
         return 1
     fi
+
+    local generation
+    # Keep the API's decimal string intact; converting it to a jq number can
+    # lose precision. Never delete when the metadata is missing or malformed.
+    if ! generation=$(jq -er '.generation | select(type == "string") | select(test("^[1-9][0-9]*$"))' "$tmpfile" 2>/dev/null); then
+        echo "Error: invalid generation for gs://$bucket_name/$2; refusing to delete" >&2
+        cat "$tmpfile" >&2
+        rm -f "$tmpfile"
+        return 1
+    fi
+    # Do not report the metadata body as a DELETE response on a connection error.
+    if ! : > "$tmpfile"; then
+        echo "Error: failed to clear temporary response file while deleting $2" >&2
+        rm -f "$tmpfile"
+        return 1
+    fi
+
+    curl_exit=0
+    # Guard the assignment so errexit cannot skip diagnostics and cleanup.
+    http_code=$(curl --silent --show-error "${GCS_CURL_RETRY_ARGS[@]}" --output "$tmpfile" --write-out '%{http_code}' -X DELETE \
+      -H "$auth_header" \
+      "${BASE_URL}/storage/v1/b/$bucket_name/o/$gcs_file_path?ifGenerationMatch=$generation") || curl_exit=$?
+
+    if [ "$curl_exit" -ne 0 ] || { [ "$http_code" != "204" ] && [ "$http_code" != "404" ]; }; then
+        echo "Error: failed to delete gs://$bucket_name/$2 (HTTP ${http_code:-?}, curl exit $curl_exit)" >&2
+        if [ "$http_code" = "412" ]; then
+            echo "Object generation changed; refusing to delete the replacement." >&2
+        fi
+        if [ -s "$tmpfile" ]; then
+            echo "Response body:" >&2
+            cat "$tmpfile" >&2
+        fi
+        rm -f "$tmpfile"
+        if [ "$curl_exit" -ne 0 ]; then
+            return "$curl_exit"
+        fi
+        return 1
+    fi
+
+    rm -f "$tmpfile"
+    if [ "$http_code" = "204" ]; then
+        echo "File gs://$bucket_name/$2 deleted successfully (HTTP 204)."
+    else
+        echo "File gs://$bucket_name/$2 is already absent (HTTP 404)."
+    fi
+    return 0
 }
