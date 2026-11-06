@@ -1,0 +1,304 @@
+#!/usr/bin/env python3
+"""
+Compat shim: accepts a subset of yaspeller CLI and config JSON, runs cspell underneath.
+Used by kubevirt docs images so existing Makefile targets keep working without the archived
+yaspeller npm package.
+"""
+
+from __future__ import annotations
+
+import argparse
+import fnmatch
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+from typing import Any, List, Tuple
+
+# Any of these suggests the dictionary entry is a regexp (yaspeller format), not a literal word.
+_REGEX_HINT = re.compile(r"[\|\(\)\[\]\*\?\+\{\}\\^$]")
+
+# Default tags from kubevirt Makefiles (--ignore-tags ...)
+_DEFAULT_IGNORE_TAGS = (
+    "iframe",
+    "img",
+    "code",
+    "kbd",
+    "object",
+    "samp",
+    "script",
+    "style",
+    "var",
+)
+
+
+def _is_regex_dictionary_entry(entry: str) -> bool:
+    return bool(_REGEX_HINT.search(entry))
+
+
+def _js_regex_flags(base: str) -> str:
+    """Suffix for cspell ignoreRegExpList entries (JS-style)."""
+    if "a-z" in base.lower() or r"\s" in base or "(?i)" in base:
+        return "g"
+    return "gi"
+
+
+def _build_tag_ignore_patterns(tags: List[str]) -> List[str]:
+    """Patterns to drop text inside given HTML/Markdown tags from spellcheck (approximate)."""
+    patterns: List[str] = []
+    for raw in tags:
+        t = raw.strip().lower()
+        if not t:
+            continue
+        void_tags = {"img", "br", "hr", "input", "meta", "link"}
+        if t in void_tags or t == "iframe":
+            patterns.append(rf"/<{t}\b[^>]*/?>/gi")
+        else:
+            patterns.append(rf"/<{t}\b[^>]*>[\s\S]*?</{t}>/gi")
+    return patterns
+
+
+def _exclude_to_ignore_path(exclude: str, root: Path) -> str | None:
+    """Map yaspeller excludeFiles entry to cspell ignorePaths glob (relative to root)."""
+    ex = exclude.rstrip("/")
+    if not ex:
+        return None
+    root_canon = root.resolve().as_posix().rstrip("/")
+    if ex.startswith(root_canon):
+        rel = ex[len(root_canon) :].lstrip("/")
+    elif ex.startswith("/srv/"):
+        # Makefile mounts repo at /srv; config uses /srv/... even if root differs
+        rel = ex[len("/srv/") :].lstrip("/")
+    else:
+        rel = ex.lstrip("/")
+
+    if not rel:
+        return "**"
+    if rel.endswith("/"):
+        return f"{rel}**"
+    # File or directory name without trailing slash
+    low = rel.lower()
+    if low.endswith(".md") or low.endswith(".html"):
+        return rel
+    return f"{rel}/**"
+
+
+def _build_cspell_config(
+    cfg: dict[str, Any],
+    root: Path,
+    ignore_tags: List[str],
+) -> dict[str, Any]:
+    words: List[str] = []
+    ignore_reg_exp: List[str] = []
+
+    for entry in cfg.get("dictionary", []):
+        if not isinstance(entry, str):
+            continue
+        s = entry.strip()
+        if not s:
+            continue
+        if _is_regex_dictionary_entry(s):
+            flags = _js_regex_flags(s)
+            ignore_reg_exp.append(f"/{s}/{flags}")
+        else:
+            words.append(s)
+
+    if cfg.get("ignoreUrls", False):
+        ignore_reg_exp.append(r"/https?:\/\/[^\s)>]+/gi")
+
+    if cfg.get("ignoreDigits", False):
+        ignore_reg_exp.append(r"/\b\d+\b/g")
+
+    ignore_paths: List[str] = []
+    for ex in cfg.get("excludeFiles", []):
+        if not isinstance(ex, str):
+            continue
+        mapped = _exclude_to_ignore_path(ex, root)
+        if mapped:
+            ignore_paths.append(mapped)
+
+    lang = cfg.get("lang", "en")
+    if not isinstance(lang, str):
+        lang = "en"
+
+    ignore_reg_exp.extend(_build_tag_ignore_patterns(ignore_tags))
+
+    # Approximate fenced code block skip (yaspeller did not spellcheck inside code)
+    ignore_reg_exp.append(
+        r"/^(\s*`{3,}).*[\s\S]*?^\1/gm"
+    )
+
+    return {
+        "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+        "version": "0.2",
+        "language": lang,
+        "words": sorted(set(words)),
+        "ignorePaths": ignore_paths,
+        "ignoreRegExpList": ignore_reg_exp,
+    }
+
+
+def _find_repeat_words(path: Path, min_len: int = 3) -> List[Tuple[int, str]]:
+    """Return (1-based line number, word) for simple repeated-word pairs."""
+    try:
+        text = path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return []
+    rep_re = re.compile(rf"\b([A-Za-z]{{{min_len},}})\s+\1\b", re.IGNORECASE)
+    hits: List[Tuple[int, str]] = []
+    for i, line in enumerate(text.splitlines(), start=1):
+        for m in rep_re.finditer(line):
+            hits.append((i, m.group(1)))
+    return hits
+
+
+def _collect_files(root: Path, extensions: Tuple[str, ...]) -> List[Path]:
+    files: List[Path] = []
+    for p in root.rglob("*"):
+        if not p.is_file():
+            continue
+        if p.suffix.lower() in extensions:
+            files.append(p)
+    return sorted(files)
+
+
+def _matches_ignore_paths(rel_posix: str, patterns: List[str]) -> bool:
+    """Whether rel_posix (relative to root) matches any cspell-style ignorePaths entry."""
+    rel = rel_posix.lstrip("./")
+    for pat in patterns:
+        if not pat:
+            continue
+        if pat.endswith("/**"):
+            prefix = pat[: -3].rstrip("/")
+            if prefix and (rel == prefix or rel.startswith(prefix + "/")):
+                return True
+        elif pat == "**":
+            return True
+        elif "*" in pat or "?" in pat:
+            if fnmatch.fnmatch(rel, pat):
+                return True
+        else:
+            if rel == pat or rel.endswith("/" + pat):
+                return True
+    return False
+
+
+def _should_check_file(path: Path, root: Path, extensions: Tuple[str, ...], cfg: dict[str, Any]) -> bool:
+    if path.suffix.lower() not in extensions:
+        return False
+    try:
+        rel = path.resolve().relative_to(root.resolve()).as_posix()
+    except ValueError:
+        return False
+    mapped_list: List[str] = []
+    for ex in cfg.get("excludeFiles", []):
+        if isinstance(ex, str):
+            m = _exclude_to_ignore_path(ex, root)
+            if m:
+                mapped_list.append(m)
+    return not _matches_ignore_paths(rel, mapped_list)
+
+
+def main(argv: List[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="yaspeller", add_help=False)
+    parser.add_argument("-c", "--config", required=True, help="Path to yaspeller.json")
+    parser.add_argument("--only-errors", action="store_true", help="Ignored (compat)")
+    parser.add_argument(
+        "--ignore-tags",
+        default=",".join(_DEFAULT_IGNORE_TAGS),
+        help="Comma-separated HTML tags to skip (yaspeller compat)",
+    )
+    parser.add_argument("root", nargs=1, help="Directory to scan")
+    parser.add_argument("-h", "--help", action="help", help="Show help")
+    args = parser.parse_args(argv)
+
+    config_path = Path(args.config).resolve()
+    root = Path(args.root[0]).resolve()
+    if not config_path.is_file():
+        print(f"✗ config not found: {config_path}", file=sys.stderr)
+        return 2
+    if not root.is_dir():
+        print(f"✗ not a directory: {root}", file=sys.stderr)
+        return 2
+
+    with open(config_path, encoding="utf-8") as f:
+        cfg = json.load(f)
+
+    ext_list = cfg.get("fileExtensions", [".md", ".html"])
+    extensions = tuple(
+        e.lower() if str(e).startswith(".") else f".{str(e).lower()}" for e in ext_list
+    )
+
+    ignore_tags = [t.strip() for t in args.ignore_tags.split(",") if t.strip()]
+    cspell_cfg = _build_cspell_config(cfg, root, ignore_tags)
+
+    exit_issues = 0
+
+    # CSpell resolves ignorePaths relative to the config file directory, so the
+    # generated config must live under the scan root (same layout as /srv in CI).
+    cfg_name = ".cspell-yaspeller-shim.json"
+    tmp_path = str(root / cfg_name)
+    try:
+        with open(tmp_path, "w", encoding="utf-8") as tmp:
+            json.dump(cspell_cfg, tmp, indent=2, ensure_ascii=False)
+
+        globs = [f"**/*{e}" for e in extensions]
+        cmd = [
+            "cspell",
+            "lint",
+            "--no-progress",
+            "--no-summary",
+            "--no-config-search",
+            "--no-must-find-files",
+            "-c",
+            tmp_path,
+            *globs,
+        ]
+        proc = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            cwd=str(root),
+        )
+        out = (proc.stdout or "") + (proc.stderr or "")
+        for line in out.splitlines():
+            line_stripped = line.strip()
+            if not line_stripped:
+                continue
+            # Typical: "path/to/file.md:1:11 - Unknown word (typo)"
+            if "Unknown word" in line_stripped or "unknown word" in line_stripped.lower():
+                exit_issues += 1
+                if ": " in line_stripped:
+                    rel_part = line_stripped.split(": ", 1)[0]
+                else:
+                    rel_part = line_stripped
+                print(f"✗ {rel_part}")
+
+        if proc.returncode not in (0, 1) and exit_issues == 0:
+            print(f"✗ cspell failed: {out or proc.returncode}", file=sys.stderr)
+            return proc.returncode if proc.returncode else 2
+
+        if cfg.get("findRepeatWords", False):
+            for fpath in _collect_files(root, extensions):
+                if not _should_check_file(fpath, root, extensions, cfg):
+                    continue
+                for line_no, w in _find_repeat_words(fpath):
+                    exit_issues += 1
+                    try:
+                        rel = fpath.resolve().relative_to(root.resolve())
+                    except ValueError:
+                        rel = fpath
+                    print(f"✗ {rel}:{line_no} Repeated word: {w}")
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+
+    return 1 if exit_issues else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
