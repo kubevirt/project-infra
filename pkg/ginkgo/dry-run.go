@@ -128,12 +128,61 @@ func DryRun(path string) (reports []types.Report, output []byte, err error) {
 
 var multipleSpacesMatcher = regexp.MustCompile(`\s{2,}`)
 
+// quarantineLabel is added to the node text of a test when it gets quarantined
+const quarantineLabel = "[QUARANTINE]"
+
 func GetSpecReportByTestName(reports []types.Report, testName string) *types.SpecReport {
 	matchingSpecReports := FilterSpecReports(reports, ByName(testName), 1)
 	if len(matchingSpecReports) != 1 {
 		return nil
 	}
 	return &matchingSpecReports[0]
+}
+
+// GetQuarantinedSpecReportByTestName returns the spec report of a quarantined test whose node texts,
+// without the quarantine label, are contained in the test name
+func GetQuarantinedSpecReportByTestName(reports []types.Report, testName string) *types.SpecReport {
+	matchingSpecReports := FilterSpecReports(reports, QuarantinedByName(testName), 1)
+	if len(matchingSpecReports) != 1 {
+		return nil
+	}
+	return &matchingSpecReports[0]
+}
+
+// QuarantinedByName checks whether types.SpecReport is quarantined and whether all of its node texts,
+// without the quarantine label, are contained in the test name
+func QuarantinedByName(testName string) func(r types.SpecReport) bool {
+	byName := ByName(testName)
+	return func(r types.SpecReport) bool {
+		if !isQuarantined(r) {
+			return false
+		}
+		r.LeafNodeText = removeQuarantineLabel(r.LeafNodeText)
+		containerTexts := make([]string, len(r.ContainerHierarchyTexts))
+		for i, text := range r.ContainerHierarchyTexts {
+			containerTexts[i] = removeQuarantineLabel(text)
+		}
+		r.ContainerHierarchyTexts = containerTexts
+		return byName(r)
+	}
+}
+
+func isQuarantined(r types.SpecReport) bool {
+	if strings.Contains(r.LeafNodeText, quarantineLabel) {
+		return true
+	}
+	for _, text := range r.ContainerHierarchyTexts {
+		if strings.Contains(text, quarantineLabel) {
+			return true
+		}
+	}
+	return false
+}
+
+// removeQuarantineLabel removes the quarantine label from a node text, like flakefinder.NormalizeTestName
+// does for test names
+func removeQuarantineLabel(text string) string {
+	return strings.TrimSpace(multipleSpacesMatcher.ReplaceAllString(strings.ReplaceAll(text, quarantineLabel, ""), " "))
 }
 
 // ByName checks whether all the node texts of types.SpecReport are contained in the test name

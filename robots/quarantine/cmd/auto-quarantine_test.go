@@ -20,6 +20,7 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"strings"
@@ -27,6 +28,7 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	log "github.com/sirupsen/logrus"
 	flakestats "kubevirt.io/project-infra/pkg/flake-stats"
 	"kubevirt.io/project-infra/pkg/searchci"
 )
@@ -450,6 +452,9 @@ to contain
 			stubCandidate([]searchci.Impact{
 				newImpact(requiredLane, 10),
 			})
+			var logOutput bytes.Buffer
+			log.SetOutput(&logOutput)
+			DeferCleanup(log.SetOutput, os.Stderr)
 
 			result, err := determineTestsForQuarantine(
 				flakestats.TopXTests{newTopXTest(testName)},
@@ -459,6 +464,27 @@ to contain
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(result).To(BeEmpty())
+			Expect(logOutput.String()).To(ContainSubstring("could not find file for"))
+		})
+
+		It("skips tests that are already quarantined without a warning", func() {
+			stubCandidate([]searchci.Impact{
+				newImpact(requiredLane, 10),
+			})
+			var logOutput bytes.Buffer
+			log.SetOutput(&logOutput)
+			DeferCleanup(log.SetOutput, os.Stderr)
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{newTopXTest(testName)},
+				reportsContaining("[QUARANTINE]should do something", "[sig-compute] my flaky test"),
+				map[string]struct{}{requiredLane: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(BeEmpty())
+			Expect(logOutput.String()).To(ContainSubstring("is already quarantined"))
+			Expect(logOutput.String()).ToNot(ContainSubstring("could not find file for"))
 		})
 
 		It("propagates error from getQuarantineCandidate", func() {
