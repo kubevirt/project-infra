@@ -20,6 +20,7 @@
 package imagebump
 
 import (
+	"fmt"
 	"time"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -115,6 +116,39 @@ var _ = Describe("skopeo", func() {
 				[]string{"latest", "v20261305-ca75c4e"},
 				"", true, map[string]time.Time{},
 			),
+			Entry("newest same-day image has the lexically largest hash",
+				"quay.io/kubevirtci/ginkgo-tests",
+				[]string{"v20260711-7a66da0", "v20260716-a2b9efe", "v20260716-ff8cd14"},
+				"v20260716-ff8cd14", false,
+				map[string]time.Time{
+					"quay.io/kubevirtci/ginkgo-tests:v20260716-a2b9efe": time.Date(2026, 7, 16, 1, 0, 0, 0, time.UTC),
+					"quay.io/kubevirtci/ginkgo-tests:v20260716-ff8cd14": time.Date(2026, 7, 16, 10, 0, 0, 0, time.UTC),
+				},
+			),
+			Entry("three same-day candidates with the newest hash in the middle",
+				"quay.io/kubevirtci/ginkgo-tests",
+				[]string{"v20260716-aaaaaaa", "v20260716-bbbbbbb", "v20260716-ccccccc", "v20260711-7a66da0"},
+				"v20260716-bbbbbbb", false,
+				map[string]time.Time{
+					"quay.io/kubevirtci/ginkgo-tests:v20260716-aaaaaaa": time.Date(2026, 7, 16, 1, 0, 0, 0, time.UTC),
+					"quay.io/kubevirtci/ginkgo-tests:v20260716-bbbbbbb": time.Date(2026, 7, 16, 10, 0, 0, 0, time.UTC),
+					"quay.io/kubevirtci/ginkgo-tests:v20260716-ccccccc": time.Date(2026, 7, 16, 5, 0, 0, 0, time.UTC),
+				},
+			),
+			Entry("mixed prefixes at the same timestamp",
+				"quay.io/kubevirtci/phased",
+				[]string{"202611050920-2a81b11", "v202611050920-ca75c4e"},
+				"v202611050920-ca75c4e", false,
+				map[string]time.Time{
+					"quay.io/kubevirtci/phased:202611050920-2a81b11":  time.Date(2026, 11, 5, 9, 25, 0, 0, time.UTC),
+					"quay.io/kubevirtci/phased:v202611050920-ca75c4e": time.Date(2026, 11, 5, 9, 30, 0, 0, time.UTC),
+				},
+			),
+			Entry("propagates inspect failures instead of selecting a tag",
+				"quay.io/kubevirtci/phased",
+				[]string{"202611050920-2a81b11", "202611050920-ca75c4e"},
+				"", true, map[string]time.Time{},
+			),
 		)
 	})
 
@@ -141,6 +175,10 @@ func newListTagsCommand(output []string) listTagsCommand {
 
 func newInspectCommand(inspectCreatedByFullImageRef map[string]time.Time) inspectCommand {
 	return func(fullImageRef string) (time.Time, error) {
-		return inspectCreatedByFullImageRef[fullImageRef], nil
+		created, ok := inspectCreatedByFullImageRef[fullImageRef]
+		if !ok {
+			return time.Time{}, fmt.Errorf("unexpected inspect of %s", fullImageRef)
+		}
+		return created, nil
 	}
 }

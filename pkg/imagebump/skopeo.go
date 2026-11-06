@@ -171,5 +171,5 @@ func LatestSkopeoTag(imageRef string) (string, error) {
 		return "", fmt.Errorf("errors when sorting tags: %w", errors.Join(sortErrs...))
 	}
 
-	return allMatching[len(candidates)-1], nil
+	return candidates[len(candidates)-1], nil
 }
