@@ -798,6 +798,15 @@ config_updater:
         default:
         - kubevirt-prow
 
+# https://github.com/kubernetes-sigs/prow/tree/main/pkg/plugins/dco
+# Not every repository has its own CONTRIBUTING.md, so link the org-wide one,
+# which explains how to sign off commits.
+dco:
+  kubevirt:
+    contributing_repo: kubevirt/.github
+    contributing_branch: main
+    contributing_path: CONTRIBUTING.md
+
 help:
   help_guidelines_url: "https://www.github.com/kubevirt/community/tree/main/contributors/help-wanted.md"
   help_guidelines_summary: |
