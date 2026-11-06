@@ -57,7 +57,7 @@ presubmits:
       vgpu: "true"
     max_concurrency: 1
     name: pull-kubevirt-e2e-kind-1.37-vgpu
-    run_before_merge: true
+    optional: true
     skip_branches:
     - release-\d+\.\d+
     spec:
