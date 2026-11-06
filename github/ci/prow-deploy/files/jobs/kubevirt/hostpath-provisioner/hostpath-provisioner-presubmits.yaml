@@ -157,6 +157,34 @@ presubmits:
           resources:
             requests:
               memory: "8Gi"
+  - name: pull-hostpath-provisioner-sanity-s390x
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    optional: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-podman-in-container-enabled: "true"
+    cluster: prow-s390x-workloads
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test-sanity"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "8Gi"
   - name: pull-hostpath-provisioner-k8s-e2e-storage
     skip_branches:
       - release-\d+\.\d+
@@ -204,6 +232,34 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-hpp-unit-test-s390x
+    cluster: prow-s390x-workloads
+    skip_branches:
+      - release-\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    always_run: true
+    skip_report: false
+    optional: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
     spec:
       containers:
         - image: quay.io/kubevirtci/golang:v20261012-6b466e3
