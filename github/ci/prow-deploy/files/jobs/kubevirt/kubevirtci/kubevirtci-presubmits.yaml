@@ -1,26 +1,24 @@
 presubmits:
   kubevirt/kubevirtci:
-  - name: pull-kubevirtci-bump-fedora-provision-image
-    always_run: false
+  - always_run: false
     annotations:
       testgrid-create-test-group: "false"
+    cluster: kubevirt-prow-control-plane
     decoration_config:
-      timeout: 1h
-    max_concurrency: 1
+      timeout: 1h0m0s
     extra_refs:
-    - org: kubevirt
-      repo: project-infra
-      base_ref: main
+    - base_ref: main
       clone_depth: 1
+      org: kubevirt
+      repo: project-infra
       workdir: true
     labels:
       preset-github-credentials: "true"
-    cluster: kubevirt-prow-control-plane
+    max_concurrency: 1
+    name: pull-kubevirtci-bump-fedora-provision-image
     spec:
       containers:
-      - image: quay.io/kubevirtci/pr-creator:v20261104-2358c4b
-        command: ["/bin/sh", "-ce"]
-        args:
+      - args:
         - |
           git-pr.sh \
             --command "./hack/bump-fedora-images-version.sh ../kubevirtci/cluster-provision/centos9/Dockerfile ../kubevirtci/cluster-provision/centos10/Dockerfile" \
@@ -30,11 +28,16 @@ presubmits:
             --repo kubevirtci \
             --target main \
             --missing-labels lgtm,approved,do-not-merge/hold
-        securityContext:
-          privileged: true
+        command:
+        - /bin/sh
+        - -ce
+        image: quay.io/kubevirtci/pr-creator:v20261104-2358c4b
+        name: ""
         resources:
           requests:
-            memory: "200Mi"
+            memory: 200Mi
+        securityContext:
+          privileged: true
   - always_run: false
     cluster: prow-workloads
     decoration_config:
@@ -60,6 +63,7 @@ presubmits:
         - name: GIMME_GO_VERSION
           value: 1.22.3
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 15Gi
@@ -99,6 +103,7 @@ presubmits:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 11264M
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -133,6 +138,7 @@ presubmits:
         - name: KUBEVIRT_DEPLOY_CDI
           value: "true"
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 24Gi
@@ -172,6 +178,7 @@ presubmits:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 11264M
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 24Gi
@@ -206,6 +213,7 @@ presubmits:
         - name: KUBEVIRT_DEPLOY_CDI
           value: "true"
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 24Gi
@@ -244,6 +252,7 @@ presubmits:
         - name: KUBEVIRT_MEMORY_SIZE
           value: 11264M
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 24Gi
@@ -279,6 +288,7 @@ presubmits:
         - name: KUBEVIRT_DEPLOY_CDI
           value: "true"
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 24Gi
@@ -335,6 +345,7 @@ presubmits:
           value: --plugin-env kubevirt-conformance.E2E_FOCUS=MediatedDevices --plugin-env
             kubevirt-conformance.E2E_SKIP=QUARANTINE
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 52Gi
@@ -375,6 +386,7 @@ presubmits:
         - name: GO_MOD_PATH
           value: cluster-provision/gocli/go.mod
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 1Gi
@@ -401,6 +413,7 @@ presubmits:
         - dnf install -y genisoimage libvirt && cd cluster-provision/images/vm-image-builder
           && ./create-containerdisk.sh alpine-cloud-init
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 500M
@@ -438,6 +451,7 @@ presubmits:
         - name: GO_MOD_PATH
           value: cluster-provision/gocli/go.mod
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 1Gi
@@ -468,40 +482,12 @@ presubmits:
         - name: RUN_KUBEVIRT_CONFORMANCE
           value: "false"
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 16Gi
         securityContext:
           privileged: true
-  - always_run: true
-    cluster: prow-workloads
-    decoration_config:
-      timeout: 3h0m0s
-    labels:
-      preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-check-provision-env: "true"
-      preset-podman-in-container-enabled: "true"
-    max_concurrency: 3
-    name: check-provision-k8s-1.34
-    optional: true
-    spec:
-      containers:
-      - command:
-        - /usr/local/bin/entrypoint.sh
-        - /bin/sh
-        - -c
-        - cd cluster-provision/k8s/1.34 && ../provision.sh
-        env:
-        - name: GO_MOD_PATH
-          value: cluster-provision/gocli/go.mod
-        image: quay.io/kubevirtci/golang:v20261012-6b466e3
-        resources:
-          requests:
-            memory: 16Gi
-        securityContext:
-          privileged: true
-      nodeSelector:
-        type: bare-metal-external
   - always_run: true
     cluster: prow-workloads
     decoration_config:
@@ -525,6 +511,7 @@ presubmits:
         - name: PROVISION_CENTOS_VERSION
           value: "10"
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 16Gi
@@ -553,6 +540,7 @@ presubmits:
         - name: GO_MOD_PATH
           value: cluster-provision/gocli/go.mod
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 16Gi
@@ -583,6 +571,7 @@ presubmits:
         - name: PROVISION_CENTOS_VERSION
           value: "10"
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 16Gi
@@ -614,6 +603,7 @@ presubmits:
         - name: BYPASS_PMAN_CHANGE_CHECK
           value: "true"
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 8Gi
@@ -631,7 +621,6 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 3
     name: check-provision-k8s-1.36
-    optional: false
     spec:
       containers:
       - command:
@@ -643,6 +632,7 @@ presubmits:
         - name: GO_MOD_PATH
           value: cluster-provision/gocli/go.mod
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 16Gi
@@ -673,6 +663,7 @@ presubmits:
         - name: PROVISION_CENTOS_VERSION
           value: "10"
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 16Gi
@@ -692,18 +683,19 @@ presubmits:
     name: check-provision-k8s-1.37
     spec:
       containers:
-      - command:
-        - /usr/local/bin/entrypoint.sh
-        args:
+      - args:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.37 && ../provision.sh
+        command:
+        - /usr/local/bin/entrypoint.sh
         env:
         - name: GO_MOD_PATH
           value: cluster-provision/gocli/go.mod
         - name: PROVISION_CENTOS_VERSION
           value: "10"
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 16Gi
@@ -723,12 +715,12 @@ presubmits:
     optional: true
     spec:
       containers:
-      - command:
-        - /usr/local/bin/entrypoint.sh
-        args:
+      - args:
         - /bin/sh
         - -c
         - cd cluster-provision/k8s/1.37 && ../provision.sh
+        command:
+        - /usr/local/bin/entrypoint.sh
         env:
         - name: GO_MOD_PATH
           value: cluster-provision/gocli/go.mod
@@ -739,6 +731,7 @@ presubmits:
         - name: RUN_KUBEVIRT_CONFORMANCE
           value: "false"
         image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        name: ""
         resources:
           requests:
             memory: 16Gi
