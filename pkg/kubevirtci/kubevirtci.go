@@ -12,7 +12,7 @@ import (
 
 	"kubevirt.io/project-infra/pkg/querier"
 
-	"github.com/Masterminds/semver"
+	"github.com/Masterminds/semver/v3"
 
 	"github.com/google/go-github/github"
 	"github.com/sirupsen/logrus"

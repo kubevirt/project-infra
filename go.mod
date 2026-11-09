@@ -4,7 +4,7 @@ require (
 	cloud.google.com/go/auth v0.18.2
 	cloud.google.com/go/iam v1.5.3
 	cloud.google.com/go/storage v1.56.0
-	github.com/Masterminds/semver v1.5.0
+	github.com/Masterminds/semver/v3 v3.5.0
 	github.com/MetalBlueberry/go-plotly v0.4.0
 	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/bazelbuild/buildtools v0.0.0-20200922170545-10384511ce98

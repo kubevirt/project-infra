@@ -29,7 +29,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Masterminds/semver"
+	"github.com/Masterminds/semver/v3"
 	"kubevirt.io/project-infra/pkg/kubevirt/cmd/flags"
 	"kubevirt.io/project-infra/pkg/kubevirt/log"
 	"kubevirt.io/project-infra/pkg/kubevirt/prowjobconfigs"
