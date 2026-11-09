@@ -2413,8 +2413,8 @@ github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapp
 github.com/GoogleCloudPlatform/testgrid v0.0.123 h1:S5LE2LjkPsUlyt7blkIgwajiUfgFzv5s17+TkyKDfnI=
 github.com/GoogleCloudPlatform/testgrid v0.0.123/go.mod h1:4Ojwl21NNySkM1rG8hT9K2bugPX9fIrc2hC+GHegLR8=
 github.com/JohnCGriffin/overflow v0.0.0-20211019200055-46fa312c352c/go.mod h1:X0CRv0ky0k6m906ixxpzmDRLvX58TFUKS2eePweuyxk=
-github.com/Masterminds/semver v1.5.0 h1:H65muMkzWKEuNDnfl9d70GUjFniHKHRbFPGBuZ3QEww=
-github.com/Masterminds/semver v1.5.0/go.mod h1:MB6lktGJrhw8PrUyiEoblNEGEQ+RzHPF078ddwwvV3Y=
+github.com/Masterminds/semver/v3 v3.5.0 h1:kQceYJfbupGfZOKZQg0kou0DgAKhzDg2NZPAwZ/2OOE=
+github.com/Masterminds/semver/v3 v3.5.0/go.mod h1:4V+yj/TJE1HU9XfppCwVMZq3I84lprf4nC11bSS5beM=
 github.com/MetalBlueberry/go-plotly v0.4.0 h1:ld/FLZIwLmPdv09ljANonwEqSoI1uNn7myLYAVjBQ48=
 github.com/MetalBlueberry/go-plotly v0.4.0/go.mod h1:TWXjEOVRo7sm3rY3j18cKbbwRrRM3FtxjMxz8fNRsoM=
 github.com/Microsoft/go-winio v0.5.2/go.mod h1:WpS1mjBmmwHBEWmogvA2mj8546UReBk4v8QkMxJ6pZY=

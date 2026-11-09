@@ -19,7 +19,7 @@ import (
 
 	"golang.org/x/oauth2"
 
-	"github.com/Masterminds/semver"
+	"github.com/Masterminds/semver/v3"
 	"github.com/google/go-github/v32/github"
 )
 

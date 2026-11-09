@@ -81,9 +81,9 @@ github.com/GoogleCloudPlatform/testgrid/pb/custom_evaluator
 github.com/GoogleCloudPlatform/testgrid/pb/state
 github.com/GoogleCloudPlatform/testgrid/pb/test_status
 github.com/GoogleCloudPlatform/testgrid/util/gcs
-# github.com/Masterminds/semver v1.5.0
-## explicit
-github.com/Masterminds/semver
+# github.com/Masterminds/semver/v3 v3.5.0
+## explicit; go 1.21
+github.com/Masterminds/semver/v3
 # github.com/MetalBlueberry/go-plotly v0.4.0
 ## explicit; go 1.16
 github.com/MetalBlueberry/go-plotly/graph_objects

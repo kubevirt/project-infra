@@ -39,7 +39,7 @@ import (
 	"unicode/utf8"
 
 	"cloud.google.com/go/storage"
-	"github.com/Masterminds/semver"
+	"github.com/Masterminds/semver/v3"
 	gojunit "github.com/joshdk/go-junit"
 	log "github.com/sirupsen/logrus"
 	"kubevirt.io/project-infra/pkg/flakefinder"
