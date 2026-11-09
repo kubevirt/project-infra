@@ -78,7 +78,23 @@ func Execute() error {
 		},
 	}
 
-	rootCmd.AddCommand(jobImagesCmd, deploymentImagesCmd, containerfileCmd, allCmd)
+	rootCmd.AddCommand(jobImagesCmd, deploymentImagesCmd, containerfileCmd, allCmd, newLatestTagCommand())
 
 	return rootCmd.Execute()
+}
+
+func newLatestTagCommand() *cobra.Command {
+	return &cobra.Command{
+		Use:   "latest-tag IMAGE",
+		Short: "Print the newest kubevirtci image tag without modifying files",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			tag, err := imagebump.LatestSkopeoTag(args[0])
+			if err != nil {
+				return err
+			}
+			_, err = fmt.Fprintln(cmd.OutOrStdout(), tag)
+			return err
+		},
+	}
 }
