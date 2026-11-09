@@ -9,7 +9,7 @@ RUN /usr/local/bin/entrypoint.sh /bin/bash -c ' \
     time go build -o /go/bin/prow-plugin-${PROW_PLUGIN} ./external-plugins/${PROW_PLUGIN}/ \
 '
 
-FROM gcr.io/k8s-staging-test-infra/git:v20260512-1f34ef0df3
+FROM gcr.io/k8s-staging-test-infra/git:v20261023-d6356df2e8
 
 ARG PROW_PLUGIN
 
