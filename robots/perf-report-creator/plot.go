@@ -14,7 +14,7 @@ import (
 	"text/template"
 	"time"
 
-	"gopkg.in/yaml.v3"
+	"go.yaml.in/yaml/v3"
 
 	grob "github.com/MetalBlueberry/go-plotly/graph_objects"
 	gonumplot "gonum.org/v1/plot"

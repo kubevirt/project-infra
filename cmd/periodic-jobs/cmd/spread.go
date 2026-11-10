@@ -10,7 +10,7 @@ import (
 
 	"github.com/robfig/cron/v3"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v3"
+	"go.yaml.in/yaml/v3"
 )
 
 // Periodic represents a periodic job with its cron expression.
