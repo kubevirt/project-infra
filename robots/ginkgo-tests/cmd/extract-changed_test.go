@@ -334,6 +334,107 @@ var _ = Describe("extract testnames", func() {
 
 	})
 
+	DescribeTable("testLabelsFromSpecReports",
+		func(specReports []types.SpecReport, expected []TestDetails) {
+			result := testLabelsFromSpecReports(specReports)
+			names := testNamesFromSpecReports(specReports)
+			Expect(result).To(BeEquivalentTo(expected))
+			for i, r := range result {
+				Expect(r.Name).To(Equal(names[i]), "name at index %d must match between labels and names output", i)
+			}
+		},
+		Entry(
+			"nil input returns empty slice not nil",
+			[]types.SpecReport(nil),
+			[]TestDetails{},
+		),
+		Entry(
+			"includes both container and leaf labels",
+			[]types.SpecReport{
+				{
+					ContainerHierarchyTexts:  []string{"SIG Compute"},
+					ContainerHierarchyLabels: [][]string{{"sig-compute"}},
+					LeafNodeText:             "should passthrough SRIOV device",
+					LeafNodeLabels:           []string{"SRIOV"},
+				},
+			},
+			[]TestDetails{
+				{
+					Name:   "SIG Compute should passthrough SRIOV device",
+					Labels: []string{"sig-compute", "SRIOV"},
+				},
+			},
+		),
+		Entry(
+			"deduplicates labels present in both container and leaf",
+			[]types.SpecReport{
+				{
+					ContainerHierarchyTexts:  []string{"SIG Network"},
+					ContainerHierarchyLabels: [][]string{{"SRIOV"}},
+					LeafNodeText:             "should attach interface",
+					LeafNodeLabels:           []string{"SRIOV"},
+				},
+			},
+			[]TestDetails{
+				{
+					Name:   "SIG Network should attach interface",
+					Labels: []string{"SRIOV"},
+				},
+			},
+		),
+		Entry(
+			"includes Serial decorator",
+			[]types.SpecReport{
+				{
+					ContainerHierarchyTexts:  []string{"SIG Compute"},
+					ContainerHierarchyLabels: [][]string{{"Serial"}},
+					LeafNodeText:             "should not conflict",
+					LeafNodeLabels:           []string{"GPU"},
+				},
+			},
+			[]TestDetails{
+				{
+					Name:   "SIG Compute should not conflict",
+					Labels: []string{"Serial", "GPU"},
+				},
+			},
+		),
+		Entry(
+			"empty labels produce empty labels slice",
+			[]types.SpecReport{
+				{
+					ContainerHierarchyTexts:  []string{"simple"},
+					ContainerHierarchyLabels: [][]string{{}},
+					LeafNodeText:             "does something",
+					LeafNodeLabels:           []string{},
+				},
+			},
+			[]TestDetails{
+				{
+					Name:   "simple does something",
+					Labels: []string{},
+				},
+			},
+		),
+		Entry(
+			"multiple container levels with labels",
+			[]types.SpecReport{
+				{
+					ContainerHierarchyTexts:  []string{"SIG Network", "with Multus"},
+					ContainerHierarchyLabels: [][]string{{"sig-network"}, {"Multus"}},
+					LeafNodeText:             "should attach secondary NIC",
+					LeafNodeLabels:           []string{"SRIOV"},
+				},
+			},
+			[]TestDetails{
+				{
+					Name:   "SIG Network with Multus should attach secondary NIC",
+					Labels: []string{"sig-network", "Multus", "SRIOV"},
+				},
+			},
+		),
+	)
+
 	DescribeTable("filtering matching specs",
 		func(reports []types.Report, allNodeTexts [][]string, matchingSpecReports []types.SpecReport) {
 			Expect(filterMatchingSpecsByPartsContainingTestNames(reports, allNodeTexts)).To(BeEquivalentTo(matchingSpecReports))
