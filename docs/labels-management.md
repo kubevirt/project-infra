@@ -38,3 +38,6 @@ Any PR touching `labels.yaml` triggers two dry-run presubmit jobs that validate 
 ## Dependency ordering
 
 When a change depends on a new label existing on GitHub (e.g. a job config that applies the label), the label definition PR must merge first **and** the daily CronJob must run before the dependent change will work. Use `/hold` on the dependent PR until the label is available.
+
+The [label-sync-kubevirt CronJob manifest](../github/ci/prow-deploy/kustom/base/manifests/local/label-sync-kubevirt.yaml)
+defines the synchronization schedule and configuration for the KubeVirt organization.
