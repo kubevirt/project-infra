@@ -18,7 +18,7 @@ periodics:
       preset-github-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/pr-creator:v20261104-2358c4b
+      - image: quay.io/kubevirtci/pr-creator:v20261109-da10659
         env:
         command: [ "/bin/bash", "-ce" ]
         args:
@@ -59,7 +59,7 @@ periodics:
       preset-github-credentials: "true"
     spec:
       containers:
-      - image: quay.io/kubevirtci/pr-creator:v20261104-2358c4b
+      - image: quay.io/kubevirtci/pr-creator:v20261109-da10659
         env:
         command: [ "/bin/bash", "-ce" ]
         args:
