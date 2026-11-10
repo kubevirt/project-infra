@@ -35,14 +35,21 @@ import (
 	"kubevirt.io/project-infra/pkg/git"
 )
 
+// TestDetails contains a test name and its Ginkgo labels
+type TestDetails struct {
+	Name   string   `json:"name"`
+	Labels []string `json:"labels"`
+}
+
 // flag variables
 var (
-	revisionRange          *string
-	repoPath               *string
-	testSubDirectory       *string
-	outputPathForTestNames *string
-	outputPathForTestPaths *string
-	debug                  *bool
+	revisionRange           *string
+	repoPath                *string
+	testSubDirectory        *string
+	outputPathForTestNames  *string
+	outputPathForTestPaths  *string
+	outputPathForTestLabels *string
+	debug                   *bool
 )
 
 var revisionRangeRegex = regexp.MustCompile(`^([^\s]+)(..([^\s]+))?$`)
@@ -53,6 +60,7 @@ func init() {
 	repoPath = extractChangedTestsCmd.Flags().StringP("repo-path", "p", "", "path to the repository")
 	outputPathForTestNames = extractChangedTestsCmd.Flags().StringP("output-names-path", "o", "", "path to the output json file containing the test names")
 	outputPathForTestPaths = extractChangedTestsCmd.Flags().StringP("output-paths-path", "O", "", "path to the output json file containing the ginkgo node data")
+	outputPathForTestLabels = extractChangedTestsCmd.Flags().StringP("output-labels-path", "l", "", "path to the output json file containing test names and their Ginkgo labels")
 	testSubDirectory = extractChangedTestsCmd.Flags().StringP("test-subdirectory", "t", "", "sub-directory of repo-path containing the tests")
 	debug = extractChangedTestsCmd.Flags().BoolP("debug", "D", false, "print and store debugging information")
 }
@@ -69,11 +77,11 @@ matching those with the ginkgo outline for the changed files.`,
 		if *debug {
 			log.SetLevel(log.DebugLevel)
 		}
-		return extractChangedTests(*debug, *revisionRange, *testSubDirectory, *repoPath, *outputPathForTestNames, *outputPathForTestPaths)
+		return extractChangedTests(*debug, *revisionRange, *testSubDirectory, *repoPath, *outputPathForTestNames, *outputPathForTestPaths, *outputPathForTestLabels)
 	},
 }
 
-func extractChangedTests(debug bool, revisionRange string, testDirectory string, repoPath string, outputTestNamesPath string, outputTestPathsPath string) error {
+func extractChangedTests(debug bool, revisionRange string, testDirectory string, repoPath string, outputTestNamesPath string, outputTestPathsPath string, outputTestLabelsPath string) error {
 	if !revisionRangeRegex.MatchString(revisionRange) {
 		return fmt.Errorf("revision range must be a valid git revision range")
 	}
@@ -162,23 +170,24 @@ func extractChangedTests(debug bool, revisionRange string, testDirectory string,
 		log.Debugf("testfile contents written to %q", testfileContentsTemp.Name())
 	}
 	allPaths := extractChangedTestPaths(commits, outlines, blameLines, testfileContents)
+
+	matchingSpecReports, err := matchChangedTests(allPaths, filepath.Join(repoPath, testDirectory))
+	if err != nil {
+		return err
+	}
+
+	changedTestNames := testNamesFromSpecReports(matchingSpecReports)
 	outputTestNamesFile, err := createFile(outputTestNamesPath, "changed-tests-*.json")
 	if err != nil {
 		return err
 	}
 	defer func() { _ = outputTestNamesFile.Close() }()
-	changedTestNames, err := generateTestNames(allPaths, filepath.Join(repoPath, testDirectory))
-	if err != nil {
-		return err
-	}
 	err = json.NewEncoder(outputTestNamesFile).Encode(&changedTestNames)
 	if err != nil {
 		return err
 	}
 	log.Infof("test name output written to %q", outputTestNamesFile.Name())
-	if err != nil {
-		return err
-	}
+
 	outputTestPathsFile, err := createFile(outputTestPathsPath, "changed-test-paths-*.json")
 	if err != nil {
 		return err
@@ -189,6 +198,21 @@ func extractChangedTests(debug bool, revisionRange string, testDirectory string,
 		return err
 	}
 	log.Infof("test path output written to %q", outputTestPathsFile.Name())
+
+	if outputTestLabelsPath != "" {
+		testLabels := testLabelsFromSpecReports(matchingSpecReports)
+		outputTestLabelsFile, err := createFile(outputTestLabelsPath, "changed-test-labels-*.json")
+		if err != nil {
+			return err
+		}
+		defer func() { _ = outputTestLabelsFile.Close() }()
+		err = json.NewEncoder(outputTestLabelsFile).Encode(&testLabels)
+		if err != nil {
+			return err
+		}
+		log.Infof("test labels output written to %q", outputTestLabelsFile.Name())
+	}
+
 	return nil
 }
 
@@ -201,13 +225,13 @@ func createFile(outputPath string, pattern string) (file *os.File, err error) {
 	return
 }
 
-func generateTestNames(allPaths [][]*ginkgo.Node, testFilePath string) ([]string, error) {
+func matchChangedTests(allPaths [][]*ginkgo.Node, testFilePath string) ([]types.SpecReport, error) {
 	reports, _, err := ginkgo.DryRun(testFilePath)
 	if err != nil {
 		return nil, fmt.Errorf("could not run ginkgo dry-run in folder %q: %w", testFilePath, err)
 	}
 	if reports == nil {
-		return nil, fmt.Errorf("no results for ginkgo dry-run in folder %q: %w", testFilePath, err)
+		return nil, fmt.Errorf("no results for ginkgo dry-run in folder %q", testFilePath)
 	}
 
 	var allNodeTexts [][]string
@@ -222,17 +246,30 @@ func generateTestNames(allPaths [][]*ginkgo.Node, testFilePath string) ([]string
 		allNodeTexts = append(allNodeTexts, nodeTexts)
 	}
 
-	matchingSpecReports := filterMatchingSpecsByPartsContainingTestNames(reports, allNodeTexts)
+	return filterMatchingSpecsByPartsContainingTestNames(reports, allNodeTexts), nil
+}
 
-	var testnames []string
-	for _, r := range matchingSpecReports {
-		var texts []string
-		texts = append(texts, r.ContainerHierarchyTexts...)
-		texts = append(texts, r.LeafNodeText)
-		testname := strings.Join(texts, " ")
-		testnames = append(testnames, testname)
+func generateTestNames(allPaths [][]*ginkgo.Node, testFilePath string) ([]string, error) {
+	matchingSpecReports, err := matchChangedTests(allPaths, testFilePath)
+	if err != nil {
+		return nil, err
 	}
-	return testnames, nil
+	return testNamesFromSpecReports(matchingSpecReports), nil
+}
+
+func specReportFullName(r types.SpecReport) string {
+	var texts []string
+	texts = append(texts, r.ContainerHierarchyTexts...)
+	texts = append(texts, r.LeafNodeText)
+	return strings.Join(texts, " ")
+}
+
+func testNamesFromSpecReports(specReports []types.SpecReport) []string {
+	var testnames []string
+	for _, r := range specReports {
+		testnames = append(testnames, specReportFullName(r))
+	}
+	return testnames
 }
 
 func filterMatchingSpecsByPartsContainingTestNames(reports []types.Report, allNodeTexts [][]string) []types.SpecReport {
@@ -448,4 +485,15 @@ func generateOutlineMapperFromFiles(testFilepath string, outline []*ginkgo.Node)
 	m = &OutlineMapper{lineModel: lineModel, outline: outline}
 
 	return
+}
+
+func testLabelsFromSpecReports(specReports []types.SpecReport) []TestDetails {
+	testLabels := make([]TestDetails, 0, len(specReports))
+	for _, r := range specReports {
+		testLabels = append(testLabels, TestDetails{
+			Name:   specReportFullName(r),
+			Labels: r.Labels(),
+		})
+	}
+	return testLabels
 }
