@@ -249,6 +249,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "none"
+    ci.kubevirt.io/provider: "none"
+    ci.kubevirt.io/sig: "none"
     preset-docker-mirror-proxy: "true"
     preset-gcs-credentials: "true"
     preset-podman-in-container-enabled: "true"
@@ -455,6 +458,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
+    ci.kubevirt.io/provider: "kind"
+    ci.kubevirt.io/sig: "none"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
     preset-podman-shared-images: "true"
@@ -814,6 +820,9 @@ periodics:
     repo: kubevirt
     clone_depth: 1
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "none"
     preset-podman-in-container-enabled: "true"
     preset-kubevirt-s390x-icr-credential: "true"
   max_concurrency: 1
@@ -855,6 +864,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "network"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1109,6 +1121,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "network"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1156,6 +1171,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.35"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "network"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1201,6 +1219,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.35"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "storage"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1246,6 +1267,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.35"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "compute"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1295,6 +1319,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.35"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "operator"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1345,6 +1372,9 @@ periodics:
     org: kubevirt
     repo: project-infra
   labels:
+    ci.kubevirt.io/k8s-version: "none"
+    ci.kubevirt.io/provider: "none"
+    ci.kubevirt.io/sig: "none"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-github-credentials: "true"
@@ -1447,6 +1477,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.36"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "network"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1492,6 +1525,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.36"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "storage"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1537,6 +1573,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.36"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "compute"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1586,6 +1625,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.36"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "operator"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1632,6 +1674,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "compute"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1683,6 +1728,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "none"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1730,6 +1778,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "compute"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1777,6 +1828,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "compute"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1828,6 +1882,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "monitoring"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1875,6 +1932,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "network"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1921,6 +1981,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "operator"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -1970,6 +2033,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "operator"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -2019,7 +2085,10 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
     ci.kubevirt.io/prometheus: ""
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "performance"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -2086,7 +2155,10 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
     ci.kubevirt.io/prometheus: ""
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "performance"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -2148,7 +2220,10 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
     ci.kubevirt.io/prometheus: ""
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "performance"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -2214,6 +2289,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "storage"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -2261,6 +2339,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
+    ci.kubevirt.io/provider: "k8s"
+    ci.kubevirt.io/sig: "storage"
     preset-bazel-cache: "true"
     preset-docker-mirror-proxy: "true"
     preset-podman-in-container-enabled: "true"
@@ -2310,6 +2391,9 @@ periodics:
     org: kubevirt
     repo: kubevirt
   labels:
+    ci.kubevirt.io/k8s-version: "1.37"
+    ci.kubevirt.io/provider: "kind"
+    ci.kubevirt.io/sig: "none"
     preset-podman-in-container-enabled: "true"
   name: periodic-kubevirt-e2e-kind-1.37-sev
   spec:
