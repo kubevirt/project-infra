@@ -152,7 +152,7 @@ postsubmits:
     branches:
     - main
     - release-v\d+\.\d+
-    cluster: kubevirt-prow-control-plane
+    cluster: prow-workloads
     always_run: false
     run_if_changed: "hack/build/docker/builder/.*"
     annotations:
