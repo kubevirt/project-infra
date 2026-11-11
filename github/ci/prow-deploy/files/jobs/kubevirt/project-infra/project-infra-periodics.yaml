@@ -425,9 +425,6 @@ periodics:
   - org: kubevirt
     repo: containerized-data-importer
     base_ref: main
-  - org: kubevirt
-    repo: kubevirt-aie
-    base_ref: release-1.8-aie-nv
   cluster: kubevirt-prow-control-plane
   spec:
     securityContext:
@@ -454,13 +451,6 @@ periodics:
             --labels skip-review \
             --release-note-none \
             --target main
-          git-pr.sh \
-            --command "go run ./robots/uploader -workspace ${PWD}/../kubevirt-aie/WORKSPACE -dry-run=false" \
-            --repo-path ../kubevirt-aie \
-            --repo kubevirt-aie \
-            --labels skip-review \
-            --release-note-none \
-            --target release-1.8-aie-nv
         resources:
           requests:
             memory: "200Mi"
