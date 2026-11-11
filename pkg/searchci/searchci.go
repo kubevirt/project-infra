@@ -169,8 +169,9 @@ func FilterImpacts(impacts []Impact, timeRange TimeRange) []Impact {
 }
 
 // HasMinRecentFailures returns a FilterOpt that keeps an Impact only if it has
-// at least minCount build failures within maxAge, and those failures span at
-// least minInterval apart (to reject same-PR bursts).
+// at least minCount build failures within maxAge, spanning at least minInterval.
+// The interval rejects a short retry burst. It does not attribute failures to
+// pull requests: the same pull request retested across days still passes.
 func HasMinRecentFailures(maxAge time.Duration, minCount int, minInterval time.Duration) FilterOpt {
 	return func(i Impact) bool {
 		var recentIntervals []time.Duration
