@@ -642,14 +642,14 @@ Gna meh whatever
 			}))
 		})
 
-		It("extracts no job names from comment body if all is found", func() {
-			commentBody := `Gna meh whatever 
+		It("extracts 'all' keyword from comment body", func() {
+			commentBody := `Gna meh whatever
 
 /rehearse all
 
 
 `
-			Expect(handler.extractJobNamesFromComment(commentBody)).To(BeNil())
+			Expect(handler.extractJobNamesFromComment(commentBody)).To(BeEquivalentTo([]string{"all"}))
 		})
 
 		It("extracts no job names from comment body if no element is found since only whitespace after command", func() {
@@ -673,7 +673,7 @@ Gna meh whatever
 		})
 
 		It("extracts question mark from comment body", func() {
-			commentBody := `Gna meh whatever 
+			commentBody := `Gna meh whatever
 
 /rehearse ?
 
@@ -681,6 +681,144 @@ Gna meh whatever
 `
 			Expect(handler.extractJobNamesFromComment(commentBody)).To(BeEquivalentTo([]string{"?"}))
 		})
+
+		It("extracts group keyword 'periodics' from comment body", func() {
+			Expect(handler.extractJobNamesFromComment("/rehearse periodics")).To(BeEquivalentTo([]string{"periodics"}))
+		})
+
+		It("extracts group keyword 'postsubmits' from comment body", func() {
+			Expect(handler.extractJobNamesFromComment("/rehearse postsubmits")).To(BeEquivalentTo([]string{"postsubmits"}))
+		})
+
+		It("extracts group keyword 'presubmits' from comment body", func() {
+			Expect(handler.extractJobNamesFromComment("/rehearse presubmits")).To(BeEquivalentTo([]string{"presubmits"}))
+		})
+
+		It("extracts singular group keywords", func() {
+			Expect(handler.extractJobNamesFromComment("/rehearse periodic")).To(BeEquivalentTo([]string{"periodic"}))
+			Expect(handler.extractJobNamesFromComment("/rehearse postsubmit")).To(BeEquivalentTo([]string{"postsubmit"}))
+		})
+
+		It("extracts multiple selectors from one command", func() {
+			Expect(handler.extractJobNamesFromComment("/rehearse periodics pull-example")).To(BeEquivalentTo([]string{"periodics", "pull-example"}))
+		})
+	})
+
+	Context("filtering jobs by type group", func() {
+
+		var prowJobs []prowapi.ProwJob
+
+		BeforeEach(func() {
+			prowJobs = []prowapi.ProwJob{
+				{Spec: prowapi.ProwJobSpec{Job: "pre-job", Type: prowapi.PresubmitJob}},
+				{Spec: prowapi.ProwJobSpec{Job: "post-job", Type: prowapi.PostsubmitJob}},
+				{Spec: prowapi.ProwJobSpec{Job: "periodic-job", Type: prowapi.PeriodicJob}},
+			}
+		})
+
+		It("filters to presubmits only", func() {
+			filtered := filterProwJobsByTypeGroup(prowJobs, []string{"presubmits"})
+			Expect(filtered).To(HaveLen(1))
+			Expect(filtered[0].Spec.Job).To(Equal("pre-job"))
+		})
+
+		It("filters to periodics only", func() {
+			filtered := filterProwJobsByTypeGroup(prowJobs, []string{"periodics"})
+			Expect(filtered).To(HaveLen(1))
+			Expect(filtered[0].Spec.Job).To(Equal("periodic-job"))
+		})
+
+		It("filters to multiple groups", func() {
+			filtered := filterProwJobsByTypeGroup(prowJobs, []string{"presubmits", "periodics"})
+			Expect(filtered).To(HaveLen(2))
+		})
+
+		It("returns nil for unknown group", func() {
+			filtered := filterProwJobsByTypeGroup(prowJobs, []string{"unknown"})
+			Expect(filtered).To(BeNil())
+		})
+
+		It("accepts a singular group name", func() {
+			filtered := filterProwJobsByTypeGroup(prowJobs, []string{"periodic"})
+			Expect(filtered).To(HaveLen(1))
+			Expect(filtered[0].Spec.Job).To(Equal("periodic-job"))
+		})
+	})
+
+	Context("selecting rehearsal jobs from a comment", func() {
+
+		var authorized []prowapi.ProwJob
+		var skipped []prowapi.ProwJob
+
+		BeforeEach(func() {
+			authorized = []prowapi.ProwJob{
+				{Spec: prowapi.ProwJobSpec{Job: "pre-job", Type: prowapi.PresubmitJob}},
+				{Spec: prowapi.ProwJobSpec{Job: "post-job", Type: prowapi.PostsubmitJob}},
+				{Spec: prowapi.ProwJobSpec{Job: "periodic-job", Type: prowapi.PeriodicJob}},
+			}
+			skipped = []prowapi.ProwJob{
+				{Spec: prowapi.ProwJobSpec{Job: "restricted-post", Type: prowapi.PostsubmitJob}},
+				{Spec: prowapi.ProwJobSpec{Job: "restricted-periodic", Type: prowapi.PeriodicJob}},
+			}
+		})
+
+		DescribeTable("selectRehearsalJobs",
+			func(args []string, wantSelected []string, wantSkipped []string) {
+				selected, skippedForComment := selectRehearsalJobs(authorized, skipped, args)
+				expectJobNames(selected, wantSelected)
+				expectJobNames(skippedForComment, wantSkipped)
+			},
+			Entry("bare command rehearses presubmits",
+				nil,
+				[]string{"pre-job"},
+				nil,
+			),
+			Entry("all rehearses every allowed job and reports the skipped ones",
+				[]string{"all"},
+				[]string{"periodic-job", "post-job", "pre-job"},
+				[]string{"restricted-periodic", "restricted-post"},
+			),
+			Entry("periodics selects that type",
+				[]string{"periodics"},
+				[]string{"periodic-job"},
+				[]string{"restricted-periodic"},
+			),
+			Entry("singular periodic selects that type",
+				[]string{"periodic"},
+				[]string{"periodic-job"},
+				[]string{"restricted-periodic"},
+			),
+			Entry("group keyword is case insensitive",
+				[]string{"Periodics"},
+				[]string{"periodic-job"},
+				[]string{"restricted-periodic"},
+			),
+			Entry("postsubmits selects that type",
+				[]string{"postsubmits"},
+				[]string{"post-job"},
+				[]string{"restricted-post"},
+			),
+			Entry("a job name selects that job at any type",
+				[]string{"periodic-job"},
+				[]string{"periodic-job"},
+				nil,
+			),
+			Entry("a job the commenter cannot run is reported as skipped",
+				[]string{"restricted-periodic"},
+				nil,
+				[]string{"restricted-periodic"},
+			),
+			Entry("a type and a job name are combined",
+				[]string{"periodics", "pre-job"},
+				[]string{"periodic-job", "pre-job"},
+				[]string{"restricted-periodic"},
+			),
+			Entry("all does not widen a comment that also names a job",
+				[]string{"all", "pre-job"},
+				[]string{"pre-job"},
+				nil,
+			),
+		)
 	})
 
 	Context("filtering jobs by name", func() {
@@ -1126,6 +1264,14 @@ type CanUserRehearseOrgAndUserTestData struct {
 	ExpectedMessageParts []string
 	UserName             string
 	IssueLabelsExisting  []string
+}
+
+func expectJobNames(jobs []prowapi.ProwJob, want []string) {
+	if want == nil {
+		Expect(jobs).To(BeEmpty())
+		return
+	}
+	Expect(jobNamesFromProwJobs(jobs)).To(Equal(want))
 }
 
 func (td CanUserRehearseOrgAndUserTestData) GetUserNameOrDefault() string {

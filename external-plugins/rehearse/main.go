@@ -183,11 +183,11 @@ func helpProvider(_ []prowconfig.OrgRepo) (*pluginhelp.PluginHelp, error) {
 		Description: "Test modifications to Prow job configurations before merging by rehearsing changed or new presubmit, postsubmit, and periodic jobs directly from a PR.",
 	}
 	pluginHelp.AddCommand(pluginhelp.Command{
-		Usage:       "/rehearse [all|job-name|?]",
-		Description: "Rehearse modified or new Prow jobs detected in a PR. /rehearse or /rehearse all runs every changed job the commenter is allowed to rehearse. /rehearse <job-name> runs a specific job if the commenter is allowed to rehearse that job type. /rehearse ? lists jobs available for rehearsal. Multiple /rehearse <job-name> lines can be included in a single comment. Rehearsal jobs are prefixed with rehearsal- and appear as separate GitHub status contexts.",
+		Usage:       "/rehearse [all|presubmits|periodics|postsubmits|job-name|?]",
+		Description: "Rehearse modified or new Prow jobs detected in a PR. /rehearse runs changed presubmits. /rehearse all runs every changed job the commenter is allowed to rehearse. /rehearse presubmits, /rehearse periodics, or /rehearse postsubmits runs that job type. Singular forms work too. /rehearse <job-name> runs a specific job if the commenter is allowed to rehearse that job type. Several selectors in one comment are combined. /rehearse ? lists jobs available for rehearsal. Rehearsal jobs are prefixed with rehearsal- and appear as separate GitHub status contexts.",
 		Featured:    true,
 		WhoCanUse:   "Presubmits: top-level approvers, leaf approvers, or ok-to-rehearse label. Periodics and postsubmits: top-level approvers only.",
-		Examples:    []string{"/rehearse", "/rehearse all", "/rehearse job-name", "/rehearse ?"},
+		Examples:    []string{"/rehearse", "/rehearse all", "/rehearse periodics", "/rehearse job-name", "/rehearse ?"},
 	})
 	return pluginHelp, nil
 }

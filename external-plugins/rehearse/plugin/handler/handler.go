@@ -37,9 +37,9 @@ const basicHelpCommentText = `
 <details>
 <summary>Further information on rehearsals</summary>
 
-A rehearsal can be triggered for all modified jobs the commenter is allowed to rehearse by commenting either ` + "`/rehearse`" + ` or ` + "`/rehearse all`" + ` on this PR.
+` + "`/rehearse`" + ` rehearses modified presubmit jobs. ` + "`/rehearse all`" + ` rehearses every modified job the commenter is allowed to run, including periodics and postsubmits.
 
-A rehearsal for a specific job can be triggered by commenting ` + "`/rehearse {job-name}`" + `. Jobs the commenter is not allowed to rehearse are skipped.
+A job type can be selected with ` + "`/rehearse presubmits`" + `, ` + "`/rehearse periodics`" + `, or ` + "`/rehearse postsubmits`" + `. Singular forms (` + "`presubmit`" + `, ` + "`periodic`" + `, ` + "`postsubmit`" + `) work too. A specific job can be selected with ` + "`/rehearse {job-name}`" + `. Several selectors in one comment are combined. Jobs the commenter is not allowed to rehearse are skipped.
 
 Commenting ` + "`/rehearse ?`" + ` triggers a comment with a list of jobs that can be rehearsed.
 
@@ -421,8 +421,7 @@ func (h *GitHubEventsHandler) handleRehearsals(log *logrus.Entry, pr *github.Pul
 		return
 	}
 
-	prowjobs = h.filterProwJobsByJobNames(authorizedJobs, jobNames)
-	skippedForComment := h.filterProwJobsByJobNames(skippedUnauthorized, jobNames)
+	prowjobs, skippedForComment := selectRehearsalJobs(authorizedJobs, skippedUnauthorized, jobNames)
 
 	if len(prowjobs) == 0 {
 		commentText := formatNoJobsComment(skippedForComment)
@@ -502,6 +501,15 @@ func (h *GitHubEventsHandler) getRebasedRepoClient(log *logrus.Entry, pr *github
 	return rebasedRepoClient, nil
 }
 
+var jobTypeGroups = map[string]prowapi.ProwJobType{
+	"presubmit":   prowapi.PresubmitJob,
+	"presubmits":  prowapi.PresubmitJob,
+	"periodic":    prowapi.PeriodicJob,
+	"periodics":   prowapi.PeriodicJob,
+	"postsubmit":  prowapi.PostsubmitJob,
+	"postsubmits": prowapi.PostsubmitJob,
+}
+
 func (h *GitHubEventsHandler) extractJobNamesFromComment(body string) []string {
 	if body == "" {
 		return nil
@@ -512,13 +520,86 @@ func (h *GitHubEventsHandler) extractJobNamesFromComment(body string) []string {
 		if len(subMatches) < 2 {
 			continue
 		}
-		trimmedJobName := strings.TrimSpace(subMatches[1])
-		if trimmedJobName == "" || trimmedJobName == "all" {
-			continue
-		}
-		jobNames = append(jobNames, trimmedJobName)
+		jobNames = append(jobNames, strings.Fields(subMatches[1])...)
 	}
 	return jobNames
+}
+
+func jobTypeForGroup(name string) (prowapi.ProwJobType, bool) {
+	jobType, ok := jobTypeGroups[strings.ToLower(name)]
+	return jobType, ok
+}
+
+// selectRehearsalJobs chooses which changed jobs a comment should rehearse.
+//
+// No selector rehearses presubmits. "all" by itself rehearses every job the
+// commenter is allowed to run. Job-type names and job names are combined, and
+// "all" does not widen a comment that also names a type or a job. Matching is
+// case-insensitive for the keywords.
+func selectRehearsalJobs(authorized, skipped []prowapi.ProwJob, jobNames []string) (selected, skippedForComment []prowapi.ProwJob) {
+	runAll := false
+	var groups []string
+	var names []string
+	for _, name := range jobNames {
+		switch strings.ToLower(name) {
+		case "all":
+			runAll = true
+		default:
+			if _, isGroup := jobTypeForGroup(name); isGroup {
+				groups = append(groups, name)
+				continue
+			}
+			names = append(names, name)
+		}
+	}
+
+	if len(groups) == 0 && len(names) == 0 {
+		if runAll {
+			return authorized, skipped
+		}
+		groups = []string{"presubmits"}
+	}
+
+	handler := &GitHubEventsHandler{}
+	seenSelected := map[string]struct{}{}
+	seenSkipped := map[string]struct{}{}
+	if len(groups) > 0 {
+		selected = appendProwJobOnce(selected, seenSelected, filterProwJobsByTypeGroup(authorized, groups)...)
+		skippedForComment = appendProwJobOnce(skippedForComment, seenSkipped, filterProwJobsByTypeGroup(skipped, groups)...)
+	}
+	if len(names) > 0 {
+		selected = appendProwJobOnce(selected, seenSelected, handler.filterProwJobsByJobNames(authorized, names)...)
+		skippedForComment = appendProwJobOnce(skippedForComment, seenSkipped, handler.filterProwJobsByJobNames(skipped, names)...)
+	}
+	return selected, skippedForComment
+}
+
+func appendProwJobOnce(dst []prowapi.ProwJob, seen map[string]struct{}, jobs ...prowapi.ProwJob) []prowapi.ProwJob {
+	for _, job := range jobs {
+		key := string(job.Spec.Type) + "/" + job.Spec.Job
+		if _, exists := seen[key]; exists {
+			continue
+		}
+		seen[key] = struct{}{}
+		dst = append(dst, job)
+	}
+	return dst
+}
+
+func filterProwJobsByTypeGroup(prowjobs []prowapi.ProwJob, groupNames []string) []prowapi.ProwJob {
+	types := map[prowapi.ProwJobType]struct{}{}
+	for _, name := range groupNames {
+		if jobType, ok := jobTypeForGroup(name); ok {
+			types[jobType] = struct{}{}
+		}
+	}
+	var filtered []prowapi.ProwJob
+	for _, pj := range prowjobs {
+		if _, ok := types[pj.Spec.Type]; ok {
+			filtered = append(filtered, pj)
+		}
+	}
+	return filtered
 }
 
 func (h *GitHubEventsHandler) filterProwJobsByJobNames(prowjobs []prowapi.ProwJob, jobNames []string) []prowapi.ProwJob {
