@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -16,6 +17,7 @@ import (
 	kubeVirtLabels "kubevirt.io/project-infra/pkg/github/labels"
 
 	"github.com/sirupsen/logrus"
+	"golang.org/x/time/rate"
 	"sigs.k8s.io/prow/pkg/config"
 	gitv2 "sigs.k8s.io/prow/pkg/git/v2"
 	"sigs.k8s.io/prow/pkg/github"
@@ -49,6 +51,9 @@ type githubClient interface {
 	GetPullRequestChanges(org, repo string, number int) ([]github.PullRequestChange, error)
 	GetIssueLabels(org, repo string, number int) ([]github.Label, error)
 	GetCombinedStatus(org, repo, ref string) (*github.CombinedStatus, error)
+	ListIssueCommentsWithContext(ctx context.Context, org, repo string, number int) ([]github.IssueComment, error)
+	BotUserCheckerWithContext(ctx context.Context) (func(string) bool, error)
+	CreateCommentWithContext(ctx context.Context, org, repo string, number int, comment string) error
 }
 
 type loadConfigBytesFunc func(h *GitHubEventsHandler, org, repo string) ([]byte, []byte, error)
@@ -95,6 +100,11 @@ type GitHubEventsHandler struct {
 	jobsConfigBase   string
 	prowLocation     string
 	cache            presubmitCache
+	reconcileMu      sync.Mutex
+	phaseLocks       [64]sync.Mutex
+	requestsMu       sync.Mutex
+	requests         map[string]time.Time
+	reconcileLimiter *rate.Limiter
 }
 
 func NewGitHubEventsHandler(
@@ -115,6 +125,7 @@ func NewGitHubEventsHandler(
 		prowLocation:     prowLocation,
 		gitClientFactory: gitClientFactory,
 		cache:            presubmitCache{ttl: 5 * time.Minute},
+		reconcileLimiter: rate.NewLimiter(rate.Every(30*time.Second), 1),
 	}
 }
 
@@ -345,33 +356,13 @@ func (h *GitHubEventsHandler) handlePhaseTransition(log *logrus.Entry, pr github
 		return
 	}
 
-	completedPhase, nextPhase := findNextPhaseToTrigger(phaseJobs, sortedPhases, statusMap)
+	_, nextPhase := findNextPhaseToTrigger(phaseJobs, sortedPhases, statusMap)
 	if nextPhase < 0 {
 		return
 	}
 
-	triggerPhaseJobs(log, h.ghClient, pr, phaseJobs[nextPhase], completedPhase, nextPhase, statusMap)
-}
-
-func triggerPhaseJobs(log *logrus.Entry, ghClient githubClient, pr github.PullRequest, jobs []config.Presubmit, completedPhase, nextPhase int, statusMap map[string]string) {
-	org := pr.Base.Repo.Owner.Login
-	repo := pr.Base.Repo.Name
-
-	var result string
-	for _, job := range jobs {
-		ctx := jobContext(job)
-		if _, exists := statusMap[ctx]; exists {
-			continue
-		}
-		result += "/test " + job.Name + "\n"
-		log.Debugf("Phase %d: triggering presubmit %s", nextPhase, job.Name)
-	}
-
-	if result != "" {
-		result = fmt.Sprintf(PhaseIntroFmt, completedPhase, nextPhase) + result
-		if err := ghClient.CreateComment(org, repo, pr.Number, result); err != nil {
-			log.WithError(err).Errorf("CreateComment failed PR %d", pr.Number)
-		}
+	if _, err := h.reconcilePR(context.Background(), pr, presubmits, false); err != nil {
+		log.WithError(err).Errorf("Could not reconcile PR %d", pr.Number)
 	}
 }
 

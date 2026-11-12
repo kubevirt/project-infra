@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"net/http"
@@ -23,18 +25,19 @@ import (
 )
 
 type options struct {
-	dryRun         bool
-	hmacSecretFile string
-	endpoint       string
-	port           int
-	prowConfigPath string
-	jobsConfigBase string
-	cacheDir       string
-	prowLocation   string
-	github         flagutil.GitHubOptions
+	dryRun            bool
+	hmacSecretFile    string
+	endpoint          string
+	port              int
+	prowConfigPath    string
+	jobsConfigBase    string
+	cacheDir          string
+	prowLocation      string
+	github            flagutil.GitHubOptions
+	reconcileInterval time.Duration
 }
 
-func (o *options) validate() {
+func (o *options) validate() error {
 	var errs []error
 	if o.prowConfigPath == "" {
 		errs = append(errs, fmt.Errorf("prow-config-path can't be empty"))
@@ -48,17 +51,15 @@ func (o *options) validate() {
 	if o.prowLocation == "" {
 		errs = append(errs, fmt.Errorf("prow-location can't be empty"))
 	}
+	if o.reconcileInterval < 0 {
+		errs = append(errs, fmt.Errorf("reconcile-interval must not be negative"))
+	}
 	err := o.github.Validate(o.dryRun)
 	if err != nil {
 		errs = append(errs, err)
 	}
 
-	if len(errs) > 0 {
-		for _, err := range errs {
-			logrus.WithError(err).Error("entry validation failure")
-		}
-		logrus.Fatalf("Arguments validation failed!")
-	}
+	return errors.Join(errs...)
 }
 
 func gatherOptions() *options {
@@ -96,6 +97,8 @@ func gatherOptions() *options {
 		"prow-location",
 		"",
 		"Prow raw git location")
+	fs.DurationVar(&o.reconcileInterval, "reconcile-interval", 10*time.Minute,
+		"Interval between phase recovery scans; 0 runs only at startup.")
 	for _, group := range []flagutil.OptionGroup{&o.github} {
 		group.AddFlags(fs)
 	}
@@ -111,7 +114,7 @@ func clientFactoryCacheDirOpt(cacheDir string) func(opts *git.ClientFactoryOpts)
 
 func main() {
 	opts := gatherOptions()
-	opts.validate()
+	mustSucceed(opts.validate(), "Arguments validation failed")
 
 	logger := setupLogger()
 	logger.Infoln("Setting up events server")
@@ -144,6 +147,9 @@ func main() {
 	interrupts.ListenAndServe(srv, 5*time.Second)
 	logger.Infoln("Events server is listening on port:", opts.port)
 	externalplugins.ServeExternalPluginHelp(serverMux, logger.WithField("plugin-help", ""), helpProvider)
+	interrupts.Run(func(ctx context.Context) {
+		eventsHandler.RunReconciler(ctx, opts.reconcileInterval)
+	})
 	interrupts.WaitForGracefulShutdown()
 	logger.Println("Phased server was gracefully shut down")
 }
