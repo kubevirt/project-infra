@@ -465,6 +465,10 @@ var defaultManualRequiredFilter = manualRequiredFilter{}
 type manualRequiredFilter struct{}
 
 func (f manualRequiredFilter) ShouldRun(p config.Presubmit) (shouldRun bool, forcedToRun bool, defaultBehavior bool) {
+	// Annotated jobs belong to status-driven progression, not review-label triggers.
+	if _, phased := p.Annotations[PhaseAnnotationKey]; phased {
+		return false, false, false
+	}
 	cond := !p.Optional && !p.AlwaysRun && p.RegexpChangeMatcher.RunIfChanged == "" &&
 		p.RegexpChangeMatcher.SkipIfOnlyChanged == ""
 	return cond, cond, false

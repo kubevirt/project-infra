@@ -93,11 +93,14 @@ The existing label-driven behavior remains available:
 - On `synchronize`: triggers only when the `skip-review` label is present
 - Selects presubmit jobs that are non-optional, not always-run, and have no
   path-based conditions (i.e. jobs requiring manual `/test` triggering)
+- Excludes all jobs with the `phased.kubevirt.io/phase` annotation; status-driven
+  progression and recovery own these jobs, regardless of their current status
 
 These requests retain the comment prefix `Required labels detected, running
-phase 2 presubmits:`. Here, "phase 2" is a legacy name, not a restriction to jobs
-annotated with phase `2`. This path does not check phase annotations or existing
-statuses, so it can request later-phase jobs before earlier phases succeed.
+phase 2 presubmits:`. Here, "phase 2" is a legacy name for unannotated required
+manual jobs, not jobs annotated with phase `2`. Review labels cannot restart
+annotated jobs or bypass earlier phases. This path still does not check existing
+statuses for unannotated jobs.
 
 The `skip-review` label is restricted to `kubevirt-bot` and
 `kubevirt-commenter-bot` via Prow label restrictions in `plugins.yaml`,

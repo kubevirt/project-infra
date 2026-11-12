@@ -25,6 +25,37 @@ func presubmitWithContext(name, ctx, phase string) config.Presubmit {
 	return ps
 }
 
+var _ = Describe("manualRequiredFilter", func() {
+	DescribeTable("excludes jobs owned by status-driven phases", func(phase string) {
+		job := presubmit("annotated-job", "")
+		job.Annotations = map[string]string{PhaseAnnotationKey: phase}
+		shouldRun, forced, defaults := (manualRequiredFilter{}).ShouldRun(job)
+		Expect(shouldRun).To(BeFalse())
+		Expect(forced).To(BeFalse())
+		Expect(defaults).To(BeFalse())
+	}, Entry("phase zero", "0"), Entry("phase one", "1"), Entry("later phase", "3"),
+		Entry("invalid annotation", "invalid"), Entry("empty annotation", ""))
+
+	It("retains unannotated required manual jobs", func() {
+		shouldRun, forced, defaults := (manualRequiredFilter{}).ShouldRun(presubmit("manual-job", ""))
+		Expect(shouldRun).To(BeTrue())
+		Expect(forced).To(BeTrue())
+		Expect(defaults).To(BeFalse())
+	})
+
+	DescribeTable("retains existing exclusions", func(optional, alwaysRun bool, runIfChanged, skipIfOnlyChanged string) {
+		job := presubmit("unannotated-job", "")
+		job.Optional, job.AlwaysRun = optional, alwaysRun
+		job.RunIfChanged, job.SkipIfOnlyChanged = runIfChanged, skipIfOnlyChanged
+		shouldRun, forced, defaults := (manualRequiredFilter{}).ShouldRun(job)
+		Expect(shouldRun).To(BeFalse())
+		Expect(forced).To(BeFalse())
+		Expect(defaults).To(BeFalse())
+	}, Entry("optional", true, false, "", ""), Entry("always run", false, true, "", ""),
+		Entry("run-if-changed", false, false, "pkg/.*", ""),
+		Entry("skip-if-only-changed", false, false, "", "docs/.*"))
+})
+
 var _ = Describe("jobContext", func() {
 	It("returns Name when Context is empty", func() {
 		job := presubmit("pull-kubevirt-build", "0")

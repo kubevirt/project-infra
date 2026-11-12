@@ -11,6 +11,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	kubeVirtLabels "kubevirt.io/project-infra/pkg/github/labels"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
@@ -19,6 +21,7 @@ import (
 	"sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/prow/pkg/github"
 	"sigs.k8s.io/prow/pkg/github/fakegithub"
+	"sigs.k8s.io/prow/pkg/labels"
 )
 
 type reconcileClient struct {
@@ -136,6 +139,44 @@ var _ = Describe("phase reconciliation", func() {
 		Expect(client.IssueCommentsAdded[0]).NotTo(ContainSubstring("/test build"))
 		Expect(client.IssueCommentsAdded[0]).NotTo(ContainSubstring("/test merge-only"))
 	})
+
+	DescribeTable("label events do not request status-driven jobs again",
+		func(action github.PullRequestEventAction, addedLabel, state string) {
+			jobs[0].AlwaysRun = true
+			later := presubmit("later-phase", "3")
+			later.Spec = jobs[0].Spec
+			jobs = append(jobs, later)
+			serveRecoveryConfig(h, jobs)
+			h.cache.set(jobs)
+			h.handleStatusEvent(logrus.NewEntry(logrus.New()), &github.StatusEvent{
+				SHA: pr.Head.SHA, State: github.StatusSuccess, Context: "build", Repo: pr.Base.Repo,
+			})
+			Expect(client.IssueCommentsAdded).To(HaveLen(1))
+			Expect(client.IssueCommentsAdded[0]).To(ContainSubstring("/test network\n"))
+			if state != "missing" {
+				client.CombinedStatuses[pr.Head.SHA].Statuses = append(client.CombinedStatuses[pr.Head.SHA].Statuses,
+					github.Status{Context: "ci/network", State: state})
+			}
+			if addedLabel == kubeVirtLabels.SkipReview {
+				Expect(client.AddLabel("kubevirt", "kubevirt", pr.Number, kubeVirtLabels.SkipReview)).To(Succeed())
+			} else {
+				Expect(client.AddLabel("kubevirt", "kubevirt", pr.Number, labels.Approved)).To(Succeed())
+				Expect(client.AddLabel("kubevirt", "kubevirt", pr.Number, labels.LGTM)).To(Succeed())
+			}
+			h.handlePullRequestEvent(logrus.NewEntry(logrus.New()), &github.PullRequestEvent{
+				Action: action, Label: github.Label{Name: addedLabel}, Repo: pr.Base.Repo, PullRequest: pr,
+			})
+			Expect(client.IssueCommentsAdded).To(HaveLen(2))
+			Expect(client.IssueCommentsAdded[1]).To(Equal("kubevirt/kubevirt#42:" + Intro + "/test merge-only\n"))
+		},
+		Entry("approved after lgtm before statuses appear", github.PullRequestActionLabeled, labels.Approved, "missing"),
+		Entry("lgtm after approval while pending", github.PullRequestActionLabeled, labels.LGTM, github.StatusPending),
+		Entry("approval after success", github.PullRequestActionLabeled, labels.Approved, github.StatusSuccess),
+		Entry("approval after failure", github.PullRequestActionLabeled, labels.Approved, github.StatusFailure),
+		Entry("approval after error", github.PullRequestActionLabeled, labels.Approved, github.StatusError),
+		Entry("skip-review added", github.PullRequestActionLabeled, kubeVirtLabels.SkipReview, "missing"),
+		Entry("skip-review synchronized", github.PullRequestActionSynchronize, kubeVirtLabels.SkipReview, github.StatusSuccess),
+	)
 
 	DescribeTable("does not request jobs whose status already exists", func(state string) {
 		client.CombinedStatuses[pr.Head.SHA].Statuses = append(client.CombinedStatuses[pr.Head.SHA].Statuses,
