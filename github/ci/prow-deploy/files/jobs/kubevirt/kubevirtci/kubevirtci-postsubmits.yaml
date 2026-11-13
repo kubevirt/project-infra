@@ -29,7 +29,7 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        - image: quay.io/kubevirtci/golang:v20261112-fe48bc3
           command:
           - "/usr/local/bin/entrypoint.sh"
           - "/bin/bash"
@@ -79,7 +79,7 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        - image: quay.io/kubevirtci/golang:v20261112-fe48bc3
           command:
           - "/usr/local/bin/runner.sh"
           - "/bin/bash"
@@ -120,7 +120,7 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        - image: quay.io/kubevirtci/golang:v20261112-fe48bc3
           command:
           - "/usr/local/bin/entrypoint.sh"
           - "/bin/bash"
@@ -180,7 +180,7 @@ postsubmits:
             type: Directory
           name: devices
         containers:
-        - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        - image: quay.io/kubevirtci/golang:v20261112-fe48bc3
           command:
           - "/usr/local/bin/runner.sh"
           - "/bin/bash"

@@ -34,7 +34,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -81,7 +81,7 @@ presubmits:
         env:
         - name: TARGET
           value: kind-1.37-vgpu
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 18Gi
@@ -139,12 +139,12 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
         - name: GINKGO_TESTS_IMAGE
-          value: quay.io/kubevirtci/ginkgo-tests:v202611101645-0f94693
+          value: quay.io/kubevirtci/ginkgo-tests:v202611121221-d2d90ed
         - name: INVOKE_FUNCTEST_ONCE
           value: "true"
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
           value: 6h45m
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -187,12 +187,12 @@ presubmits:
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
         - name: GINKGO_TESTS_IMAGE
-          value: quay.io/kubevirtci/ginkgo-tests:v202611101645-0f94693
+          value: quay.io/kubevirtci/ginkgo-tests:v202611121221-d2d90ed
         - name: INVOKE_FUNCTEST_ONCE
           value: "true"
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
           value: 35h45m
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -221,7 +221,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make generate-verify
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 12Gi
@@ -249,7 +249,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make verify-rpm-deps
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 12Gi
@@ -282,7 +282,7 @@ presubmits:
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
           value: 2606301559-b9f50e380a
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 12Gi
@@ -309,7 +309,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make deps-sync && hack/verify-generate.sh
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 12Gi
@@ -338,7 +338,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make gosec
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 12Gi
@@ -366,7 +366,7 @@ presubmits:
         - /bin/sh
         - -ce
         - make go-test
-        image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        image: quay.io/kubevirtci/golang:v20261112-fe48bc3
         resources:
           requests:
             memory: 8Gi
@@ -397,7 +397,7 @@ presubmits:
         - /bin/sh
         - -ce
         - make go-test
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 12Gi
@@ -425,7 +425,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make && make build-verify
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 12Gi
@@ -456,7 +456,7 @@ presubmits:
         env:
         - name: BUILD_ARCH
           value: crossbuild-aarch64
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 8Gi
@@ -487,7 +487,7 @@ presubmits:
         env:
         - name: BUILD_ARCH
           value: crossbuild-s390x
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 8Gi
@@ -520,7 +520,7 @@ presubmits:
           value: "10"
         - name: KUBEVIRT_CS10_BUILDER_VERSION
           value: 2606301559-b9f50e380a
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 12Gi
@@ -555,7 +555,7 @@ presubmits:
           value: 2606301559-b9f50e380a
         - name: BUILD_ARCH
           value: crossbuild-aarch64
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 8Gi
@@ -590,7 +590,7 @@ presubmits:
           value: 2606301559-b9f50e380a
         - name: BUILD_ARCH
           value: crossbuild-s390x
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 8Gi
@@ -621,7 +621,7 @@ presubmits:
         - /bin/sh
         - -ce
         - make go-test
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             cpu: "4"
@@ -651,7 +651,7 @@ presubmits:
         - /bin/sh
         - -c
         - make fuzz
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 8Gi
@@ -679,7 +679,7 @@ presubmits:
         - /bin/sh
         - -c
         - make test-integration
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 8Gi
@@ -710,7 +710,7 @@ presubmits:
         env:
         - name: COVERALLS_TOKEN_FILE
           value: /root/.docker/secrets/coveralls/token
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 16Gi
@@ -745,7 +745,7 @@ presubmits:
         env:
         - name: FOSSA_TOKEN_FILE
           value: /root/.docker/secrets/fossa/token
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 16Gi
@@ -780,7 +780,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make apidocs
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 12Gi
@@ -807,7 +807,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make client-python
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 12Gi
@@ -835,7 +835,7 @@ presubmits:
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make manifests DOCKER_PREFIX="docker.io/kubevirt"
           && make olm-verify
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 12Gi
@@ -862,7 +862,7 @@ presubmits:
         - /bin/sh
         - -c
         - cp /etc/bazel.bazelrc ./ci.bazelrc && make prom-rules-verify
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 12Gi
@@ -890,7 +890,7 @@ presubmits:
         - /bin/sh
         - -c
         - hack/check-unassigned-tests.sh
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 12Gi
@@ -931,7 +931,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -975,7 +975,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1015,7 +1015,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_BUILDER_IMAGE
           value: icr.io/kubevirt/builder-cs10:2610281559-177548615f
-        image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        image: quay.io/kubevirtci/golang:v20261112-fe48bc3
         resources:
           requests:
             memory: 21Gi
@@ -1045,7 +1045,7 @@ presubmits:
         - -ce
         - |
           make builder-build
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 16Gi
@@ -1075,7 +1075,7 @@ presubmits:
         - -ce
         - |
           make builder-build-centos-stream-10
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 16Gi
@@ -1104,7 +1104,7 @@ presubmits:
         - -c
         - |
           make lint
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 12Gi
@@ -1145,7 +1145,7 @@ presubmits:
           value: local
         - name: KUBEVIRT_LABEL_FILTER
           value: (vsock)
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1177,7 +1177,7 @@ presubmits:
         - -c
         - |
           make lint-metrics
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 4Gi
@@ -1216,7 +1216,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1257,7 +1257,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1300,7 +1300,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1341,7 +1341,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1382,7 +1382,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1423,7 +1423,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1466,7 +1466,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1509,7 +1509,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1550,7 +1550,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1640,7 +1640,7 @@ presubmits:
           value: docker.io/harshitg/qemu-rpms:qemu-10.2.0-w-cpuid # TODO Change this to stable image after testing
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
           value: "8h"
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 18Gi
@@ -1682,7 +1682,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1723,7 +1723,7 @@ presubmits:
           value: "2"
         - name: KUBEVIRT_CENTOS_STREAM_VERSION
           value: "10"
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1771,7 +1771,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1816,7 +1816,7 @@ presubmits:
           value: dual
         - name: RUN_ON_ARM64_INFRA
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1866,7 +1866,7 @@ presubmits:
           value: 1G
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1910,7 +1910,7 @@ presubmits:
           value: 1G
         - name: KUBEVIRT_MEMORY_SIZE
           value: 16G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1952,7 +1952,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -1998,7 +1998,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -2037,7 +2037,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -2082,7 +2082,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -2123,7 +2123,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -2164,7 +2164,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -2226,7 +2226,7 @@ presubmits:
           value: 1G
         - name: KUBEVIRT_WITH_ETC_IN_MEMORY
           value: "true"
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             cpu: "12"
@@ -2310,7 +2310,7 @@ presubmits:
           value: debug
         - name: PERFSCALE_WORKLOAD
           value: tests/performance/manifests/kube-burner/kubevirt-density/kubevirt-density.yml
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             cpu: "12"
@@ -2367,7 +2367,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 8G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             cpu: "12"
@@ -2410,7 +2410,7 @@ presubmits:
           value: "true"
         - name: KUBEVIRT_WITH_ETC_CAPACITY
           value: 1G
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 52Gi
@@ -2450,7 +2450,7 @@ presubmits:
           value: kind-1.37-sev
         - name: KUBEVIRT_PROVIDER
           value: kind-1.37
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 18Gi
@@ -2532,7 +2532,7 @@ presubmits:
           value: Always
         - name: BUILD_ARCH
           value: crossbuild-s390x
-        image: quay.io/kubevirtci/bootstrap:v20261012-6b466e3
+        image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
         resources:
           requests:
             memory: 8Gi

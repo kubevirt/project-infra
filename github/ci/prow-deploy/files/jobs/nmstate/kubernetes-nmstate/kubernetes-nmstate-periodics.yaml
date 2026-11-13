@@ -9,7 +9,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v202611091810-da10659
+    - image: quay.io/kubevirtci/flakefinder:v202611121221-d2d90ed
       command:
       - /usr/bin/flakefinder
       args:
@@ -31,7 +31,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v202611091810-da10659
+    - image: quay.io/kubevirtci/flakefinder:v202611121221-d2d90ed
       command:
       - /usr/bin/flakefinder
       args:
@@ -53,7 +53,7 @@ periodics:
   cluster: kubevirt-prow-control-plane
   spec:
     containers:
-    - image: quay.io/kubevirtci/flakefinder:v202611091810-da10659
+    - image: quay.io/kubevirtci/flakefinder:v202611121221-d2d90ed
       command:
       - /usr/bin/flakefinder
       args:
@@ -87,7 +87,7 @@ periodics:
     nodeSelector:
       type: bare-metal-external
     containers:
-      - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+      - image: quay.io/kubevirtci/golang:v20261112-fe48bc3
         securityContext:
           privileged: true
         resources:
