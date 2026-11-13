@@ -51,6 +51,39 @@ The first configured phase must be started by another mechanism, typically
 Prow's `always_run: true`. Later phases should use `always_run: false` so they
 wait for the plugin rather than starting automatically.
 
+### Recovery after restarts and missed events
+
+At startup, phased scans all open `kubevirt/kubevirt` PRs using a fresh job
+configuration snapshot. It evaluates the current HEAD statuses with the same
+phase rules as status webhooks. If earlier phases succeeded, it requests the
+missing jobs in the next phase directly; it does not rerun phase-0 jobs or replay
+the label-driven path.
+
+Recovery scans repeat ten minutes after the previous pass finishes, so changes
+to phase annotations and missed webhook deliveries also recover without a
+restart. Set `--reconcile-interval=0` for startup-only recovery, or use another
+nonnegative duration to change the interval. Failed passes retry with exponential
+backoff, starting at one second and capped at one minute. A single PR failure
+does not prevent processing other PRs.
+
+The scan uses at most four concurrent status reads. After scanning, recovery
+requests are paced at one PR per thirty seconds. HEAD, eligibility, and statuses
+are rechecked before posting. Webhooks continue to be handled during recovery;
+their requests are not paced by the recovery limiter.
+
+Status webhooks and recovery share per-PR locking and recent-request tracking.
+Generated comments include hidden markers identifying each requested job by
+HEAD SHA and phase. For ten minutes, markers in comments from the plugin's bot
+account suppress duplicate requests, including after a restart. An in-memory
+ledger covers delays before newly posted comments become visible through the
+GitHub cache. Jobs with any existing status are never requested again by this
+path, even if that status is a failure.
+
+Scan and completion logs include PR counts for skipped, blocked, candidate,
+requested, already requested, and failed evaluations. A request without statuses
+becomes eligible again after the ten-minute grace period; monitor repeated
+requests as a possible Prow dispatch or reporting problem.
+
 ### Label-driven jobs
 
 The existing label-driven behavior remains available:
@@ -60,11 +93,14 @@ The existing label-driven behavior remains available:
 - On `synchronize`: triggers only when the `skip-review` label is present
 - Selects presubmit jobs that are non-optional, not always-run, and have no
   path-based conditions (i.e. jobs requiring manual `/test` triggering)
+- Excludes all jobs with the `phased.kubevirt.io/phase` annotation; status-driven
+  progression and recovery own these jobs, regardless of their current status
 
 These requests retain the comment prefix `Required labels detected, running
-phase 2 presubmits:`. Here, "phase 2" is a legacy name, not a restriction to jobs
-annotated with phase `2`. This path does not check phase annotations or existing
-statuses, so it can request later-phase jobs before earlier phases succeed.
+phase 2 presubmits:`. Here, "phase 2" is a legacy name for unannotated required
+manual jobs, not jobs annotated with phase `2`. Review labels cannot restart
+annotated jobs or bypass earlier phases. This path still does not check existing
+statuses for unannotated jobs.
 
 The `skip-review` label is restricted to `kubevirt-bot` and
 `kubevirt-commenter-bot` via Prow label restrictions in `plugins.yaml`,
@@ -126,11 +162,14 @@ Deployment manifests:
 - Status-driven progression handles commit `status` events, not `check_run` or
   `check_suite` events, and ignores non-success events.
 - Status processing caches presubmit configuration and phased status contexts
-  in memory for five minutes. Configuration changes take effect after cache
-  expiry and a subsequent event. Label-driven processing loads config separately.
-- Existing commit statuses, not previously posted comments, prevent repeat phase
-  requests. Repeated events before jobs publish statuses can produce duplicate
-  `/test` comments.
+  in memory for five minutes. Recovery bypasses this cache once per pass.
+  Label-driven processing loads config separately.
+- Comment-based triggering is not exactly-once delivery. The per-PR locks are
+  process-local, so overlapping plugin replicas can race before either sees the
+  other's request. Requests without statuses can be repeated after the grace
+  period. Run one replica; restart markers reduce but do not eliminate this race.
+- Shutdown cancels pacing and comment requests. Existing GitHub read operations
+  without context support must finish before an in-flight scan can stop.
 
 ## Development
 

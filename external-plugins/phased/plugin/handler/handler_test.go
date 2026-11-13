@@ -1,12 +1,12 @@
 package handler
 
 import (
+	"time"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/sirupsen/logrus"
 	"sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/prow/pkg/github"
-	"sigs.k8s.io/prow/pkg/github/fakegithub"
 )
 
 func presubmit(name string, phase string) config.Presubmit {
@@ -25,48 +25,35 @@ func presubmitWithContext(name, ctx, phase string) config.Presubmit {
 	return ps
 }
 
-type phaseCommentClient struct {
-	githubClient
-	comments *fakegithub.FakeClient
-}
+var _ = Describe("manualRequiredFilter", func() {
+	DescribeTable("excludes jobs owned by status-driven phases", func(phase string) {
+		job := presubmit("annotated-job", "")
+		job.Annotations = map[string]string{PhaseAnnotationKey: phase}
+		shouldRun, forced, defaults := (manualRequiredFilter{}).ShouldRun(job)
+		Expect(shouldRun).To(BeFalse())
+		Expect(forced).To(BeFalse())
+		Expect(defaults).To(BeFalse())
+	}, Entry("phase zero", "0"), Entry("phase one", "1"), Entry("later phase", "3"),
+		Entry("invalid annotation", "invalid"), Entry("empty annotation", ""))
 
-func (c phaseCommentClient) CreateComment(org, repo string, number int, comment string) error {
-	return c.comments.CreateComment(org, repo, number, comment)
-}
-
-var _ = Describe("triggerPhaseJobs", func() {
-	It("posts only untriggered jobs to the pull request repository", func() {
-		gh := fakegithub.NewFakeClient()
-		pr := github.PullRequest{
-			Number: 42,
-			Base: github.PullRequestBranch{Repo: github.Repo{
-				Owner: github.User{Login: "test-org"},
-				Name:  "test-repo",
-			}},
-		}
-		jobs := []config.Presubmit{
-			presubmit("pending-job", "1"),
-			presubmitWithContext("new-job", "custom-context", "1"),
-		}
-
-		triggerPhaseJobs(logrus.NewEntry(logrus.New()), phaseCommentClient{comments: gh}, pr, jobs, 0, 1, map[string]string{
-			"pending-job": github.StatusPending,
-		})
-
-		Expect(gh.IssueCommentsAdded).To(Equal([]string{
-			"test-org/test-repo#42:Phase 0 jobs completed, triggering phase 1 presubmits:\n/test new-job\n",
-		}))
+	It("retains unannotated required manual jobs", func() {
+		shouldRun, forced, defaults := (manualRequiredFilter{}).ShouldRun(presubmit("manual-job", ""))
+		Expect(shouldRun).To(BeTrue())
+		Expect(forced).To(BeTrue())
+		Expect(defaults).To(BeFalse())
 	})
 
-	It("does not comment when all jobs already have statuses", func() {
-		gh := fakegithub.NewFakeClient()
-
-		triggerPhaseJobs(logrus.NewEntry(logrus.New()), phaseCommentClient{comments: gh}, github.PullRequest{},
-			[]config.Presubmit{presubmitWithContext("job", "custom-context", "1")}, 0, 1,
-			map[string]string{"custom-context": github.StatusSuccess})
-
-		Expect(gh.IssueCommentsAdded).To(BeEmpty())
-	})
+	DescribeTable("retains existing exclusions", func(optional, alwaysRun bool, runIfChanged, skipIfOnlyChanged string) {
+		job := presubmit("unannotated-job", "")
+		job.Optional, job.AlwaysRun = optional, alwaysRun
+		job.RunIfChanged, job.SkipIfOnlyChanged = runIfChanged, skipIfOnlyChanged
+		shouldRun, forced, defaults := (manualRequiredFilter{}).ShouldRun(job)
+		Expect(shouldRun).To(BeFalse())
+		Expect(forced).To(BeFalse())
+		Expect(defaults).To(BeFalse())
+	}, Entry("optional", true, false, "", ""), Entry("always run", false, true, "", ""),
+		Entry("run-if-changed", false, false, "pkg/.*", ""),
+		Entry("skip-if-only-changed", false, false, "", "docs/.*"))
 })
 
 var _ = Describe("jobContext", func() {
@@ -355,13 +342,13 @@ var _ = DescribeTable("isPRNotMergeable",
 
 var _ = Describe("presubmitCache", func() {
 	It("returns miss on empty cache", func() {
-		c := presubmitCache{ttl: 5}
+		c := presubmitCache{ttl: 5 * time.Minute}
 		_, _, ok := c.get()
 		Expect(ok).To(BeFalse())
 	})
 
 	It("returns hit after set", func() {
-		c := presubmitCache{ttl: 5 * 60}
+		c := presubmitCache{ttl: 5 * time.Minute}
 		presubmits := []config.Presubmit{
 			presubmit("build", "0"),
 			presubmit("merge-job", ""),
@@ -375,7 +362,7 @@ var _ = Describe("presubmitCache", func() {
 	})
 
 	It("builds phasedNames only for annotated jobs", func() {
-		c := presubmitCache{ttl: 5 * 60}
+		c := presubmitCache{ttl: 5 * time.Minute}
 		c.set([]config.Presubmit{
 			presubmit("phase-0-job", "0"),
 			presubmit("phase-1-job", "1"),
@@ -389,7 +376,7 @@ var _ = Describe("presubmitCache", func() {
 	})
 
 	It("uses Context field for phasedNames key when set", func() {
-		c := presubmitCache{ttl: 5 * 60}
+		c := presubmitCache{ttl: 5 * time.Minute}
 		c.set([]config.Presubmit{
 			presubmitWithContext("build", "ci/build", "0"),
 		})
