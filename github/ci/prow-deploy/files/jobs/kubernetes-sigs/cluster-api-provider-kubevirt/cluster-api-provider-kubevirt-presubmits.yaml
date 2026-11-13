@@ -21,7 +21,7 @@ presubmits:
         - /bin/sh
         - -c
         - make functest
-        image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        image: quay.io/kubevirtci/golang:v20261112-fe48bc3
         resources:
           requests:
             memory: 16Gi
@@ -55,7 +55,7 @@ presubmits:
             - /bin/sh
             - -c
             - make functest
-          image: quay.io/kubevirtci/golang:v20261012-6b466e3
+          image: quay.io/kubevirtci/golang:v20261112-fe48bc3
           resources:
             requests:
               memory: 16Gi

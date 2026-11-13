@@ -73,7 +73,7 @@ periodics:
       - /usr/local/bin/runner.sh
       - /bin/bash
       - -ce
-      image: quay.io/kubevirtci/pr-creator:v20261109-da10659
+      image: quay.io/kubevirtci/pr-creator:v20261112-d2d90ed
       securityContext:
         privileged: true
       resources:

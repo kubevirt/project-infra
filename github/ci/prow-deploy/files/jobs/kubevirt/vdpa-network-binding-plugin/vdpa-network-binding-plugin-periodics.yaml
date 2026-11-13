@@ -21,7 +21,7 @@ periodics:
     max_concurrency: 1
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        - image: quay.io/kubevirtci/golang:v20261112-fe48bc3
           command: [/usr/local/bin/entrypoint.sh]
           args:
             - /bin/sh
@@ -70,7 +70,7 @@ periodics:
     max_concurrency: 1
     spec:
       containers:
-        - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+        - image: quay.io/kubevirtci/golang:v20261112-fe48bc3
           command: [/usr/local/bin/entrypoint.sh]
           args:
             - /bin/sh
