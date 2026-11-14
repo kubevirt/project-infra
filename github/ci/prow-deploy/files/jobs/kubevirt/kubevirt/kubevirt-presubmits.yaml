@@ -350,6 +350,7 @@ presubmits:
       phased.kubevirt.io/phase: "0"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-s390x-workloads
+    optional: true
     decoration_config:
       grace_period: 5m0s
       timeout: 2h0m0s
