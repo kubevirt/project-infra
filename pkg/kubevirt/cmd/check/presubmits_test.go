@@ -30,6 +30,30 @@ func TestPresubmits(t *testing.T) {
 	RunSpecs(t, "check presubmits suite")
 }
 
+func TestValidateSelectionLabels(t *testing.T) {
+	errs := validateSelectionLabels(&config.JobConfig{
+		PresubmitsStatic: map[string][]config.Presubmit{
+			prowjobconfigs.OrgAndRepoForJobConfig: {
+				{JobBase: config.JobBase{Name: "pull-kubevirt-e2e-k8s-1.37-sig-compute"}},
+			},
+		},
+	})
+	if len(errs) == 0 {
+		t.Fatal("expected missing selection label errors")
+	}
+
+	labeled := config.Presubmit{JobBase: config.JobBase{Name: "pull-kubevirt-e2e-k8s-1.37-sig-network"}}
+	labeled.Labels = prowjobconfigs.ApplySelectionLabels(nil, labeled.Name)
+	errs = validateSelectionLabels(&config.JobConfig{
+		PresubmitsStatic: map[string][]config.Presubmit{
+			prowjobconfigs.OrgAndRepoForJobConfig: {labeled},
+		},
+	})
+	if len(errs) != 0 {
+		t.Fatalf("labeled job returned %v", errs)
+	}
+}
+
 var _ = Describe("presubmit checks", func() {
 	DescribeTable("validateSigNetworkSkipSmokeEnv",
 		func(jobs []config.Presubmit, expectedErrs ...string) {
