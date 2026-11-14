@@ -120,6 +120,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-check-tests-for-flakes
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1491,6 +1492,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.37-sig-compute-serial
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1663,6 +1665,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.37-sig-compute
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1705,6 +1708,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 4
     name: pull-kubevirt-e2e-kind-1.37-sig-compute-arm64
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -1935,6 +1939,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.37-sig-compute-migrations
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2006,9 +2011,10 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "1"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
     decoration_config:
@@ -2020,6 +2026,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
     name: pull-kubevirt-e2e-k8s-1.37-sig-monitoring
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2049,7 +2056,6 @@ presubmits:
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits
-      phased.kubevirt.io/phase: "1"
     cluster: prow-workloads
     decoration_config:
       grace_period: 5m0s
@@ -2090,9 +2096,10 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  - always_run: true
+  - always_run: false
     annotations:
       fork-per-release: "true"
+      phased.kubevirt.io/phase: "1"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-workloads
     decoration_config:
@@ -2106,6 +2113,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.37-sig-network-smoke
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2148,6 +2156,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.37-sig-operator
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
@@ -2393,6 +2402,7 @@ presubmits:
       preset-shared-images: "true"
     max_concurrency: 11
     name: pull-kubevirt-e2e-k8s-1.37-sig-storage
+    run_before_merge: true
     skip_branches:
     - release-\d+\.\d+
     spec:
