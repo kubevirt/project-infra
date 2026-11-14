@@ -325,26 +325,30 @@ to contain
 		)
 
 		var originalGetQuarantineCandidate func(*flakestats.TopXTest, searchci.TimeRange) (*TestToQuarantine, error)
+		var originalPullsForBatchBuild func(string) ([]int, error)
 
 		BeforeEach(func() {
 			originalGetQuarantineCandidate = getQuarantineCandidate
+			originalPullsForBatchBuild = pullsForBatchBuild
 			quarantineOpts.matchingLaneRegexString = defaultMatchingLaneRegexString
 			quarantineOpts.releaseLaneSuffix = ""
 			quarantineOpts.maxTestsToQuarantine = 0
 			quarantineOpts.maxFailureAge = 72 * time.Hour
 			quarantineOpts.minRecentFailures = 2
 			quarantineOpts.minFailureInterval = 24 * time.Hour
+			quarantineOpts.minIndependentFailures = 2
 		})
 
 		AfterEach(func() {
 			getQuarantineCandidate = originalGetQuarantineCandidate
+			pullsForBatchBuild = originalPullsForBatchBuild
 		})
 
 		newImpact := func(lane string, percent float64, buildURLs ...searchci.JobBuildURL) searchci.Impact {
 			if len(buildURLs) == 0 {
 				buildURLs = []searchci.JobBuildURL{
-					{URL: "https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/1", Interval: 4 * time.Hour},
-					{URL: "https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/2", Interval: 36 * time.Hour},
+					{URL: presubmitBuildURL(101, "1"), Interval: 4 * time.Hour},
+					{URL: presubmitBuildURL(202, "2"), Interval: 36 * time.Hour},
 				}
 			}
 			return searchci.Impact{
@@ -534,8 +538,8 @@ to contain
 		It("keeps candidates with recent spread-out failures", func() {
 			stubCandidate([]searchci.Impact{
 				newImpact(requiredLane, 10,
-					searchci.JobBuildURL{URL: "https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/1", Interval: 4 * time.Hour},
-					searchci.JobBuildURL{URL: "https://prow.ci.kubevirt.io/view/gs/kubevirt-prow/pr-logs/pull/2", Interval: 36 * time.Hour},
+					searchci.JobBuildURL{URL: presubmitBuildURL(101, "1"), Interval: 4 * time.Hour},
+					searchci.JobBuildURL{URL: presubmitBuildURL(202, "2"), Interval: 36 * time.Hour},
 				),
 			})
 
@@ -566,6 +570,188 @@ to contain
 			Expect(err).ToNot(HaveOccurred())
 			Expect(result).To(HaveLen(1))
 			Expect(result[0].RelevantImpacts).To(HaveLen(2))
+		})
+
+		It("skips a lane whose recent failures are one pull request and Tide batches that include it", func() {
+			pullsForBatchBuild = func(buildURL string) ([]int, error) {
+				Expect(buildURL).To(ContainSubstring("/batch-18459"))
+				return []int{18459, 19700}, nil
+			}
+			stubCandidate([]searchci.Impact{
+				newImpact(requiredLane, 10,
+					searchci.JobBuildURL{URL: presubmitBuildURL(18459, "a"), Interval: 5 * time.Hour},
+					searchci.JobBuildURL{URL: tideBatchBuildURL("batch-18459"), Interval: 26 * time.Hour},
+					searchci.JobBuildURL{URL: presubmitBuildURL(18459, "b"), Interval: 40 * time.Hour},
+				),
+			})
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{newTopXTest(testName)},
+				reportsContaining("should do something", "[sig-compute] my flaky test"),
+				map[string]struct{}{requiredLane: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(BeEmpty())
+		})
+
+		It("skips a lane when one outside failure is the only corroboration", func() {
+			stubCandidate([]searchci.Impact{
+				newImpact(requiredLane, 10,
+					searchci.JobBuildURL{URL: presubmitBuildURL(18459, "a"), Interval: 4 * time.Hour},
+					searchci.JobBuildURL{URL: presubmitBuildURL(18459, "b"), Interval: 30 * time.Hour},
+					searchci.JobBuildURL{URL: presubmitBuildURL(18459, "c"), Interval: 50 * time.Hour},
+					searchci.JobBuildURL{URL: presubmitBuildURL(999, "d"), Interval: 60 * time.Hour},
+				),
+			})
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{newTopXTest(testName)},
+				reportsContaining("should do something", "[sig-compute] my flaky test"),
+				map[string]struct{}{requiredLane: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(BeEmpty())
+		})
+
+		It("keeps a lane whose recent failures come from different pull requests", func() {
+			stubCandidate([]searchci.Impact{
+				newImpact(requiredLane, 10,
+					searchci.JobBuildURL{URL: presubmitBuildURL(101, "a"), Interval: 4 * time.Hour},
+					searchci.JobBuildURL{URL: presubmitBuildURL(202, "b"), Interval: 36 * time.Hour},
+				),
+			})
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{newTopXTest(testName)},
+				reportsContaining("should do something", "[sig-compute] my flaky test"),
+				map[string]struct{}{requiredLane: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(HaveLen(1))
+			Expect(result[0].RelevantImpacts).To(HaveLen(1))
+		})
+
+		It("keeps a lane when two failures fall outside the repeated pull request", func() {
+			stubCandidate([]searchci.Impact{
+				newImpact(requiredLane, 10,
+					searchci.JobBuildURL{URL: presubmitBuildURL(18459, "a"), Interval: 4 * time.Hour},
+					searchci.JobBuildURL{URL: presubmitBuildURL(18459, "b"), Interval: 20 * time.Hour},
+					searchci.JobBuildURL{URL: presubmitBuildURL(18459, "c"), Interval: 48 * time.Hour},
+					searchci.JobBuildURL{URL: presubmitBuildURL(300, "d"), Interval: 30 * time.Hour},
+					searchci.JobBuildURL{URL: presubmitBuildURL(400, "e"), Interval: 55 * time.Hour},
+				),
+			})
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{newTopXTest(testName)},
+				reportsContaining("should do something", "[sig-compute] my flaky test"),
+				map[string]struct{}{requiredLane: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(HaveLen(1))
+		})
+
+		It("does not treat an unresolved Tide batch as independent corroboration", func() {
+			pullsForBatchBuild = func(string) ([]int, error) {
+				return nil, fmt.Errorf("prowjob unavailable")
+			}
+			stubCandidate([]searchci.Impact{
+				newImpact(requiredLane, 10,
+					searchci.JobBuildURL{URL: presubmitBuildURL(18459, "a"), Interval: 4 * time.Hour},
+					searchci.JobBuildURL{URL: tideBatchBuildURL("missing"), Interval: 20 * time.Hour},
+					searchci.JobBuildURL{URL: presubmitBuildURL(18459, "b"), Interval: 36 * time.Hour},
+				),
+			})
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{newTopXTest(testName)},
+				reportsContaining("should do something", "[sig-compute] my flaky test"),
+				map[string]struct{}{requiredLane: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(BeEmpty())
+		})
+
+		It("keeps Tide batches that share no pull request", func() {
+			pullsForBatchBuild = func(buildURL string) ([]int, error) {
+				switch {
+				case strings.HasSuffix(buildURL, "/disjoint-a"):
+					return []int{11, 12}, nil
+				case strings.HasSuffix(buildURL, "/disjoint-b"):
+					return []int{13, 14}, nil
+				default:
+					return nil, fmt.Errorf("unexpected batch URL %s", buildURL)
+				}
+			}
+			stubCandidate([]searchci.Impact{
+				newImpact(requiredLane, 10,
+					searchci.JobBuildURL{URL: tideBatchBuildURL("disjoint-a"), Interval: 4 * time.Hour},
+					searchci.JobBuildURL{URL: tideBatchBuildURL("disjoint-b"), Interval: 36 * time.Hour},
+				),
+			})
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{newTopXTest(testName)},
+				reportsContaining("should do something", "[sig-compute] my flaky test"),
+				map[string]struct{}{requiredLane: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(HaveLen(1))
+		})
+
+		It("skips Tide batches that all contain the same pull request", func() {
+			pullsForBatchBuild = func(buildURL string) ([]int, error) {
+				switch {
+				case strings.HasSuffix(buildURL, "/shared-a"):
+					return []int{18459, 11}, nil
+				case strings.HasSuffix(buildURL, "/shared-b"):
+					return []int{18459, 12}, nil
+				default:
+					return nil, fmt.Errorf("unexpected batch URL %s", buildURL)
+				}
+			}
+			stubCandidate([]searchci.Impact{
+				newImpact(requiredLane, 10,
+					searchci.JobBuildURL{URL: tideBatchBuildURL("shared-a"), Interval: 4 * time.Hour},
+					searchci.JobBuildURL{URL: tideBatchBuildURL("shared-b"), Interval: 36 * time.Hour},
+				),
+			})
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{newTopXTest(testName)},
+				reportsContaining("should do something", "[sig-compute] my flaky test"),
+				map[string]struct{}{requiredLane: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(BeEmpty())
+		})
+
+		It("drops a single-PR lane and keeps a cross-PR lane for the same spec", func() {
+			stubCandidate([]searchci.Impact{
+				newImpact(requiredLane, 10,
+					searchci.JobBuildURL{URL: presubmitBuildURL(18459, "a"), Interval: 4 * time.Hour},
+					searchci.JobBuildURL{URL: presubmitBuildURL(18459, "b"), Interval: 36 * time.Hour},
+				),
+				newImpact(requiredLane2, 8),
+			})
+
+			result, err := determineTestsForQuarantine(
+				flakestats.TopXTests{newTopXTest(testName)},
+				reportsContaining("should do something", "[sig-compute] my flaky test"),
+				map[string]struct{}{requiredLane: {}, requiredLane2: {}},
+			)
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(result).To(HaveLen(1))
+			Expect(result[0].RelevantImpacts).To(HaveLen(1))
+			Expect(result[0].RelevantImpacts[0].URL).To(ContainSubstring(requiredLane2))
 		})
 	})
 })
