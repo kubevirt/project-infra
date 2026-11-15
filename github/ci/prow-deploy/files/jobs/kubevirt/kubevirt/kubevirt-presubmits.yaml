@@ -1569,7 +1569,7 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
     max_concurrency: 11
-    name: pull-kubevirt-e2e-kind-1.35-sig-compute-parallel-wg-mshv-amd64
+    name: pull-kubevirt-e2e-kind-1.37-sig-compute-parallel-wg-mshv-amd64
     optional: true
     skip_branches:
     - release-\d+\.\d+
@@ -1635,7 +1635,7 @@ presubmits:
           podman stop $container_id
         env:
         - name: TARGET
-          value: kind-1.35-sig-compute-parallel-wg-mshv-amd64
+          value: kind-1.37-sig-compute-parallel-wg-mshv-amd64
         - name: QEMU_RPMS_IMG
           value: docker.io/harshitg/qemu-rpms:qemu-10.2.0-w-cpuid # TODO Change this to stable image after testing
         - name: KUBEVIRT_FUNC_TEST_GINKGO_TIMEOUT
