@@ -140,6 +140,34 @@ var _ = Describe("phase reconciliation", func() {
 		Expect(client.IssueCommentsAdded[0]).NotTo(ContainSubstring("/test merge-only"))
 	})
 
+	It("skips recovery for needs-rebase despite reported mergeability", func() {
+		Expect(pr.Mergable).To(HaveValue(BeTrue()))
+		pr.Labels = []github.Label{{Name: labels.NeedsRebase}}
+		client.prs = []github.PullRequest{pr}
+		serveRecoveryConfig(h, jobs)
+
+		summary, err := h.ReconcileOpenPRs(ctx)
+
+		Expect(err).NotTo(HaveOccurred())
+		Expect(client.IssueCommentsAdded).To(BeEmpty())
+		Expect(summary.Skipped).To(Equal(1))
+		Expect(summary.Candidates).To(BeZero())
+		Expect(summary.Requested).To(BeZero())
+	})
+
+	It("ignores status webhooks for needs-rebase despite reported mergeability", func() {
+		Expect(pr.Mergable).To(HaveValue(BeTrue()))
+		pr.Labels = []github.Label{{Name: labels.NeedsRebase}}
+		client.prs = []github.PullRequest{pr}
+		h.cache.set(jobs)
+
+		h.handleStatusEvent(logrus.NewEntry(logrus.New()), &github.StatusEvent{
+			SHA: pr.Head.SHA, State: github.StatusSuccess, Context: "build", Repo: pr.Base.Repo,
+		})
+
+		Expect(client.IssueCommentsAdded).To(BeEmpty())
+	})
+
 	DescribeTable("label events do not request status-driven jobs again",
 		func(action github.PullRequestEventAction, addedLabel, state string) {
 			jobs[0].AlwaysRun = true
@@ -253,6 +281,24 @@ var _ = Describe("phase reconciliation", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(requested).To(BeFalse())
 		Expect(client.IssueCommentsAdded).To(BeEmpty())
+	})
+
+	It("rechecks needs-rebase immediately before posting despite reported mergeability", func() {
+		Expect(pr.Mergable).To(HaveValue(BeTrue()))
+		calls := 0
+		client.get = func(int) (*github.PullRequest, error) {
+			calls++
+			copy := pr
+			if calls == 2 {
+				copy.Labels = []github.Label{{Name: labels.NeedsRebase}}
+			}
+			return &copy, nil
+		}
+		requested, err := h.reconcilePR(ctx, pr, jobs, false)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(calls).To(Equal(2))
+		Expect(client.IssueCommentsAdded).To(BeEmpty())
+		Expect(requested).To(BeFalse())
 	})
 
 	It("rechecks statuses immediately before posting", func() {
