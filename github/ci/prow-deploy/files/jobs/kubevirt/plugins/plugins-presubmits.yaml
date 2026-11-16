@@ -1,0 +1,66 @@
+presubmits:
+  kubevirt/plugins:
+  - name: pull-kubevirt-plugins-unit-test
+    annotations:
+      testgrid-create-test-group: "false"
+    always_run: true
+    optional: false
+    cluster: kubevirt-prow-control-plane
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    max_concurrency: 11
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+          command:
+            - "/usr/local/bin/entrypoint.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make vet test && go vet ./tests/..."
+          env:
+            - name: GO_MOD_PATH
+              value: "go.mod"
+            - name: KUBEVIRT_PLUGINS_SKIP_DOCKERIZED
+              value: "true"
+          resources:
+            requests:
+              memory: "4Gi"
+  - name: pull-kubevirt-plugins-e2e
+    annotations:
+      testgrid-create-test-group: "false"
+    optional: false
+    skip_report: false
+    skip_if_only_changed: '^docs/|\.md$|^(LICENSE|OWNERS|OWNERS_ALIASES)$'
+    cluster: prow-workloads
+    decoration_config:
+      timeout: 3h
+      grace_period: 5m
+    max_concurrency: 6
+    labels:
+      preset-podman-in-container-enabled: "true"
+      preset-podman-shared-images: "true"
+      preset-docker-mirror-proxy: "true"
+    spec:
+      nodeSelector:
+        type: bare-metal-external
+      containers:
+        - image: quay.io/kubevirtci/golang:v20261012-6b466e3
+          command:
+            - "/usr/local/bin/entrypoint.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make cluster-up cluster-sync functest"
+          env:
+            - name: GO_MOD_PATH
+              value: "go.mod"
+            - name: KUBEVIRT_PLUGINS_SKIP_DOCKERIZED
+              value: "true"
+            - name: FUNC_TEST_ARGS
+              value: "--junit-report=junit.functest.xml --output-dir=/logs/artifacts"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "52Gi"

@@ -1,5 +1,6 @@
 dashboards:
 - name: kubevirt-containerized-data-importer-presubmits
+- name: kubevirt-plugins-periodics
 - name: kubevirt-presubmits
 - name: kubevirt-periodics
 - name: kubevirt-postsubmits
@@ -320,6 +321,7 @@ dashboard_groups:
 - name: kubevirt
   dashboard_names:
   - kubevirt-containerized-data-importer-presubmits
+  - kubevirt-plugins-periodics
   - kubevirt-presubmits
   - kubevirt-periodics
   - kubevirt-postsubmits

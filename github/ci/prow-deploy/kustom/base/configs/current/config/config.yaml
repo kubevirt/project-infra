@@ -513,6 +513,9 @@ branch-protection:
               protect: true
               allow_force_pushes: true
         plugins:
+          protect: true
+          include:
+          - '^release-[0-9]+\.[0-9]+$'
           branches:
             main:
               protect: true
