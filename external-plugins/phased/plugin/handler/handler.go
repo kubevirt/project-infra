@@ -29,7 +29,6 @@ var log *logrus.Logger
 
 const (
 	Intro              = "Required labels detected, running phase 2 presubmits:\n"
-	PhaseIntroFmt      = "Phase %d jobs completed, triggering phase %d presubmits:\n"
 	PhaseAnnotationKey = "phased.kubevirt.io/phase"
 )
 

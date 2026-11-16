@@ -370,7 +370,7 @@ var _ = Describe("Phased", func() {
 
 			Expect(gh.IssueCommentsAdded).To(HaveLen(1))
 			Expect(gh.IssueCommentsAdded[0]).To(ContainSubstring("/test pull-kubevirt-e2e-test"))
-			Expect(gh.IssueCommentsAdded[0]).To(ContainSubstring("Phase 0 jobs completed"))
+			Expect(gh.IssueCommentsAdded[0]).To(ContainSubstring("Phase 0 checks passed for commit"))
 		})
 
 		It("does not trigger phase 1 when phase 0 is partially succeeded", func() {
@@ -860,7 +860,8 @@ var _ = Describe("Phased", func() {
 
 			Expect(gh.IssueCommentsAdded).To(HaveLen(1))
 			Expect(gh.IssueCommentsAdded[0]).To(ContainSubstring("/test pull-kubevirt-e2e"))
-			Expect(gh.IssueCommentsAdded[0]).To(ContainSubstring("Phase 1 jobs completed, triggering phase 2"))
+			Expect(gh.IssueCommentsAdded[0]).To(ContainSubstring("**CI phase 2: requesting 1 missing job**"))
+			Expect(gh.IssueCommentsAdded[0]).To(ContainSubstring("Phase 1 checks passed for commit"))
 		})
 
 		It("does not trigger phase 2 when phase 1 is still running", func() {

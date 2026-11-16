@@ -44,10 +44,27 @@ in that phase that have no status yet; jobs with any existing status are not
 requested again. Status matching uses a job's explicit `context` when configured,
 otherwise its `name`. The `/test` commands always use job names. For example:
 
-```text
-Phase 0 jobs completed, triggering phase 1 presubmits:
+```markdown
+**CI phase 1: requesting 1 missing job**
+
+Phase 0 checks passed for commit `0123456789abcdef`.
+This phase-1 job has not reported a status yet.
+
+Requested automatically by a recovery scan.
+
+<details>
+<summary>Show requested job (1)</summary>
+
 /test pull-example-e2e
+
+</details>
 ```
+
+Comments identify the current HEAD commit, the prerequisite phase, and whether
+the request came from recovery or a successful status update. Job counts reflect
+only the jobs still missing at the final status recheck. Commands are collapsed
+for readability but remain unfenced and unindented so Prow recognizes them;
+commands inside fenced code blocks are ignored by Prow.
 
 The first configured phase must be started by another mechanism, typically
 Prow's `always_run: true`. Later phases should use `always_run: false` so they
