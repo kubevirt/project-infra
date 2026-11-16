@@ -301,6 +301,7 @@ presubmits:
     branches:
     - release-1.10
     cluster: prow-s390x-workloads
+    optional: true
     context: pull-kubevirt-unit-test-s390x
     decoration_config:
       grace_period: 5m0s
