@@ -20,9 +20,11 @@ Phased is a Prow external plugin with two independent execution paths:
   request required manual presubmits when review labels allow it.
 
 Both paths operate on `kubevirt/kubevirt` PRs targeting `main` or `master`, skip
-draft, merged, closed, or explicitly non-mergeable PRs, and post GitHub comments
-with `/test <job-name>` commands for Prow to execute. Prow and presubmit job
-configs are fetched at runtime over HTTP from the configured `--prow-location`.
+draft, merged, closed, explicitly non-mergeable, or `needs-rebase`-labeled PRs,
+and post GitHub comments with `/test <job-name>` commands for Prow to execute.
+The `needs-rebase` label prevents requests even when GitHub reports the PR as
+mergeable. Prow and presubmit job configs are fetched at runtime over HTTP from
+the configured `--prow-location`.
 
 ### Status-driven phases
 

@@ -454,6 +454,10 @@ func isPRNotMergeable(pr github.PullRequest) bool {
 		return true
 	}
 
+	if github.HasLabel(labels.NeedsRebase, pr.Labels) {
+		return true
+	}
+
 	if pr.Mergable != nil && !*pr.Mergable {
 		return true
 	}
