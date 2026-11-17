@@ -143,7 +143,8 @@ presubmits:
             memory: 12Gi
         securityContext:
           privileged: true
-  - always_run: true
+  # TODO: revert once the prow-s390x-workloads cluster is healthy
+  - always_run: false
     annotations:
       fork-per-release: "true"
       testgrid-dashboards: kubevirt-presubmits

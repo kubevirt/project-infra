@@ -82,7 +82,8 @@ presubmits:
       annotations:
         fork-per-release: "true"
         testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
-      always_run: true
+      # TODO: revert once the prow-s390x-workloads cluster is healthy
+      always_run: false
       optional: true
       decoration_config:
         timeout: 8h
@@ -148,7 +149,8 @@ presubmits:
       annotations:
         fork-per-release: "true"
         testgrid-dashboards: kubevirt-hyperconverged-cluster-operator-presubmits
-      always_run: true
+      # TODO: revert once the prow-s390x-workloads cluster is healthy
+      always_run: false
       optional: true
       decoration_config:
         timeout: 2h
