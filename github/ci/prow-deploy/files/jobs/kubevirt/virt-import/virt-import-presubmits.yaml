@@ -131,7 +131,7 @@ presubmits:
         - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
-        - make build-installer
+        - make build-installer build-installer-hco
         env:
         - name: GO_MOD_PATH
           value: "go.mod"
