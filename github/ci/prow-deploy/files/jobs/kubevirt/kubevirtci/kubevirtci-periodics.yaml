@@ -19,7 +19,7 @@ periodics:
   spec:
     containers:
       # GCS authentication is done by KubeVirt CI bootstrap image runner script
-      - image: quay.io/kubevirtci/bootstrap:v20261112-fe48bc3
+      - image: quay.io/kubevirtci/bootstrap:v20261116-94a0485
         command: [/usr/local/bin/entrypoint.sh]
         args:
           - ./hack/mirror-crio.sh
@@ -168,7 +168,7 @@ periodics:
   cluster: prow-s390x-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20261112-fe48bc3
+    - image: quay.io/kubevirtci/golang:v20261116-94a0485
       command:
       - "/usr/local/bin/runner.sh"
       - "/bin/bash"
@@ -275,7 +275,7 @@ periodics:
   cluster: prow-s390x-workloads
   spec:
     containers:
-    - image: quay.io/kubevirtci/golang:v20261112-fe48bc3
+    - image: quay.io/kubevirtci/golang:v20261116-94a0485
       command:
       - "/usr/local/bin/entrypoint.sh"
       - "/bin/bash"
