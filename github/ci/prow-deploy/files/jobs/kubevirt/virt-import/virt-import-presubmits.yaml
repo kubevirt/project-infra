@@ -118,7 +118,7 @@ presubmits:
     branches:
     - main
     always_run: false
-    run_if_changed: "api/.*|config/.*|hack/.*|internal/.*|Makefile"
+    run_if_changed: "api/.*|config/.*|hack/.*|internal/.*|Makefile|^(tools/)?go\\.(mod|sum)$|^go\\.work(\\.sum)?$"
     cluster: prow-workloads
     annotations:
       testgrid-create-test-group: "false"
