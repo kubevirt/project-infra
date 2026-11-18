@@ -1,0 +1,24 @@
+- always_run: true
+  branches:
+  - __BRANCH__
+  cluster: kubevirt-prow-control-plane
+  context: pull-__REPO__-verify-rpm-urls
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 10m0s
+  labels:
+    preset-docker-mirror-proxy: "true"
+  name: pull-__REPO__-verify-rpm-urls-__VERSION__
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -ce
+      - |
+        go run ./hack/rpm-mirror-checker/rpm-mirror-checker.go
+      image: quay.io/kubevirtci/golang:v20261012-6b466e3
+      name: ""
+      resources:
+        requests:
+          memory: 1Gi
