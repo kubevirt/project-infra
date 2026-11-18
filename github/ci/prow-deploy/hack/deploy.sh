@@ -80,10 +80,12 @@ populate_secrets(){
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow/github/client-id "${secrets_dir}"/github/
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow/github/client-secret "${secrets_dir}"/github/
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow/github/hmac-token "${secrets_dir}"/github/
-    install -Dm 400 "${secrets_repo_dir}"/secrets/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json "${secrets_dir}"/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json
     install -Dm 400 "${secrets_repo_dir}"/secrets/slack/kubevirtci-token "${secrets_dir}"/slack/token
 
     install -Dm 400 "${secrets_repo_dir}"/tokens/github/kubevirt-commenter-bot/prow-2026-11 "${secrets_dir}"/commenter-oauth-token
+    install -Dm 400 "${secrets_repo_dir}"/tokens/google/service-accounts/bazel-cache/bazel-cache-sa.json "${secrets_dir}"/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json
+    install -Dm 400 "${secrets_repo_dir}"/tokens/google/service-accounts/prow/prow-sa.json "${secrets_dir}"/service-account.json
+    install -Dm 400 "${secrets_repo_dir}"/tokens/google/service-accounts/virtualization-ci/virtualization-ci-sa.json "${secrets_dir}"/virtci-service-account.json
 
     local components_dir="${base_dir}/kustom/components"
     install -Dm 400 "${secrets_repo_dir}"/secrets/docker-mirror-proxy/ca.crt "${components_dir}"/docker-mirror-proxy/base/configs/
