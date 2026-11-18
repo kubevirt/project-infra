@@ -1,0 +1,23 @@
+- always_run: true
+  branches:
+  - {{ .Branch }}
+  cluster: kubevirt-prow-control-plane
+  context: pull-{{ .Repo }}-verify-rpm-urls
+  decoration_config:
+    grace_period: 5m0s
+    timeout: 10m0s
+  labels:
+    preset-docker-mirror-proxy: "true"
+  name: pull-{{ .Repo }}-verify-rpm-urls-{{ .Version }}
+  spec:
+    containers:
+    - command:
+      - /usr/local/bin/runner.sh
+      - /bin/sh
+      - -c
+      - make rpm-mirror-checker
+      image: {{ .BootstrapImage }}
+      name: ""
+      resources:
+        requests:
+          memory: 1Gi
