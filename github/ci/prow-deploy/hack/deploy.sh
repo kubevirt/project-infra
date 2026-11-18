@@ -83,6 +83,8 @@ populate_secrets(){
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json "${secrets_dir}"/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json
     install -Dm 400 "${secrets_repo_dir}"/secrets/slack/kubevirtci-token "${secrets_dir}"/slack/token
 
+    install -Dm 400 "${secrets_repo_dir}"/tokens/github/kubevirt-commenter-bot/prow-2026-11 "${secrets_dir}"/commenter-oauth-token
+
     local components_dir="${base_dir}/kustom/components"
     install -Dm 400 "${secrets_repo_dir}"/secrets/docker-mirror-proxy/ca.crt "${components_dir}"/docker-mirror-proxy/base/configs/
     install -Dm 400 "${secrets_repo_dir}"/secrets/docker-mirror-proxy/ca.key "${components_dir}"/docker-mirror-proxy/base/secrets/
