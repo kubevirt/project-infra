@@ -350,7 +350,7 @@ presubmits:
     optional: true
     annotations:
       fork-per-release: "true"
-      phased.kubevirt.io/phase: "0"
+      #phased.kubevirt.io/phase: "0"
       testgrid-dashboards: kubevirt-presubmits
     cluster: prow-s390x-workloads
     optional: true
