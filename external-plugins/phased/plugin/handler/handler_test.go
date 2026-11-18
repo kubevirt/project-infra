@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 	"sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/prow/pkg/github"
+	"sigs.k8s.io/prow/pkg/labels"
 )
 
 func presubmit(name string, phase string) config.Presubmit {
@@ -333,6 +334,13 @@ var _ = DescribeTable("isPRNotMergeable",
 		m := true
 		return github.PullRequest{State: "open", Mergable: &m}
 	}(), false),
+	Entry("needs-rebase with Mergable true", func() github.PullRequest {
+		m := true
+		return github.PullRequest{
+			State: "open", Mergable: &m,
+			Labels: []github.Label{{Name: labels.NeedsRebase}},
+		}
+	}(), true),
 	Entry("Mergable nil", github.PullRequest{State: "open"}, false),
 	Entry("draft with Mergable true", func() github.PullRequest {
 		m := true

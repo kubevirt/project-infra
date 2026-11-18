@@ -29,7 +29,6 @@ var log *logrus.Logger
 
 const (
 	Intro              = "Required labels detected, running phase 2 presubmits:\n"
-	PhaseIntroFmt      = "Phase %d jobs completed, triggering phase %d presubmits:\n"
 	PhaseAnnotationKey = "phased.kubevirt.io/phase"
 )
 
@@ -451,6 +450,10 @@ func listRequiredManual(ghClient githubClient, pr github.PullRequest, presubmits
 
 func isPRNotMergeable(pr github.PullRequest) bool {
 	if pr.Draft || pr.Merged || pr.State != "open" {
+		return true
+	}
+
+	if github.HasLabel(labels.NeedsRebase, pr.Labels) {
 		return true
 	}
 

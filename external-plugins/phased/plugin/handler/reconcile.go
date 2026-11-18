@@ -225,18 +225,34 @@ func (h *GitHubEventsHandler) reconcilePR(ctx context.Context, observed github.P
 	if err := ctx.Err(); err != nil {
 		return false, err
 	}
-	comment := fmt.Sprintf(PhaseIntroFmt, completed, next)
 	var requested []config.Presubmit
 	for _, job := range missing {
 		if _, exists := statuses[jobContext(job)]; exists {
 			continue
 		}
 		requested = append(requested, job)
-		comment += "/test " + job.Name + "\n"
 	}
 	if len(requested) == 0 {
 		return false, nil
 	}
+	jobNoun, subject, verb := "job", "This", "has"
+	if len(requested) > 1 {
+		jobNoun, subject, verb = "jobs", "These", "have"
+	}
+	comment := fmt.Sprintf("**CI phase %d: requesting %d missing %s**\n\n"+
+		"Phase %d checks passed for commit `%s`.\n"+
+		"%s phase-%d %s %s not reported a status yet.\n\n",
+		next, len(requested), jobNoun, completed, pr.Head.SHA, subject, next, jobNoun, verb)
+	if paced {
+		comment += "Requested automatically by a recovery scan.\n\n"
+	} else {
+		comment += "Requested automatically after a successful status update.\n\n"
+	}
+	comment += fmt.Sprintf("<details>\n<summary>Show requested %s (%d)</summary>\n\n", jobNoun, len(requested))
+	for _, job := range requested {
+		comment += "/test " + job.Name + "\n"
+	}
+	comment += "\n</details>\n\n"
 	for _, job := range requested {
 		comment += phaseRequestMarker(pr.Head.SHA, next, job.Name) + "\n"
 	}

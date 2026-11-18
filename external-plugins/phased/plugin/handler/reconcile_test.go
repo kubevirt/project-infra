@@ -22,6 +22,7 @@ import (
 	"sigs.k8s.io/prow/pkg/github"
 	"sigs.k8s.io/prow/pkg/github/fakegithub"
 	"sigs.k8s.io/prow/pkg/labels"
+	"sigs.k8s.io/prow/pkg/pjutil"
 )
 
 type reconcileClient struct {
@@ -134,10 +135,119 @@ var _ = Describe("phase reconciliation", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(requested).To(BeTrue())
 		Expect(client.IssueCommentsAdded).To(HaveLen(1))
-		Expect(client.IssueCommentsAdded[0]).To(ContainSubstring("Phase 0 jobs completed, triggering phase 1 presubmits:\n/test network\n"))
+		Expect(client.IssueCommentsAdded[0]).To(ContainSubstring("**CI phase 1: requesting 1 missing job**"))
 		Expect(client.IssueCommentsAdded[0]).To(ContainSubstring(phaseRequestMarker(pr.Head.SHA, 1, "network")))
 		Expect(client.IssueCommentsAdded[0]).NotTo(ContainSubstring("/test build"))
 		Expect(client.IssueCommentsAdded[0]).NotTo(ContainSubstring("/test merge-only"))
+	})
+
+	It("posts a reader-friendly recovery comment with an unfenced command in details", func() {
+		serveRecoveryConfig(h, jobs)
+
+		summary, err := h.ReconcileOpenPRs(ctx)
+
+		Expect(err).NotTo(HaveOccurred())
+		Expect(summary.Requested).To(Equal(1))
+		Expect(client.IssueComments[pr.Number]).To(HaveLen(1))
+		Expect(client.IssueComments[pr.Number][0].Body).To(Equal(
+			"**CI phase 1: requesting 1 missing job**\n\n" +
+				"Phase 0 checks passed for commit `head-sha`.\n" +
+				"This phase-1 job has not reported a status yet.\n\n" +
+				"Requested automatically by a recovery scan.\n\n" +
+				"<details>\n<summary>Show requested job (1)</summary>\n\n" +
+				"/test network\n\n</details>\n\n" +
+				"<!-- phased: sha=head-sha phase=1 job=network -->\n"))
+	})
+
+	It("posts a reader-friendly status comment with the requested job count", func() {
+		jobs = append(jobs, presubmit("storage", "1"))
+		h.cache.set(jobs)
+
+		h.handleStatusEvent(logrus.NewEntry(logrus.New()), &github.StatusEvent{
+			SHA: pr.Head.SHA, State: github.StatusSuccess, Context: "build", Repo: pr.Base.Repo,
+		})
+
+		Expect(client.IssueComments[pr.Number]).To(HaveLen(1))
+		Expect(client.IssueComments[pr.Number][0].Body).To(Equal(
+			"**CI phase 1: requesting 2 missing jobs**\n\n" +
+				"Phase 0 checks passed for commit `head-sha`.\n" +
+				"These phase-1 jobs have not reported a status yet.\n\n" +
+				"Requested automatically after a successful status update.\n\n" +
+				"<details>\n<summary>Show requested jobs (2)</summary>\n\n" +
+				"/test network\n/test storage\n\n</details>\n\n" +
+				"<!-- phased: sha=head-sha phase=1 job=network -->\n" +
+				"<!-- phased: sha=head-sha phase=1 job=storage -->\n"))
+	})
+
+	It("keeps reader-friendly commands recognizable by the Prow command filter", func() {
+		jobs = append(jobs, presubmit("storage", "1"))
+		for i := range jobs {
+			jobs[i].Trigger = config.DefaultTriggerFor(jobs[i].Name)
+			jobs[i].RerunCommand = config.DefaultRerunCommandFor(jobs[i].Name)
+		}
+		Expect(config.SetPresubmitRegexes(jobs)).To(Succeed())
+
+		requested, err := h.reconcilePR(ctx, pr, jobs, false)
+
+		Expect(err).NotTo(HaveOccurred())
+		Expect(requested).To(BeTrue())
+		Expect(client.IssueComments[pr.Number]).To(HaveLen(1))
+		body := client.IssueComments[pr.Number][0].Body
+		filter := pjutil.NewCommandFilter(body)
+		var triggered []string
+		for _, job := range jobs {
+			shouldRun, _, _ := filter.ShouldRun(job)
+			if shouldRun {
+				triggered = append(triggered, job.Name)
+			}
+		}
+		Expect(triggered).To(Equal([]string{"network", "storage"}))
+		Expect(body).NotTo(ContainSubstring("```"))
+		Expect(body).To(ContainSubstring("<details>\n<summary>Show requested jobs (2)</summary>\n\n/test network\n/test storage\n\n</details>"))
+	})
+
+	It("deduplicates a reader-friendly request after restarting without an in-memory ledger", func() {
+		requested, err := h.reconcilePR(ctx, pr, jobs, false)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(requested).To(BeTrue())
+		Expect(client.IssueComments[pr.Number]).To(HaveLen(1))
+		client.IssueComments[pr.Number][0].CreatedAt = time.Now()
+		restarted := NewGitHubEventsHandler(nil, logrus.New(), client, "", "", "", nil)
+
+		requested, err = restarted.reconcilePR(ctx, pr, jobs, false)
+
+		Expect(err).NotTo(HaveOccurred())
+		Expect(requested).To(BeFalse())
+		Expect(client.IssueCommentsAdded).To(HaveLen(1))
+		Expect(restarted.requests).To(BeEmpty())
+	})
+
+	It("skips recovery for needs-rebase despite reported mergeability", func() {
+		Expect(pr.Mergable).To(HaveValue(BeTrue()))
+		pr.Labels = []github.Label{{Name: labels.NeedsRebase}}
+		client.prs = []github.PullRequest{pr}
+		serveRecoveryConfig(h, jobs)
+
+		summary, err := h.ReconcileOpenPRs(ctx)
+
+		Expect(err).NotTo(HaveOccurred())
+		Expect(client.IssueCommentsAdded).To(BeEmpty())
+		Expect(summary.Skipped).To(Equal(1))
+		Expect(summary.Candidates).To(BeZero())
+		Expect(summary.Requested).To(BeZero())
+	})
+
+	It("ignores status webhooks for needs-rebase despite reported mergeability", func() {
+		Expect(pr.Mergable).To(HaveValue(BeTrue()))
+		pr.Labels = []github.Label{{Name: labels.NeedsRebase}}
+		client.prs = []github.PullRequest{pr}
+		h.cache.set(jobs)
+
+		h.handleStatusEvent(logrus.NewEntry(logrus.New()), &github.StatusEvent{
+			SHA: pr.Head.SHA, State: github.StatusSuccess, Context: "build", Repo: pr.Base.Repo,
+		})
+
+		Expect(client.IssueCommentsAdded).To(BeEmpty())
 	})
 
 	DescribeTable("label events do not request status-driven jobs again",
@@ -228,7 +338,8 @@ var _ = Describe("phase reconciliation", func() {
 		requested, err := h.reconcilePR(ctx, pr, jobs, false)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(requested).To(BeTrue())
-		Expect(client.IssueCommentsAdded[0]).To(ContainSubstring("Phase 1 jobs completed, triggering phase 3 presubmits:\n/test later"))
+		Expect(client.IssueCommentsAdded[0]).To(ContainSubstring("**CI phase 3: requesting 1 missing job**"))
+		Expect(client.IssueCommentsAdded[0]).To(ContainSubstring("Phase 1 checks passed for commit `head-sha`."))
 	})
 
 	It("rejects a stale HEAD before reading statuses", func() {
@@ -253,6 +364,24 @@ var _ = Describe("phase reconciliation", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(requested).To(BeFalse())
 		Expect(client.IssueCommentsAdded).To(BeEmpty())
+	})
+
+	It("rechecks needs-rebase immediately before posting despite reported mergeability", func() {
+		Expect(pr.Mergable).To(HaveValue(BeTrue()))
+		calls := 0
+		client.get = func(int) (*github.PullRequest, error) {
+			calls++
+			copy := pr
+			if calls == 2 {
+				copy.Labels = []github.Label{{Name: labels.NeedsRebase}}
+			}
+			return &copy, nil
+		}
+		requested, err := h.reconcilePR(ctx, pr, jobs, false)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(calls).To(Equal(2))
+		Expect(client.IssueCommentsAdded).To(BeEmpty())
+		Expect(requested).To(BeFalse())
 	})
 
 	It("rechecks statuses immediately before posting", func() {
@@ -285,6 +414,8 @@ var _ = Describe("phase reconciliation", func() {
 		requested, err := h.reconcilePR(ctx, pr, jobs, false)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(requested).To(BeTrue())
+		Expect(client.IssueCommentsAdded[0]).To(ContainSubstring("**CI phase 1: requesting 1 missing job**"))
+		Expect(client.IssueCommentsAdded[0]).To(ContainSubstring("<summary>Show requested job (1)</summary>"))
 		Expect(client.IssueCommentsAdded[0]).To(ContainSubstring("/test storage"))
 		Expect(client.IssueCommentsAdded[0]).NotTo(ContainSubstring("/test network"))
 	})
