@@ -36,7 +36,7 @@ presubmits:
       timeout: 7h0m0s
     labels:
       preset-dind-enabled: "true"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
       preset-shared-images: "true"
     max_concurrency: 6
     cluster: prow-workloads

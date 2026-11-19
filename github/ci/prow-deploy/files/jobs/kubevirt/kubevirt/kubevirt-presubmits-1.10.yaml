@@ -1601,7 +1601,7 @@ presubmits:
       timeout: 4h0m0s
     labels:
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"

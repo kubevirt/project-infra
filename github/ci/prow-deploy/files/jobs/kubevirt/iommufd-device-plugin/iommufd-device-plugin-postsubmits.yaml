@@ -15,7 +15,7 @@ postsubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
     spec:
       nodeSelector:
         type: bare-metal-external
@@ -50,7 +50,7 @@ postsubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
     spec:
       nodeSelector:
         type: bare-metal-external

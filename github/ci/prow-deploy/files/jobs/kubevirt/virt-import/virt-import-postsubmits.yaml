@@ -12,7 +12,7 @@ postsubmits:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
       preset-github-credentials: "true"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
       preset-pgp-bot-key: "true"
     decoration_config:
       grace_period: 5m0s

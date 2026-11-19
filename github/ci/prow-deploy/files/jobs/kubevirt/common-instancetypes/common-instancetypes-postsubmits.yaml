@@ -11,7 +11,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirt-push: "true"
       annotations:
         testgrid-create-test-group: "false"
       cluster: prow-workloads

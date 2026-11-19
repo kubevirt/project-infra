@@ -77,7 +77,7 @@ periodics:
     preset-podman-in-container-enabled: "true"
     preset-docker-mirror-proxy: "true"
     preset-gcs-credentials: "true"
-    preset-kubevirtci-quay-credential: "true"
+    preset-quay-kubevirt-push: "true"
   extra_refs:
     - org: kubevirt
       repo: containerized-data-importer

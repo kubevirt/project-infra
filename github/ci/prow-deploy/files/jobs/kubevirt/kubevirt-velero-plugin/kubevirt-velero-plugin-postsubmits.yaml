@@ -14,7 +14,7 @@ postsubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "false"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
     spec:
       containers:
       - image: quay.io/kubevirtci/golang:v20261116-94a0485
@@ -50,7 +50,7 @@ postsubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "false"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
     spec:
       containers:
       - image: quay.io/kubevirtci/golang:v20261116-94a0485

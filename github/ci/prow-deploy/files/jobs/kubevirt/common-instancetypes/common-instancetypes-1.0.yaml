@@ -249,7 +249,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
     max_concurrency: 1
     spec:
       containers:
@@ -427,7 +427,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
     max_concurrency: 1
     spec:
       containers:
@@ -466,7 +466,7 @@ presubmits:
       preset-podman-in-container-enabled: "true"
       preset-podman-shared-images: "true"
       preset-shared-images: "true"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
     max_concurrency: 1
     spec:
       containers:

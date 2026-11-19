@@ -20,7 +20,7 @@ postsubmits:
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-github-credentials: "true"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
       preset-pgp-bot-key: "true"
     spec:
       containers:
@@ -103,7 +103,7 @@ postsubmits:
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-github-credentials: "true"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
     spec:
       containers:
       - image: quay.io/kubevirtci/golang:v20261116-94a0485
@@ -217,7 +217,7 @@ postsubmits:
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-github-credentials: "true"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads
@@ -252,7 +252,7 @@ postsubmits:
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-github-credentials: "true"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-workloads

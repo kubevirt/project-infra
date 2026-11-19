@@ -12,7 +12,7 @@ periodics:
     preset-docker-mirror-proxy: "true"
     preset-gcs-credentials: "true"
     preset-shared-images: "true"
-    preset-kubevirtci-quay-credential: "true"
+    preset-quay-kubevirt-push: "true"
     rehearsal.allowed: "true"
   extra_refs:
     - org: kubevirt
