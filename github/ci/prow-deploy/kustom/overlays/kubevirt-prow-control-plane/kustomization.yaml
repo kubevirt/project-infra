@@ -294,21 +294,15 @@ secretGenerator:
     files:
       - config=secrets/kubeconfig
     type: Opaque
-  - name: kubevirtci-docker-credential
-    namespace: kubevirt-prow-jobs
-    # username=dockerUser
-    # password=dockerPass
-    envs:
-    - secrets/kubevirtci-docker-credential
-    type: Opaque
 
   - name: kubevirtci-quay-credential
     namespace: kubevirt-prow-jobs
-    # username=quayUser
-    # password=quayPass
-    envs:
-    - secrets/kubevirtci-quay-credential
+    files:
+      - secrets/kubevirtci-quay-credential/username
+      - secrets/kubevirtci-quay-credential/password
+      - secrets/kubevirtci-quay-credential/token
     type: Opaque
+
   - name: kubevirtci-installer-pull-token
     namespace: kubevirt-prow-jobs
     files:
