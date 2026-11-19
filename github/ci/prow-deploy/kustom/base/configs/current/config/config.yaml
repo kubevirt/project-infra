@@ -806,22 +806,6 @@ presets:
   - name: shared-iso
     mountPath: /var/lib/stdci/shared/kubevirt-images/
 - labels:
-    preset-kubevirtci-docker-credential: "true"
-  env:
-    - name: DOCKER_USER
-      value: /etc/kubevirtci-cred/username
-    - name: DOCKER_PASSWORD
-      value: /etc/kubevirtci-cred/password
-  volumes:
-    - name: kubevirtci-cred
-      secret:
-        defaultMode: 0400
-        secretName: kubevirtci-docker-credential
-  volumeMounts:
-    - name: kubevirtci-cred
-      mountPath: /etc/kubevirtci-cred
-      readOnly: true
-- labels:
     preset-bazel-cache: "true"
   env:
     - name: BAZEL_VERSION
@@ -900,22 +884,6 @@ presets:
     value: "k8s"
   - name: CHECK_CLUSTER
     value: "true"
-- labels:
-    preset-project-infra-kubevirtci-docker-credential: "true"
-  env:
-  - name: DOCKER_USER
-    value: /etc/kubevirtci-cred/username
-  - name: DOCKER_PASSWORD
-    value: /etc/kubevirtci-cred/password
-  volumes:
-  - name: kubevirtci-cred
-    secret:
-      defaultMode: 0400
-      secretName: kubevirtci-docker-credential
-  volumeMounts:
-  - name: kubevirtci-cred
-    mountPath: /etc/kubevirtci-cred
-    readOnly: true
 - labels:
     preset-github-app-id: "true"
   env:
