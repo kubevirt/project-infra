@@ -147,7 +147,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
@@ -170,7 +169,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
@@ -220,7 +218,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
       preset-project-infra-image-build-linux: "true"
     cluster: kubevirt-prow-control-plane
     spec:
@@ -246,7 +243,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
@@ -271,7 +267,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
     cluster: kubevirt-prow-control-plane
     extra_refs:
     - org: kubevirt
@@ -301,7 +296,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
@@ -326,7 +320,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
@@ -351,7 +344,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
     cluster: prow-workloads
     spec:
       containers:
@@ -376,7 +368,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
     cluster: prow-workloads
     spec:
       containers:
@@ -401,7 +392,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
@@ -424,7 +414,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
     cluster: kubevirt-prow-control-plane
     spec:
       containers:
@@ -448,7 +437,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
       preset-project-infra-image-build-linux: "true"
     cluster: kubevirt-prow-control-plane
     spec:
@@ -474,7 +462,6 @@ presubmits:
     cluster: kubevirt-prow-control-plane
     max_concurrency: 1
     labels:
-      preset-kubevirtci-quay-credential: "true"
       preset-podman-in-container-enabled: "true"
       preset-project-infra-image-build-linux: "true"
     spec:
@@ -485,7 +472,6 @@ presubmits:
             - "/bin/bash"
             - "-c"
             - |
-              cat "$QUAY_PASSWORD" | podman login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
               cd images
               ./publish_image.sh -b -e ginkgo-tests quay.io kubevirtci
           resources:
@@ -501,7 +487,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
       preset-project-infra-image-build-linux: "true"
     cluster: kubevirt-prow-control-plane
     spec:
@@ -525,7 +510,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
       preset-project-infra-image-build-linux: "true"
     cluster: kubevirt-prow-control-plane
     spec:
@@ -549,7 +533,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
       preset-project-infra-image-build-linux: "true"
     cluster: kubevirt-prow-control-plane
     spec:
@@ -573,7 +556,6 @@ presubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
-      preset-kubevirtci-quay-credential: "true"
       preset-project-infra-image-build-linux: "true"
     cluster: kubevirt-prow-control-plane
     spec:

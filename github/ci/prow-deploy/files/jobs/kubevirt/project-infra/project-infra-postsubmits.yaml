@@ -14,7 +14,7 @@ postsubmits:
       max_concurrency: 1
       labels:
         preset-docker-mirror-proxy: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
         preset-podman-in-container-enabled: "true"
       spec:
         containers:
@@ -92,7 +92,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
         preset-project-infra-image-build-linux: "true"
       spec:
         containers:
@@ -121,7 +121,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
         preset-podman-in-container-enabled: "true"
         preset-project-infra-image-build-linux: "true"
       spec:
@@ -152,7 +152,7 @@ postsubmits:
       cluster: kubevirt-prow-control-plane
       max_concurrency: 1
       labels:
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
         preset-podman-in-container-enabled: "true"
         preset-project-infra-image-build-linux: "true"
       spec:
@@ -184,7 +184,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
@@ -217,7 +217,7 @@ postsubmits:
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
       cluster: prow-workloads
       spec:
         containers:
@@ -249,7 +249,7 @@ postsubmits:
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
@@ -280,7 +280,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
@@ -311,7 +311,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
       cluster: kubevirt-prow-control-plane
       extra_refs:
       - org: kubevirt
@@ -347,7 +347,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
@@ -377,7 +377,7 @@ postsubmits:
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
@@ -407,7 +407,7 @@ postsubmits:
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
       cluster: prow-workloads
       spec:
         containers:
@@ -438,7 +438,7 @@ postsubmits:
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
       cluster: prow-workloads
       spec:
         containers:
@@ -472,7 +472,7 @@ postsubmits:
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
       cluster: prow-workloads
       spec:
         containers:
@@ -502,7 +502,7 @@ postsubmits:
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
@@ -700,7 +700,7 @@ postsubmits:
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
         preset-project-infra-image-build-linux: "true"
       spec:
         containers:
@@ -730,7 +730,7 @@ postsubmits:
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
         preset-project-infra-image-build-linux: "true"
       spec:
         containers:
@@ -759,7 +759,7 @@ postsubmits:
         testgrid-create-test-group: "false"
       cluster: kubevirt-prow-control-plane
       labels:
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
         preset-docker-mirror-proxy: "true"
       spec:
         containers:
