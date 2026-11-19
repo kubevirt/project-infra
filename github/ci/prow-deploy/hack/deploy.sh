@@ -87,6 +87,18 @@ populate_secrets(){
     install -Dm 400 "${secrets_repo_dir}"/creds/quay.io/kubevirtcibot/password "${secrets_dir}"/kubevirtci-quay-credential/
     install -Dm 400 "${secrets_repo_dir}"/creds/quay.io/kubevirtcibot/token "${secrets_dir}"/kubevirtci-quay-credential/
 
+    mkdir -p "${secrets_dir}"/quay-kubevirt-push
+    install -Dm 400 "${secrets_repo_dir}"/creds/quay.io/kubevirt+prow-push/username "${secrets_dir}"/quay-kubevirt-push/
+    install -Dm 400 "${secrets_repo_dir}"/creds/quay.io/kubevirt+prow-push/password "${secrets_dir}"/quay-kubevirt-push/
+
+    mkdir -p "${secrets_dir}"/quay-kubevirtci-push
+    install -Dm 400 "${secrets_repo_dir}"/creds/quay.io/kubevirtci+prow-push/username "${secrets_dir}"/quay-kubevirtci-push/
+    install -Dm 400 "${secrets_repo_dir}"/creds/quay.io/kubevirtci+prow-push/password "${secrets_dir}"/quay-kubevirtci-push/
+
+    mkdir -p "${secrets_dir}"/quay-containerdisks-push
+    install -Dm 400 "${secrets_repo_dir}"/creds/quay.io/containerdisks+prow-push/username "${secrets_dir}"/quay-containerdisks-push/
+    install -Dm 400 "${secrets_repo_dir}"/creds/quay.io/containerdisks+prow-push/password "${secrets_dir}"/quay-containerdisks-push/
+
     install -Dm 400 "${secrets_repo_dir}"/tokens/github/kubevirt-commenter-bot/prow-2026-11 "${secrets_dir}"/commenter-oauth-token
     install -Dm 400 "${secrets_repo_dir}"/tokens/google/service-accounts/bazel-cache/bazel-cache-sa.json "${secrets_dir}"/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json
     install -Dm 400 "${secrets_repo_dir}"/tokens/google/service-accounts/prow/prow-sa.json "${secrets_dir}"/service-account.json

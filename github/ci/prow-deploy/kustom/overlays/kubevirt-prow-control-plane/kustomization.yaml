@@ -303,6 +303,27 @@ secretGenerator:
       - secrets/kubevirtci-quay-credential/token
     type: Opaque
 
+  - name: quay-kubevirt-push
+    namespace: kubevirt-prow-jobs
+    files:
+      - secrets/quay-kubevirt-push/username
+      - secrets/quay-kubevirt-push/password
+    type: Opaque
+
+  - name: quay-kubevirtci-push
+    namespace: kubevirt-prow-jobs
+    files:
+      - secrets/quay-kubevirtci-push/username
+      - secrets/quay-kubevirtci-push/password
+    type: Opaque
+
+  - name: quay-containerdisks-push
+    namespace: kubevirt-prow-jobs
+    files:
+      - secrets/quay-containerdisks-push/username
+      - secrets/quay-containerdisks-push/password
+    type: Opaque
+
   - name: kubevirtci-installer-pull-token
     namespace: kubevirt-prow-jobs
     files:

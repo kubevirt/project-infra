@@ -876,6 +876,54 @@ presets:
     mountPath: /etc/kubevirtci-cred
     readOnly: true
 - labels:
+    preset-quay-kubevirt-push: "true"
+  env:
+  - name: QUAY_USER
+    value: /etc/quay-kubevirt-push/username
+  - name: QUAY_PASSWORD
+    value: /etc/quay-kubevirt-push/password
+  volumes:
+  - name: quay-kubevirt-push
+    secret:
+      defaultMode: 0400
+      secretName: quay-kubevirt-push
+  volumeMounts:
+  - name: quay-kubevirt-push
+    mountPath: /etc/quay-kubevirt-push
+    readOnly: true
+- labels:
+    preset-quay-kubevirtci-push: "true"
+  env:
+  - name: QUAY_USER
+    value: /etc/quay-kubevirtci-push/username
+  - name: QUAY_PASSWORD
+    value: /etc/quay-kubevirtci-push/password
+  volumes:
+  - name: quay-kubevirtci-push
+    secret:
+      defaultMode: 0400
+      secretName: quay-kubevirtci-push
+  volumeMounts:
+  - name: quay-kubevirtci-push
+    mountPath: /etc/quay-kubevirtci-push
+    readOnly: true
+- labels:
+    preset-quay-containerdisks-push: "true"
+  env:
+  - name: QUAY_USER
+    value: /etc/quay-containerdisks-push/username
+  - name: QUAY_PASSWORD
+    value: /etc/quay-containerdisks-push/password
+  volumes:
+  - name: quay-containerdisks-push
+    secret:
+      defaultMode: 0400
+      secretName: quay-containerdisks-push
+  volumeMounts:
+  - name: quay-containerdisks-push
+    mountPath: /etc/quay-containerdisks-push
+    readOnly: true
+- labels:
     preset-kubevirtci-check-provision-env: "true"
   env:
   - name: KUBEVIRT_PSA
