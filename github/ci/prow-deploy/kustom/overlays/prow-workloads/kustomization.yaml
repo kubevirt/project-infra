@@ -46,12 +46,12 @@ secretGenerator:
 
   - name: kubevirtci-quay-credential
     namespace: kubevirt-prow-jobs
-    # username=quayUser
-    # password=quayPass
-    # token=quayOAuthToken
-    envs:
-    - secrets/kubevirtci-quay-credential
+    files:
+      - secrets/kubevirtci-quay-credential/username
+      - secrets/kubevirtci-quay-credential/password
+      - secrets/kubevirtci-quay-credential/token
     type: Opaque
+
   - name: kubevirtci-installer-pull-token
     namespace: kubevirt-prow-jobs
     files:
