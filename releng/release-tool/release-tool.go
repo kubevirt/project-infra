@@ -160,12 +160,26 @@ func bootstrapImage(jobConfig config.JobConfig, repoKey string) (string, error) 
 	return "", fmt.Errorf("no presubmit runs in a %s* image", bootstrapImagePrefix)
 }
 
+// credentialsRegexp matches credentials embedded in urls, e.g. the github
+// token in https://<token>@github.com/...
+var credentialsRegexp = regexp.MustCompile(`(https?://)[^@/\s]+@`)
+
+// redactCredentials returns s with credentials embedded in urls replaced
+// by ***, so that tokens do not end up in logs
+func redactCredentials(s string) string {
+	return credentialsRegexp.ReplaceAllString(s, "${1}***@")
+}
+
 func _gitCommand(arg ...string) (string, error) {
-	log.Printf("executing 'git %v", arg)
+	loggedArgs := make([]string, len(arg))
+	for i, a := range arg {
+		loggedArgs[i] = redactCredentials(a)
+	}
+	log.Printf("executing 'git %v'", loggedArgs)
 	cmd := exec.Command("git", arg...)
 	bytes, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Printf("ERROR: git command output: %s : %s ", string(bytes), err)
+		log.Printf("ERROR: git command output: %s : %s ", redactCredentials(string(bytes)), err)
 		return "", err
 	}
 	return string(bytes), nil
@@ -595,7 +609,7 @@ func (r *releaseData) forkProwJobs() error {
 		)
 		bytes, err := cmd.CombinedOutput()
 		if err != nil && !strings.Contains(string(bytes), "A pull request already exists") {
-			log.Printf("ERROR: pr-creator command output: %s : %s ", string(bytes), err)
+			log.Printf("ERROR: pr-creator command output: %s : %s ", redactCredentials(string(bytes)), err)
 			return err
 		}
 	}
@@ -1030,7 +1044,7 @@ func (r *releaseData) addRPMURLsJob(branch string) error {
 		)
 		bytes, err := cmd.CombinedOutput()
 		if err != nil && !strings.Contains(string(bytes), "A pull request already exists") {
-			log.Printf("ERROR: pr-creator command output: %s : %s ", string(bytes), err)
+			log.Printf("ERROR: pr-creator command output: %s : %s ", redactCredentials(string(bytes)), err)
 			return err
 		}
 	}
@@ -1695,7 +1709,7 @@ func (r *releaseData) printData() {
 
 	log.Print("Input Data")
 
-	log.Printf("\trepoUrl: %s", r.repoUrl)
+	log.Printf("\trepoUrl: %s", redactCredentials(r.repoUrl))
 	log.Printf("\tnewTag: %s", r.tag)
 	log.Printf("\tnewBranch: %s", r.newBranch)
 	log.Printf("\texistingBranch: %s", r.tagBranch)
