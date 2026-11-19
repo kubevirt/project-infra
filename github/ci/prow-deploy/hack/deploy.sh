@@ -82,6 +82,11 @@ populate_secrets(){
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow/github/hmac-token "${secrets_dir}"/github/
     install -Dm 400 "${secrets_repo_dir}"/secrets/slack/kubevirtci-token "${secrets_dir}"/slack/token
 
+    mkdir -p "${secrets_dir}"/kubevirtci-quay-credential
+    install -Dm 400 "${secrets_repo_dir}"/creds/quay.io/kubevirtcibot/username "${secrets_dir}"/kubevirtci-quay-credential/
+    install -Dm 400 "${secrets_repo_dir}"/creds/quay.io/kubevirtcibot/password "${secrets_dir}"/kubevirtci-quay-credential/
+    install -Dm 400 "${secrets_repo_dir}"/creds/quay.io/kubevirtcibot/token "${secrets_dir}"/kubevirtci-quay-credential/
+
     install -Dm 400 "${secrets_repo_dir}"/tokens/github/kubevirt-commenter-bot/prow-2026-11 "${secrets_dir}"/commenter-oauth-token
     install -Dm 400 "${secrets_repo_dir}"/tokens/google/service-accounts/bazel-cache/bazel-cache-sa.json "${secrets_dir}"/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json
     install -Dm 400 "${secrets_repo_dir}"/tokens/google/service-accounts/prow/prow-sa.json "${secrets_dir}"/service-account.json
