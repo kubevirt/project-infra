@@ -324,12 +324,6 @@ secretGenerator:
       - secrets/quay-containerdisks-push/password
     type: Opaque
 
-  - name: kubevirtci-installer-pull-token
-    namespace: kubevirt-prow-jobs
-    files:
-      # installerPullToken
-      - token=secrets/kubevirtci-installer-pull-token
-    type: Opaque
   - name: commenter-oauth-token
     namespace: kubevirt-prow-jobs
     # githubCommenterToken
