@@ -53,7 +53,7 @@ periodics:
   labels:
     preset-podman-in-container-enabled: "true"
     preset-docker-mirror-proxy: "true"
-    preset-kubevirtci-quay-credential: "true"
+    preset-quay-containerdisks-push: "true"
   max_concurrency: 1
   name: periodic-containerdisks-push-nightly
   spec:
@@ -64,7 +64,7 @@ periodics:
       - -c
       - |
         set -e
-        cat "$QUAY_PASSWORD" | docker login --username $(cat "$QUAY_USER") --password-stdin=true quay.io
+        podman login quay.io --username "$(cat "${QUAY_USER}")" --password-stdin <"${QUAY_PASSWORD}"
         ./pipeline-periodic.sh
       env:
       - name: GO_MOD_PATH
