@@ -334,6 +334,30 @@ presubmits:
           privileged: true
   - always_run: true
     branches:
+      - release-1.7
+    cluster: kubevirt-prow-control-plane
+    context: pull-kubevirt-verify-rpm-urls
+    decoration_config:
+      grace_period: 5m0s
+      timeout: 10m0s
+    labels:
+      preset-docker-mirror-proxy: "true"
+    name: pull-kubevirt-verify-rpm-urls-1.7
+    spec:
+      containers:
+        - command:
+            - /usr/local/bin/runner.sh
+            - /bin/sh
+            - -ce
+            - |
+              go run ./hack/rpm-mirror-checker/rpm-mirror-checker.go
+          image: quay.io/kubevirtci/golang:v20251022-6eb3ab1
+          name: ""
+          resources:
+            requests:
+              memory: 1Gi
+  - always_run: true
+    branches:
     - release-1.7
     cluster: kubevirt-prow-control-plane
     context: pull-kubevirt-verify-go-mod
