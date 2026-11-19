@@ -1336,15 +1336,27 @@ func (r *releaseData) getBranches() ([]*github.Branch, error) {
 		return r.allBranches, nil
 	}
 
-	branches, _, err := r.githubClient.Repositories.ListBranches(context.Background(), r.org, r.repo, &github.BranchListOptions{
+	// github caps per_page at 100: follow the pagination until all
+	// branches were seen, a single response is not enough to decide that
+	// a branch does not exist
+	var allBranches []*github.Branch
+	opt := &github.BranchListOptions{
 		ListOptions: github.ListOptions{
-			PerPage: 10000,
+			PerPage: 100,
 		},
-	})
-	if err != nil {
-		return nil, err
 	}
-	r.allBranches = branches
+	for {
+		branches, resp, err := r.githubClient.Repositories.ListBranches(context.Background(), r.org, r.repo, opt)
+		if err != nil {
+			return nil, err
+		}
+		allBranches = append(allBranches, branches...)
+		if resp.NextPage == 0 {
+			break
+		}
+		opt.Page = resp.NextPage
+	}
+	r.allBranches = allBranches
 
 	return r.allBranches, nil
 
