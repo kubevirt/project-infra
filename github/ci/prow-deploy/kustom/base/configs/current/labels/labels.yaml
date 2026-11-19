@@ -657,6 +657,12 @@ repos:
         addedBy: anyone
         prowPlugin: label
         description: Categorizes issue or PR as a Virtualization Enhancement Proposal (VEP).
+      - name: target/1.11
+        color: bfd4f2
+        target: issues
+        addedBy: anyone
+        prowPlugin: label
+        description: Indicates a VEP is targeting to be worked on in release 1.11
   nmstate/kubernetes-nmstate:
     labels:
       - name: kind/documentation
