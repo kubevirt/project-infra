@@ -14,7 +14,7 @@ postsubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "false"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
     spec:
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20261116-94a0485
@@ -50,7 +50,7 @@ postsubmits:
     labels:
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "false"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
     spec:
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20261116-94a0485
@@ -166,7 +166,7 @@ postsubmits:
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
       preset-github-credentials: "true"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
     spec:
       nodeSelector:
         type: bare-metal-external

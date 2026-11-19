@@ -37,7 +37,7 @@ presubmits:
 #    labels:
 #      preset-dind-enabled: "true"
 #      preset-docker-mirror-proxy: "true"
-#      preset-kubevirtci-quay-credential: "true"
+#      preset-quay-kubevirt-push: "true"
 #      preset-shared-images: "true"
 #    max_concurrency: 6
 #    name: pull-hyperconverged-cluster-operator-e2e-ocp-4.4

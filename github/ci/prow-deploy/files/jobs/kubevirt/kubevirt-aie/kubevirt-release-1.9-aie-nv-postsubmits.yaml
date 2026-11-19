@@ -17,7 +17,7 @@ postsubmits:
       preset-bazel-cache: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
-      preset-kubevirtci-quay-credential: "true"
+      preset-quay-kubevirt-push: "true"
     spec:
       containers:
       - image: quay.io/kubevirtci/bootstrap:v20261116-94a0485

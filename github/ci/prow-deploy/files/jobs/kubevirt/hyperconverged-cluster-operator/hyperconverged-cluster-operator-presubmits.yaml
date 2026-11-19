@@ -120,7 +120,7 @@ presubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-github-credentials: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirt-push: "true"
       cluster: kubevirt-prow-control-plane
       spec:
         containers:

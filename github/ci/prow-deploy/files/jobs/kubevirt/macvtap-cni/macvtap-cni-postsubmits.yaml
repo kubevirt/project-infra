@@ -10,7 +10,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirt-push: "true"
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
@@ -35,7 +35,7 @@ postsubmits:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
         preset-github-credentials: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirt-push: "true"
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
