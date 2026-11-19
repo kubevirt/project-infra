@@ -1,9 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -394,8 +399,6 @@ func TestCutNewBranch(t *testing.T) {
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [clone https://fake-token@github.com/kubevirt/project-infra.git %s/kubevirt/https-project-infra]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/kubevirt/https-project-infra config user.name fake-user]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/kubevirt/https-project-infra config user.email fake-email@fake.fake]", r.cacheDir))
-	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/kubevirt/https-project-infra checkout -b fake-org_fake-repo_release-0.2_configs]", r.cacheDir))
-	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/kubevirt/https-project-infra pull origin fake-org_fake-repo_release-0.2_configs]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [clone https://fake-token@github.com/fake-org/fake-repo.git %s/fake-org/https-fake-repo]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo config user.name fake-user]", r.cacheDir))
 	expectedGitCommands = append(expectedGitCommands, fmt.Sprintf("git [-C %s/fake-org/https-fake-repo config user.email fake-email@fake.fake]", r.cacheDir))
@@ -420,6 +423,347 @@ func TestCutNewBranch(t *testing.T) {
 		if entry != expectedGitCommands[i] {
 			t.Errorf("expected command %s and got %s", expectedGitCommands[i], entry)
 		}
+	}
+}
+
+func runProwGit(t *testing.T, args ...string) string {
+	t.Helper()
+	output, err := _gitCommand(args...)
+	if err != nil {
+		t.Fatalf("git %v: %v", args, err)
+	}
+	return strings.TrimSpace(output)
+}
+
+func setupProwConfigTest(t *testing.T, owner string, handler http.HandlerFunc) (releaseData, string, string) {
+	t.Helper()
+	r := standardSetup()
+	t.Cleanup(func() { standardCleanup(&r) })
+	r.org, r.repo, r.newBranch, r.gitToken, r.dryRun = "kubevirt", "kubevirt", "release-1.7", "fake-token", false
+	base := t.TempDir()
+	upstream, fork := filepath.Join(base, "upstream.git"), filepath.Join(base, "fork.git")
+	gitConfig := filepath.Join(base, "gitconfig")
+	if err := os.WriteFile(gitConfig, []byte(fmt.Sprintf(`[url %q]
+	insteadOf = https://fake-token@github.com/kubevirt/project-infra.git
+[url %q]
+	insteadOf = https://fake-token@github.com/%s/project-infra.git
+[protocol "https"]
+	allow = never
+[user]
+	name = fake-user
+	email = fake-email@fake.fake
+`, upstream, fork, owner)), 0600); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("GIT_CONFIG_GLOBAL", gitConfig)
+	t.Setenv("GIT_CONFIG_NOSYSTEM", "1")
+	oldGitCommand, oldConfigForkerPath := gitCommand, configForkerPath
+	t.Cleanup(func() { gitCommand, configForkerPath = oldGitCommand, oldConfigForkerPath })
+	gitCommand = _gitCommand
+	configForkerPath = filepath.Join(base, "config-forker")
+	if err := os.WriteFile(configForkerPath, []byte(`#!/bin/sh
+set -eu
+while [ "$#" -gt 0 ]; do
+  case "$1" in --job-config) input="$2"; shift;; --output) output="$2"; shift;; esac
+  shift
+done
+cp "$input" "$output"
+`), 0700); err != nil {
+		t.Fatal(err)
+	}
+	seed := filepath.Join(base, "seed")
+	jobDir := filepath.Join(seed, "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt")
+	if err := os.MkdirAll(jobDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+	job, err := os.ReadFile("testdata/jobconfig/kubevirt-presubmits-1.6.yaml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(jobDir, "kubevirt-presubmits.yaml"), job, 0644); err != nil {
+		t.Fatal(err)
+	}
+	runProwGit(t, "-C", seed, "init", "-b", "main")
+	runProwGit(t, "-C", seed, "add", ".")
+	runProwGit(t, "-C", seed, "commit", "-m", "seed")
+	runProwGit(t, "clone", "--bare", seed, upstream)
+	runProwGit(t, "clone", "--bare", upstream, fork)
+	if err := r.checkoutProjectInfra(); err != nil {
+		t.Fatal(err)
+	}
+	server := httptest.NewServer(handler)
+	t.Cleanup(server.Close)
+	r.githubClient = github.NewClient(server.Client())
+	r.githubClient.BaseURL, err = url.Parse(server.URL + "/")
+	if err != nil {
+		t.Fatal(err)
+	}
+	return r, upstream, fork
+}
+
+func TestForkProwJobs(t *testing.T) {
+	for _, tc := range []struct {
+		name         string
+		override     string
+		owner        string
+		createStatus int
+	}{
+		{name: "authenticated user", owner: "Bhup-GitHUB", createStatus: http.StatusCreated},
+		{name: "override and failed PR retry", override: "release-team", owner: "release-team", createStatus: http.StatusServiceUnavailable},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			branch := "kubevirt_kubevirt_release-1.7_configs"
+			outputConfig := "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits-1.7.yaml"
+			prCalls := 0
+			r, upstream, fork := setupProwConfigTest(t, tc.owner, func(w http.ResponseWriter, req *http.Request) {
+				switch req.Method + " " + req.URL.Path {
+				case "GET /user":
+					if tc.override != "" {
+						t.Error("explicit fork owner must not require authenticated user lookup")
+					}
+					fmt.Fprintf(w, `{"login":%q}`, tc.owner)
+				case "GET /repos/" + tc.owner + "/project-infra":
+					if tc.override == "" {
+						fmt.Fprint(w, `{"fork":true,"parent":{"full_name":"kubevirt/project-infra"}}`)
+					} else {
+						fmt.Fprint(w, `{"fork":true,"parent":{"full_name":"another/project-infra"},"source":{"full_name":"kubevirt/project-infra"}}`)
+					}
+				case "POST /repos/kubevirt/project-infra/pulls":
+					var payload map[string]any
+					if err := json.NewDecoder(req.Body).Decode(&payload); err != nil {
+						t.Error(err)
+					}
+					want := map[string]any{
+						"title": "Release configs for kubevirt/kubevirt release branch release-1.7",
+						"body":  "adds new release configs", "head": tc.owner + ":" + branch,
+						"base": "main", "maintainer_can_modify": false,
+					}
+					if !reflect.DeepEqual(payload, want) {
+						t.Errorf("PR payload = %#v, want %#v", payload, want)
+					}
+					prCalls++
+					status := tc.createStatus
+					if prCalls > 1 {
+						status = http.StatusUnprocessableEntity
+					}
+					w.WriteHeader(status)
+					fmt.Fprint(w, `{}`)
+				case "GET /repos/kubevirt/project-infra/pulls":
+					query := req.URL.Query()
+					if query.Get("state") != "open" || query.Get("head") != tc.owner+":"+branch || query.Get("base") != "main" {
+						t.Errorf("unexpected PR lookup: %s", req.URL.RawQuery)
+					}
+					fmt.Fprintf(w, `[{"state":"open","head":{"label":%q},"base":{"ref":"main"}}]`, tc.owner+":"+branch)
+				default:
+					t.Errorf("unexpected GitHub request: %s %s", req.Method, req.URL)
+					http.Error(w, "unexpected request", http.StatusInternalServerError)
+				}
+			})
+			r.forkOwner = tc.override
+			err := r.forkProwJobs()
+			if (err != nil) != (tc.createStatus != http.StatusCreated) {
+				t.Fatalf("forkProwJobs error = %v, PR response status = %d", err, tc.createStatus)
+			}
+			if runProwGit(t, "ls-remote", "--heads", upstream, "refs/heads/"+branch) != "" {
+				t.Fatal("config branch was pushed to upstream")
+			}
+			if runProwGit(t, "ls-remote", "--heads", fork, "refs/heads/"+branch) == "" {
+				t.Fatal("config branch was not pushed to the fork")
+			}
+			message := runProwGit(t, "--git-dir", fork, "log", "-1", "--format=%B", branch)
+			if !strings.Contains(message, "Signed-off-by: fake-user <fake-email@fake.fake>") {
+				t.Fatalf("config commit is not signed off: %s", message)
+			}
+			collaborator := filepath.Join(t.TempDir(), "collaborator")
+			runProwGit(t, "clone", "--branch", branch, fork, collaborator)
+			generated := runProwGit(t, "-C", collaborator, "show", "HEAD:"+outputConfig)
+			edited := strings.Replace(generated, "max_concurrency: 4", "max_concurrency: 3", 1)
+			if edited == generated {
+				t.Fatal("fixture has no concurrency setting to edit")
+			}
+			if err := os.WriteFile(filepath.Join(collaborator, outputConfig), []byte(edited+"\n"), 0644); err != nil {
+				t.Fatal(err)
+			}
+			runProwGit(t, "-C", collaborator, "commit", "-am", "adjust fork config")
+			runProwGit(t, "-C", collaborator, "push", "origin", branch)
+			r.infraDir = filepath.Join(t.TempDir(), "fresh-cache")
+			if err := r.checkoutProjectInfra(); err != nil {
+				t.Fatal(err)
+			}
+			if err := r.forkProwJobs(); err != nil {
+				t.Fatalf("retry with existing fork branch and PR: %v", err)
+			}
+			if got := runProwGit(t, "-C", r.infraDir, "show", "HEAD:"+outputConfig); got != edited {
+				t.Fatal("retry did not preserve the fork's config edit")
+			}
+			if runProwGit(t, "-C", r.infraDir, "config", "--get", "remote.origin.url") != r.infraUrl {
+				t.Fatal("upstream checkout origin was replaced with the fork")
+			}
+		})
+	}
+}
+
+func TestForkProwJobsInvalidFork(t *testing.T) {
+	for _, tc := range []struct {
+		name, owner, login, body, wantError string
+		status                              int
+	}{
+		{name: "missing", owner: "Bhup-GitHUB", status: http.StatusNotFound, wantError: "a writable fork of kubevirt/project-infra is required"},
+		{name: "inaccessible", owner: "Bhup-GitHUB", status: http.StatusForbidden, wantError: "a writable fork of kubevirt/project-infra is required"},
+		{name: "not a fork", owner: "Bhup-GitHUB", body: `{"fork":false}`, wantError: "not a fork of kubevirt/project-infra"},
+		{name: "unrelated fork", owner: "Bhup-GitHUB", body: `{"fork":true,"parent":{"full_name":"other/project-infra"}}`, wantError: "not a fork of kubevirt/project-infra"},
+		{name: "upstream override", owner: "KuBeViRt", wantError: "fork owner must not be kubevirt"},
+		{name: "upstream login", login: "kubevirt", wantError: "fork owner must not be kubevirt"},
+		{name: "user lookup fails", status: http.StatusUnauthorized, wantError: "looking up project-infra fork owner"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			r, _, fork := setupProwConfigTest(t, "Bhup-GitHUB", func(w http.ResponseWriter, req *http.Request) {
+				switch req.Method + " " + req.URL.Path {
+				case "GET /user":
+					if tc.status != 0 {
+						w.WriteHeader(tc.status)
+					}
+					fmt.Fprintf(w, `{"login":%q}`, tc.login)
+				case "GET /repos/Bhup-GitHUB/project-infra":
+					if tc.status != 0 {
+						w.WriteHeader(tc.status)
+					}
+					fmt.Fprint(w, tc.body)
+				default:
+					t.Errorf("unexpected GitHub request: %s %s", req.Method, req.URL)
+					http.Error(w, "unexpected request", http.StatusInternalServerError)
+				}
+			})
+			r.forkOwner = tc.owner
+			if err := r.forkProwJobs(); err == nil || !strings.Contains(err.Error(), tc.wantError) {
+				t.Fatalf("forkProwJobs error = %v, want %q", err, tc.wantError)
+			}
+			if runProwGit(t, "ls-remote", "--heads", fork, "refs/heads/kubevirt_kubevirt_release-1.7_configs") != "" {
+				t.Fatal("invalid fork was modified")
+			}
+		})
+	}
+}
+
+func TestForkProwJobsWithoutFork(t *testing.T) {
+	for _, name := range []string{"dry run", "no template", "already on main"} {
+		t.Run(name, func(t *testing.T) {
+			r, upstream, fork := setupProwConfigTest(t, "Bhup-GitHUB", func(w http.ResponseWriter, req *http.Request) {
+				t.Errorf("unexpected GitHub request: %s %s", req.Method, req.URL)
+				http.Error(w, "unexpected request", http.StatusInternalServerError)
+			})
+			outputConfig := "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits-1.7.yaml"
+			switch name {
+			case "dry run":
+				r.dryRun = true
+			case "no template":
+				r.repo = "no-template"
+			case "already on main":
+				if err := os.WriteFile(filepath.Join(r.infraDir, outputConfig), []byte("existing config\n"), 0644); err != nil {
+					t.Fatal(err)
+				}
+				runProwGit(t, "-C", r.infraDir, "add", outputConfig)
+				runProwGit(t, "-C", r.infraDir, "commit", "-m", "config already on main")
+			}
+			if err := r.forkProwJobs(); err != nil {
+				t.Fatal(err)
+			}
+			for _, remote := range []string{upstream, fork} {
+				if runProwGit(t, "ls-remote", "--heads", remote, "refs/heads/kubevirt_kubevirt_release-1.7_configs") != "" {
+					t.Fatalf("unexpected config branch on %s", remote)
+				}
+			}
+			if name == "dry run" {
+				if _, err := config.ReadJobConfig(filepath.Join(r.infraDir, outputConfig)); err != nil {
+					t.Fatalf("dry run did not generate a local config: %v", err)
+				}
+			} else if runProwGit(t, "-C", r.infraDir, "branch", "--show-current") != "main" {
+				t.Fatal("skipped config generation changed the branch")
+			}
+		})
+	}
+}
+
+func TestForkProwJobsUnmatchedPR(t *testing.T) {
+	for _, tc := range []struct {
+		name, pull string
+	}{
+		{name: "validation error", pull: `[]`},
+		{name: "upstream head", pull: `[{"state":"open","head":{"label":"kubevirt:kubevirt_kubevirt_release-1.7_configs"},"base":{"ref":"main"}}]`},
+		{name: "different base", pull: `[{"state":"open","head":{"label":"Bhup-GitHUB:kubevirt_kubevirt_release-1.7_configs"},"base":{"ref":"release-1.7"}}]`},
+		{name: "closed PR", pull: `[{"state":"closed","head":{"label":"Bhup-GitHUB:kubevirt_kubevirt_release-1.7_configs"},"base":{"ref":"main"}}]`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			r, _, _ := setupProwConfigTest(t, "Bhup-GitHUB", func(w http.ResponseWriter, req *http.Request) {
+				switch req.Method + " " + req.URL.Path {
+				case "GET /repos/Bhup-GitHUB/project-infra":
+					fmt.Fprint(w, `{"fork":true,"parent":{"full_name":"kubevirt/project-infra"}}`)
+				case "POST /repos/kubevirt/project-infra/pulls":
+					w.WriteHeader(http.StatusUnprocessableEntity)
+					fmt.Fprint(w, `{"message":"Validation Failed"}`)
+				case "GET /repos/kubevirt/project-infra/pulls":
+					fmt.Fprint(w, tc.pull)
+				default:
+					t.Errorf("unexpected GitHub request: %s %s", req.Method, req.URL)
+					http.Error(w, "unexpected request", http.StatusInternalServerError)
+				}
+			})
+			r.forkOwner = "Bhup-GitHUB"
+			if err := r.forkProwJobs(); err == nil || !strings.Contains(err.Error(), "Validation Failed") {
+				t.Fatalf("unmatched PR must not suppress the creation error: %v", err)
+			}
+		})
+	}
+}
+
+func TestForkProwJobsGitFailure(t *testing.T) {
+	for _, name := range []string{"inaccessible fork ref", "concurrent update"} {
+		t.Run(name, func(t *testing.T) {
+			r, upstream, fork := setupProwConfigTest(t, "Bhup-GitHUB", func(w http.ResponseWriter, req *http.Request) {
+				if req.Method == "GET" && req.URL.Path == "/repos/Bhup-GitHUB/project-infra" {
+					fmt.Fprint(w, `{"fork":true,"parent":{"full_name":"kubevirt/project-infra"}}`)
+					return
+				}
+				t.Errorf("unexpected GitHub request: %s %s", req.Method, req.URL)
+				http.Error(w, "unexpected request", http.StatusInternalServerError)
+			})
+			r.forkOwner = "Bhup-GitHUB"
+			branch := "kubevirt_kubevirt_release-1.7_configs"
+			var concurrentCommit string
+			if name == "inaccessible fork ref" {
+				if err := os.RemoveAll(fork); err != nil {
+					t.Fatal(err)
+				}
+			} else {
+				collaborator := filepath.Join(t.TempDir(), "collaborator")
+				runProwGit(t, "clone", fork, collaborator)
+				if err := os.WriteFile(filepath.Join(collaborator, "fork-edit.txt"), []byte("concurrent fork edit\n"), 0644); err != nil {
+					t.Fatal(err)
+				}
+				runProwGit(t, "-C", collaborator, "add", ".")
+				runProwGit(t, "-C", collaborator, "commit", "-m", "concurrent fork edit")
+				concurrentCommit = runProwGit(t, "-C", collaborator, "rev-parse", "HEAD")
+				gitCommand = func(args ...string) (string, error) {
+					if len(args) > 2 && args[2] == "push" {
+						runProwGit(t, "-C", collaborator, "push", fork, "HEAD:refs/heads/"+branch)
+					}
+					return _gitCommand(args...)
+				}
+			}
+			if err := r.forkProwJobs(); err == nil {
+				t.Fatal("git failure must stop config publishing")
+			}
+			if name == "inaccessible fork ref" {
+				if runProwGit(t, "-C", r.infraDir, "branch", "--show-current") != "main" {
+					t.Fatal("failed ref lookup was treated as an absent branch")
+				}
+			} else if runProwGit(t, "--git-dir", fork, "rev-parse", branch) != concurrentCommit {
+				t.Fatal("concurrent fork edit was overwritten")
+			}
+			if runProwGit(t, "ls-remote", "--heads", upstream, "refs/heads/"+branch) != "" {
+				t.Fatal("git failure modified upstream")
+			}
+		})
 	}
 }
 
