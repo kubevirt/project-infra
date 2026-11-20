@@ -27,6 +27,12 @@ depending on billing alerts. See [README](limiter/README.md)
 
 * `releng/release-tool`: Tool for creating KubeVirt releases
 
+  Publishing new release Prow configs requires an existing writable fork of
+  `kubevirt/project-infra`. The fork owner defaults to the authenticated GitHub
+  user; use `--fork-owner <owner>` to select another user's or organization's fork.
+  The tool pushes config branches only to that fork and opens PRs into upstream
+  `main`. Dry runs and `--skip-prow` do not require a fork.
+
 * `robots`: Automation tools
 
   * `robots/dependabot`: Tool to create PRs to resolve Github dependabot alerts in kubevirt org repositories

@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -34,6 +35,7 @@ type releaseData struct {
 	cacheDir  string
 	repoUrl   string
 	infraUrl  string
+	forkOwner string
 	repo      string
 	org       string
 	newBranch string
@@ -67,12 +69,15 @@ type releaseData struct {
 // Allow mocking for tests
 var gitCommand = _gitCommand
 
+var gitURLCredentials = regexp.MustCompile(`(https?://)[^/@\s]+@`)
+var configForkerPath = "/usr/bin/config-forker"
+
 func _gitCommand(arg ...string) (string, error) {
-	log.Printf("executing 'git %v", arg)
+	log.Printf("executing 'git %s", gitURLCredentials.ReplaceAllString(fmt.Sprint(arg), "${1}<redacted>@"))
 	cmd := exec.Command("git", arg...)
 	bytes, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Printf("ERROR: git command output: %s : %s ", string(bytes), err)
+		log.Printf("ERROR: git command output: %s : %s ", gitURLCredentials.ReplaceAllString(string(bytes), "${1}<redacted>@"), err)
 		return "", err
 	}
 	return string(bytes), nil
@@ -402,30 +407,70 @@ func (r *releaseData) getReleaseNote(number int) (string, error) {
 	return "", nil
 }
 
+func (r *releaseData) projectInfraFork() (string, string, error) {
+	owner := r.forkOwner
+	ctx := context.Background()
+	if owner == "" {
+		user, _, err := r.githubClient.Users.Get(ctx, "")
+		if err != nil {
+			return "", "", fmt.Errorf("looking up project-infra fork owner: %w", err)
+		}
+		owner = user.GetLogin()
+	}
+	if strings.EqualFold(owner, "kubevirt") {
+		return "", "", fmt.Errorf("project-infra fork owner must not be kubevirt")
+	}
+	fork, _, err := r.githubClient.Repositories.Get(ctx, owner, "project-infra")
+	if err != nil {
+		return "", "", fmt.Errorf("accessing %s/project-infra: a writable fork of kubevirt/project-infra is required: %w", owner, err)
+	}
+	if !fork.GetFork() || (!strings.EqualFold(fork.GetParent().GetFullName(), "kubevirt/project-infra") && !strings.EqualFold(fork.GetSource().GetFullName(), "kubevirt/project-infra")) {
+		return "", "", fmt.Errorf("%s/project-infra is not a fork of kubevirt/project-infra", owner)
+	}
+	return owner, fmt.Sprintf("https://%s@github.com/%s/project-infra.git", r.gitToken, owner), nil
+}
+
 func (r *releaseData) forkProwJobs() error {
 	version := strings.TrimPrefix(r.newBranch, "release-")
 	outputConfig := fmt.Sprintf("github/ci/prow-deploy/files/jobs/%s/%s/%s-presubmits-%s.yaml", r.org, r.repo, r.repo, version)
 	fullOutputConfig := fmt.Sprintf("%s/%s", r.infraDir, outputConfig)
 	fullJobConfig := fmt.Sprintf("%s/github/ci/prow-deploy/files/jobs/%s/%s/%s-presubmits.yaml", r.infraDir, r.org, r.repo, r.repo)
 
-	gitbranch := fmt.Sprintf("%s_%s_%s_configs", r.org, r.repo, r.newBranch)
+	if _, err := os.Stat(fullJobConfig); err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return err
+	}
+	if _, err := os.Stat(fullOutputConfig); err == nil {
+		return nil
+	} else if !os.IsNotExist(err) {
+		return err
+	}
 
-	_, err := gitCommand("-C", r.infraDir, "checkout", "-b", gitbranch)
-	if err != nil {
-		_, err = gitCommand("-C", r.infraDir, "checkout", "-B", gitbranch)
+	gitbranch := fmt.Sprintf("%s_%s_%s_configs", r.org, r.repo, r.newBranch)
+	startPoint := "main"
+	var forkOwner, forkURL string
+	if !r.dryRun {
+		var err error
+		forkOwner, forkURL, err = r.projectInfraFork()
 		if err != nil {
 			return err
 		}
-
+		ref := "refs/heads/" + gitbranch
+		existing, err := gitCommand("-C", r.infraDir, "ls-remote", "--heads", forkURL, ref)
+		if err != nil {
+			return err
+		}
+		if strings.TrimSpace(existing) != "" {
+			if _, err := gitCommand("-C", r.infraDir, "fetch", forkURL, ref); err != nil {
+				return err
+			}
+			startPoint = "FETCH_HEAD"
+		}
 	}
-	// ignore error here, we're just trying to make sure we've synced
-	// and pulled down any changes from the origin branch in github
-	// in case there are non local changes that need to get pulled in.
-	_, _ = gitCommand("-C", r.infraDir, "pull", "origin", gitbranch)
-
-	if _, err = os.Stat(fullJobConfig); err != nil && os.IsNotExist(err) {
-		// no job to fork for this project
-		return nil
+	if _, err := gitCommand("-C", r.infraDir, "checkout", "-B", gitbranch, startPoint); err != nil {
+		return err
 	}
 
 	// create new prow configs if they don't already exist
@@ -436,8 +481,9 @@ func (r *releaseData) forkProwJobs() error {
 			log.Printf("ERROR: temp dir creation failed: %s", err)
 			return err
 		}
+		defer func() { _ = os.RemoveAll(temp) }()
 		tempPresubmitsConfigPath := filepath.Join(temp, "presubmits.yaml")
-		cmd := exec.Command("/usr/bin/config-forker", "--job-config", fullJobConfig, "--go-version", "1.24", "--version", version, "--output", tempPresubmitsConfigPath)
+		cmd := exec.Command(configForkerPath, "--job-config", fullJobConfig, "--go-version", "1.24", "--version", version, "--output", tempPresubmitsConfigPath)
 		bytes, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Printf("ERROR: config-forker command output: %s : %s ", string(bytes), err)
@@ -459,37 +505,36 @@ func (r *releaseData) forkProwJobs() error {
 		if err != nil {
 			return err
 		}
-
-		if !r.dryRun {
-			_, err = gitCommand("-C", r.infraDir, "push", r.infraUrl, gitbranch)
-			if err != nil {
-				return err
-			}
-		}
 	} else if err != nil {
 		return err
 	}
 
 	if !r.dryRun {
-		// Example at...
-		// https://github.com/kubevirt/kubevirt/blob/main/hack/autobump-kubevirtci.sh
-		// This should be idempotent, so it's okay if we call this multiple times
-		log.Printf("Creating PR for new prow yamls")
-		cmd := exec.Command("/usr/bin/pr-creator",
-			"--org", "kubevirt",
-			"--repo", "project-infra",
-			"--branch", "main",
-			"--github-token-path", r.githubTokenPath,
-			"--title", fmt.Sprintf("Release configs for %s/%s release branch %s", r.org, r.repo, r.newBranch),
-			"--body", "adds new release configs",
-			"--source", fmt.Sprintf("kubevirt:%s", gitbranch),
-			"--confirm",
-		)
-		bytes, err := cmd.CombinedOutput()
-		if err != nil && !strings.Contains(string(bytes), "A pull request already exists") {
-			log.Printf("ERROR: pr-creator command output: %s : %s ", string(bytes), err)
+		if _, err := gitCommand("-C", r.infraDir, "push", forkURL, gitbranch); err != nil {
 			return err
 		}
+		log.Printf("Creating PR for new prow yamls")
+		head := fmt.Sprintf("%s:%s", forkOwner, gitbranch)
+		ctx := context.Background()
+		_, response, err := r.githubClient.PullRequests.Create(ctx, "kubevirt", "project-infra", &github.NewPullRequest{
+			Title:               github.String(fmt.Sprintf("Release configs for %s/%s release branch %s", r.org, r.repo, r.newBranch)),
+			Body:                github.String("adds new release configs"),
+			Head:                github.String(head),
+			Base:                github.String("main"),
+			MaintainerCanModify: github.Bool(false),
+		})
+		if err != nil && response != nil && response.StatusCode == http.StatusUnprocessableEntity {
+			pulls, _, listErr := r.githubClient.PullRequests.List(ctx, "kubevirt", "project-infra", &github.PullRequestListOptions{State: "open", Head: head, Base: "main"})
+			if listErr != nil {
+				return listErr
+			}
+			for _, pull := range pulls {
+				if pull.GetState() == "open" && pull.GetHead().GetLabel() == head && pull.GetBase().GetRef() == "main" {
+					return nil
+				}
+			}
+		}
+		return err
 	}
 
 	return nil
@@ -1186,7 +1231,7 @@ func (r *releaseData) printData() {
 
 	log.Print("Input Data")
 
-	log.Printf("\trepoUrl: %s", r.repoUrl)
+	log.Printf("\trepoUrl: %s", gitURLCredentials.ReplaceAllString(r.repoUrl, "${1}<redacted>@"))
 	log.Printf("\tnewTag: %s", r.tag)
 	log.Printf("\tnewBranch: %s", r.newBranch)
 	log.Printf("\texistingBranch: %s", r.tagBranch)
@@ -1211,6 +1256,7 @@ func main() {
 	skipReleaseNotes := flag.Bool("skip-release-notes", false, "skip generating release notes for a tag")
 	force := flag.Bool("force", false, "force a release or release branch to occur despite blockers or other warnings")
 	skipProw := flag.Bool("skip-prow", false, "skip creating prow configs")
+	forkOwner := flag.String("fork-owner", "", "Owner of the project-infra fork for Prow config PRs (defaults to the authenticated user)")
 	promoteRC := flag.String("promote-release-candidate", "", "The tag of an rc release that will be promoted to an official release")
 
 	autoRelease := flag.Bool("auto-release", false, "Automatically perform branch cutting an releases based on time intervals")
@@ -1263,6 +1309,7 @@ func main() {
 		repo:             *repo,
 		org:              *org,
 		newBranch:        *newBranch,
+		forkOwner:        *forkOwner,
 		tag:              *releaseTag,
 		tagBranch:        *existingBranch,
 		promoteRC:        *promoteRC,
