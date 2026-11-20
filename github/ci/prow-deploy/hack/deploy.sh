@@ -25,6 +25,7 @@ main(){
     source ${project_infra_root}/hack/manage-secrets.sh
     decrypt_secrets
 
+    local secrets_dir="${base_dir}/kustom/overlays/${DEPLOY_ENVIRONMENT}/secrets"
     generate_consolidated_kubeconfig
     populate_secrets
 
@@ -56,21 +57,11 @@ generate_consolidated_kubeconfig(){
         printf "${secrets_repo_dir}/secrets/kubeconfigs/%s:" "${prow_build_clusters[@]}"
     )
 
-    kubeconfig_tmp=$(mktemp)
-    KUBECONFIG="${kubeconfig_list}" kubectl config view --flatten --raw > "${kubeconfig_tmp}"
+    KUBECONFIG="${kubeconfig_list}" kubectl config view --flatten --raw > "${secrets_dir}/kubeconfig"
 
-    mkdir -p ${base_dir}/vars/${DEPLOY_ENVIRONMENT}
-
-    yq '
-      .kubeconfig |= load_str("'"${kubeconfig_tmp}"'")
-    ' "${secrets_repo_dir}"/main.yml > "${base_dir}/vars/${DEPLOY_ENVIRONMENT}"/secrets.yml
-
-    rm -f "${kubeconfig_tmp}"
 }
 
 populate_secrets(){
-    local secrets_dir="${base_dir}/kustom/overlays/${DEPLOY_ENVIRONMENT}/secrets"
-
     install -Dm 400 "${secrets_repo_dir}"/tokens/product-keys/windows/sysprep-001 "${secrets_dir}"/win-sysprep-001
 
     install -Dm 400 "${secrets_repo_dir}"/tokens/fossa/kubevirt/push "${secrets_dir}"/kubevirtci-fossa-token

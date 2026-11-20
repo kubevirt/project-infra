@@ -22,19 +22,7 @@ decrypt_secrets(){
 
     cd "${secrets_repo_dir}"
 
-    # git-crypt workflow
-    if command -v git-crypt >/dev/null; then
-        git-crypt unlock
-    else
-        echo "[WARNING] git-crypt is missing, only legacy secrets are available" >&2
-    fi
-
-    # Legacy workflow
-    gpg --decrypt secrets.tar.asc | tar -xvf -
-    if [ ! -f main.yml ]; then
-        echo "[ERROR] Secrets file not present after unencrypting and unpacking" >&2
-        exit 1
-    fi
+    git-crypt unlock
 
     cd - >/dev/null
 }
