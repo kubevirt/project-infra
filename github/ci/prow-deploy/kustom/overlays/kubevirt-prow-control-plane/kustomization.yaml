@@ -17,8 +17,6 @@ resources:
   - resources/sinker-rbac.yaml
   - resources/statusreconciler-rbac.yaml
   - resources/tide-rbac.yaml
-  # templated resources
-  - resources/admin-rbac.yaml
 
 components:
   - ../../components/docker-mirror-proxy/pv
