@@ -71,6 +71,8 @@ generate_consolidated_kubeconfig(){
 populate_secrets(){
     local secrets_dir="${base_dir}/kustom/overlays/${DEPLOY_ENVIRONMENT}/secrets"
 
+    install -Dm 400 "${secrets_repo_dir}"/tokens/product-keys/windows/sysprep-001 "${secrets_dir}"/win-sysprep-001
+
     mkdir -p "${secrets_dir}"/github
 
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow/cookie "${secrets_dir}"/
