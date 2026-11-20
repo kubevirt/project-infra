@@ -5,5 +5,3 @@ secrets_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/kub
 
 node_name: node01
 
-githubUnprivileged:
-  token: "test"
