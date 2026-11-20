@@ -73,6 +73,8 @@ populate_secrets(){
 
     install -Dm 400 "${secrets_repo_dir}"/tokens/product-keys/windows/sysprep-001 "${secrets_dir}"/win-sysprep-001
 
+    install -Dm 400 "${secrets_repo_dir}"/tokens/fossa/kubevirt/push "${secrets_dir}"/kubevirtci-fossa-token
+
     mkdir -p "${secrets_dir}"/github
 
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow/cookie "${secrets_dir}"/
