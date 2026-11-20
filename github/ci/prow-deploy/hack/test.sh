@@ -70,6 +70,9 @@ populate_secrets(){
 
     install -Dm 400 "${secrets_repo_dir}"/tokens/fossa/kubevirt/push "${secrets_dir}"/kubevirtci-fossa-token
 
+    install -Dm 400 "${secrets_repo_dir}"/tokens/coveralls/kubevirt/repo "${secrets_dir}"/kubevirtci-coveralls-token
+    install -Dm 400 "${secrets_repo_dir}"/tokens/coveralls/containerized-data-importer/repo "${secrets_dir}"/containerized-data-importer-coveralls-token
+
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow-staging/cookie "${secrets_dir}"/
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow-staging/github/app-id "${secrets_dir}"/github/
     install -Dm 400 "${secrets_repo_dir}"/secrets/prow-staging/github/app-secret "${secrets_dir}"/github/
