@@ -10,7 +10,7 @@ import (
 
 	"github.com/nao1215/markdown/mermaid/gantt"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v3"
+	"go.yaml.in/yaml/v3"
 )
 
 //go:embed default-runtimes.yaml
