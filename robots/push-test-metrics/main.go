@@ -26,7 +26,9 @@ import (
 	"fmt"
 	"io"
 	"path"
+	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"cloud.google.com/go/storage"
@@ -34,33 +36,71 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/api/iterator"
+	"sigs.k8s.io/prow/pkg/config"
 
 	"github.com/prometheus/client_golang/prometheus/push"
 )
 
 type jobNames []string
 
-func (j jobNames) String() string {
-	return strings.Join(j, ",")
+func (j *jobNames) String() string {
+	return strings.Join(*j, ",")
 }
-func (j jobNames) Set(string) error {
+func (j *jobNames) Set(value string) error {
+	*j = append(*j, value)
 	return nil
+}
+
+var sigLaneMatcher = regexp.MustCompile(`^periodic-kubevirt-e2e-k8s-(\d+)\.(\d+)-sig-(compute|network|operator|storage)$`)
+
+// latestSIGLanes returns for each SIG the name of the periodic lane targeting the latest Kubernetes version
+func latestSIGLanes(periodics []config.Periodic) jobNames {
+	type lane struct {
+		major, minor int
+		name         string
+	}
+	latestLanes := map[string]lane{}
+	for _, periodic := range periodics {
+		matches := sigLaneMatcher.FindStringSubmatch(periodic.Name)
+		if matches == nil {
+			continue
+		}
+		major, _ := strconv.Atoi(matches[1])
+		minor, _ := strconv.Atoi(matches[2])
+		sig := matches[3]
+		if latest, exists := latestLanes[sig]; exists &&
+			(latest.major > major || latest.major == major && latest.minor >= minor) {
+			continue
+		}
+		latestLanes[sig] = lane{major: major, minor: minor, name: periodic.Name}
+	}
+	var lanes jobNames
+	for _, latest := range latestLanes {
+		lanes = append(lanes, latest.name)
+	}
+	sort.Strings(lanes)
+	return lanes
 }
 
 func main() {
 	var pushgatewayURL string
+	var jobConfigPath string
 	var jobNamesToScan jobNames
 	flag.StringVar(&pushgatewayURL, "pushgateway-url", "http://localhost:8080/", "pushgateway url to push values to")
-	flag.Var(jobNamesToScan, "job-name", "periodic job names to scan for values")
+	flag.StringVar(&jobConfigPath, "job-config-path", "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-periodics.yaml", "path to the kubevirt periodic job config to determine the job names from")
+	flag.Var(&jobNamesToScan, "job-name", "periodic job names to scan for values, can be given multiple times (default: for each SIG the lane of the latest Kubernetes version found in the job config)")
 	flag.Parse()
 	if len(jobNamesToScan) == 0 {
-		jobNamesToScan = jobNames{
-			"periodic-kubevirt-e2e-k8s-1.29-sig-compute",
-			"periodic-kubevirt-e2e-k8s-1.29-sig-storage",
-			"periodic-kubevirt-e2e-k8s-1.29-sig-network",
-			"periodic-kubevirt-e2e-k8s-1.29-sig-operator",
+		jobConfig, err := config.ReadJobConfig(jobConfigPath)
+		if err != nil {
+			log.Fatalf("failed to read job config %q: %v", jobConfigPath, err)
+		}
+		jobNamesToScan = latestSIGLanes(jobConfig.Periodics)
+		if len(jobNamesToScan) == 0 {
+			log.Fatalf("no periodic SIG lanes found in %q", jobConfigPath)
 		}
 	}
+	log.Infof("scanning jobs %s", jobNamesToScan.String())
 
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
