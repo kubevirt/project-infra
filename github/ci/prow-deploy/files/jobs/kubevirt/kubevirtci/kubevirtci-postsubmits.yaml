@@ -18,7 +18,7 @@ postsubmits:
         preset-docker-mirror-proxy: "true"
         preset-gcs-credentials: "true"
         preset-github-credentials: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
       cluster: prow-workloads
       spec:
         nodeSelector:
@@ -68,7 +68,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-docker-mirror-proxy: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
       cluster: prow-workloads
       spec:
         nodeSelector:
@@ -111,7 +111,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-gcs-credentials: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
       cluster: prow-s390x-workloads
       spec:
         volumes:
@@ -171,7 +171,7 @@ postsubmits:
       max_concurrency: 1
       labels:
         preset-podman-in-container-enabled: "true"
-        preset-kubevirtci-quay-credential: "true"
+        preset-quay-kubevirtci-push: "true"
       cluster: prow-s390x-workloads
       spec:
         volumes:

@@ -118,7 +118,7 @@ periodics:
     preset-docker-mirror-proxy: "true"
     preset-github-credentials: "true"
     preset-podman-in-container-enabled: "true"
-    preset-kubevirtci-quay-credential: "true"
+    preset-quay-kubevirtci-push: "true"
     preset-gcs-credentials: "true"
   cluster: prow-workloads
   spec:
@@ -163,7 +163,7 @@ periodics:
     workdir: true
   labels:
     preset-podman-in-container-enabled: "true"
-    preset-kubevirtci-quay-credential: "true"
+    preset-quay-kubevirtci-push: "true"
     preset-gcs-credentials: "true"
   cluster: prow-s390x-workloads
   spec:
@@ -225,7 +225,7 @@ periodics:
     preset-docker-mirror-proxy: "true"
     preset-github-credentials: "true"
     preset-podman-in-container-enabled: "true"
-    preset-kubevirtci-quay-credential: "true"
+    preset-quay-kubevirtci-push: "true"
     preset-gcs-credentials: "true"
   cluster: prow-workloads
   spec:
@@ -270,7 +270,7 @@ periodics:
     workdir: true
   labels:
     preset-podman-in-container-enabled: "true"
-    preset-kubevirtci-quay-credential: "true"
+    preset-quay-kubevirtci-push: "true"
     preset-gcs-credentials: "true"
   cluster: prow-s390x-workloads
   spec:
