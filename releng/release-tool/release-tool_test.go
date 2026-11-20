@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -511,6 +512,443 @@ func TestGenerateReleaseNotesSkipsBots(t *testing.T) {
 	}
 	if !strings.Contains(notes, "Bob") {
 		t.Error("release notes should contain Bob")
+	}
+}
+
+func TestDoesBranchExist(t *testing.T) {
+	// the lookup must use the requested branch, not newBranch: the
+	// --add-rpm-urls-job dispatch runs with an empty newBranch
+	r := standardSetup()
+	defer standardCleanup(&r)
+	r.newBranch = ""
+
+	exists, err := r.doesBranchExist("release-0.1")
+	if err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+	if !exists {
+		t.Error("expected release-0.1 to exist")
+	}
+
+	exists, err = r.doesBranchExist("release-0.2")
+	if err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+	if exists {
+		t.Error("expected release-0.2 to not exist")
+	}
+}
+
+func TestIsValidReleaseBranch(t *testing.T) {
+	var tests = []struct {
+		branch  string
+		isValid bool
+	}{
+		{branch: "release-1.10", isValid: true},
+		{branch: "release-0.30", isValid: true},
+		{branch: "main", isValid: false},
+		{branch: "release-1", isValid: false},
+		{branch: "release-1.10.1", isValid: false},
+		{branch: "release-1.10-hotfix", isValid: false},
+	}
+	for _, tc := range tests {
+		if got := isValidReleaseBranch(tc.branch); got != tc.isValid {
+			t.Errorf("expected %q -> %t, got %t", tc.branch, tc.isValid, got)
+		}
+	}
+}
+
+func TestRPMURLsPresubmit(t *testing.T) {
+	job, jobText, err := rpmURLsPresubmit("kubevirt", "kubevirt", "1.10")
+	if err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+	if job.Name != "pull-kubevirt-verify-rpm-urls-1.10" {
+		t.Errorf("unexpected job name %s", job.Name)
+	}
+	// the branch must be the plain branch name: the rehearse plugin
+	// passes it verbatim to git as the ref to clone, so it must be a
+	// valid refspec, not an anchored regex
+	if !slices.Equal(job.Branches, []string{"release-1.10"}) {
+		t.Errorf("unexpected job branches %v", job.Branches)
+	}
+	if job.Context != "pull-kubevirt-verify-rpm-urls" {
+		t.Errorf("unexpected job context %s", job.Context)
+	}
+	if !job.AlwaysRun {
+		t.Error("expected always_run to be true")
+	}
+	if job.RunIfChanged != "" {
+		t.Errorf("unexpected run_if_changed %s", job.RunIfChanged)
+	}
+	// the rendered item must be a single insertable yaml list entry
+	if !strings.HasPrefix(jobText, "- always_run: true") {
+		t.Errorf("unexpected rendered job text:\n%s", jobText)
+	}
+}
+
+func TestAppendRPMURLsJob(t *testing.T) {
+	tempDir := t.TempDir()
+	configPath := filepath.Join(tempDir, "presubmits.yaml")
+	existingConfig := []byte(`presubmits:
+  fake-org/fake-repo:
+  # TODO: operational comment that must survive the append
+  - name: pull-fake-repo-e2e
+    branches:
+    - release-0.2
+    always_run: true
+`)
+	if err := os.WriteFile(configPath, existingConfig, 0666); err != nil {
+		t.Fatalf("failed to seed the job config: %s", err)
+	}
+
+	added, err := appendRPMURLsJob(configPath, "fake-org", "fake-repo", "0.2")
+	if err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+	if !added {
+		t.Error("expected the job to be added")
+	}
+
+	// appending again must be a no-op
+	added, err = appendRPMURLsJob(configPath, "fake-org", "fake-repo", "0.2")
+	if err != nil {
+		t.Fatalf("got unexpected error on second call %s", err)
+	}
+	if added {
+		t.Error("expected the second call to be a no-op")
+	}
+
+	jobConfig, err := config.ReadJobConfig(configPath)
+	if err != nil {
+		t.Fatalf("failed to read the updated job config: %s", err)
+	}
+	names := []string{}
+	for _, presubmit := range jobConfig.PresubmitsStatic["fake-org/fake-repo"] {
+		names = append(names, presubmit.Name)
+	}
+	expectedNames := []string{"pull-fake-repo-e2e", "pull-fake-repo-verify-rpm-urls-0.2"}
+	if !slices.Equal(names, expectedNames) {
+		t.Errorf("expected jobs %v, got %v", expectedNames, names)
+	}
+
+	// the append must not rewrite the existing config: comments and
+	// formatting survive
+	updated, err := os.ReadFile(configPath)
+	if err != nil {
+		t.Fatalf("failed to read the updated job config: %s", err)
+	}
+	if !strings.Contains(string(updated), "# TODO: operational comment that must survive the append") {
+		t.Errorf("expected the config comment to survive the append, got:\n%s", updated)
+	}
+	if !strings.Contains(string(updated), "    always_run: true\n") {
+		t.Errorf("expected the existing config formatting to survive the append, got:\n%s", updated)
+	}
+}
+
+func TestAppendRPMURLsJobMissingRepo(t *testing.T) {
+	tempDir := t.TempDir()
+	configPath := filepath.Join(tempDir, "presubmits.yaml")
+	existingConfig := []byte(`presubmits:
+  other-org/other-repo:
+  - name: pull-other-repo-e2e
+    branches:
+    - release-0.2
+    always_run: true
+`)
+	if err := os.WriteFile(configPath, existingConfig, 0666); err != nil {
+		t.Fatalf("failed to seed the job config: %s", err)
+	}
+
+	added, err := appendRPMURLsJob(configPath, "fake-org", "fake-repo", "0.2")
+	if err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+	if !added {
+		t.Error("expected the job to be added")
+	}
+
+	jobConfig, err := config.ReadJobConfig(configPath)
+	if err != nil {
+		t.Fatalf("failed to read the updated job config: %s", err)
+	}
+	names := []string{}
+	for _, presubmit := range jobConfig.PresubmitsStatic["other-org/other-repo"] {
+		names = append(names, presubmit.Name)
+	}
+	if !slices.Equal(names, []string{"pull-other-repo-e2e"}) {
+		t.Errorf("expected jobs of the untouched repo %v", names)
+	}
+	names = []string{}
+	for _, presubmit := range jobConfig.PresubmitsStatic["fake-org/fake-repo"] {
+		names = append(names, presubmit.Name)
+	}
+	if !slices.Equal(names, []string{"pull-fake-repo-verify-rpm-urls-0.2"}) {
+		t.Errorf("expected jobs of the appended repo %v", names)
+	}
+}
+
+func TestAppendRPMURLsJobInsertionPoints(t *testing.T) {
+	var tests = []struct {
+		name           string
+		existingConfig string
+		expectedJobs   map[string][]string
+	}{
+		{
+			// the job is inserted before the next repo key
+			name: "insert before the next repo",
+			existingConfig: `presubmits:
+  fake-org/fake-repo:
+  - name: pull-fake-repo-e2e
+    always_run: true
+  other-org/other-repo:
+  - name: pull-other-repo-e2e
+    always_run: true
+`,
+			expectedJobs: map[string][]string{
+				"fake-org/fake-repo":   {"pull-fake-repo-e2e", "pull-fake-repo-verify-rpm-urls-0.2"},
+				"other-org/other-repo": {"pull-other-repo-e2e"},
+			},
+		},
+		{
+			// the job is inserted before the top-level key that follows
+			// the presubmits section
+			name: "insert before the next top-level key",
+			existingConfig: `presubmits:
+  fake-org/fake-repo:
+  - name: pull-fake-repo-e2e
+    always_run: true
+periodics:
+- name: periodic-job
+  interval: 1h
+`,
+			expectedJobs: map[string][]string{
+				"fake-org/fake-repo": {"pull-fake-repo-e2e", "pull-fake-repo-verify-rpm-urls-0.2"},
+			},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			tempDir := t.TempDir()
+			configPath := filepath.Join(tempDir, "presubmits.yaml")
+			if err := os.WriteFile(configPath, []byte(tc.existingConfig), 0666); err != nil {
+				t.Fatalf("failed to seed the job config: %s", err)
+			}
+
+			added, err := appendRPMURLsJob(configPath, "fake-org", "fake-repo", "0.2")
+			if err != nil {
+				t.Fatalf("got unexpected error %s", err)
+			}
+			if !added {
+				t.Fatal("expected the job to be added")
+			}
+
+			jobConfig, err := config.ReadJobConfig(configPath)
+			if err != nil {
+				t.Fatalf("failed to read the updated job config: %s", err)
+			}
+			for repoKey, expectedNames := range tc.expectedJobs {
+				names := []string{}
+				for _, presubmit := range jobConfig.PresubmitsStatic[repoKey] {
+					names = append(names, presubmit.Name)
+				}
+				if !slices.Equal(names, expectedNames) {
+					t.Errorf("expected jobs %v for %s, got %v", expectedNames, repoKey, names)
+				}
+			}
+
+			updated, err := os.ReadFile(configPath)
+			if err != nil {
+				t.Fatalf("failed to read the updated job config: %s", err)
+			}
+			if strings.Contains(tc.existingConfig, "periodic-job") {
+				// the periodic must survive the append untouched
+				if len(jobConfig.Periodics) != 1 || jobConfig.Periodics[0].Name != "periodic-job" {
+					t.Errorf("expected the periodics to survive the append, got %v", jobConfig.Periodics)
+				}
+				if !strings.Contains(string(updated), "periodics:\n- name: periodic-job\n") {
+					t.Errorf("expected the periodics to be untouched, got:\n%s", updated)
+				}
+			}
+		})
+	}
+}
+
+func TestAppendRPMURLsJobMissingRepoIndentedKeys(t *testing.T) {
+	tempDir := t.TempDir()
+	configPath := filepath.Join(tempDir, "presubmits.yaml")
+	// repository keys indented by four spaces are valid yaml: the new
+	// repo key must match the indentation of its siblings
+	existingConfig := []byte(`presubmits:
+    other-org/other-repo:
+    - name: pull-other-repo-e2e
+      branches:
+      - release-0.2
+      always_run: true
+`)
+	if err := os.WriteFile(configPath, existingConfig, 0666); err != nil {
+		t.Fatalf("failed to seed the job config: %s", err)
+	}
+
+	added, err := appendRPMURLsJob(configPath, "fake-org", "fake-repo", "0.2")
+	if err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+	if !added {
+		t.Fatal("expected the job to be added")
+	}
+
+	// the result must still be valid yaml
+	jobConfig, err := config.ReadJobConfig(configPath)
+	if err != nil {
+		t.Fatalf("failed to read the updated job config: %s", err)
+	}
+	names := []string{}
+	for _, presubmit := range jobConfig.PresubmitsStatic["fake-org/fake-repo"] {
+		names = append(names, presubmit.Name)
+	}
+	if !slices.Equal(names, []string{"pull-fake-repo-verify-rpm-urls-0.2"}) {
+		t.Errorf("expected jobs of the appended repo %v", names)
+	}
+
+	updated, err := os.ReadFile(configPath)
+	if err != nil {
+		t.Fatalf("failed to read the updated job config: %s", err)
+	}
+	if !strings.Contains(string(updated), "\n    fake-org/fake-repo:\n") {
+		t.Errorf("expected the new repo key to match the sibling indentation, got:\n%s", updated)
+	}
+}
+
+func TestAppendRPMURLsJobFlowSequence(t *testing.T) {
+	tempDir := t.TempDir()
+	configPath := filepath.Join(tempDir, "presubmits.yaml")
+	// a flow style job list cannot be extended with a block style item:
+	// the append must refuse instead of producing invalid yaml
+	existingConfig := []byte("presubmits:\n  fake-org/fake-repo: [{name: pull-fake-repo-e2e}]\n")
+	if err := os.WriteFile(configPath, existingConfig, 0666); err != nil {
+		t.Fatalf("failed to seed the job config: %s", err)
+	}
+
+	_, err := appendRPMURLsJob(configPath, "fake-org", "fake-repo", "0.2")
+	if err == nil {
+		t.Fatal("expected an error for a flow style job list")
+	}
+	if !strings.Contains(err.Error(), "flow style") {
+		t.Errorf("unexpected error %s", err)
+	}
+
+	// the config must be left untouched
+	updated, readErr := os.ReadFile(configPath)
+	if readErr != nil {
+		t.Fatalf("failed to read the job config: %s", readErr)
+	}
+	if string(updated) != string(existingConfig) {
+		t.Errorf("expected the config to be left untouched, got:\n%s", updated)
+	}
+}
+
+func TestAppendRPMURLsJobEmptyPresubmits(t *testing.T) {
+	tempDir := t.TempDir()
+	configPath := filepath.Join(tempDir, "presubmits.yaml")
+	// the config-forker emits empty sections as flow mappings when a repo
+	// has no forkable presubmits
+	existingConfig := []byte(`periodics: []
+postsubmits: {}
+presubmits: {}
+`)
+	if err := os.WriteFile(configPath, existingConfig, 0666); err != nil {
+		t.Fatalf("failed to seed the job config: %s", err)
+	}
+
+	added, err := appendRPMURLsJob(configPath, "fake-org", "fake-repo", "0.2")
+	if err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+	if !added {
+		t.Error("expected the job to be added")
+	}
+
+	jobConfig, err := config.ReadJobConfig(configPath)
+	if err != nil {
+		t.Fatalf("failed to read the updated job config: %s", err)
+	}
+	names := []string{}
+	for _, presubmit := range jobConfig.PresubmitsStatic["fake-org/fake-repo"] {
+		names = append(names, presubmit.Name)
+	}
+	if !slices.Equal(names, []string{"pull-fake-repo-verify-rpm-urls-0.2"}) {
+		t.Errorf("expected jobs %v", names)
+	}
+}
+
+func TestAddRPMURLsJob(t *testing.T) {
+	r := standardSetup()
+	defer standardCleanup(&r)
+
+	outputConfig := fmt.Sprintf("github/ci/prow-deploy/files/jobs/%s/%s/%s-presubmits-%s.yaml", r.org, r.repo, r.repo, "0.2")
+	fullOutputConfig := filepath.Join(r.infraDir, outputConfig)
+	if err := os.MkdirAll(filepath.Dir(fullOutputConfig), 0755); err != nil {
+		t.Fatalf("failed to create the job config dir: %s", err)
+	}
+	existingConfig := []byte(`presubmits:
+  fake-org/fake-repo:
+  - name: pull-fake-repo-e2e
+    branches:
+    - release-0.2
+    always_run: true
+`)
+	if err := os.WriteFile(fullOutputConfig, existingConfig, 0666); err != nil {
+		t.Fatalf("failed to seed the job config: %s", err)
+	}
+
+	seenGitCommands := []string{}
+	originalGitCommand := gitCommand
+	t.Cleanup(func() { gitCommand = originalGitCommand })
+	gitCommand = func(arg ...string) (string, error) {
+		seenGitCommands = append(seenGitCommands, fmt.Sprintf("git %s", arg))
+		return "", nil
+	}
+
+	if err := r.addRPMURLsJob("release-0.2"); err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+
+	jobConfig, err := config.ReadJobConfig(fullOutputConfig)
+	if err != nil {
+		t.Fatalf("failed to read the updated job config: %s", err)
+	}
+	names := []string{}
+	for _, presubmit := range jobConfig.PresubmitsStatic["fake-org/fake-repo"] {
+		names = append(names, presubmit.Name)
+	}
+	expectedNames := []string{"pull-fake-repo-e2e", "pull-fake-repo-verify-rpm-urls-0.2"}
+	if !slices.Equal(names, expectedNames) {
+		t.Errorf("expected jobs %v, got %v", expectedNames, names)
+	}
+
+	// the job is committed on a dedicated branch, and only the job
+	// config is committed: unrelated staged files must not end up in it
+	expectedCommit := fmt.Sprintf("git [-C %s commit -s -m add rpm urls presubmit job for branch release-0.2 -- %s]", r.infraDir, outputConfig)
+	sawCommit := false
+	for _, command := range seenGitCommands {
+		if command == expectedCommit {
+			sawCommit = true
+		}
+	}
+	if !sawCommit {
+		t.Errorf("expected command %s, got %v", expectedCommit, seenGitCommands)
+	}
+
+	// adding the job again must be a no-op
+	commandsBefore := len(seenGitCommands)
+	if err := r.addRPMURLsJob("release-0.2"); err != nil {
+		t.Fatalf("got unexpected error on second call: %s", err)
+	}
+	for _, name := range seenGitCommands[commandsBefore:] {
+		if strings.Contains(name, "commit") {
+			t.Errorf("second call must not commit anything, got %s", name)
+		}
 	}
 }
 
