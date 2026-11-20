@@ -26,6 +26,7 @@ main(){
     decrypt_secrets
 
     local secrets_dir="${base_dir}/kustom/overlays/${DEPLOY_ENVIRONMENT}/secrets"
+    mkdir -p "${secrets_dir}"
     generate_consolidated_kubeconfig
     populate_secrets
 
@@ -42,7 +43,7 @@ EOF
 }
 
 generate_consolidated_kubeconfig(){
-    local prow_build_clusters kubeconfig_list kubeconfig_tmp
+    local prow_build_clusters kubeconfig_list
 
     prow_build_clusters=(
         kubevirt-prow-control-plane
