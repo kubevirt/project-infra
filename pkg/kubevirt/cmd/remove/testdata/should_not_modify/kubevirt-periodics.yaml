@@ -994,7 +994,7 @@ periodics:
         # get kubeconfig
         source ../project-infra/hack/manage-secrets.sh
         decrypt_secrets
-        extract_secret 'kubeconfigARM' /kubeconfig
+        install -m400 "${secrets_repo_dir}"/secrets/kubeconfigs/prow-arm64-external /kubeconfig
         cleanup_secrets
 
         # login quay.io

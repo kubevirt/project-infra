@@ -32,17 +32,3 @@ cleanup_secrets(){
         rm -rf "${secrets_repo_dir}"
     fi
 }
-
-extract_secret(){
-    local key="${1}"
-    local path="${2}"
-
-    if ! command -v yq >/dev/null; then
-        curl -fsSLo ./yq https://github.com/mikefarah/yq/releases/download/v4.47.1/yq_linux_amd64
-        chmod +x ./yq && mv ./yq /usr/local/bin
-    fi
-
-    mkdir -p $(dirname "${path}")
-    # only remove new line at the end
-    yq -r ".${key}" "${secrets_repo_dir}"/main.yml | awk 'NR>1{print PREV} {PREV=$0} END{printf("%s",$0)}' > "${path}"
-}
