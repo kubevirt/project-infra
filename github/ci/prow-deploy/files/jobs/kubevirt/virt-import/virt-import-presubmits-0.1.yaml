@@ -29,7 +29,7 @@ presubmits:
     branches:
     - release-0.1
     always_run: false
-    run_if_changed: 'api/.*|cmd/.*|hack/.*|internal/.*|staging/.*|vendor/.*|Dockerfile|Makefile|^go\.(mod|sum|work)'
+    run_if_changed: '^(api|cmd|hack|internal|staging|vendor)/|^([^/]+\.)?Dockerfile$|^Makefile$|^go\.(mod|sum|work)'
     cluster: prow-workloads
     annotations:
       testgrid-create-test-group: "false"
@@ -61,7 +61,7 @@ presubmits:
     branches:
     - release-0.1
     always_run: false
-    run_if_changed: 'api/.*|config/crd/.*|hack/.*|internal/.*|staging/.*|vendor/.*|Makefile|^go\.(mod|sum|work)'
+    run_if_changed: '^(api|cmd|config/crd|hack|internal|staging|vendor)/|^Makefile$|^go\.(mod|sum|work)'
     cluster: prow-workloads
     annotations:
       testgrid-create-test-group: "false"
@@ -86,7 +86,7 @@ presubmits:
     branches:
     - release-0.1
     always_run: false
-    run_if_changed: 'api/.*|cmd/.*|config/.*|hack/.*|internal/.*|staging/.*|tests/.*|vendor/.*|Dockerfile|Makefile|^go\.(mod|sum|work)'
+    run_if_changed: '^(api|cmd|config|hack|internal|staging|tests|vendor)/|^([^/]+\.)?Dockerfile$|^Makefile$|^go\.(mod|sum|work)'
     annotations:
       testgrid-create-test-group: "false"
     labels:
@@ -118,7 +118,7 @@ presubmits:
     branches:
     - release-0.1
     always_run: false
-    run_if_changed: "api/.*|config/.*|hack/.*|internal/.*|Makefile|^(tools/)?go\\.(mod|sum)$|^go\\.work(\\.sum)?$"
+    run_if_changed: "^(api|config|hack|internal)/|^Makefile$|^(tools/)?go\\.(mod|sum)$|^go\\.work(\\.sum)?$"
     cluster: prow-workloads
     annotations:
       testgrid-create-test-group: "false"
