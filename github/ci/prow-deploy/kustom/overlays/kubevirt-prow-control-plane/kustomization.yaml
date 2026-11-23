@@ -322,12 +322,14 @@ secretGenerator:
       - secrets/quay-containerdisks-push/password
     type: Opaque
 
-  - name: commenter-oauth-token
-    namespace: kubevirt-prow-jobs
-    # githubCommenterToken
+  - &kubevirt_commenter_bot_token
+    name: commenter-oauth-token
     files:
       - oauth=secrets/commenter-oauth-token
     type: Opaque
+  - <<: *kubevirt_commenter_bot_token
+    namespace: kubevirt-prow-jobs
+
   - name: kubevirtci-coveralls-token
     namespace: kubevirt-prow-jobs
     files:
