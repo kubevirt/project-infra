@@ -23,10 +23,10 @@ secretGenerator:
   - name: gcs-credentials
     namespace: kubevirt-prow-jobs
     files:
-      - secrets/service-account.json
+      - service-account.json=secrets/tokens/google/service-accounts/prow/prow-sa.json
     type: Opaque
   - name: bazel-cache-gcs
     namespace: kubevirt-prow-jobs
     files:
-      - secrets/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json
+      - secrets/tokens/google/service-accounts/bazel-cache/bazel-cache-sa.json
     type: Opaque

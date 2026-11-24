@@ -27,6 +27,30 @@ decrypt_secrets(){
     cd - >/dev/null
 }
 
+populate_prow_secrets(){
+    local secrets_dir="${1:?}"
+    local mirror_secrets_dir="${2:?}"
+    local prow_secrets="${3:?}"
+
+    mkdir -p "${secrets_dir}"/creds "${mirror_secrets_dir}"
+    chmod 700 "${secrets_dir}" "${secrets_dir}"/creds "${mirror_secrets_dir}"
+
+    # Replace copied directories while preserving generated files.
+    rm -rf -- "${secrets_dir:?}"/{prow,prow-staging,slack,tokens} \
+        "${secrets_dir:?}"/creds/quay.io "${mirror_secrets_dir:?}"/docker-mirror-proxy
+
+    # Copy bot-token's contents instead of its symlink.
+    cp -RL "${secrets_repo_dir}"/secrets/"${prow_secrets}" "${secrets_repo_dir}"/secrets/slack "${secrets_dir}"/
+
+    # Copy other directories.
+    cp -R "${secrets_repo_dir}"/creds/quay.io "${secrets_dir}"/creds/
+    cp -R "${secrets_repo_dir}"/tokens "${secrets_dir}"/
+    cp -R "${secrets_repo_dir}"/secrets/docker-mirror-proxy "${mirror_secrets_dir}"/
+
+    find "${secrets_dir}/${prow_secrets}" "${secrets_dir}"/{slack,creds,tokens} "${mirror_secrets_dir}" -type d -exec chmod 700 {} +
+    find "${secrets_dir}/${prow_secrets}" "${secrets_dir}"/{slack,creds,tokens} "${mirror_secrets_dir}" -type f -exec chmod 400 {} +
+}
+
 cleanup_secrets(){
     if [ -d "${secrets_repo_dir}" ]; then
         rm -rf "${secrets_repo_dir}"

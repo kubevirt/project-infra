@@ -8,7 +8,7 @@ configMapGenerator:
     name: mirror-proxy-config
     namespace: kubevirt-prow
     files:
-      - configs/ca.crt
+      - secrets/docker-mirror-proxy/ca.crt
   - <<: *mirror_proxy_config
     namespace: kubevirt-prow-jobs
   - name: docker-daemon-mirror-config
@@ -20,7 +20,7 @@ secretGenerator:
   - name: docker-mirror-proxy
     namespace: kubevirt-prow
     files:
-      - ca.key=secrets/ca.key
+      - ca.key=secrets/docker-mirror-proxy/ca.key
     type: Opaque
 
 generatorOptions:

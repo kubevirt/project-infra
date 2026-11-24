@@ -8,6 +8,7 @@ prowUrl: prow.ci.kubevirt.io
 
 project_infra_root: /home/prow/go/src/github.com/kubevirt/project-infra
 components_dir: '{{ project_infra_root }}/github/ci/prow-deploy/kustom/components'
+prow_secrets_dir: '{{ secrets_dir }}/{{ "prow-staging" if deploy_environment == "kubevirtci-testing" else "prow" }}'
 testinfra_dir: /tmp/test-infra
 
 bootstrap_full_config: false
