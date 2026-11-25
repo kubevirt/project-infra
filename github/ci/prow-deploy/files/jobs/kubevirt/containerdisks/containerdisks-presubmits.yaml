@@ -81,8 +81,7 @@ presubmits:
           privileged: true
       nodeSelector:
         type: bare-metal-external
-  # TODO: revert once the prow-s390x-workloads cluster is healthy
-  - always_run: false
+  - always_run: true
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-s390x-workloads
@@ -180,8 +179,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    # TODO: revert once the prow-s390x-workloads cluster is healthy
-    #run_if_changed: "artifacts/centosstream/.*"
+    run_if_changed: "artifacts/centosstream/.*"
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-s390x-workloads
@@ -246,8 +244,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    # TODO: revert once the prow-s390x-workloads cluster is healthy
-    #run_if_changed: "artifacts/fedora/.*"
+    run_if_changed: "artifacts/fedora/.*"
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-s390x-workloads
@@ -312,8 +309,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    # TODO: revert once the prow-s390x-workloads cluster is healthy
-    #run_if_changed: "artifacts/ubuntu/.*"
+    run_if_changed: "artifacts/ubuntu/.*"
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-s390x-workloads
@@ -378,8 +374,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    # TODO: revert once the prow-s390x-workloads cluster is healthy
-    #run_if_changed: "artifacts/opensuse/microos/.*"
+    run_if_changed: "artifacts/opensuse/microos/.*"
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-s390x-workloads
@@ -444,8 +439,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    # TODO: revert once the prow-s390x-workloads cluster is healthy
-    #run_if_changed: "artifacts/opensuse/tumbleweed/.*"
+    run_if_changed: "artifacts/opensuse/tumbleweed/.*"
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-s390x-workloads
@@ -543,8 +537,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
   - always_run: false
-    # TODO: revert once the prow-s390x-workloads cluster is healthy
-    #run_if_changed: "artifacts/almalinux/.*"
+    run_if_changed: "artifacts/almalinux/.*"
     annotations:
       testgrid-create-test-group: "false"
     cluster: prow-s390x-workloads
