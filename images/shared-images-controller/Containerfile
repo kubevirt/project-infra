@@ -14,7 +14,7 @@ COPY go.sum go.sum
 
 RUN /usr/local/bin/runner.sh /bin/sh -c "go mod download"
 
-COPY ./ ./
+COPY --exclude=podman/ ./ ./
 
 RUN /usr/local/bin/runner.sh /bin/sh -c "go build ."
 
@@ -24,7 +24,7 @@ WORKDIR /
 
 RUN mkdir -p /var/lib/shared-images
 
-COPY ./storage.conf /etc/containers/storage.conf
+COPY --chown=root:root podman/ /etc/containers/
 
 ENV PODMAN_IN_CONTAINER_ENABLED=true
 
