@@ -1271,8 +1271,6 @@ periodics:
       env:
       - name: CLUSTER_KUBECONFIG_NAME
         value: prow-arm64-workloads
-      - name: CLUSTER_LIVEZ_ENDPOINT
-        value: /k8s/clusters/c-zvkv8/livez
 - <<: *cluster_livez_job
   name: periodic-project-infra-prow-hyperv-workloads-livez
   annotations:
