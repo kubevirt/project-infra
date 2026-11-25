@@ -95,8 +95,7 @@ presubmits:
       - release-v\d+\.\d+
     annotations:
       fork-per-release: "true"
-    # TODO: revert once the prow-s390x-workloads cluster is healthy
-    always_run: false
+    always_run: true
     optional: true
     decoration_config:
       timeout: 5h
@@ -113,13 +112,6 @@ presubmits:
               value: "k8s-1.36"
             - name: BUILD_ARCHES
               value: "s390x"
-            - name: KUBEVIRT_SLIM
-              value: "true"
-            # Latest kubevirtci tag whose slim provider image includes s390x.
-            - name: KUBEVIRTCI_CONTAINER_SUFFIX
-              value: "2611131403-839bd578"
-            - name: KUBEVIRTCI_GOCLI_CONTAINER
-              value: "quay.io/kubevirtci/gocli:2611131403-839bd578"
           command:
             - "/usr/local/bin/runner.sh"
             - "/bin/sh"
@@ -136,8 +128,7 @@ presubmits:
     cluster: prow-s390x-workloads
     annotations:
       fork-per-release: "true"
-    # TODO: revert once the prow-s390x-workloads cluster is healthy
-    always_run: false
+    always_run: true
     optional: true
     decoration_config:
       timeout: 1h
