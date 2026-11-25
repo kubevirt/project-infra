@@ -90,3 +90,71 @@ presubmits:
           resources:
             requests:
               memory: "52Gi"
+  - name: pull-aaq-functest-s390x
+    skip_branches:
+      - release-v\d+\.\d+
+    annotations:
+      fork-per-release: "true"
+    # TODO: revert once the prow-s390x-workloads cluster is healthy
+    always_run: false
+    optional: true
+    decoration_config:
+      timeout: 5h
+      grace_period: 5m
+    max_concurrency: 1
+    cluster: prow-s390x-workloads
+    labels:
+      preset-podman-in-container-enabled: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20261116-94a0485
+          env:
+            - name: TARGET
+              value: "k8s-1.36"
+            - name: BUILD_ARCHES
+              value: "s390x"
+            - name: KUBEVIRT_SLIM
+              value: "true"
+            # Latest kubevirtci tag whose slim provider image includes s390x.
+            - name: KUBEVIRTCI_CONTAINER_SUFFIX
+              value: "2611131403-839bd578"
+            - name: KUBEVIRTCI_GOCLI_CONTAINER
+              value: "quay.io/kubevirtci/gocli:2611131403-839bd578"
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "automation/test.sh"
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "52Gi"
+  - name: pull-aaq-unit-test-s390x
+    skip_branches:
+      - release-v\d+\.\d+
+    cluster: prow-s390x-workloads
+    annotations:
+      fork-per-release: "true"
+    # TODO: revert once the prow-s390x-workloads cluster is healthy
+    always_run: false
+    optional: true
+    decoration_config:
+      timeout: 1h
+      grace_period: 5m
+    labels:
+      preset-podman-in-container-enabled: "true"
+    spec:
+      containers:
+        - image: quay.io/kubevirtci/bootstrap:v20261116-94a0485
+          command:
+            - "/usr/local/bin/runner.sh"
+            - "/bin/sh"
+            - "-c"
+            - "make test"
+          # docker-in-docker needs privileged mode
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              memory: "4Gi"
