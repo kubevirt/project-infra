@@ -12,7 +12,6 @@ filters:
     - dhiller
     - dollierp
     - enp0s3
-    - fabiand
     - iholder101
     - jean-edouard
     - jschintag
@@ -26,8 +25,8 @@ filters:
     reviewers:
     - jschintag
     - whitedyl
-  BUILD\.bazel|.*\.bzl|WORKSPACE|Makefile|\.bazelrc|ci\.bazelrc|\.bazelversion|nogo_config\.json:
-    approvers:
+  ? BUILD\.bazel|.*\.bzl|MODULE\.bazel|MODULE\.bazel\.lock|rpms\.json|Makefile|\.bazelrc|ci\.bazelrc|\.bazelversion|nogo_config\.json
+  : approvers:
     - brianmcarey
     - dhiller
     labels:
