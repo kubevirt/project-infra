@@ -374,20 +374,22 @@ presubmits:
       timeout: 10m0s
     labels:
       preset-docker-mirror-proxy: "true"
+      preset-podman-in-container-enabled: "true"
     name: pull-kubevirt-verify-rpm-urls-1.9
     spec:
       containers:
         - command:
             - /usr/local/bin/runner.sh
             - /bin/sh
-            - -ce
-            - |
-              go run ./hack/rpm-mirror-checker/rpm-mirror-checker.go
-          image: quay.io/kubevirtci/golang:v20260707-cacb217
+            - -c
+            - make rpm-mirror-checker
+          image: quay.io/kubevirtci/bootstrap:v20260612-73bc71e
           name: ""
           resources:
             requests:
               memory: 1Gi
+          securityContext:
+            privileged: true
   - always_run: true
     branches:
     - release-1.9
