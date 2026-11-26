@@ -8,6 +8,7 @@
     timeout: 10m0s
   labels:
     preset-docker-mirror-proxy: "true"
+    preset-podman-in-container-enabled: "true"
   name: pull-{{ .Repo }}-verify-rpm-urls-{{ .Version }}
   spec:
     containers:
@@ -21,3 +22,5 @@
       resources:
         requests:
           memory: 1Gi
+      securityContext:
+        privileged: true
