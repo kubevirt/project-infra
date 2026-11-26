@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -511,6 +512,410 @@ func TestGenerateReleaseNotesSkipsBots(t *testing.T) {
 	}
 	if !strings.Contains(notes, "Bob") {
 		t.Error("release notes should contain Bob")
+	}
+}
+
+func TestDoesBranchExist(t *testing.T) {
+	// the lookup must use the requested branch, not newBranch: the
+	// --add-rpm-urls-job dispatch runs with an empty newBranch
+	r := standardSetup()
+	defer standardCleanup(&r)
+	r.newBranch = ""
+
+	exists, err := r.doesBranchExist("release-0.1")
+	if err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+	if !exists {
+		t.Error("expected release-0.1 to exist")
+	}
+
+	exists, err = r.doesBranchExist("release-0.2")
+	if err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+	if exists {
+		t.Error("expected release-0.2 to not exist")
+	}
+}
+
+func TestIsValidReleaseBranch(t *testing.T) {
+	var tests = []struct {
+		branch  string
+		isValid bool
+	}{
+		{branch: "release-1.10", isValid: true},
+		{branch: "release-0.30", isValid: true},
+		{branch: "main", isValid: false},
+		{branch: "release-1", isValid: false},
+		{branch: "release-1.10.1", isValid: false},
+		{branch: "release-1.10-hotfix", isValid: false},
+	}
+	for _, tc := range tests {
+		if got := isValidReleaseBranch(tc.branch); got != tc.isValid {
+			t.Errorf("expected %q -> %t, got %t", tc.branch, tc.isValid, got)
+		}
+	}
+}
+
+func TestRPMURLsPresubmit(t *testing.T) {
+	const image = "quay.io/kubevirtci/bootstrap:v20990101-abcdef12"
+	job, jobText, err := rpmURLsPresubmit("kubevirt", "kubevirt", "1.10", image)
+	if err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+	if job.Name != "pull-kubevirt-verify-rpm-urls-1.10" {
+		t.Errorf("unexpected job name %s", job.Name)
+	}
+	// the branch must be the plain branch name: the rehearse plugin
+	// passes it verbatim to git as the ref to clone, so it must be a
+	// valid refspec, not an anchored regex
+	if !slices.Equal(job.Branches, []string{"release-1.10"}) {
+		t.Errorf("unexpected job branches %v", job.Branches)
+	}
+	if job.Context != "pull-kubevirt-verify-rpm-urls" {
+		t.Errorf("unexpected job context %s", job.Context)
+	}
+	if !job.AlwaysRun {
+		t.Error("expected always_run to be true")
+	}
+	if job.RunIfChanged != "" {
+		t.Errorf("unexpected run_if_changed %s", job.RunIfChanged)
+	}
+	// the job must run make rpm-mirror-checker in the bootstrap image
+	// it was rendered with
+	if job.Spec == nil || len(job.Spec.Containers) != 1 || job.Spec.Containers[0].Image != image {
+		t.Errorf("expected the job to run in %s, got %+v", image, job.Spec)
+	}
+	// the rendered item must be a single insertable yaml list entry
+	if !strings.HasPrefix(jobText, "- always_run: true") {
+		t.Errorf("unexpected rendered job text:\n%s", jobText)
+	}
+}
+
+func TestAppendRPMURLsJob(t *testing.T) {
+	const (
+		org     = "fake-org"
+		repo    = "fake-repo"
+		version = "0.2"
+	)
+	var tests = []struct {
+		name              string
+		existingConfig    string
+		expectedErr       string // expected substring of the error, empty when no error is expected
+		expectedJobs      map[string][]string
+		expectedPeriodics []string
+		expectedContains  []string // substrings expected in the updated config text
+		// expected image of the appended rpm urls job, asserted when
+		// non-empty
+		expectedBootstrapImage string
+	}{
+		{
+			name: "appends to the existing job list",
+			existingConfig: `presubmits:
+  fake-org/fake-repo:
+  # TODO: operational comment that must survive the append
+  - name: pull-fake-repo-e2e
+    branches:
+    - release-0.2
+    always_run: true
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20990101-abcdef12
+`,
+			expectedJobs: map[string][]string{
+				"fake-org/fake-repo": {"pull-fake-repo-e2e", "pull-fake-repo-verify-rpm-urls-0.2"},
+			},
+			// the append must not rewrite the existing config: comments
+			// and formatting survive
+			expectedContains: []string{
+				"# TODO: operational comment that must survive the append",
+				"    always_run: true\n",
+			},
+			expectedBootstrapImage: "quay.io/kubevirtci/bootstrap:v20990101-abcdef12",
+		},
+		{
+			// the job inherits the bootstrap image of the repo's
+			// presubmits instead of pinning a tag that no automation
+			// updates
+			name: "inherits the bootstrap image from the repo's presubmits",
+			existingConfig: `presubmits:
+  fake-org/fake-repo:
+  - name: pull-fake-repo-e2e
+    branches:
+    - release-0.2
+    always_run: true
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20990101-abcdef12
+`,
+			expectedJobs: map[string][]string{
+				"fake-org/fake-repo": {"pull-fake-repo-e2e", "pull-fake-repo-verify-rpm-urls-0.2"},
+			},
+			expectedBootstrapImage: "quay.io/kubevirtci/bootstrap:v20990101-abcdef12",
+		},
+		{
+			// the job is inserted before the next repo key
+			name: "inserts the job before the next repo key",
+			existingConfig: `presubmits:
+  fake-org/fake-repo:
+  - name: pull-fake-repo-e2e
+    always_run: true
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20990101-abcdef12
+  other-org/other-repo:
+  - name: pull-other-repo-e2e
+    always_run: true
+`,
+			expectedJobs: map[string][]string{
+				"fake-org/fake-repo":   {"pull-fake-repo-e2e", "pull-fake-repo-verify-rpm-urls-0.2"},
+				"other-org/other-repo": {"pull-other-repo-e2e"},
+			},
+		},
+		{
+			// the job is inserted before the top-level key that follows
+			// the presubmits section
+			name: "inserts the job before the top-level key that follows the presubmits section",
+			existingConfig: `presubmits:
+  fake-org/fake-repo:
+  - name: pull-fake-repo-e2e
+    always_run: true
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20990101-abcdef12
+periodics:
+- name: periodic-job
+  interval: 1h
+`,
+			expectedJobs: map[string][]string{
+				"fake-org/fake-repo": {"pull-fake-repo-e2e", "pull-fake-repo-verify-rpm-urls-0.2"},
+			},
+			// the periodic must survive the append untouched
+			expectedPeriodics: []string{"periodic-job"},
+			expectedContains:  []string{"periodics:\n- name: periodic-job\n"},
+		},
+		{
+			name: "adds a new repo key when the config has presubmits for other repos only",
+			existingConfig: `presubmits:
+  other-org/other-repo:
+  - name: pull-other-repo-e2e
+    branches:
+    - release-0.2
+    always_run: true
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20990101-abcdef12
+`,
+			expectedJobs: map[string][]string{
+				"other-org/other-repo": {"pull-other-repo-e2e"},
+				"fake-org/fake-repo":   {"pull-fake-repo-verify-rpm-urls-0.2"},
+			},
+			// with no presubmits of its own the repo inherits the
+			// bootstrap image of the other repos in the config
+			expectedBootstrapImage: "quay.io/kubevirtci/bootstrap:v20990101-abcdef12",
+		},
+		{
+			// repository keys indented by four spaces are valid yaml: the
+			// new repo key must match the indentation of its siblings
+			name: "matches the indentation of the sibling repo keys",
+			existingConfig: `presubmits:
+    other-org/other-repo:
+    - name: pull-other-repo-e2e
+      branches:
+      - release-0.2
+      always_run: true
+      spec:
+        containers:
+        - image: quay.io/kubevirtci/bootstrap:v20990101-abcdef12
+`,
+			expectedJobs: map[string][]string{
+				"fake-org/fake-repo": {"pull-fake-repo-verify-rpm-urls-0.2"},
+			},
+			expectedContains: []string{"\n    fake-org/fake-repo:\n"},
+		},
+		{
+			// a flow style job list cannot be extended with a block style
+			// item: the append must refuse instead of producing invalid
+			// yaml
+			name:           "refuses to extend a flow style job list",
+			existingConfig: "presubmits:\n  fake-org/fake-repo: [{name: pull-fake-repo-e2e, spec: {containers: [{image: quay.io/kubevirtci/bootstrap:v20990101-abcdef12}]}}]\n",
+			expectedErr:    "flow style",
+		},
+		{
+			// the config-forker emits empty sections as flow mappings when
+			// a repo has no forkable presubmits: with no presubmit at all
+			// there is no bootstrap image to inherit, and the append must
+			// refuse instead of pinning an image that nothing keeps
+			// current
+			name:           "refuses to append without a bootstrap image to inherit",
+			existingConfig: "periodics: []\npostsubmits: {}\npresubmits: {}\n",
+			expectedErr:    "no presubmit runs in a quay.io/kubevirtci/bootstrap:* image",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			tempDir := t.TempDir()
+			configPath := filepath.Join(tempDir, "presubmits.yaml")
+			if err := os.WriteFile(configPath, []byte(tc.existingConfig), 0666); err != nil {
+				t.Fatalf("failed to seed the job config: %s", err)
+			}
+
+			added, err := appendRPMURLsJob(configPath, org, repo, version)
+			if tc.expectedErr != "" {
+				if err == nil {
+					t.Fatal("expected an error")
+				}
+				if !strings.Contains(err.Error(), tc.expectedErr) {
+					t.Errorf("expected the error to contain %q, got %s", tc.expectedErr, err)
+				}
+				if added {
+					t.Error("expected no job to be added")
+				}
+				// the config must be left untouched
+				updated, readErr := os.ReadFile(configPath)
+				if readErr != nil {
+					t.Fatalf("failed to read the job config: %s", readErr)
+				}
+				if string(updated) != tc.existingConfig {
+					t.Errorf("expected the config to be left untouched, got:\n%s", updated)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("got unexpected error %s", err)
+			}
+			if !added {
+				t.Error("expected the job to be added")
+			}
+
+			// appending again must be a no-op
+			added, err = appendRPMURLsJob(configPath, org, repo, version)
+			if err != nil {
+				t.Fatalf("got unexpected error on second call %s", err)
+			}
+			if added {
+				t.Error("expected the second call to be a no-op")
+			}
+
+			jobConfig, err := config.ReadJobConfig(configPath)
+			if err != nil {
+				t.Fatalf("failed to read the updated job config: %s", err)
+			}
+			for repoKey, expectedNames := range tc.expectedJobs {
+				names := []string{}
+				for _, presubmit := range jobConfig.PresubmitsStatic[repoKey] {
+					names = append(names, presubmit.Name)
+				}
+				if !slices.Equal(names, expectedNames) {
+					t.Errorf("expected jobs %v for %s, got %v", expectedNames, repoKey, names)
+				}
+			}
+			if tc.expectedBootstrapImage != "" {
+				image := ""
+				for _, presubmit := range jobConfig.PresubmitsStatic[org+"/"+repo] {
+					if presubmit.Name == "pull-fake-repo-verify-rpm-urls-0.2" &&
+						presubmit.Spec != nil && len(presubmit.Spec.Containers) == 1 {
+						image = presubmit.Spec.Containers[0].Image
+					}
+				}
+				if image != tc.expectedBootstrapImage {
+					t.Errorf("expected the rpm urls job to run in %s, got %s", tc.expectedBootstrapImage, image)
+				}
+			}
+			if len(tc.expectedPeriodics) > 0 {
+				names := []string{}
+				for _, periodic := range jobConfig.Periodics {
+					names = append(names, periodic.Name)
+				}
+				if !slices.Equal(names, tc.expectedPeriodics) {
+					t.Errorf("expected periodics %v, got %v", tc.expectedPeriodics, names)
+				}
+			}
+
+			updated, err := os.ReadFile(configPath)
+			if err != nil {
+				t.Fatalf("failed to read the updated job config: %s", err)
+			}
+			for _, substring := range tc.expectedContains {
+				if !strings.Contains(string(updated), substring) {
+					t.Errorf("expected the updated config to contain %q, got:\n%s", substring, updated)
+				}
+			}
+		})
+	}
+}
+
+func TestAddRPMURLsJob(t *testing.T) {
+	r := standardSetup()
+	defer standardCleanup(&r)
+
+	outputConfig := fmt.Sprintf("github/ci/prow-deploy/files/jobs/%s/%s/%s-presubmits-%s.yaml", r.org, r.repo, r.repo, "0.2")
+	fullOutputConfig := filepath.Join(r.infraDir, outputConfig)
+	if err := os.MkdirAll(filepath.Dir(fullOutputConfig), 0755); err != nil {
+		t.Fatalf("failed to create the job config dir: %s", err)
+	}
+	existingConfig := []byte(`presubmits:
+  fake-org/fake-repo:
+  - name: pull-fake-repo-e2e
+    branches:
+    - release-0.2
+    always_run: true
+    spec:
+      containers:
+      - image: quay.io/kubevirtci/bootstrap:v20990101-abcdef12
+`)
+	if err := os.WriteFile(fullOutputConfig, existingConfig, 0666); err != nil {
+		t.Fatalf("failed to seed the job config: %s", err)
+	}
+
+	seenGitCommands := []string{}
+	originalGitCommand := gitCommand
+	t.Cleanup(func() { gitCommand = originalGitCommand })
+	gitCommand = func(arg ...string) (string, error) {
+		seenGitCommands = append(seenGitCommands, fmt.Sprintf("git %s", arg))
+		return "", nil
+	}
+
+	if err := r.addRPMURLsJob("release-0.2"); err != nil {
+		t.Fatalf("got unexpected error %s", err)
+	}
+
+	jobConfig, err := config.ReadJobConfig(fullOutputConfig)
+	if err != nil {
+		t.Fatalf("failed to read the updated job config: %s", err)
+	}
+	names := []string{}
+	for _, presubmit := range jobConfig.PresubmitsStatic["fake-org/fake-repo"] {
+		names = append(names, presubmit.Name)
+	}
+	expectedNames := []string{"pull-fake-repo-e2e", "pull-fake-repo-verify-rpm-urls-0.2"}
+	if !slices.Equal(names, expectedNames) {
+		t.Errorf("expected jobs %v, got %v", expectedNames, names)
+	}
+
+	// the job is committed on a dedicated branch, and only the job
+	// config is committed: unrelated staged files must not end up in it
+	expectedCommit := fmt.Sprintf("git [-C %s commit -s -m add rpm urls presubmit job for branch release-0.2 -- %s]", r.infraDir, outputConfig)
+	sawCommit := false
+	for _, command := range seenGitCommands {
+		if command == expectedCommit {
+			sawCommit = true
+		}
+	}
+	if !sawCommit {
+		t.Errorf("expected command %s, got %v", expectedCommit, seenGitCommands)
+	}
+
+	// adding the job again must be a no-op
+	commandsBefore := len(seenGitCommands)
+	if err := r.addRPMURLsJob("release-0.2"); err != nil {
+		t.Fatalf("got unexpected error on second call: %s", err)
+	}
+	for _, name := range seenGitCommands[commandsBefore:] {
+		if strings.Contains(name, "commit") {
+			t.Errorf("second call must not commit anything, got %s", name)
+		}
 	}
 }
 

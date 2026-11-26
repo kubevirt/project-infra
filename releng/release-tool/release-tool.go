@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	_ "embed"
 	"flag"
 	"fmt"
 	"log"
@@ -12,8 +14,10 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"text/template"
 	"time"
 
+	yamlv3 "gopkg.in/yaml.v3"
 	"sigs.k8s.io/prow/pkg/config"
 	"sigs.k8s.io/yaml"
 
@@ -67,12 +71,115 @@ type releaseData struct {
 // Allow mocking for tests
 var gitCommand = _gitCommand
 
+// rpmURLsPresubmitTemplate is the template of the rpm urls presubmit job
+// item. It is appended to the job config of a release branch by the
+// release-tool when the branch is forked (forkProwJobs); branches forked
+// before the job existed get it backfilled via --add-rpm-urls-job.
+//
+// The job deliberately does not live in the main job config: it must not
+// run on main, where rpms are updated before they are mirrored.
+//
+// The job runs hack/rpm-mirror-checker from the repository checkout: the
+// checker is backported to the release branch together with the job.
+//
+// The template is rendered by the release-tool with the repository name,
+// the release branch and the release version (see rpmURLsPresubmitData).
+// The rendered item is a single yaml list entry so that it can be
+// inserted into an existing job config without rewriting it.
+//
+//go:embed templates/rpm-urls-presubmit.yaml
+var rpmURLsPresubmitTemplate string
+
+// rpmURLsPresubmitJobTemplate is the parsed rpm urls presubmit job
+// template, compiled once and reused for every rendering
+var rpmURLsPresubmitJobTemplate = template.Must(template.New("rpm-urls-presubmit.yaml").Parse(rpmURLsPresubmitTemplate))
+
+// rpmURLsPresubmitData holds the values the rpm urls presubmit job
+// template is rendered with
+type rpmURLsPresubmitData struct {
+	// Repo is the repository name, e.g. kubevirt
+	Repo string
+	// Branch is the release branch the job runs on, e.g. release-1.10.
+	// It is the plain branch name, like every other job of a release
+	// branch: prow matches it as a regular expression, which still
+	// matches the branch exactly, while the rehearse plugin passes the
+	// string verbatim to git as the ref to clone, where an anchored and
+	// quoted regex is an invalid refspec
+	Branch string
+	// Version is the release version, e.g. 1.10
+	Version string
+	// BootstrapImage is the container image the job runs
+	// make rpm-mirror-checker in, e.g.
+	// quay.io/kubevirtci/bootstrap:v20261116-94a0485
+	BootstrapImage string
+}
+
+// bootstrapImagePrefix is the prefix of the bootstrap images that the
+// prow jobs of the kubevirt org run their make targets in
+const bootstrapImagePrefix = "quay.io/kubevirtci/bootstrap:"
+
+// bootstrapImage returns the bootstrap image the rpm urls presubmit
+// job runs in: the bootstrap image of the repo's presubmits, so that a
+// forked branch runs the same image as the jobs it was forked from
+// instead of a tag frozen in this repository, which the image bumper
+// never walks. There is deliberately no fallback to a pinned tag: every
+// job config is expected to hold at least one bootstrap image, and
+// without one the append fails rather than rendering an image that no
+// automation keeps current. The repo's own presubmits are scanned
+// first, the rest of the job config follows in a deterministic order.
+func bootstrapImage(jobConfig config.JobConfig, repoKey string) (string, error) {
+	scan := func(presubmits []config.Presubmit) (string, bool) {
+		for _, presubmit := range presubmits {
+			if presubmit.Spec == nil {
+				continue
+			}
+			for _, container := range presubmit.Spec.Containers {
+				if strings.HasPrefix(container.Image, bootstrapImagePrefix) {
+					return container.Image, true
+				}
+			}
+		}
+		return "", false
+	}
+	if image, ok := scan(jobConfig.PresubmitsStatic[repoKey]); ok {
+		return image, nil
+	}
+	repoKeys := make([]string, 0, len(jobConfig.PresubmitsStatic))
+	for key := range jobConfig.PresubmitsStatic {
+		repoKeys = append(repoKeys, key)
+	}
+	sort.Strings(repoKeys)
+	for _, key := range repoKeys {
+		if key == repoKey {
+			continue
+		}
+		if image, ok := scan(jobConfig.PresubmitsStatic[key]); ok {
+			return image, nil
+		}
+	}
+	return "", fmt.Errorf("no presubmit runs in a %s* image", bootstrapImagePrefix)
+}
+
+// credentialsRegexp matches credentials embedded in urls, e.g. the github
+// token in https://<token>@github.com/...
+var credentialsRegexp = regexp.MustCompile(`(https?://)[^@/\s]+@`)
+
+// redactCredentials returns s with credentials embedded in urls replaced
+// by ***, so that tokens do not end up in logs
+func redactCredentials(s string) string {
+	return credentialsRegexp.ReplaceAllString(s, "${1}***@")
+}
+
 func _gitCommand(arg ...string) (string, error) {
-	log.Printf("executing 'git %v", arg)
+	loggedArgs := make([]string, len(arg))
+	for i, a := range arg {
+		loggedArgs[i] = redactCredentials(a)
+	}
+	log.Printf("executing 'git %v'", loggedArgs)
 	cmd := exec.Command("git", arg...)
 	bytes, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Printf("ERROR: git command output: %s : %s ", string(bytes), err)
+		log.Printf("ERROR: git command output: %s : %s ", redactCredentials(string(bytes)), err)
 		return "", err
 	}
 	return string(bytes), nil
@@ -436,11 +543,26 @@ func (r *releaseData) forkProwJobs() error {
 			log.Printf("ERROR: temp dir creation failed: %s", err)
 			return err
 		}
+		defer func() {
+			if err := os.RemoveAll(temp); err != nil {
+				log.Printf("ERROR: removing the temporary presubmits dir %s failed: %s", temp, err)
+			}
+		}()
 		tempPresubmitsConfigPath := filepath.Join(temp, "presubmits.yaml")
 		cmd := exec.Command("/usr/bin/config-forker", "--job-config", fullJobConfig, "--go-version", "1.24", "--version", version, "--output", tempPresubmitsConfigPath)
 		bytes, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Printf("ERROR: config-forker command output: %s : %s ", string(bytes), err)
+			return err
+		}
+
+		// append the rpm urls presubmit job to the jobs of the new branch
+		// while the config is still staged: a failure must leave no config
+		// at fullOutputConfig that a retry with a cached checkout would
+		// mistake for a completed fork
+		_, err = appendRPMURLsJob(tempPresubmitsConfigPath, r.org, r.repo, version)
+		if err != nil {
+			log.Printf("ERROR: appending the rpm urls presubmit job failed: %s", err)
 			return err
 		}
 
@@ -487,7 +609,7 @@ func (r *releaseData) forkProwJobs() error {
 		)
 		bytes, err := cmd.CombinedOutput()
 		if err != nil && !strings.Contains(string(bytes), "A pull request already exists") {
-			log.Printf("ERROR: pr-creator command output: %s : %s ", string(bytes), err)
+			log.Printf("ERROR: pr-creator command output: %s : %s ", redactCredentials(string(bytes)), err)
 			return err
 		}
 	}
@@ -535,8 +657,402 @@ func configureReleaseJob(configPath string, outputPath string) error {
 	return nil
 }
 
-func (r *releaseData) cutNewBranch(skipProw bool) error {
+// rpmURLsPresubmit renders the rpm urls presubmit job template for an
+// org/repo, a release version, e.g. 1.10, and the bootstrap image the
+// job runs make rpm-mirror-checker in. It returns the rendered job
+// and the rendered yaml text of the job item, ready to be inserted into a
+// job config.
+func rpmURLsPresubmit(org, repo, version, bootstrapImage string) (config.Presubmit, string, error) {
+	templateData := rpmURLsPresubmitData{
+		Repo:           repo,
+		Branch:         "release-" + version,
+		Version:        version,
+		BootstrapImage: bootstrapImage,
+	}
+	var rendered bytes.Buffer
+	if err := rpmURLsPresubmitJobTemplate.Execute(&rendered, templateData); err != nil {
+		return config.Presubmit{}, "", fmt.Errorf("failed to render the rpm urls job template: %w", err)
+	}
+	jobText := rendered.String()
 
+	tempDir, err := os.MkdirTemp("", "rpm-urls-presubmit-*")
+	if err != nil {
+		return config.Presubmit{}, "", err
+	}
+	defer func(path string) {
+		if err := os.RemoveAll(path); err != nil {
+			log.Printf("ERROR: removing the temporary job config dir %s failed: %s", path, err)
+		}
+	}(tempDir)
+	tempPath := filepath.Join(tempDir, "presubmit.yaml")
+	// wrap the rendered job item in a job config envelope so that it can
+	// be parsed and validated
+	envelope := fmt.Sprintf("presubmits:\n  %s/%s:\n%s", org, repo, indentLines(jobText, 2))
+	if err := os.WriteFile(tempPath, []byte(envelope), 0666); err != nil {
+		return config.Presubmit{}, "", err
+	}
+
+	jobConfig, err := config.ReadJobConfig(tempPath)
+	if err != nil {
+		return config.Presubmit{}, "", fmt.Errorf("the rendered rpm urls job template is not a valid job config: %w", err)
+	}
+	presubmits, ok := jobConfig.PresubmitsStatic[fmt.Sprintf("%s/%s", org, repo)]
+	if !ok || len(presubmits) != 1 {
+		return config.Presubmit{}, "", fmt.Errorf("expected exactly one rpm urls presubmit in the template")
+	}
+	return presubmits[0], jobText, nil
+}
+
+// appendRPMURLsJob appends the rpm urls presubmit job to the job config at
+// configPath. The job item is inserted into the raw config text so that
+// comments and formatting of the existing config are preserved. It returns
+// whether the job was added and is a no-op when the job is already present.
+func appendRPMURLsJob(configPath, org, repo, version string) (bool, error) {
+	jobConfig, err := config.ReadJobConfig(configPath)
+	if err != nil {
+		return false, err
+	}
+
+	repoKey := fmt.Sprintf("%s/%s", org, repo)
+
+	// the job inherits the bootstrap image of the repo's presubmits: the
+	// image bumper does not walk releng/, so an image pinned here would
+	// never be updated, while the inherited one follows the jobs the
+	// branch was forked from
+	image, err := bootstrapImage(jobConfig, repoKey)
+	if err != nil {
+		return false, fmt.Errorf("failed to find a bootstrap image for the rpm urls job in %s: %w", configPath, err)
+	}
+	job, jobText, err := rpmURLsPresubmit(org, repo, version, image)
+	if err != nil {
+		return false, err
+	}
+
+	presubmits := jobConfig.PresubmitsStatic[repoKey]
+	for _, presubmit := range presubmits {
+		if presubmit.Name == job.Name {
+			log.Printf("job %s is already present in %s, nothing to do", job.Name, configPath)
+			return false, nil
+		}
+	}
+
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		return false, err
+	}
+	updated, err := insertRPMURLsJob(data, repoKey, jobText)
+	if err != nil {
+		return false, err
+	}
+
+	if err := atomicWriteFile(configPath, updated); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+// atomicWriteFile replaces the content of path with data via a temporary
+// file in the same directory, so that a failed or partial write leaves the
+// original file intact
+func atomicWriteFile(path string, data []byte) error {
+	mode := os.FileMode(0666)
+	if info, err := os.Stat(path); err == nil {
+		mode = info.Mode()
+	}
+	temp, err := os.CreateTemp(filepath.Dir(path), fmt.Sprintf(".%s.tmp-*", filepath.Base(path)))
+	if err != nil {
+		return err
+	}
+	defer func() {
+		// after a successful rename the temporary file is gone: only
+		// unexpected removal errors are reported
+		if err := os.Remove(temp.Name()); err != nil && !os.IsNotExist(err) {
+			log.Printf("ERROR: removing the temporary file %s failed: %s", temp.Name(), err)
+		}
+	}()
+	if err := temp.Chmod(mode); err != nil {
+		_ = temp.Close()
+		return err
+	}
+	if _, err := temp.Write(data); err != nil {
+		_ = temp.Close()
+		return err
+	}
+	if err := temp.Close(); err != nil {
+		return err
+	}
+	return os.Rename(temp.Name(), path)
+}
+
+// insertRPMURLsJob inserts the rendered job item for repoKey into the raw
+// text of a job config, appended to the existing job list of repoKey. A
+// new repoKey entry is created when the config has none yet. Inserting
+// text instead of reserializing the config preserves its comments.
+func insertRPMURLsJob(data []byte, repoKey, jobText string) ([]byte, error) {
+	var doc yamlv3.Node
+	if err := yamlv3.Unmarshal(data, &doc); err != nil {
+		return nil, fmt.Errorf("failed to parse the job config: %w", err)
+	}
+	if doc.Kind != yamlv3.DocumentNode || len(doc.Content) == 0 {
+		return nil, fmt.Errorf("unexpected job config structure")
+	}
+	root := doc.Content[0]
+	if root.Kind != yamlv3.MappingNode || root.Style&yamlv3.FlowStyle != 0 {
+		return nil, fmt.Errorf("unexpected job config structure")
+	}
+
+	presubmitsKeyIndex, presubmits := mappingValue(root, "presubmits")
+	if presubmits == nil {
+		return nil, fmt.Errorf("no presubmits in the job config")
+	}
+	presubmitsKey := root.Content[presubmitsKeyIndex]
+
+	lines := strings.Split(string(data), "\n")
+	ins, err := jobInsertionFor(root, presubmitsKey, presubmits, presubmitsKeyIndex, repoKey, jobText, lines)
+	if err != nil {
+		return nil, err
+	}
+	return ins.apply(lines), nil
+}
+
+// mappingValue returns the index of the key node of entry in mapping.Content
+// and its value node, or -1 and nil when the mapping has no such entry
+func mappingValue(mapping *yamlv3.Node, entry string) (int, *yamlv3.Node) {
+	for i := 0; i+1 < len(mapping.Content); i += 2 {
+		if mapping.Content[i].Value == entry {
+			return i, mapping.Content[i+1]
+		}
+	}
+	return -1, nil
+}
+
+// nodeLine returns the zero-based line index of node in the text it was
+// parsed from: yaml node lines are one-based
+func nodeLine(node *yamlv3.Node) int {
+	return node.Line - 1
+}
+
+// jobInsertion describes a raw text edit that inserts the rendered job
+// item into a job config
+type jobInsertion struct {
+	// replaceIndex is the zero-based index of the line replaced with
+	// replaceText, or -1 when no line is replaced
+	replaceIndex int
+	replaceText  string
+	// insertIndex is the zero-based index of the line the insert text is
+	// inserted before
+	insertIndex int
+	// insertText is the text of the inserted job item, already indented
+	// to match its surroundings
+	insertText string
+}
+
+// apply returns the config lines with the insertion applied
+func (i jobInsertion) apply(lines []string) []byte {
+	if i.replaceIndex >= 0 {
+		lines[i.replaceIndex] = i.replaceText
+	}
+	insertedLines := strings.Split(strings.TrimRight(i.insertText, "\n"), "\n")
+	updated := make([]string, 0, len(lines)+len(insertedLines))
+	updated = append(updated, lines[:i.insertIndex]...)
+	updated = append(updated, insertedLines...)
+	updated = append(updated, lines[i.insertIndex:]...)
+	return []byte(strings.Join(updated, "\n"))
+}
+
+// jobInsertionFor decides how the job item is inserted for repoKey, based
+// on the structure of the presubmits section of the job config
+func jobInsertionFor(root, presubmitsKey, presubmits *yamlv3.Node, presubmitsKeyIndex int, repoKey, jobText string, lines []string) (jobInsertion, error) {
+	switch {
+	case presubmits.Kind == yamlv3.MappingNode && len(presubmits.Content) > 0:
+		return repoListInsertion(root, presubmits, presubmitsKeyIndex, repoKey, jobText, lines)
+	case presubmits.Kind == yamlv3.MappingNode || (presubmits.Kind == yamlv3.ScalarNode && presubmits.Tag == "!!null"):
+		// presubmits is null or an empty mapping, e.g. the output of the
+		// config-forker for a repo without forkable presubmits
+		return emptyPresubmitsInsertion(presubmitsKey, repoKey, jobText), nil
+	default:
+		return jobInsertion{}, fmt.Errorf("unexpected presubmits structure in the job config")
+	}
+}
+
+// repoListInsertion returns the insertion for a populated presubmits
+// mapping: the job is either appended to the existing job list of repoKey,
+// or a new repoKey entry is added when the config has none yet
+func repoListInsertion(root, presubmits *yamlv3.Node, presubmitsKeyIndex int, repoKey, jobText string, lines []string) (jobInsertion, error) {
+	if presubmits.Style&yamlv3.FlowStyle != 0 {
+		return jobInsertion{}, fmt.Errorf("flow style job configs are not supported")
+	}
+	ins := jobInsertion{
+		replaceIndex: -1,
+		// insertion point at the end of the job list: right before the
+		// next top-level key after presubmits, or at the end of the file
+		insertIndex: sectionEndIndex(root, presubmitsKeyIndex, lines),
+	}
+
+	repoKeyIndex, jobs := mappingValue(presubmits, repoKey)
+	if jobs == nil {
+		// the config has presubmits but none for repoKey: add a new entry
+		// for it at the end of the presubmits section, indented like the
+		// existing repository keys
+		keyIndent := presubmits.Content[0].Column - 1
+		ins.insertText = fmt.Sprintf("%s%s:\n%s", strings.Repeat(" ", keyIndent), repoKey, indentLines(jobText, keyIndent))
+		return ins, nil
+	}
+
+	if jobs.Kind != yamlv3.SequenceNode || len(jobs.Content) == 0 {
+		return jobInsertion{}, fmt.Errorf("no presubmit jobs for %s in the job config", repoKey)
+	}
+	if jobs.Style&yamlv3.FlowStyle != 0 {
+		return jobInsertion{}, fmt.Errorf("flow style presubmit jobs for %s are not supported", repoKey)
+	}
+	// append to the job list of repoKey, right before the next repository
+	// key when there is one
+	if repoKeyIndex+2 < len(presubmits.Content) {
+		ins.insertIndex = nodeLine(presubmits.Content[repoKeyIndex+2])
+	}
+	// the sequence node column is the column of the list dashes
+	ins.insertText = indentLines(jobText, jobs.Column-1)
+	return ins, nil
+}
+
+// emptyPresubmitsInsertion returns the insertion for a presubmits section
+// that is null or an empty mapping: the empty value is dropped from the
+// presubmits key line and a new entry for repoKey is added under it
+func emptyPresubmitsInsertion(presubmitsKey *yamlv3.Node, repoKey, jobText string) jobInsertion {
+	keyIndent := presubmitsKey.Column - 1
+	return jobInsertion{
+		// drop the empty value from the presubmits key line
+		replaceIndex: nodeLine(presubmitsKey),
+		replaceText:  fmt.Sprintf("%spresubmits:", strings.Repeat(" ", keyIndent)),
+		// the new repository key is indented below the presubmits key
+		insertIndex: nodeLine(presubmitsKey) + 1,
+		insertText:  fmt.Sprintf("%s%s:\n%s", strings.Repeat(" ", keyIndent+2), repoKey, indentLines(jobText, keyIndent+2)),
+	}
+}
+
+// sectionEndIndex returns the zero-based line index where the section of
+// the top-level key at keyIndex ends: right before the line of the next
+// top-level key, or at the end of the file. The empty final line produced
+// by splitting a newline-terminated file is kept at the end.
+func sectionEndIndex(root *yamlv3.Node, keyIndex int, lines []string) int {
+	end := len(lines)
+	if len(lines) > 0 && lines[len(lines)-1] == "" {
+		end--
+	}
+	if keyIndex+2 < len(root.Content) {
+		end = nodeLine(root.Content[keyIndex+2])
+	}
+	return end
+}
+
+// indentLines indents every non-empty line of text by n spaces
+func indentLines(text string, n int) string {
+	prefix := strings.Repeat(" ", n)
+	lines := strings.Split(text, "\n")
+	for i, line := range lines {
+		if line != "" {
+			lines[i] = prefix + line
+		}
+	}
+	return strings.Join(lines, "\n")
+}
+
+// addRPMURLsJob adds the rpm urls presubmit job to the job config of an
+// existing release branch, e.g. release-1.10, and creates a PR for it.
+//
+// Branches forked with a release-tool that knows about the job get it
+// appended by forkProwJobs already; this is only for branches that were
+// forked before the job existed.
+func (r *releaseData) addRPMURLsJob(branch string) error {
+	version := strings.TrimPrefix(branch, "release-")
+
+	// checkout project infra in order to update the jobs of the branch
+	err := r.checkoutProjectInfra()
+	if err != nil {
+		return err
+	}
+
+	outputConfig := fmt.Sprintf("github/ci/prow-deploy/files/jobs/%s/%s/%s-presubmits-%s.yaml", r.org, r.repo, r.repo, version)
+	fullOutputConfig := fmt.Sprintf("%s/%s", r.infraDir, outputConfig)
+
+	// the job config of the branch is created when the branch is forked
+	if _, err := os.Stat(fullOutputConfig); err != nil && os.IsNotExist(err) {
+		return fmt.Errorf("no job config at %s, was the release branch forked?", outputConfig)
+	}
+
+	// discard uncommitted leftovers of an aborted run, from the working
+	// tree and the index: a modified but uncommitted config must not make
+	// the append below report the job as already present on main. A
+	// failed restore must stop the backfill: continuing would risk
+	// pushing a commit that does not contain the job.
+	if _, err := gitCommand("-C", r.infraDir, "checkout", "HEAD", "--", outputConfig); err != nil {
+		return fmt.Errorf("failed to restore the job config %s from main: %w", outputConfig, err)
+	}
+
+	gitbranch := fmt.Sprintf("%s_%s_%s_rpm_urls_job", r.org, r.repo, branch)
+
+	// Reuse the topic branch of a previous run when it exists, so that a
+	// retry, e.g. after a failed PR creation, does not rewrite already
+	// pushed history with a new commit. The branch is taken from the
+	// remote when it is not available locally.
+	if _, err := gitCommand("-C", r.infraDir, "checkout", gitbranch); err != nil {
+		if _, fetchErr := gitCommand("-C", r.infraDir, "fetch", r.infraUrl, gitbranch); fetchErr == nil {
+			_, err = gitCommand("-C", r.infraDir, "checkout", "-B", gitbranch, "FETCH_HEAD")
+		} else {
+			_, err = gitCommand("-C", r.infraDir, "checkout", "-b", gitbranch)
+		}
+		if err != nil {
+			return err
+		}
+	}
+
+	added, err := appendRPMURLsJob(fullOutputConfig, r.org, r.repo, version)
+	if err != nil {
+		return err
+	}
+
+	if added {
+		_, err = gitCommand("-C", r.infraDir, "add", outputConfig)
+		if err != nil {
+			return err
+		}
+
+		// commit only the job config, so that unrelated files staged in a
+		// reused cache cannot end up in the backfill commit
+		_, err = gitCommand("-C", r.infraDir, "commit", "-s", "-m", fmt.Sprintf("add rpm urls presubmit job for branch %s", branch), "--", outputConfig)
+		if err != nil {
+			return err
+		}
+	}
+
+	if !r.dryRun {
+		_, err = gitCommand("-C", r.infraDir, "push", r.infraUrl, gitbranch)
+		if err != nil {
+			return err
+		}
+
+		log.Printf("Creating PR for the rpm urls job")
+		cmd := exec.Command("/usr/bin/pr-creator",
+			"--org", "kubevirt",
+			"--repo", "project-infra",
+			"--branch", "main",
+			"--github-token-path", r.githubTokenPath,
+			"--title", fmt.Sprintf("Add rpm urls presubmit job for %s/%s release branch %s", r.org, r.repo, branch),
+			"--body", fmt.Sprintf("adds the rpm urls presubmit job for branch %s", branch),
+			"--source", fmt.Sprintf("kubevirt:%s", gitbranch),
+			"--confirm",
+		)
+		bytes, err := cmd.CombinedOutput()
+		if err != nil && !strings.Contains(string(bytes), "A pull request already exists") {
+			log.Printf("ERROR: pr-creator command output: %s : %s ", redactCredentials(string(bytes)), err)
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *releaseData) cutNewBranch(skipProw bool) error {
 	if !skipProw {
 		// checkout project infra project in order to update jobs for new branch
 		err := r.checkoutProjectInfra()
@@ -700,12 +1216,22 @@ func (r *releaseData) doesBranchExist(branch string) (bool, error) {
 	}
 
 	for _, b := range branches {
-		if b.Name != nil && *b.Name == r.newBranch {
+		if b.Name != nil && *b.Name == branch {
 			return true, nil
 		}
 	}
 
 	return false, nil
+}
+
+// releaseBranchRegexp matches release branch names, i.e. release-x.y.
+// It is compiled once and reused for every check.
+var releaseBranchRegexp = regexp.MustCompile(`^release-\d*\.\d*$`)
+
+// isValidReleaseBranch reports whether branch is formatted as a release
+// branch, i.e. release-x.y
+func isValidReleaseBranch(branch string) bool {
+	return releaseBranchRegexp.MatchString(branch)
 }
 
 func (r *releaseData) verifyBranch() error {
@@ -718,10 +1244,7 @@ func (r *releaseData) verifyBranch() error {
 		return nil
 	}
 
-	// branches are expected to be formatted as "release-x.y"
-	re := regexp.MustCompile(`^release-\d*\.\d*$`)
-	match := re.FindString(r.newBranch)
-	if match != r.newBranch {
+	if !isValidReleaseBranch(r.newBranch) {
 		return fmt.Errorf("malformed release branch name [%s]. Branch name must be formatted as release-[x].[y]. For example a branch for release 0.30.0 would be release-0.30", r.newBranch)
 	}
 
@@ -813,15 +1336,27 @@ func (r *releaseData) getBranches() ([]*github.Branch, error) {
 		return r.allBranches, nil
 	}
 
-	branches, _, err := r.githubClient.Repositories.ListBranches(context.Background(), r.org, r.repo, &github.BranchListOptions{
+	// github caps per_page at 100: follow the pagination until all
+	// branches were seen, a single response is not enough to decide that
+	// a branch does not exist
+	var allBranches []*github.Branch
+	opt := &github.BranchListOptions{
 		ListOptions: github.ListOptions{
-			PerPage: 10000,
+			PerPage: 100,
 		},
-	})
-	if err != nil {
-		return nil, err
 	}
-	r.allBranches = branches
+	for {
+		branches, resp, err := r.githubClient.Repositories.ListBranches(context.Background(), r.org, r.repo, opt)
+		if err != nil {
+			return nil, err
+		}
+		allBranches = append(allBranches, branches...)
+		if resp.NextPage == 0 {
+			break
+		}
+		opt.Page = resp.NextPage
+	}
+	r.allBranches = allBranches
 
 	return r.allBranches, nil
 
@@ -1186,7 +1721,7 @@ func (r *releaseData) printData() {
 
 	log.Print("Input Data")
 
-	log.Printf("\trepoUrl: %s", r.repoUrl)
+	log.Printf("\trepoUrl: %s", redactCredentials(r.repoUrl))
 	log.Printf("\tnewTag: %s", r.tag)
 	log.Printf("\tnewBranch: %s", r.newBranch)
 	log.Printf("\texistingBranch: %s", r.tagBranch)
@@ -1194,6 +1729,30 @@ func (r *releaseData) printData() {
 	log.Printf("\trepo: %s", r.repo)
 	log.Printf("\tforce: %t", r.force)
 	log.Printf("\tgithubTokenFile: %s", r.githubTokenPath)
+}
+
+// addRPMURLsJobCommand runs the --add-rpm-urls-job dispatch: it validates
+// the requested branch and adds the rpm urls presubmit job to it
+func addRPMURLsJobCommand(r *releaseData, branch string) {
+	if r.newBranch != "" || r.tag != "" {
+		log.Fatal("ERROR --add-rpm-urls-job cannot be combined with --new-branch or --new-release")
+	}
+
+	if !isValidReleaseBranch(branch) {
+		log.Fatalf("ERROR malformed release branch name [%s]. Branch name must be formatted as release-[x].[y]. For example a branch for release 0.30.0 would be release-0.30", branch)
+	}
+
+	exists, err := r.doesBranchExist(branch)
+	if err != nil {
+		log.Fatalf("ERROR Invalid branch: %s ", err)
+	}
+	if !exists {
+		log.Fatalf("ERROR Release branch [%s] does not exist", branch)
+	}
+
+	if err := r.addRPMURLsJob(branch); err != nil {
+		log.Fatalf("ERROR Adding the rpm urls job: %s ", err)
+	}
 }
 
 func main() {
@@ -1211,6 +1770,7 @@ func main() {
 	skipReleaseNotes := flag.Bool("skip-release-notes", false, "skip generating release notes for a tag")
 	force := flag.Bool("force", false, "force a release or release branch to occur despite blockers or other warnings")
 	skipProw := flag.Bool("skip-prow", false, "skip creating prow configs")
+	addRPMURLsJob := flag.String("add-rpm-urls-job", "", "Add the rpm urls presubmit job to the job config of an existing release branch, e.g. release-1.10")
 	promoteRC := flag.String("promote-release-candidate", "", "The tag of an rc release that will be promoted to an official release")
 
 	autoRelease := flag.Bool("auto-release", false, "Automatically perform branch cutting an releases based on time intervals")
@@ -1298,6 +1858,11 @@ func main() {
 	}
 
 	r.printData()
+
+	if *addRPMURLsJob != "" {
+		addRPMURLsJobCommand(&r, *addRPMURLsJob)
+		return
+	}
 
 	if r.newBranch != "" {
 		err := r.verifyBranch()
