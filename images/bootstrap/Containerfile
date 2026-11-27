@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Includes basic workspace setup, with gcloud and a bootstrap runner
-FROM fedora:44
+FROM fedora:45
 
 WORKDIR /workspace
 RUN mkdir -p /workspace
@@ -118,13 +118,10 @@ RUN dnf -y update; dnf -y reinstall shadow-utils && \
 
 VOLUME /var/lib/containers
 
-COPY storage.conf /etc/containers/storage.conf
 RUN mkdir -p /var/lib/shared-images
 
-COPY containers.conf /etc/containers/containers.conf
-COPY podman.json /etc/containers/networks/podman.json
+COPY --chown=root:root podman/ /etc/containers/
 
-RUN chmod 644 /etc/containers/containers.conf
 #
 # END: PODMAN IN CONTAINER SETUP
 #
