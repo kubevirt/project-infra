@@ -180,7 +180,7 @@ presubmits:
             - |
               cd images
               ./publish_multiarch_image.sh -a -b bootstrap quay.io kubevirtci
-              ./publish_multiarch_image.sh -a -b -l golang quay.io kubevirtci
+              ./publish_multiarch_image.sh -a -b golang    quay.io kubevirtci
           securityContext:
             privileged: true
           resources:
