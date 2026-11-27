@@ -14,14 +14,14 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - make all
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.24.11"
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         resources:
           requests:
             memory: 4Gi
@@ -39,14 +39,14 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - make build-virttemplatectl
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.24.11"
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         resources:
           requests:
             memory: 4Gi
@@ -66,14 +66,14 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - make container-build
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.24.11"
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         resources:
           requests:
             memory: "8Gi"
@@ -95,14 +95,14 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - make test
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.24.11"
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         resources:
           requests:
             memory: 4Gi
@@ -123,14 +123,14 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - "make cluster-up && make cluster-sync && make cluster-functest"
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.24.11"
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         resources:
           requests:
             memory: 20Gi
@@ -152,14 +152,14 @@ presubmits:
     spec:
       containers:
       - command:
-        - /usr/local/bin/runner.sh
+        - /usr/local/bin/entrypoint.sh
         - /bin/sh
         - -c
         - make build-installer build-installer-openshift
         env:
-        - name: GIMME_GO_VERSION
-          value: "1.24.11"
-        image: quay.io/kubevirtci/golang:v20251218-e7a7fc9
+        - name: GO_MOD_PATH
+          value: "go.mod"
+        image: quay.io/kubevirtci/golang:v20260612-73bc71e
         resources:
           requests:
             memory: 4Gi
