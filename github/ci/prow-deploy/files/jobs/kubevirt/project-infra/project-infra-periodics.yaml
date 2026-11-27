@@ -766,7 +766,7 @@ periodics:
   spec:
     containers:
     - name: peribolos
-      image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20261118-9c8eff7c9
+      image: us-docker.pkg.dev/k8s-infra-prow/images/peribolos:v20261126-6dceccd02
       command:
       - /ko-app/peribolos
       # when changing the peribolos settings below, please align the peribolos settings from the presubmit job!
