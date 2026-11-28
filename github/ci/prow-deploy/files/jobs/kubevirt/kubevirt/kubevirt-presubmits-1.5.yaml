@@ -9,6 +9,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 2h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.31"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "performance"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -68,6 +71,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 2h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "none"
+      ci.kubevirt.io/provider: "none"
+      ci.kubevirt.io/sig: "none"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-gcs-credentials: "true"
@@ -105,6 +111,9 @@ presubmits:
       grace_period: 30m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.30"
+      ci.kubevirt.io/provider: "kind"
+      ci.kubevirt.io/sig: "none"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -172,6 +181,9 @@ presubmits:
       grace_period: 30m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "none"
+      ci.kubevirt.io/provider: "kind"
+      ci.kubevirt.io/sig: "none"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -719,6 +731,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.32"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "network"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -760,6 +775,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.32"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "network"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -801,6 +819,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.32"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -842,6 +863,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "none"
+      ci.kubevirt.io/provider: "none"
+      ci.kubevirt.io/sig: "none"
       preset-bazel-unnested: "false"
       preset-podman-in-container-enabled: "true"
     max_concurrency: 1
@@ -1008,6 +1032,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.32"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "none"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1048,6 +1075,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 2h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.31"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "monitoring"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
       preset-podman-in-container-enabled: "true"
@@ -1081,6 +1111,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.32"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "none"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1126,6 +1159,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.31"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "storage"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1163,6 +1199,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.31"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -1203,6 +1242,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.32"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -1269,6 +1311,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.30"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "network"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -1310,6 +1355,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.30"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "storage"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -1351,6 +1399,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.30"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -1392,6 +1443,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.30"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "operator"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -1431,6 +1485,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.31"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "network"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -1472,6 +1529,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.31"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "storage"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -1513,6 +1573,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.31"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -1554,6 +1617,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.31"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "operator"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -1593,7 +1659,10 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.32"
       ci.kubevirt.io/prometheus: ""
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "performance"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-podman-in-container-enabled: "true"
@@ -1643,6 +1712,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.32"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "network"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -1684,6 +1756,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.32"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "storage"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -1725,6 +1800,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.32"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -1766,6 +1844,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.32"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "operator"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"
@@ -1805,6 +1886,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.32"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-docker-mirror-proxy: "true"
       preset-kubevirtci-etcd-in-mem: "true"

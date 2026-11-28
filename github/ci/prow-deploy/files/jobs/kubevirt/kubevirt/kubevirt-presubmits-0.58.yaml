@@ -9,6 +9,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.23"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -45,6 +48,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.23"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "storage"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -81,6 +87,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.23"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -118,6 +127,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.23"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "network"
       preset-bazel-unnested: "true"
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -155,6 +167,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.23"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "storage"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -192,6 +207,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.24"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "storage"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -227,6 +245,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.22"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "performance"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -283,6 +304,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.23"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "operator"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -320,6 +344,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 2h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "none"
+      ci.kubevirt.io/provider: "none"
+      ci.kubevirt.io/sig: "none"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-gcs-credentials: "true"
@@ -357,6 +384,9 @@ presubmits:
       grace_period: 30m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.22"
+      ci.kubevirt.io/provider: "kind"
+      ci.kubevirt.io/sig: "none"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -435,6 +465,9 @@ presubmits:
       grace_period: 30m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.22"
+      ci.kubevirt.io/provider: "kind"
+      ci.kubevirt.io/sig: "none"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -510,6 +543,9 @@ presubmits:
       grace_period: 30m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.23"
+      ci.kubevirt.io/provider: "kind"
+      ci.kubevirt.io/sig: "none"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -579,6 +615,9 @@ presubmits:
       grace_period: 30m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.23"
+      ci.kubevirt.io/provider: "kind"
+      ci.kubevirt.io/sig: "none"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
       vgpu: "true"
@@ -1029,6 +1068,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.22"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "network"
       preset-bazel-unnested: "true"
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1062,6 +1104,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.24"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "network"
       preset-bazel-unnested: "true"
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1095,6 +1140,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.22"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "storage"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1128,6 +1176,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.22"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1161,6 +1212,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.24"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1198,6 +1252,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.23"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1235,6 +1292,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.24"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1276,6 +1336,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.22"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "operator"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1309,6 +1372,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.22"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1346,6 +1412,9 @@ presubmits:
       org: kubevirt
       repo: project-infra
     labels:
+      ci.kubevirt.io/k8s-version: "none"
+      ci.kubevirt.io/provider: "none"
+      ci.kubevirt.io/sig: "none"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1446,6 +1515,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.23"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "network"
       preset-bazel-unnested: "true"
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1507,6 +1579,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.23"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "storage"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1540,6 +1615,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.23"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1573,6 +1651,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.23"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "operator"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1606,6 +1687,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.23"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "none"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1645,6 +1729,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 1h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.22"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "monitoring"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
     name: pull-kubevirt-e2e-k8s-1.22-sig-monitoring-0.58
@@ -1676,6 +1763,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.23"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "none"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1720,6 +1810,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.24"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "network"
       preset-bazel-unnested: "true"
       preset-podman-in-container-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1753,6 +1846,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.24"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "storage"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1786,6 +1882,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.24"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1819,6 +1918,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.24"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "operator"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1852,6 +1954,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 7h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.24"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "compute"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"
@@ -1886,6 +1991,9 @@ presubmits:
       grace_period: 5m0s
       timeout: 4h0m0s
     labels:
+      ci.kubevirt.io/k8s-version: "1.24"
+      ci.kubevirt.io/provider: "k8s"
+      ci.kubevirt.io/sig: "storage"
       preset-bazel-unnested: "true"
       preset-dind-enabled: "true"
       preset-docker-mirror-proxy: "true"

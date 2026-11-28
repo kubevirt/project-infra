@@ -46,7 +46,8 @@ var checkPresubmitsCommand = &cobra.Command{
 
 For the latest Kubernetes version found in the presubmit job definitions it checks that
 the sig-compute-serial job has a -serial TARGET and the plain sig-compute job has a -parallel TARGET.
-It also checks that the latest stable sig-network lane configuration stays coherent with the sig-network-smoke lane.`,
+It also checks that the latest stable sig-network lane configuration stays coherent with the sig-network-smoke lane.
+Kubevirt e2e lanes must carry ci.kubevirt.io/k8s-version, ci.kubevirt.io/sig, and ci.kubevirt.io/provider so Grafana can select them from prow_job_labels.`,
 	RunE: runCheckPresubmits,
 }
 
@@ -72,6 +73,7 @@ func runCheckPresubmits(cmd *cobra.Command, args []string) error {
 	var errs []string
 	errs = append(errs, validateSigComputeTargets(&jobConfig)...)
 	errs = append(errs, validateSigNetworkSkipSmokeEnv(&jobConfig)...)
+	errs = append(errs, validateSelectionLabels(&jobConfig)...)
 
 	if len(errs) > 0 {
 		return fmt.Errorf("presubmit validation failed:\n%s", strings.Join(errs, "\n"))
@@ -110,6 +112,16 @@ func validateSigComputeTargets(jobConfig *config.JobConfig) []string {
 		}
 	}
 
+	return errs
+}
+
+func validateSelectionLabels(jobConfig *config.JobConfig) []string {
+	var errs []string
+	for _, jobs := range jobConfig.PresubmitsStatic {
+		for _, job := range jobs {
+			errs = append(errs, prowjobconfigs.SelectionLabelErrors(job.Name, job.Labels)...)
+		}
+	}
 	return errs
 }
 

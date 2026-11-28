@@ -252,6 +252,7 @@ func copyPresubmitJobsForNewProvider(jobConfig *config.JobConfig, targetProvider
 		}
 		newJob.Name = targetJobName
 		newJob.Optional = true
+		newJob.Labels = prowjobconfigs.ApplySelectionLabels(newJob.Labels, newJob.Name)
 		jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig] = append(jobConfig.PresubmitsStatic[prowjobconfigs.OrgAndRepoForJobConfig], newJob)
 
 		updated = true
@@ -316,6 +317,7 @@ func copyPeriodicJobsForNewProvider(jobConfig *config.JobConfig, targetProviderR
 			}
 		}
 		newJob.Name = targetJobName
+		newJob.Labels = prowjobconfigs.ApplySelectionLabels(newJob.Labels, newJob.Name)
 		jobConfig.Periodics = append(jobConfig.Periodics, newJob)
 
 		updated = true

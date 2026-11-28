@@ -298,7 +298,7 @@ func Test_copyPeriodicJobsForNewProvider(t *testing.T) {
 					{
 						JobBase: config.JobBase{
 							Annotations: map[string]string{},
-							Labels:      map[string]string{},
+							Labels:      prowjobconfigs.ApplySelectionLabels(map[string]string{}, prowjobconfigs.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network")),
 							Name:        prowjobconfigs.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network"),
 							Spec: &corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -403,9 +403,9 @@ func Test_copyPeriodicJobsForNewProvider(t *testing.T) {
 							Annotations: map[string]string{
 								"your-annotation": "value-goes-here",
 							},
-							Labels: map[string]string{
+							Labels: prowjobconfigs.ApplySelectionLabels(map[string]string{
 								"your-label": "value-goes-here",
-							},
+							}, prowjobconfigs.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network")),
 							Name: prowjobconfigs.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network"),
 							Spec: &corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -506,7 +506,7 @@ func Test_copyPeriodicJobsForNewProvider(t *testing.T) {
 					{
 						JobBase: config.JobBase{
 							Annotations: map[string]string{},
-							Labels:      map[string]string{},
+							Labels:      prowjobconfigs.ApplySelectionLabels(map[string]string{}, prowjobconfigs.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network")),
 							Name:        prowjobconfigs.CreatePeriodicJobName(semver("1", "22", "0"), "sig-network"),
 							Spec: &corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -712,7 +712,7 @@ func Test_copyPresubmitJobsForNewProvider(t *testing.T) {
 				PresubmitsStatic: map[string][]config.Presubmit{
 					prowjobconfigs.OrgAndRepoForJobConfig: {
 						createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher([]string{"Release-\\d+\\.\\d+"}, nil)),
-						createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", false, true, false, createJobBrancher([]string{"Release-\\d+\\.\\d+"}, nil)),
+						withSelectionLabels(createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", false, true, false, createJobBrancher([]string{"Release-\\d+\\.\\d+"}, nil))),
 					},
 				},
 			},
@@ -735,7 +735,7 @@ func Test_copyPresubmitJobsForNewProvider(t *testing.T) {
 				PresubmitsStatic: map[string][]config.Presubmit{
 					prowjobconfigs.OrgAndRepoForJobConfig: {
 						createPresubmitJobForRelease(newMinorSemver("1", "37"), "sig-network", true, false, false, createJobBrancher(nil, []string{"Release-\\d+\\.\\d+"})),
-						createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", false, true, false, createJobBrancher(nil, []string{"Release-\\d+\\.\\d+"})),
+						withSelectionLabels(createPresubmitJobForRelease(newMinorSemver("1", "42"), "sig-network", false, true, false, createJobBrancher(nil, []string{"Release-\\d+\\.\\d+"}))),
 					},
 				},
 			},
@@ -784,6 +784,11 @@ func newMinorSemver(major, minor string) *querier.SemVer {
 		Minor: minor,
 		Patch: "0",
 	}
+}
+
+func withSelectionLabels(job config.Presubmit) config.Presubmit {
+	job.Labels = prowjobconfigs.ApplySelectionLabels(job.Labels, job.Name)
+	return job
 }
 
 func createPresubmitJobForRelease(semver *querier.SemVer, sigName string, alwaysRun, optional, skipReport bool, brancher config.Brancher) config.Presubmit {

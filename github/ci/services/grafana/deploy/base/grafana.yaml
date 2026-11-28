@@ -2749,6 +2749,98 @@ data:
           "yaxis": {
             "align": false
           }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Failure ratio for lanes selected by prow_job_labels. A lane shows up after its next run, which is when the new labels are present. Lanes without a SIG, provider, or Kubernetes version use none.",
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 39
+          },
+          "hiddenSeries": false,
+          "id": 19,
+          "interval": "1h",
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "sort": "current",
+            "sortDesc": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "9.1.6",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "exemplar": true,
+              "expr": "sum by (job_name) (\n  prowjobs{org=\"kubevirt\", state=~\"failure\", job_name=~\"${job_name}\"}\n  and on(job_name)\n  prow_job_labels{label_ci_kubevirt_io_k8s_version=~\"${k8s_version}\", label_ci_kubevirt_io_provider=~\"${provider}\", label_ci_kubevirt_io_sig=~\"${sig}\"}\n)\n/\nsum by (job_name) (\n  prowjobs{org=\"kubevirt\", state=~\"success|failure\", job_name=~\"${job_name}\"}\n  and on(job_name)\n  prow_job_labels{label_ci_kubevirt_io_k8s_version=~\"${k8s_version}\", label_ci_kubevirt_io_provider=~\"${provider}\", label_ci_kubevirt_io_sig=~\"${sig}\"}\n)\n* 100",
+              "interval": "1h",
+              "legendFormat": "{{job_name}}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeRegions": [],
+          "title": "failure ratio by job label",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "logBase": 1,
+              "show": true
+            },
+            {
+              "format": "short",
+              "logBase": 1,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false
+          }
         }
       ],
       "refresh": "2h",
@@ -2757,6 +2849,105 @@ data:
       "tags": [],
       "templating": {
         "list": [
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": true,
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(prow_job_labels, label_ci_kubevirt_io_sig)",
+            "description": "Filters the failure ratio by job label panel.",
+            "hide": 0,
+            "includeAll": true,
+            "label": "SIG",
+            "multi": true,
+            "name": "sig",
+            "options": [],
+            "query": {
+              "query": "label_values(prow_job_labels, label_ci_kubevirt_io_sig)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": true,
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(prow_job_labels, label_ci_kubevirt_io_k8s_version)",
+            "description": "Filters the failure ratio by job label panel.",
+            "hide": 0,
+            "includeAll": true,
+            "label": "Kubernetes version",
+            "multi": true,
+            "name": "k8s_version",
+            "options": [],
+            "query": {
+              "query": "label_values(prow_job_labels, label_ci_kubevirt_io_k8s_version)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "allValue": ".*",
+            "current": {
+              "selected": true,
+              "text": [
+                "All"
+              ],
+              "value": [
+                "$__all"
+              ]
+            },
+            "datasource": {
+              "type": "prometheus",
+              "uid": "prometheus"
+            },
+            "definition": "label_values(prow_job_labels, label_ci_kubevirt_io_provider)",
+            "description": "Filters the failure ratio by job label panel.",
+            "hide": 0,
+            "includeAll": true,
+            "label": "provider",
+            "multi": true,
+            "name": "provider",
+            "options": [],
+            "query": {
+              "query": "label_values(prow_job_labels, label_ci_kubevirt_io_provider)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "skipUrlSync": false,
+            "sort": 1,
+            "type": "query"
+          },
           {
             "current": {
               "selected": true,
@@ -2867,6 +3058,7 @@ data:
       },
       "timepicker": {},
       "timezone": "",
+      "description": "KubeVirt e2e lanes carry ci.kubevirt.io/k8s-version, ci.kubevirt.io/sig, and ci.kubevirt.io/provider. prow-exporter exposes them on prow_job_labels. SIG, Kubernetes version, and provider filter the label panel. Other panels keep selecting lanes by job name.",
       "title": "e2e jobs overview V2",
       "uid": "efpTS3t4z",
       "version": 1,
