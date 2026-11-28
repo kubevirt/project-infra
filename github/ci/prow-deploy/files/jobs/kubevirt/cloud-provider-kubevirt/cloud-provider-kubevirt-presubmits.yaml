@@ -22,7 +22,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20261116-94a0485
+        - image: quay.io/kubevirtci/golang:v20261127-b835ddf
           command:
             - "/usr/local/bin/entrypoint.sh"
             - "/bin/sh"
@@ -59,7 +59,7 @@ presubmits:
       nodeSelector:
         type: bare-metal-external
       containers:
-        - image: quay.io/kubevirtci/golang:v20261116-94a0485
+        - image: quay.io/kubevirtci/golang:v20261127-b835ddf
           command:
             - "/usr/local/bin/entrypoint.sh"
             - "/bin/sh"
@@ -94,7 +94,7 @@ presubmits:
         - /bin/sh
         - -c
         - make functest
-        image: quay.io/kubevirtci/golang:v20261116-94a0485
+        image: quay.io/kubevirtci/golang:v20261127-b835ddf
         resources:
           requests:
             memory: 16Gi
