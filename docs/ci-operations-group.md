@@ -127,6 +127,12 @@ The group is NOT responsible for
 
 ## Processes and meetings
 
+### KubeVirt release operations
+
+See [KubeVirt Release Operations for SIG-CI](kubevirt-release-operations.md)
+for release-related manual handoffs, existing automation, verification
+checklists, and links to the detailed procedures.
+
 
 ### KubeVirt CI Taskforce Sync
 
