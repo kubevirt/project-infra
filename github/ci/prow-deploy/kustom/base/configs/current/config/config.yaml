@@ -750,12 +750,17 @@ presets:
       type: Directory
   - name: podman-data
     emptyDir: {}
+  - name: var-tmp
+    emptyDir: {}
   volumeMounts:
   - name: podman-data
     mountPath: /var/lib/containers
   - name: modules
     mountPath: /lib/modules
     readOnly: true
+  # Workaround for https://github.com/podman-container-tools/buildah/issues/6892
+  - name: var-tmp
+    mountPath: /var/tmp
 - labels:
     preset-podman-shared-images: "true"
   volumes:
