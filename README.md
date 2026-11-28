@@ -27,6 +27,18 @@ depending on billing alerts. See [README](limiter/README.md)
 
 * `releng/release-tool`: Tool for creating KubeVirt releases
 
+  Publishing new release Prow configs requires an existing writable fork of
+  `kubevirt/project-infra`. The fork owner defaults to the authenticated GitHub
+  user; use `--fork-owner <owner>` to select another user's or organization's fork.
+  The tool pushes config branches only to that fork and opens PRs into upstream
+  `main`. Dry runs and `--skip-prow` do not require a fork.
+
+  For public repositories, provide a classic GitHub personal access token with
+  the `public_repo` scope via `--github-token-file`. The same token must be able
+  to push to the selected fork and open a PR in `kubevirt/project-infra`; it does
+  not need upstream push access. A fine-grained token scoped only to the fork
+  does not grant permission to open the upstream PR.
+
 * `robots`: Automation tools
 
   * `robots/dependabot`: Tool to create PRs to resolve Github dependabot alerts in kubevirt org repositories
