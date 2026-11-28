@@ -1,4 +1,4 @@
-FROM quay.io/kubevirtci/golang:v20261116-94a0485 AS builder
+FROM quay.io/kubevirtci/golang:v20261127-b835ddf AS builder
 
 ARG PROW_PLUGIN
 ARG GOMAXPROCS=4

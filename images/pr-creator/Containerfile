@@ -1,4 +1,4 @@
-FROM --platform=${BUILDPLATFORM} quay.io/kubevirtci/golang:v20261116-94a0485 AS builder
+FROM --platform=${BUILDPLATFORM} quay.io/kubevirtci/golang:v20261127-b835ddf AS builder
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -26,7 +26,7 @@ RUN set -x && \
     ' && \
     chmod +x /usr/local/bin/labels-checker
 
-FROM --platform=${TARGETPLATFORM} quay.io/kubevirtci/golang:v20261116-94a0485
+FROM --platform=${TARGETPLATFORM} quay.io/kubevirtci/golang:v20261127-b835ddf
 
 RUN dnf install -y \
     skopeo && \
