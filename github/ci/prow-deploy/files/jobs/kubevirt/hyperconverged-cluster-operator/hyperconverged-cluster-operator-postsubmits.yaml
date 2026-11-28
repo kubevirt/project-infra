@@ -43,7 +43,7 @@ postsubmits:
       labels:
         preset-podman-in-container-enabled: "true"
         preset-github-credentials: "true"
-        preset-quay-kubevirt-push: "true"
+        preset-quay-kubevirtci-push: "true"
       cluster: kubevirt-prow-control-plane
       spec:
         containers:
