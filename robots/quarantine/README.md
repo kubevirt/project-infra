@@ -81,7 +81,26 @@ Prow: `periodic-publish-kubevirt-most-flaky-tests-report` (`cron: '*/30 * * * *'
 
 Selects candidates, quarantines source, writes a PR body. **No `--dry-run`.** Files are modified in place.
 
-Unlike `report`: uses **only** the 336h search.ci window (≥5% impact); **does not** include today’s rolling-window flakefinder report; ignores tests named `AfterSuite`; flake-stats still drops jobs whose names start with `periodic` and keeps only lanes matching `--matching-lane-regex`; keeps a test only if at least one remaining impact is a **required** lane (`ContextRequired()`: `optional: false` and not `skip_report`) whose job history URL last path element matches `--matching-lane-regex`, and that impact passes the recent-failure filter. Shared search.ci filters from `report` (rehearsal / flake-check / clustered junit) still apply.
+Unlike `report`: uses **only** the 336h search.ci window (≥5% impact); **does not** include today’s rolling-window flakefinder report; ignores tests named `AfterSuite`; flake-stats still drops jobs whose names start with `periodic` and keeps only lanes matching `--matching-lane-regex`; keeps a test only if at least one remaining impact is a **required** lane (`ContextRequired()`: `optional: false` and not `skip_report`) whose job history URL last path element matches `--matching-lane-regex`, that impact passes the recent-failure filter, and those recent failures are not explained by one pull request. Shared search.ci filters from `report` (rehearsal / flake-check / clustered junit) still apply. The HTML report still lists single-PR lanes; only `auto` applies the attribution safeguard below.
+
+### How the failure rate is calculated
+
+Candidate order comes from flake-stats. `quarantine auto` loads one 24h flakefinder JSON per day for `--days-in-the-past` (yesterday backward; today's rolling window is not included). Each spec's `failed` count is summed per presubmit. That sum only ranks which specs are inspected. It is not the percentage written into the quarantine PR.
+
+The percentage is search.ci's impact over 336h (`excludeName=periodic-.*`). search.ci reports matching runs divided by all runs of that job (the `N% impact` figure). Lanes under 5% are dropped. A lane then has to match `--matching-lane-regex`, be required (`ContextRequired()`), and have at least `--min-recent-failures` failures newer than `--max-failure-age` spanning at least `--min-failure-interval`.
+
+Each presubmit retry and each Tide batch is its own run, so a failure is counted again in the numerator and the run is counted in the denominator. `--min-failure-interval` only rejects a short burst. The same pull request retested a day later still passes.
+
+`test_id:10822` (`should successfully plug guaranteed vCPUs`) crossed that bar at **10% over 336h** on `pull-kubevirt-e2e-k8s-1.37-sig-compute-migrations` ([kubevirt/kubevirt#19773](https://github.com/kubevirt/kubevirt/pull/19773)). Reviewers reported those failures were concentrated in unmerged [kubevirt/kubevirt#18459](https://github.com/kubevirt/kubevirt/pull/18459) and Tide batches that included it. The PR author reported that the change left too few CPUs for the test. See [project-infra#5617](https://github.com/kubevirt/project-infra/issues/5617).
+
+### Pull request attribution
+
+Recent failures (within `--max-failure-age`) are attributed before a lane can justify quarantine:
+
+- `pr-logs/pull/<org>_<repo>/<number>/...` is that pull request.
+- `pr-logs/pull/batch/...` is every pull request listed in that build's `prowjob.json` (`spec.refs.pulls`). A batch that contains a PR is the same source as a direct run of it. A batch whose `prowjob.json` cannot be read is left unresolved and does not add an independent failure.
+
+The lane counts as quarantine evidence only when at least `--min-independent-failures` (default 2) attributed recent failures do not include the pull request that appears most often. One failure on a different PR does not outweigh retries of a single unmerged PR. Failures in which no pull request appears more than once are already spread across PRs; they are kept once at least that many failures were attributed, so two failures on two pull requests still quarantine. A spec that fails on many PRs still quarantines when one of those PRs was retried more often, as long as enough recent failures do not include it.
 
 ```bash
 go run ./robots/quarantine auto \
@@ -95,7 +114,8 @@ go run ./robots/quarantine auto \
 | `--max-tests-to-quarantine` | `1` | `0` means no ceiling. |
 | `--release-lane-suffix` | empty | Sprintf’d into `--matching-lane-regex` (main branch vs e.g. `-1.7`). |
 | `--matching-lane-regex` | `^pull-.*-sig-(compute(-serial\|-migrations\|-arm64)?\|network\|storage\|operator)%s$` | Must contain a `%s` for the suffix. |
-| `--max-failure-age` / `--min-recent-failures` / `--min-failure-interval` | `72h` / `2` / `24h` | Hard filter on impacts (not display-only). |
+| `--max-failure-age` / `--min-recent-failures` / `--min-failure-interval` | `72h` / `2` / `24h` | Hard filter on impacts (not display-only). The interval rejects a short burst; it does not attribute failures to a pull request. |
+| `--min-independent-failures` | `2` | Attributed recent failures that must not include the pull request explaining the most failures. Tide batches contribute every PR in `prowjob.json`. Values below 1 are treated as 1. |
 | `--job-config-path` / `--job-config-org-repo` | same defaults as `report` | Required-job set. |
 | `--labels-yaml` | `github/ci/prow-deploy/kustom/base/configs/current/labels/labels.yaml` | Maps Ginkgo `sig-*` / `wg-*` labels to `/sig …` and `/wg …` in the PR body (aliases in `cmd/labels.go`). No matching label → `/sig compute`. |
 | `--pr-description-output-file` | temp `pr-description-*.md` | Overwrite is allowed. Template: `cmd/auto-quarantine-pr-description.gomd`. |

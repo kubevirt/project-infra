@@ -47,7 +47,9 @@ const (
 
 Uses the data from the flake stats, combines that with
 scraped results from search.ci and then modifies all tests matching quarantine
-criteria so that they are recognized by automation as being quarantined.`
+criteria so that they are recognized by automation as being quarantined.
+Failures explained by one unmerged pull request, including Tide batches that
+contain it, are not treated as flakiness of the shared branch.`
 )
 
 var (
@@ -72,6 +74,7 @@ func init() {
 	autoQuarantineCmd.PersistentFlags().DurationVar(&quarantineOpts.maxFailureAge, "max-failure-age", 72*time.Hour, "maximum age of failures to consider as recent")
 	autoQuarantineCmd.PersistentFlags().IntVar(&quarantineOpts.minRecentFailures, "min-recent-failures", 2, "minimum number of recent failures required per lane")
 	autoQuarantineCmd.PersistentFlags().DurationVar(&quarantineOpts.minFailureInterval, "min-failure-interval", 24*time.Hour, "minimum time span between recent failures to confirm a consistent pattern")
+	autoQuarantineCmd.PersistentFlags().IntVar(&quarantineOpts.minIndependentFailures, "min-independent-failures", 2, "minimum recent failures that must not include the pull request explaining the most failures; Tide batches count as every PR they contain. Values below 1 are treated as 1")
 	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.jobConfigPath, "job-config-path", "github/ci/prow-deploy/files/jobs/kubevirt/kubevirt/kubevirt-presubmits.yaml", "path to the Prow presubmit job config YAML used to determine required lanes")
 	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.jobConfigOrgRepo, "job-config-org-repo", "kubevirt/kubevirt", "org/repo key for looking up presubmits in the job config")
 	autoQuarantineCmd.PersistentFlags().StringVar(&quarantineOpts.labelsYAMLPath, "labels-yaml", "github/ci/prow-deploy/kustom/base/configs/current/labels/labels.yaml", "path to the Prow labels.yaml file used to determine valid SIG/WG labels")
@@ -200,7 +203,7 @@ func determineTestsForQuarantine(topXTests flakestats.TopXTests, reports []types
 		}
 
 		// Filter impacts by the matching lane regex, required lane status,
-		// and recency of failures
+		// recency of failures, and pull-request attribution.
 		recentFailureFilter := searchci.HasMinRecentFailures(quarantineOpts.maxFailureAge, quarantineOpts.minRecentFailures, quarantineOpts.minFailureInterval)
 		var filteredImpacts []searchci.Impact
 		for _, impact := range candidate.RelevantImpacts {
@@ -218,6 +221,18 @@ func determineTestsForQuarantine(topXTests flakestats.TopXTests, reports []types
 			}
 			if !recentFailureFilter(impact) {
 				log.Debugf("skipping impact from lane %q for test %q: insufficient recent failures", lastElement, topXTest.Name)
+				continue
+			}
+			// Retries of one unmerged PR, and Tide batches that include it, are
+			// separate search.ci runs. They are not evidence the spec fails on
+			// the shared branch.
+			dominated, pullNumber, covered, resolved := impactDominatedBySinglePR(impact, quarantineOpts.maxFailureAge, quarantineOpts.minIndependentFailures)
+			if dominated {
+				if pullNumber == 0 {
+					log.Infof("skipping impact from lane %q for test %q: recent failures could not be attributed to pull requests", lastElement, topXTest.Name)
+				} else {
+					log.Infof("skipping impact from lane %q for test %q: %d/%d attributed recent failures are explained by PR %d or Tide batches that include it", lastElement, topXTest.Name, covered, resolved, pullNumber)
+				}
 				continue
 			}
 			filteredImpacts = append(filteredImpacts, impact)
