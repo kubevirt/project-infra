@@ -27,75 +27,75 @@ secretGenerator:
   - name: github-token
     namespace: kubevirt-prow-jobs
     files:
-      - appid=secrets/github/app-id
-      - cert=secrets/github/app-secret
+      - appid=secrets/prow/github/app-id
+      - cert=secrets/prow/github/app-secret
       # For backward compatibility
-      - oauth=secrets/github/bot-token
-      - token=secrets/github/bot-token
+      - oauth=secrets/prow/github/bot-token
+      - token=secrets/prow/github/bot-token
     type: Opaque
   - name: gcs-credentials
     namespace: kubevirt-prow-jobs
     files:
-      - secrets/service-account.json
+      - service-account.json=secrets/tokens/google/service-accounts/prow/prow-sa.json
     type: Opaque
   - name: bazel-cache-gcs
     namespace: kubevirt-prow-jobs
     files:
-      - secrets/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json
+      - secrets/tokens/google/service-accounts/bazel-cache/bazel-cache-sa.json
     type: Opaque
 
   - name: kubevirtci-quay-credential
     namespace: kubevirt-prow-jobs
     files:
-      - secrets/kubevirtci-quay-credential/username
-      - secrets/kubevirtci-quay-credential/password
-      - secrets/kubevirtci-quay-credential/token
+      - secrets/creds/quay.io/kubevirtcibot/username
+      - secrets/creds/quay.io/kubevirtcibot/password
+      - secrets/creds/quay.io/kubevirtcibot/token
     type: Opaque
 
   - name: quay-kubevirt-push
     namespace: kubevirt-prow-jobs
     files:
-      - secrets/quay-kubevirt-push/username
-      - secrets/quay-kubevirt-push/password
+      - secrets/creds/quay.io/kubevirt+prow-push/username
+      - secrets/creds/quay.io/kubevirt+prow-push/password
     type: Opaque
 
   - name: quay-kubevirtci-push
     namespace: kubevirt-prow-jobs
     files:
-      - secrets/quay-kubevirtci-push/username
-      - secrets/quay-kubevirtci-push/password
+      - secrets/creds/quay.io/kubevirtci+prow-push/username
+      - secrets/creds/quay.io/kubevirtci+prow-push/password
     type: Opaque
 
   - name: quay-containerdisks-push
     namespace: kubevirt-prow-jobs
     files:
-      - secrets/quay-containerdisks-push/username
-      - secrets/quay-containerdisks-push/password
+      - secrets/creds/quay.io/containerdisks+prow-push/username
+      - secrets/creds/quay.io/containerdisks+prow-push/password
     type: Opaque
 
   - name: commenter-oauth-token
     namespace: kubevirt-prow-jobs
     # githubCommenterToken
     files:
-      - oauth=secrets/commenter-oauth-token
+      - oauth=secrets/tokens/github/kubevirt-commenter-bot/prow-2026-11
     type: Opaque
   - name: kubevirtci-coveralls-token
     namespace: kubevirt-prow-jobs
     files:
-      - token=secrets/kubevirtci-coveralls-token
+      - token=secrets/tokens/coveralls/kubevirt/repo
     type: Opaque
   - name: containerized-data-importer-coveralls-token
     namespace: kubevirt-prow-jobs
     files:
-      - token=secrets/containerized-data-importer-coveralls-token
+      - token=secrets/tokens/coveralls/containerized-data-importer/repo
     type: Opaque
   - name: win-sysprep-001
     namespace: kubevirt-prow-jobs
     files:
-      - productKey=secrets/win-sysprep-001
+      - productKey=secrets/tokens/product-keys/windows/sysprep-001
     type: Opaque
   - name: kubevirtci-fossa-token
     namespace: kubevirt-prow-jobs
     files:
-      - token=secrets/kubevirtci-fossa-token
+      - token=secrets/tokens/fossa/kubevirt/push
     type: Opaque

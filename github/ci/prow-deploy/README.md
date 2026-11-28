@@ -112,7 +112,23 @@ Will contain the rendered configurations
 
 - overlays/$overlay/secrets
 
-Will contain the copied secrets.
+Contains copied secret directories. The source repository's outer `secrets/`
+directory is omitted:
+
+```text
+secrets/
+  prow/          # prow-staging/ in the testing environment
+  slack/
+  creds/quay.io/
+  tokens/
+```
+
+Kustomize maps these paths to existing Secret data keys using `key=path`
+where the source filename differs. Generated `github-oauth-config` and
+`kubeconfig` files remain directly under this directory. Copied files have
+mode `0400` and directories have mode `0700`. Copied directories are replaced
+on each run so removed source files cannot leave stale credentials behind.
+
 
 - overlays/$overlay/yq_scripts
 

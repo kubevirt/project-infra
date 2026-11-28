@@ -247,42 +247,42 @@ secretGenerator:
   - &github_token
     name: github-token
     files:
-      - appid=secrets/github/app-id
-      - cert=secrets/github/app-secret
+      - appid=secrets/prow/github/app-id
+      - cert=secrets/prow/github/app-secret
       # For backward compatibility
-      - oauth=secrets/github/bot-token
-      - token=secrets/github/bot-token
+      - oauth=secrets/prow/github/bot-token
+      - token=secrets/prow/github/bot-token
     type: Opaque
   - <<: *github_token
     namespace: kubevirt-prow-jobs
   - &gcs_credentials
     name: gcs-credentials
     files:
-      - secrets/service-account.json
+      - service-account.json=secrets/tokens/google/service-accounts/prow/prow-sa.json
     type: Opaque
   - <<: *gcs_credentials
     namespace: kubevirt-prow-jobs
   - name: bazel-cache-gcs
     namespace: kubevirt-prow-jobs
     files:
-      - secrets/prow/google/service-accounts/bazel-cache/bazel-cache-sa.json
+      - secrets/tokens/google/service-accounts/bazel-cache/bazel-cache-sa.json
     type: Opaque
   - name: virtci-gcs
     namespace: kubevirt-prow-jobs
     files:
-      - secrets/virtci-service-account.json
+      - virtci-service-account.json=secrets/tokens/google/service-accounts/virtualization-ci/virtualization-ci-sa.json
     type: Opaque
   - name: hmac-token
     files:
-      - hmac=secrets/github/hmac-token
+      - hmac=secrets/prow/github/hmac-token
     type: Opaque
   - name: slack-token
     files:
-      - token=secrets/slack/token
+      - token=secrets/slack/kubevirtci-token
     type: Opaque
   - name: cookie
     files:
-      - secret=secrets/cookie
+      - secret=secrets/prow/cookie
     type: Opaque
   - name: github-oauth-config
     files:
@@ -296,36 +296,36 @@ secretGenerator:
   - name: kubevirtci-quay-credential
     namespace: kubevirt-prow-jobs
     files:
-      - secrets/kubevirtci-quay-credential/username
-      - secrets/kubevirtci-quay-credential/password
-      - secrets/kubevirtci-quay-credential/token
+      - secrets/creds/quay.io/kubevirtcibot/username
+      - secrets/creds/quay.io/kubevirtcibot/password
+      - secrets/creds/quay.io/kubevirtcibot/token
     type: Opaque
 
   - name: quay-kubevirt-push
     namespace: kubevirt-prow-jobs
     files:
-      - secrets/quay-kubevirt-push/username
-      - secrets/quay-kubevirt-push/password
+      - secrets/creds/quay.io/kubevirt+prow-push/username
+      - secrets/creds/quay.io/kubevirt+prow-push/password
     type: Opaque
 
   - name: quay-kubevirtci-push
     namespace: kubevirt-prow-jobs
     files:
-      - secrets/quay-kubevirtci-push/username
-      - secrets/quay-kubevirtci-push/password
+      - secrets/creds/quay.io/kubevirtci+prow-push/username
+      - secrets/creds/quay.io/kubevirtci+prow-push/password
     type: Opaque
 
   - name: quay-containerdisks-push
     namespace: kubevirt-prow-jobs
     files:
-      - secrets/quay-containerdisks-push/username
-      - secrets/quay-containerdisks-push/password
+      - secrets/creds/quay.io/containerdisks+prow-push/username
+      - secrets/creds/quay.io/containerdisks+prow-push/password
     type: Opaque
 
   - &kubevirt_commenter_bot_token
     name: commenter-oauth-token
     files:
-      - oauth=secrets/commenter-oauth-token
+      - oauth=secrets/tokens/github/kubevirt-commenter-bot/prow-2026-11
     type: Opaque
   - <<: *kubevirt_commenter_bot_token
     namespace: kubevirt-prow-jobs
@@ -333,15 +333,15 @@ secretGenerator:
   - name: kubevirtci-coveralls-token
     namespace: kubevirt-prow-jobs
     files:
-      - token=secrets/kubevirtci-coveralls-token
+      - token=secrets/tokens/coveralls/kubevirt/repo
     type: Opaque
   - name: containerized-data-importer-coveralls-token
     namespace: kubevirt-prow-jobs
     files:
-      - token=secrets/containerized-data-importer-coveralls-token
+      - token=secrets/tokens/coveralls/containerized-data-importer/repo
     type: Opaque
   - name: kubevirtci-fossa-token
     namespace: kubevirt-prow-jobs
     files:
-      - token=secrets/kubevirtci-fossa-token
+      - token=secrets/tokens/fossa/kubevirt/push
     type: Opaque

@@ -68,5 +68,5 @@
   shell: |
     phony \
       --address="http://{{ prowUrl }}/hook" \
-      --hmac $(cat {{ secrets_dir }}/github/hmac-token)
+      --hmac $(cat {{ prow_secrets_dir }}/github/hmac-token)
   changed_when: false

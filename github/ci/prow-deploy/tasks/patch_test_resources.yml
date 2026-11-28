@@ -11,6 +11,9 @@
 
 - name: prepare production resources for testing usage
   block:
+    - name: use staging Prow credentials
+      shell: |
+        yq -i '(.secretGenerator[].files[]) |= sub("secrets/prow/", "secrets/prow-staging/")' {{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/kustomization.yaml
     - name: patch ghproxy pvc class
       shell: |
         yq -i '.spec.storageClassName = "local"' {{ project_infra_root }}/github/ci/prow-deploy/kustom/overlays/{{ deploy_environment }}/patches/StrategicMerge/ghproxy.yaml
